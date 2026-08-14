@@ -41,6 +41,7 @@ export const industries: Industry[] = [
     color: 'secondary',
     products: [
       { name: 'Hospital Management Software', slug: 'hospital-management-software', shortDescription: 'OPD/IPD, EMR, billing, pharmacy, and lab integration for hospitals.' },
+      { name: 'IVF & Fertility Clinic Software', slug: 'ivf-fertility-clinic-software', shortDescription: 'In Vitro Fertilization (IVF) cycle tracking, embryology lab management, follicle monitoring, and specialized fertility EMR.' },
       { name: 'Clinic Management Software', slug: 'clinic-management-software', shortDescription: 'Appointment scheduling, patient records, and billing for clinics.' },
       { name: 'Pathology Lab Software', slug: 'pathology-lab-software', shortDescription: 'Sample tracking, report generation, and lab equipment integration.' },
       { name: 'Pharmacy Billing Software', slug: 'pharmacy-billing-software', shortDescription: 'Inventory, GST billing, expiry tracking, and supplier management.' },
