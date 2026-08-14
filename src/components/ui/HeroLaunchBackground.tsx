@@ -72,8 +72,8 @@ export function HeroLaunchBackground() {
         {activeTab === 'architecture' && (
           <div className="max-w-5xl mx-auto rounded-2xl overflow-hidden border border-black/10 shadow-2xl bg-[#0d0d0e] group-hover:scale-[1.005] transition-transform duration-500">
             <NextImage
-              src="/hero_ecosystem_illustration.jpg"
-              alt="OHO TECH Technology Ecosystem - Abstract Digital Core, AI Neural Networks, Cloud Infrastructure, and Cyber Security"
+              src="/hero_workspace_editorial.jpg"
+              alt="OHO TECH Technology Studio - Real Software Engineers & Product Designers Working in a Modern Architectural Workspace"
               width={1600}
               height={900}
               style={{ width: '100%', maxHeight: '420px', objectFit: 'cover' }}
