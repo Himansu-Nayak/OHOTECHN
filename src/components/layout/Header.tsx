@@ -43,6 +43,7 @@ export function Header() {
               width={140}
               height={40}
               priority
+              style={{ width: 'auto', height: 'auto' }}
               className="h-8 sm:h-10 max-h-10 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
@@ -380,6 +381,7 @@ export function Header() {
                   alt="OHO TECH Logo"
                   width={130}
                   height={36}
+                  style={{ width: 'auto', height: 'auto' }}
                   className="h-9 max-h-9 w-auto object-contain"
                 />
                 <button onClick={() => setIsMobileOpen(false)} className="p-1 text-slate-400 hover:text-[#0d0d0e]">

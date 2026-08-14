@@ -65,7 +65,6 @@ export function HeroLaunchBackground() {
           alt="OHO TECH Website UI Showcase on Tablet Device - Software, Digital Solutions & Business Growth"
           fill
           priority
-          quality={85}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
           className="object-cover object-center brightness-[0.95] contrast-[1.03] group-hover:scale-[1.015] transition-transform duration-700 ease-out"
         />

@@ -21,6 +21,7 @@ export default function Footer() {
                 alt="OHO TECH Logo"
                 width={140}
                 height={40}
+                style={{ width: 'auto', height: 'auto' }}
                 className="h-10 w-auto object-contain brightness-0 invert"
               />
             </Link>

@@ -477,9 +477,7 @@ export default function WideStudioPage() {
               
               <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 sm:p-10 shadow-xl relative">
                 <Quote className="w-10 h-10 text-sky-500/30 mb-4" />
-                <p className="text-lg sm:text-xl font-medium text-slate-200 leading-relaxed italic">
-                  &quot;At OHO TECH, our mission is to deliver straightforward, high-performance software engineering for businesses. Under Jagabandhu Kampa&apos;s leadership, we build digital systems that provide real operational clarity across healthcare, education, retail, and enterprise sectors.&quot;
-                </p>
+                <p className="text-lg sm:text-xl font-medium text-slate-200 leading-relaxed italic">&quot;At OHO TECH, our mission is to deliver straightforward, high-performance software engineering for businesses. Under Jagabandhu Kampa&apos;s leadership, we build digital systems that provide real operational clarity across healthcare, education, retail, and enterprise sectors.&quot;</p>
                 <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
                   <div>
                     <div className="text-sm font-bold text-white">Jagabandhu Kampa</div>
