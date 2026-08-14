@@ -23,6 +23,13 @@ import { cn } from '@/lib/utils';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
 import { SolutionsSection } from '@/components/solutions/SolutionsSection';
 import { ServicesSection } from '@/components/services/ServicesSection';
+import { SoftwareStorySection } from '@/components/story/SoftwareStorySection';
+import { WebStorySection } from '@/components/story/WebStorySection';
+import { MobileStorySection } from '@/components/story/MobileStorySection';
+import { ERPStorySection } from '@/components/story/ERPStorySection';
+import { DesignIntegrationStorySection } from '@/components/story/DesignIntegrationStorySection';
+import { DigitalGrowthStorySection } from '@/components/story/DigitalGrowthStorySection';
+import { FinalCTASection } from '@/components/story/FinalCTASection';
 
 export default function WideStudioPage() {
   const [easterEggActive, setEasterEggActive] = React.useState(false);
@@ -487,6 +494,25 @@ export default function WideStudioPage() {
       {/* ── 5. ALL 15 CORE SERVICES (MODERN MINIMAL SERVICES SECTION) ── */}
       <ServicesSection />
 
+      {/* ── PROGRESSIVE SERVICE STORY SECTIONS ── */}
+      {/* SECTION 1: SOFTWARE & CUSTOM DEVELOPMENT */}
+      <SoftwareStorySection />
+
+      {/* SECTION 2: WEBSITE & DIGITAL PLATFORMS */}
+      <WebStorySection />
+
+      {/* SECTION 3: MOBILE APPLICATIONS */}
+      <MobileStorySection />
+
+      {/* SECTION 4: ERP & BUSINESS SYSTEMS */}
+      <ERPStorySection />
+
+      {/* SECTION 5: DESIGN, UX & INTEGRATION */}
+      <DesignIntegrationStorySection />
+
+      {/* SECTION 6: DIGITAL GROWTH SERVICES */}
+      <DigitalGrowthStorySection />
+
       {/* ── 6. THREE CUSTOMER JOURNEYS (STRUCTURED ENGAGEMENT PATHWAYS) ── */}
       <section className="max-w-[1536px] w-full mx-auto mb-6 bg-[#ebebe8] border border-black/10 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm" id="flows">
         
@@ -829,50 +855,8 @@ export default function WideStudioPage() {
 
       </section>
 
-      {/* ── 9. SCARCITY & FINAL CONVERSION BLOCK (HIGH-IMPACT DARK FOOTER) ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-12 bg-[#0d0d0e] text-white border border-black/20 rounded-[32px] sm:rounded-[44px] p-8 sm:p-16 lg:p-20 text-center shadow-2xl relative overflow-hidden grid-pattern-dark">
-        
-        {/* Glowing Ambient Backdrop Accent */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-teal-500/10 blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold uppercase tracking-wider mb-4">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-            2 Open Development Spots Left This Month
-          </div>
-
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-5">
-            Tell us what you're building
-          </h2>
-
-          <p className="text-slate-400 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed">
-            Ready to launch your custom software system or scale your digital product? Book a 15-minute engineering call with our team today.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              id="bottom-book-call"
-              href="/book-demo"
-              className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-white text-[#0d0d0e] hover:bg-teal-400 font-black text-sm tracking-tight transition-all shadow-2xl group hover:scale-105"
-            >
-              <span>Book a 15-minute call</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-
-            <Link
-              href="/get-quote"
-              className="inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full bg-white/10 text-white hover:bg-white/20 font-bold text-sm tracking-tight transition-all border border-white/20 hover:scale-105"
-            >
-              <span>Get Custom Quote →</span>
-            </Link>
-          </div>
-
-          <p className="text-xs font-mono text-slate-500 mt-12">
-            © {new Date().getFullYear()} OHO TECH. Enterprise Systems &amp; Digital Technology Studio.
-          </p>
-        </div>
-
-      </section>
+      {/* ── FINAL CTA SECTION ── */}
+      <FinalCTASection />
 
     </div>
   );

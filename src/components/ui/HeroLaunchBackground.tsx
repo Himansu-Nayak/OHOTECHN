@@ -26,8 +26,8 @@ export function HeroLaunchBackground() {
       {/* ── 3. HUD TELEMETRY DATA OVERLAYS (TOP CORNERS) ── */}
       <div className="relative z-20 flex flex-wrap items-center justify-between gap-3 font-mono text-[10px] sm:text-xs text-slate-600 font-bold uppercase tracking-wider">
         <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/10 shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-          <span>OHO_TECH :: ENTERPRISE_SOFTWARE_LAB_ONLINE</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>OHO TECH Software &amp; Digital Studio</span>
         </div>
 
         {/* Interactive View Toggles */}
@@ -57,14 +57,12 @@ export function HeroLaunchBackground() {
               activeTab === 'security' ? "bg-[#0d0d0e] text-white" : "text-slate-600 hover:text-black"
             )}
           >
-            Security & SLA
+            Architecture &amp; Quality
           </button>
         </div>
 
         <div className="hidden md:flex items-center gap-3 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/10 shadow-sm text-slate-800">
-          <span>65+ PRODUCTS ACTIVE</span>
-          <span>•</span>
-          <span>SLA: 99.99% UPTIME</span>
+          <span>Custom Software &amp; Digital Growth</span>
         </div>
       </div>
 
