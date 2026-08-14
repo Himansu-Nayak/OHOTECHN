@@ -14,6 +14,7 @@ import {
   Layers,
   Sparkles,
 } from 'lucide-react';
+import { ArchitectureDiagram } from '@/components/home/ArchitectureDiagram';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
 import { SolutionsSection } from '@/components/solutions/SolutionsSection';
 import { ServicesSection } from '@/components/services/ServicesSection';
@@ -77,14 +78,14 @@ export default function WideStudioPage() {
 
       </section>
 
-      {/* ── 02. INTRODUCTION / ABOUT OHO TECH & STRATEGIC DIRECTION ── */}
+      {/* ── ABOUT OHO TECH & STRATEGIC DIRECTION ── */}
       <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="about-intro">
         
         {/* Section Header */}
-        <div className="max-w-4xl mb-12 text-left">
+        <div className="max-w-4xl mb-10 text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            02 / ABOUT OHO TECH &amp; STRATEGIC DIRECTION
+            ABOUT OHO TECH &amp; STRATEGIC DIRECTION 🏗️
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-5">
             Engineering precision meets data-driven growth.
@@ -93,6 +94,9 @@ export default function WideStudioPage() {
             OHO TECH is an enterprise technology studio delivering custom software applications, digital platforms, and customer acquisition strategies tailored to your operational business goals.
           </p>
         </div>
+
+        {/* High Visibility Architecture Diagram */}
+        <ArchitectureDiagram />
 
         {/* 4 Strategic Direction & Feature Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
