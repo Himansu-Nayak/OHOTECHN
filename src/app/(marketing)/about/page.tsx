@@ -36,7 +36,7 @@ const values = [
 
 export default async function AboutPage() {
   return (
-    <div className="bg-[#09090b] text-white min-h-screen">
+    <div className="bg-[#09090b] text-white min-h-screen pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 pb-16">
       
       {/* ── HERO SECTION ── */}
       <div className="relative isolate pt-24 lg:pt-32 pb-20 overflow-hidden">

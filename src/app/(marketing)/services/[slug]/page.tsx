@@ -2,14 +2,13 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { services } from '@/config/services';
-import { cn } from '@/lib/utils';
-import { ArrowRight, CheckCircle2, Settings } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Sparkles, Layers } from 'lucide-react';
 import { Metadata } from 'next';
 import * as Icons from 'lucide-react';
 
 function DynamicIcon({ name, ...props }: { name: string } & Icons.LucideProps) {
   const Icon = Icons[name as keyof typeof Icons] as Icons.LucideIcon;
-  if (!Icon) return null;
+  if (!Icon) return <Layers {...props} />;
   return <Icon {...props} />;
 }
 
@@ -36,104 +35,134 @@ export default async function ServiceDetailPage(props: { params: Promise<{ slug:
   }
 
   return (
-    <main className="bg-white min-h-screen" id={`service-detail-${service.slug}`}>
-      {/* Hero Section */}
-      <section className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="service-hero">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="flex-1 text-center lg:text-left">
-            <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-2xl mb-6 text-primary">
-              <DynamicIcon name={service.iconName || 'Settings'} className="w-10 h-10" />
+    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white" id={`service-detail-${service.slug}`}>
+      <main className="max-w-[1536px] w-full mx-auto">
+        
+        {/* Service Hero Section */}
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm mb-10 relative overflow-hidden grid-pattern-light" id="service-hero">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <div className="flex-1 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+                OHO TECH {service.category.toUpperCase()} SERVICE
+              </div>
+              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-[1.08]" id="service-title">
+                {service.name}
+              </h1>
+              <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed" id="service-desc">
+                {service.description}
+              </p>
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                <Link
+                  href={`/contact?service=${service.slug}`}
+                  id="hero-get-started"
+                  className="px-8 py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg inline-flex items-center gap-2"
+                >
+                  <span>Get Started with {service.name}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
-            <p className="text-sm font-semibold tracking-wide text-primary uppercase mb-4" id="service-category">
-              {service.category}
-            </p>
-            <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 mb-6" id="service-title">
-              {service.name}
-            </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 mb-8" id="service-desc">
-              {service.description}
-            </p>
-            <Link
-              href={`/contact?service=${service.slug}`}
-              id="hero-get-started"
-              className="inline-flex justify-center items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-white bg-primary hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
-            >
-              Get Started with {service.name} <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </div>
-          <div className="flex-1 w-full max-w-lg lg:max-w-none">
-             <div className="aspect-square rounded-3xl bg-slate-50 border border-neutral-100 p-8 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
-                <DynamicIcon name={service.iconName || 'Settings'} className="w-48 h-48 text-primary/20" />
-             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      {service.features && service.features.length > 0 && (
-        <section className="py-20 bg-slate-50" id="service-features">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Key Features & Capabilities</h2>
-              <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {service.features.map((feature: string, idx: number) => (
-                <div key={idx} className="flex items-start p-6 bg-white rounded-2xl border border-neutral-100 shadow-sm" id={`feature-${idx}`}>
-                  <CheckCircle2 className="w-6 h-6 text-primary flex-shrink-0 mr-4 mt-0.5" />
-                  <p className="text-lg font-medium text-slate-700">{feature}</p>
+            <div className="flex-1 w-full max-w-md">
+              <div className="p-10 rounded-3xl bg-[#fafafa] border-2 border-slate-200 text-center flex flex-col items-center justify-center shadow-inner">
+                <div className="w-20 h-20 rounded-3xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center mb-6">
+                  <DynamicIcon name={service.iconName || 'Layers'} className="w-10 h-10" />
                 </div>
-              ))}
+                <div className="text-xs font-mono font-bold text-sky-700 bg-sky-50 px-3 py-1 rounded-full border border-sky-200 mb-2">
+                  ENTERPRISE CAPABILITY
+                </div>
+                <p className="text-xs text-slate-500 font-mono">
+                  Tailored Execution &amp; Dedicated Engineering
+                </p>
+              </div>
             </div>
           </div>
         </section>
-      )}
 
-      {/* Process Section */}
-      <section className="py-20 lg:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="service-process">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">How We Deliver</h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">Our proven methodology ensures consistent, high-quality results.</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-          {/* Connecting line for desktop */}
-          <div className="hidden lg:block absolute top-12 left-[12%] right-[12%] h-0.5 bg-neutral-100 z-0"></div>
-          
-          {[
-            { step: '01', title: 'Discovery & Planning', desc: 'We analyze your requirements and chart a strategic roadmap.' },
-            { step: '02', title: 'Design & Strategy', desc: 'Crafting the blueprint, architecture, and core approach.' },
-            { step: '03', title: 'Execution & Dev', desc: 'Building and executing with precision and agile methodology.' },
-            { step: '04', title: 'Review & Launch', desc: 'Rigorous testing, final adjustments, and successful deployment.' },
-          ].map((process, i) => (
-            <div key={i} className="relative z-10 flex flex-col items-center text-center group" id={`process-step-${i}`}>
-              <div className="w-24 h-24 bg-white border-4 border-neutral-50 rounded-full flex items-center justify-center mb-6 shadow-sm group-hover:border-primary/20 transition-colors">
-                <span className="text-2xl font-bold text-primary">{process.step}</span>
+        {/* Features Section */}
+        {service.features && service.features.length > 0 && (
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm mb-10" id="service-features">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
+              <div>
+                <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">
+                  DELIVERABLES &amp; CAPABILITIES
+                </div>
+                <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
+                  Key Features &amp; Technical Scope
+                </h2>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">{process.title}</h3>
-              <p className="text-slate-600">{process.desc}</p>
+              <p className="text-xs font-mono text-slate-500">
+                Rigorous Specifications &amp; Quality Control
+              </p>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-slate-900" id="service-final-cta">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white mb-6">Ready to elevate your {service.name.toLowerCase()}?</h2>
-          <p className="text-slate-400 text-lg mb-8">
-            Contact us today to discuss your project requirements and get a custom proposal.
-          </p>
-          <Link
-            href="/contact"
-            id="final-contact-cta"
-            className="inline-flex justify-center items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-slate-900 bg-white hover:bg-neutral-100 transition-colors"
-          >
-            Let&apos;s Talk <ArrowRight className="ml-2 w-5 h-5" />
-          </Link>
-        </div>
-      </section>
-    </main>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {service.features.map((feature: string, idx: number) => (
+                <div key={idx} className="p-7 bg-[#fafafa] border-2 border-slate-200 rounded-3xl flex items-start gap-4" id={`feature-${idx}`}>
+                  <CheckCircle2 className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+                  <p className="text-sm font-bold text-[#0d0d0e] leading-snug">{feature}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Process Section */}
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm mb-10" id="service-process">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
+            <div>
+              <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">
+                DELIVERY METHODOLOGY
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
+                How We Execute &amp; Deliver
+              </h2>
+            </div>
+            <p className="text-xs font-mono text-slate-500">
+              4-Phase Structured Development
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { step: '01', title: 'Discovery & Planning', desc: 'Analyzing technical requirements and mapping architecture.' },
+              { step: '02', title: 'Design & Strategy', desc: 'Crafting UI/UX prototypes, schemas, and system workflows.' },
+              { step: '03', title: 'Agile Execution', desc: 'Building codebases with continuous integration and security.' },
+              { step: '04', title: 'QA & Launch', desc: 'Comprehensive testing, server deployment, and handoff.' },
+            ].map((process, i) => (
+              <div key={i} className="p-7 bg-[#fafafa] border-2 border-slate-200 rounded-3xl flex flex-col justify-between" id={`process-step-${i}`}>
+                <div>
+                  <span className="text-xs font-mono font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200 inline-block mb-4">
+                    PHASE {process.step}
+                  </span>
+                  <h3 className="text-lg font-extrabold text-[#0d0d0e] mb-2">{process.title}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">{process.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="bg-[#0d0d0e] text-white border-2 border-slate-700 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-16 text-center shadow-2xl relative overflow-hidden" id="service-final-cta">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">Ready to elevate your {service.name.toLowerCase()}?</h2>
+            <p className="text-sm sm:text-base text-slate-300 mb-8 max-w-xl mx-auto">
+              Contact us today to discuss your project requirements and receive a custom engineering proposal.
+            </p>
+            <Link
+              href="/contact"
+              id="final-contact-cta"
+              className="px-8 py-4 rounded-full bg-white hover:bg-sky-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg inline-flex items-center gap-2"
+            >
+              <span>Let&apos;s Talk</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </section>
+
+      </main>
+    </div>
   );
 }

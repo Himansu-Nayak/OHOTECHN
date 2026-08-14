@@ -1,60 +1,95 @@
 // src/app/(marketing)/solutions/page.tsx
 import Link from 'next/link';
 import { industries } from '@/config/industries';
-import { cn } from '@/lib/utils';
 import * as Icons from 'lucide-react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Layers, Sparkles } from 'lucide-react';
 
 function DynamicIcon({ name, ...props }: { name: string } & Icons.LucideProps) {
   const Icon = Icons[name as keyof typeof Icons] as Icons.LucideIcon;
-  if (!Icon) return null;
+  if (!Icon) return <Layers {...props} />;
   return <Icon {...props} />;
 }
 
 export default function SolutionsHubPage() {
   return (
-    <main className="bg-white" id="solutions-hub-main">
-      {/* Hero Section */}
-      <section className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center" id="solutions-hero">
-        <p className="text-sm font-semibold tracking-wide text-primary uppercase mb-4" id="solutions-hero-eyebrow">Solutions by Industry</p>
-        <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 mb-6" id="solutions-hero-heading">
-          Tailored Software for Every Industry
-        </h1>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto" id="solutions-hero-desc">
-          Discover comprehensive, scalable solutions designed specifically to meet the unique challenges and opportunities of your sector.
-        </p>
-      </section>
+    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
+      <main className="max-w-[1536px] w-full mx-auto" id="solutions-hub-main">
+        
+        {/* Top Header Hero Container */}
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="solutions-hero">
+          <div className="max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+              SOLUTIONS BY INDUSTRY
+            </div>
+            
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-[1.08]" id="solutions-hero-heading">
+              Tailored Enterprise Software for Every Sector.
+            </h1>
+            
+            <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal max-w-2xl mx-auto leading-relaxed" id="solutions-hero-desc">
+              Discover comprehensive, scalable software solutions designed specifically to streamline operations, automate workflows, and drive digital growth across 13 industry verticals.
+            </p>
+          </div>
+        </section>
 
-      {/* Grid Section */}
-      <section className="pb-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="solutions-grid-section">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="solutions-grid">
-          {industries.map((industry) => (
-            <Link
-              key={industry.slug}
-              href={`/solutions/${industry.slug}`}
-              id={`solution-card-${industry.slug}`}
-              className="group block p-8 bg-white border border-neutral-100 rounded-2xl hover:shadow-xl transition-all duration-300 relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
-              <div className="relative">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 text-primary">
-                  <DynamicIcon name={industry.iconName} className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{industry.name}</h3>
-                <p className="text-slate-600 mb-6 line-clamp-3">{industry.description}</p>
-                <div className="flex items-center justify-between mt-auto">
-                  <span className="text-sm font-medium text-slate-500 bg-slate-50 px-3 py-1 rounded-full">
-                    {industry.products.length} {industry.products.length === 1 ? 'Product' : 'Products'}
-                  </span>
-                  <span className="text-primary font-medium flex items-center group-hover:translate-x-1 transition-transform">
-                    Explore <ArrowRight className="w-4 h-4 ml-1" />
-                  </span>
-                </div>
+        {/* Industry Solutions Showcase Grid */}
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="solutions-grid-section">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
+            <div>
+              <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">
+                13 INDUSTRY VERTICALS
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-    </main>
+              <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
+                Enterprise Solution Modules
+              </h2>
+            </div>
+            <p className="text-xs font-mono text-slate-500">
+              65+ Custom &amp; SaaS Products Operational
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="solutions-grid">
+            {industries.map((industry) => (
+              <Link
+                key={industry.slug}
+                href={`/solutions/${industry.slug}`}
+                id={`solution-card-${industry.slug}`}
+                className="group p-8 bg-[#fafafa] border-2 border-slate-200 hover:border-sky-500 rounded-3xl transition-all duration-300 flex flex-col justify-between hover:shadow-lg relative overflow-hidden"
+              >
+                <div>
+                  {/* Card Header & Icon */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all duration-300">
+                      <DynamicIcon name={industry.iconName} className="w-6 h-6" />
+                    </div>
+                    <span className="text-[11px] font-mono font-bold text-sky-700 bg-sky-50 border border-sky-200 px-3 py-1 rounded-full">
+                      {industry.products.length} {industry.products.length === 1 ? 'Solution' : 'Solutions'}
+                    </span>
+                  </div>
+
+                  {/* Title & Description */}
+                  <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">
+                    {industry.name}
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                    {industry.description}
+                  </p>
+                </div>
+
+                {/* Card Action Link Footer */}
+                <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs font-bold text-slate-800 group-hover:text-sky-600">
+                  <span>Explore Architecture</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            ))}
+          </div>
+
+        </section>
+
+      </main>
+    </div>
   );
 }
