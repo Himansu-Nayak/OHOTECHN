@@ -13,7 +13,10 @@ import {
   Play,
   Pause,
   Tv,
-  Film,
+  Lock,
+  Activity,
+  Layers,
+  Search,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -99,32 +102,153 @@ export function HeroLaunchBackground() {
       {/* ── 1. LUXURY TABLET DEMO STREAM DISPLAY (LIVE MOTION VIDEO DISPLAY) ── */}
       <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[600px] overflow-hidden">
         
-        {/* Animated Motion Video Screen Image */}
+        {/* Background Base Mockup Photo */}
         <NextImage
           src="/hero_ipad_mockup_ohotech.jpg"
-          alt="OHO TECH Website UI Showcase on Tablet Device - Software, Digital Solutions & Business Growth"
+          alt="OHO TECH Website UI Showcase on Tablet Device"
           fill
           priority
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-          className={cn(
-            "object-cover object-center brightness-[0.95] contrast-[1.03] transition-all duration-1000 ease-in-out",
-            isPlaying ? "scale-105" : "scale-100"
-          )}
+          className="object-cover object-center brightness-[0.9] contrast-[1.05]"
         />
 
-        {/* Live Scanning Laser & Video Shimmer Motion Effect */}
-        {isPlaying && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {/* Top-to-Bottom Moving Video Scanner Light */}
-            <div className="w-full h-40 bg-gradient-to-b from-transparent via-emerald-400/20 to-transparent transform -translate-y-full animate-[scan_4s_ease-in-out_infinite]" />
-            
-            {/* Ambient Pulse Light */}
-            <div className="absolute inset-0 bg-emerald-500/5 animate-pulse" />
+        {/* ── DYNAMIC LIVE AUTO-SCROLLING SCREEN INSIDE THE TABLET ── */}
+        <div className="absolute top-[18%] left-[16%] right-[16%] bottom-[12%] z-10 bg-[#0d0d0e]/95 text-white rounded-2xl border-2 border-slate-700/80 shadow-2xl overflow-hidden flex flex-col backdrop-blur-xl">
+          
+          {/* Simulated Browser URL Bar */}
+          <div className="bg-[#141416] border-b border-white/10 px-3 py-2 flex items-center justify-between gap-2 shrink-0">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+            </div>
+
+            <div className="flex-1 max-w-md mx-auto bg-black/40 border border-white/10 rounded-lg px-3 py-0.5 text-[10px] font-mono text-slate-300 flex items-center gap-2">
+              <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
+              <span className="truncate">https://ohotech.com/live-solution-demo/{solutions[activeSolution].id}</span>
+            </div>
+
+            <div className="flex items-center gap-2 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              <Activity className="w-3 h-3 animate-pulse" />
+              <span>LIVE SCREEN</span>
+            </div>
           </div>
-        )}
+
+          {/* DYNAMIC SCROLLING PAGE CONTENT MATCHING ACTIVE SOLUTION */}
+          <div className="flex-1 p-4 sm:p-6 overflow-hidden relative">
+            
+            {/* Auto-Scrolling Animated Screen Container */}
+            <div className={cn(
+              "space-y-4 transition-all duration-700 ease-out",
+              isPlaying ? "animate-pulse" : ""
+            )}>
+              
+              {/* Screen Top Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{solutions[activeSolution].emoji}</span>
+                  <h4 className="text-sm font-mono font-black text-white uppercase tracking-wider">
+                    {solutions[activeSolution].title}
+                  </h4>
+                </div>
+                <span className="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                  Slide {activeSolution + 1} of 04
+                </span>
+              </div>
+
+              {/* Dynamic Screen Body Preview */}
+              {activeSolution === 0 && (
+                <div className="space-y-3 font-mono text-xs">
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">Custom Microservices Engine</span>
+                    <span className="text-emerald-400 text-[10px]">Running 99.99%</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">Automated Workflow Pipelines</span>
+                    <span className="text-amber-400 text-[10px]">Active Sync</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">REST &amp; GraphQL API Gateway</span>
+                    <span className="text-teal-400 text-[10px]">Protected</span>
+                  </div>
+                </div>
+              )}
+
+              {activeSolution === 1 && (
+                <div className="space-y-3 font-mono text-xs">
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                    <span className="text-emerald-300">IVF Fertility Cycle &amp; EMR Tracking</span>
+                    <span className="text-emerald-400 text-[10px]">Active Records</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">OPD / IPD Patient Queue &amp; Beds</span>
+                    <span className="text-emerald-400 text-[10px]">Live Sync</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">Pathology Lab &amp; Pharmacy GST Billing</span>
+                    <span className="text-teal-400 text-[10px]">Connected</span>
+                  </div>
+                </div>
+              )}
+
+              {activeSolution === 2 && (
+                <div className="space-y-3 font-mono text-xs">
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between">
+                    <span className="text-amber-300">Multi-Campus University ERP</span>
+                    <span className="text-amber-400 text-[10px]">3 Campuses Active</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">Student Online Fee Collection</span>
+                    <span className="text-emerald-400 text-[10px]">Gateway Live</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">Proctored Examination Core</span>
+                    <span className="text-teal-400 text-[10px]">Ready</span>
+                  </div>
+                </div>
+              )}
+
+              {activeSolution === 3 && (
+                <div className="space-y-3 font-mono text-xs">
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                    <span className="text-emerald-300">Retail POS Barcode Counter Billing</span>
+                    <span className="text-emerald-400 text-[10px]">Sub-Second Checkout</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">Multi-Store Inventory Stock Sync</span>
+                    <span className="text-emerald-400 text-[10px]">Auto Balance</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span className="text-slate-300">GST Invoice Generator &amp; Returns</span>
+                    <span className="text-teal-400 text-[10px]">Compliance Ready</span>
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Live Video Motion Scanner Light across the screen */}
+            {isPlaying && (
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="w-full h-16 bg-gradient-to-b from-transparent via-emerald-400/25 to-transparent transform -translate-y-full animate-[scan_3s_linear_infinite]" />
+              </div>
+            )}
+
+          </div>
+
+          {/* Screen Bottom Controls Footer */}
+          <div className="bg-[#141416] border-t border-white/10 px-4 py-2 flex items-center justify-between text-[10px] font-mono text-slate-400 shrink-0">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>LIVE AUTOMATED SCREEN FLOW</span>
+            </span>
+            <span className="text-emerald-400 font-bold">AUTOPLAY ACTIVE</span>
+          </div>
+
+        </div>
 
         {/* Video HUD Overlay: Live Stream HUD Bar */}
-        <div className="absolute top-20 sm:top-24 left-6 sm:left-10 z-20 pointer-events-none flex items-center gap-3">
+        <div className="absolute top-6 left-6 z-20 pointer-events-none flex items-center gap-3">
           <div className="px-3 py-1 rounded-full bg-[#0c0d0e]/90 backdrop-blur-md border border-emerald-500/40 text-white font-mono text-[11px] font-bold flex items-center gap-2 shadow-xl">
             <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
             <span className="text-red-400 font-black">REC</span>
