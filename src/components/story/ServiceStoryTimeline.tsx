@@ -2,9 +2,19 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Code2, Globe, Smartphone, LayoutGrid, Palette, TrendingUp, CheckCircle2, ShieldCheck, Cpu, Workflow, Database } from 'lucide-react';
+import { ArrowRight, Code2, Globe, Smartphone, LayoutGrid, Palette, TrendingUp, CheckCircle2, ShieldCheck, Cpu, Workflow, Database, MapPin, ChevronDown, Layers } from 'lucide-react';
 
 export function ServiceStoryTimeline() {
+  const [selectedPillar, setSelectedPillar] = React.useState<string | null>(null);
+
+  const handleScrollToPillar = (id: string) => {
+    setSelectedPillar(id);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const stories = [
     {
       id: 'software-story',
@@ -322,7 +332,7 @@ export function ServiceStoryTimeline() {
     <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden" id="capabilities-timeline">
       
       {/* Top Main Section Header */}
-      <div className="max-w-4xl mb-16 text-left border-b border-slate-200 pb-10">
+      <div className="max-w-4xl mb-12 text-left">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
           OHO TECH END-TO-END CAPABILITIES 🚀
@@ -331,8 +341,52 @@ export function ServiceStoryTimeline() {
           Engineering &amp; Growth Capabilities Roadmap.
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
-          Discover our 6 core capability pillars, from custom software and web platforms to mobile engineering, business ERP systems, UI/UX design, and digital customer acquisition.
+          Discover our 6 core capability pillars. Click any roadmap step below to view the capability flow from 01 to 06.
         </p>
+      </div>
+
+      {/* Interactive Roadmap Selector Bar */}
+      <div className="bg-[#0d0d0e] text-white rounded-3xl p-6 sm:p-8 mb-16 border-2 border-slate-800 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-6">
+          <div className="flex items-center gap-2 font-mono text-xs text-emerald-400 font-bold uppercase tracking-wider">
+            <MapPin className="w-4 h-4 text-emerald-400 animate-pulse" />
+            <span>INTERACTIVE ROADMAP SELECTOR (01 TO 06)</span>
+          </div>
+          <span className="text-xs font-mono text-slate-400">
+            Click any pillar to view step
+          </span>
+        </div>
+
+        {/* 6 Roadmap Pillar Buttons */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {stories.map((s) => {
+            const isSelected = selectedPillar === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => handleScrollToPillar(s.id)}
+                type="button"
+                className={`p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                  isSelected
+                    ? 'bg-emerald-500 text-white border-emerald-400 shadow-lg scale-105'
+                    : 'bg-[#141416] text-slate-300 border-white/10 hover:border-emerald-500/50 hover:bg-white/5'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`font-mono text-xs font-black px-2 py-0.5 rounded ${
+                    isSelected ? 'bg-white text-[#0d0d0e]' : 'bg-white/10 text-emerald-400'
+                  }`}>
+                    {s.step}
+                  </span>
+                  <span className="text-lg">{s.emoji}</span>
+                </div>
+                <div className="text-xs font-bold truncate mt-1">
+                  {s.title.split(' ')[0]} {s.title.split(' ')[1] || ''}
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Main Timeline Body */}
