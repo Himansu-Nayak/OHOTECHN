@@ -408,6 +408,24 @@ export function ServiceStoryTimeline() {
                 </div>
               </div>
 
+              {/* Chain & Arrow Sequential Connector Line */}
+              {idx < stories.length - 1 && (
+                <div className="py-8 flex flex-col items-center justify-center relative my-4">
+                  <div className="w-1 h-8 bg-gradient-to-b from-slate-300 via-emerald-400 to-emerald-500 rounded-full" />
+
+                  <div className="my-2 p-3 rounded-full bg-[#0d0d0e] border-2 border-slate-700 shadow-lg text-emerald-400 flex items-center gap-2 group hover:border-emerald-400 transition-all hover:scale-110">
+                    <span className="w-7 h-7 rounded-full bg-[#141416] border border-white/10 flex items-center justify-center text-xs font-mono font-bold text-emerald-400">
+                      🔗
+                    </span>
+                    <span className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-black animate-bounce">
+                      ↓
+                    </span>
+                  </div>
+
+                  <div className="w-1 h-8 bg-gradient-to-b from-emerald-500 via-emerald-400 to-slate-300 rounded-full" />
+                </div>
+              )}
+
             </div>
           );
         })}
