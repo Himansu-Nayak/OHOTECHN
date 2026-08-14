@@ -16,7 +16,7 @@ export function ServicesSection() {
 
   return (
     <section
-      className="max-w-[1536px] w-full mx-auto mb-12 bg-[#fafafa] border border-slate-200/80 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden"
+      className="max-w-[1536px] w-full mx-auto mb-12 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden"
       id="services"
     >
       {/* 1. Section Header */}

@@ -16,7 +16,7 @@ export function DigitalGrowthStorySection() {
   ];
 
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-gradient-to-b from-[#fefbf6] via-[#fafafa] to-white border border-amber-200/80 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden transition-all duration-500" id="growth-story">
+    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden transition-all duration-500" id="growth-story">
       
       {/* Clear Visual Transition Header Badge */}
       <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs font-mono font-bold uppercase tracking-wider mb-6">

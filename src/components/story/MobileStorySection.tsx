@@ -14,7 +14,7 @@ export function MobileStorySection() {
   ];
 
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border border-slate-200/80 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden transition-all duration-500" id="mobile-story">
+    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden transition-all duration-500" id="mobile-story">
       
       {/* Eyebrow Label */}
       <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-4">

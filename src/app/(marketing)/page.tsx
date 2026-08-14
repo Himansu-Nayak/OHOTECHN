@@ -33,7 +33,7 @@ export default function WideStudioPage() {
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-6 pt-4 px-2 sm:px-4 lg:px-6 selection:bg-[#0d0d0e] selection:text-white">
       
       {/* ── 01. HERO SECTION ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 bg-[#fafafa] border border-slate-200/80 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm pt-24 sm:pt-32 text-center relative overflow-hidden grid-pattern-light" id="hero">
+      <section className="max-w-[1536px] w-full mx-auto mb-10 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm pt-24 sm:pt-32 text-center relative overflow-hidden grid-pattern-light" id="hero">
         
         {/* Category Pill */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#f0f0eb] border border-black/10 text-[#0d0d0e] font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
@@ -78,7 +78,7 @@ export default function WideStudioPage() {
       </section>
 
       {/* ── 02. INTRODUCTION / POSITIONING STATEMENT ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 bg-white border border-slate-200/80 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-16 text-center shadow-sm">
+      <section className="max-w-[1536px] w-full mx-auto mb-10 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-16 text-center shadow-sm" id="about-intro">
         <div className="max-w-4xl mx-auto">
           <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-3">
             ABOUT OHO TECH
@@ -99,7 +99,7 @@ export default function WideStudioPage() {
       <SolutionsSection />
 
       {/* ── 05. FEATURED TECHNOLOGY SOLUTIONS WE BUILD ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border border-slate-200/80 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="featured-solutions">
+      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="featured-solutions">
         
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200/80">
           <div>
@@ -122,7 +122,7 @@ export default function WideStudioPage() {
         {/* Clean Solution Showcase Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-sky-600 uppercase tracking-wider mb-2">Healthcare</div>
               <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">Hospital Management &amp; EMR System</h3>
@@ -136,7 +136,7 @@ export default function WideStudioPage() {
             </Link>
           </div>
 
-          <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-amber-600 uppercase tracking-wider mb-2">Education</div>
               <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-amber-600 transition-colors">Education &amp; Campus Management System</h3>
@@ -150,7 +150,7 @@ export default function WideStudioPage() {
             </Link>
           </div>
 
-          <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Retail &amp; Commerce</div>
               <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Retail POS &amp; Inventory Management System</h3>
@@ -164,7 +164,7 @@ export default function WideStudioPage() {
             </Link>
           </div>
 
-          <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-sky-600 uppercase tracking-wider mb-2">Finance &amp; Banking</div>
               <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">NBFC &amp; Loan Management System</h3>
@@ -178,7 +178,7 @@ export default function WideStudioPage() {
             </Link>
           </div>
 
-          <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-amber-600 uppercase tracking-wider mb-2">Fitness &amp; Wellness</div>
               <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-amber-600 transition-colors">Fitness &amp; Club Management System</h3>
@@ -192,7 +192,7 @@ export default function WideStudioPage() {
             </Link>
           </div>
 
-          <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Logistics</div>
               <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Warehouse &amp; Dispatch Logistics System</h3>

@@ -28,7 +28,7 @@ export function WhyChooseSection() {
   ];
 
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#fafafa] border border-slate-200/80 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="why-oho-tech">
+    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="why-oho-tech">
       
       {/* Header */}
       <div className="max-w-3xl mb-12">

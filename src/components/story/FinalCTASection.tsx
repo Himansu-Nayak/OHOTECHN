@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 
 export function FinalCTASection() {
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#0d0d0e] text-white border border-black rounded-[32px] sm:rounded-[44px] p-10 sm:p-16 lg:p-20 text-center shadow-2xl relative overflow-hidden grid-pattern-dark" id="final-cta">
+    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#0d0d0e] text-white border-2 border-slate-700 rounded-[32px] sm:rounded-[44px] p-10 sm:p-16 lg:p-20 text-center shadow-2xl relative overflow-hidden grid-pattern-dark" id="final-cta">
       
       {/* Ambient Backdrop Accent */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
