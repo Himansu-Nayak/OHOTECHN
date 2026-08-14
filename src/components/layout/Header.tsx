@@ -2,119 +2,325 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, BookOpen, Users, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
 
 export function Header() {
+  const [openDropdown, setOpenDropdown] = React.useState<string | null>(null);
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+
+  // Close dropdown on Escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpenDropdown(null);
+        setIsMobileOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const toggleDropdown = (name: string) => {
+    setOpenDropdown(prev => (prev === name ? null : name));
+  };
 
   return (
     <>
-      {/* ── Perfectly Proportioned Floating Top Pill Navigation Bar ── */}
+      {/* Floating Top Navigation Header Bar */}
       <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
         <header
           id="site-header"
-          className="pointer-events-auto bg-white/90 backdrop-blur-xl border border-black/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-5 sm:px-7 py-2 flex items-center justify-between gap-6 sm:gap-8 transition-all duration-300 max-w-4xl w-full"
+          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-5 sm:px-7 py-2.5 flex items-center justify-between gap-6 max-w-6xl w-full transition-all duration-300"
         >
-          {/* Official OHO TECH Logo - Ultra Sharp Vector SVG */}
+          {/* Logo */}
           <Link href="/" id="logo-link" className="flex items-center shrink-0 group py-0.5">
             <img
               src="/OHO_TECH_LOGO.svg"
               alt="OHO TECH Logo"
-              className="h-9 sm:h-11 md:h-12 max-h-12 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-8 sm:h-10 max-h-10 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-7 text-xs sm:text-sm font-extrabold tracking-tight text-slate-700">
-            <Link href="#work" className="hover:text-[#0d0d0e] transition-colors">
-              Work
+          {/* Desktop Navigation Links with Dropdowns */}
+          <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-700">
+            
+            {/* Solutions Dropdown */}
+            <div className="relative" onMouseLeave={() => setOpenDropdown(null)}>
+              <button
+                onClick={() => toggleDropdown('solutions')}
+                onMouseEnter={() => setOpenDropdown('solutions')}
+                aria-expanded={openDropdown === 'solutions'}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-full flex items-center gap-1.5 transition-all",
+                  openDropdown === 'solutions' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                )}
+              >
+                <span>Solutions</span>
+                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'solutions' && "rotate-180")} />
+              </button>
+
+              {openDropdown === 'solutions' && (
+                <div className="absolute top-full left-0 mt-3 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                  <div className="text-[11px] font-mono font-bold text-slate-400 uppercase px-3 py-1 mb-1">
+                    Solutions by Industry
+                  </div>
+                  {solutionsNav.slice(0, 6).map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpenDropdown(null)}
+                      className="p-2.5 rounded-xl hover:bg-slate-50 transition-colors group block"
+                    >
+                      <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-sky-600 transition-colors">
+                        {item.name}
+                      </div>
+                      {item.description && (
+                        <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{item.description}</div>
+                      )}
+                    </Link>
+                  ))}
+                  <div className="pt-2 border-t border-slate-100 mt-1">
+                    <Link
+                      href="/solutions"
+                      onClick={() => setOpenDropdown(null)}
+                      className="text-xs font-bold text-sky-600 hover:text-sky-700 px-3 py-1 block"
+                    >
+                      View All 13 Industry Solutions →
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Services Mega Dropdown */}
+            <div className="relative" onMouseLeave={() => setOpenDropdown(null)}>
+              <button
+                onClick={() => toggleDropdown('services')}
+                onMouseEnter={() => setOpenDropdown('services')}
+                aria-expanded={openDropdown === 'services'}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-full flex items-center gap-1.5 transition-all",
+                  openDropdown === 'services' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                )}
+              >
+                <span>Services</span>
+                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'services' && "rotate-180")} />
+              </button>
+
+              {openDropdown === 'services' && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[560px] bg-white border border-slate-200 rounded-2xl shadow-xl p-5 grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                  {/* Column 1: Tech Services */}
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-sky-600 uppercase px-2 mb-2">
+                      <Code2 className="w-3.5 h-3.5" />
+                      <span>Technology Services</span>
+                    </div>
+                    <div className="space-y-1">
+                      {techServicesNav.slice(0, 5).map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setOpenDropdown(null)}
+                          className="p-2 rounded-lg hover:bg-slate-50 block transition-colors group"
+                        >
+                          <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-sky-600 transition-colors">
+                            {item.name}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Column 2: Digital Growth */}
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-600 uppercase px-2 mb-2">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      <span>Digital Growth</span>
+                    </div>
+                    <div className="space-y-1">
+                      {growthServicesNav.slice(0, 5).map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setOpenDropdown(null)}
+                          className="p-2 rounded-lg hover:bg-slate-50 block transition-colors group"
+                        >
+                          <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-amber-600 transition-colors">
+                            {item.name}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="col-span-2 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+                    <Link href="/services" onClick={() => setOpenDropdown(null)} className="text-sky-600 hover:text-sky-700">
+                      Explore All 15 Core Services →
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Products Link */}
+            <Link href="/products" className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 hover:text-black transition-all">
+              Products
             </Link>
-            <Link href="/solutions" className="hover:text-[#0d0d0e] transition-colors">
-              Solutions
-            </Link>
-            <Link href="/services" className="hover:text-[#0d0d0e] transition-colors">
-              Services
-            </Link>
-            <Link href="#about" className="hover:text-[#0d0d0e] transition-colors">
-              About
-            </Link>
+
+            {/* Resources Dropdown */}
+            <div className="relative" onMouseLeave={() => setOpenDropdown(null)}>
+              <button
+                onClick={() => toggleDropdown('resources')}
+                onMouseEnter={() => setOpenDropdown('resources')}
+                aria-expanded={openDropdown === 'resources'}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-full flex items-center gap-1.5 transition-all",
+                  openDropdown === 'resources' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                )}
+              >
+                <span>Resources</span>
+                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'resources' && "rotate-180")} />
+              </button>
+
+              {openDropdown === 'resources' && (
+                <div className="absolute top-full left-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                  {resourcesNav.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpenDropdown(null)}
+                      className="p-2.5 rounded-xl hover:bg-slate-50 transition-colors group block"
+                    >
+                      <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-sky-600 transition-colors">
+                        {item.name}
+                      </div>
+                      {item.description && (
+                        <div className="text-[11px] text-slate-500 mt-0.5">{item.description}</div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Company Dropdown */}
+            <div className="relative" onMouseLeave={() => setOpenDropdown(null)}>
+              <button
+                onClick={() => toggleDropdown('company')}
+                onMouseEnter={() => setOpenDropdown('company')}
+                aria-expanded={openDropdown === 'company'}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-full flex items-center gap-1.5 transition-all",
+                  openDropdown === 'company' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                )}
+              >
+                <span>Company</span>
+                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'company' && "rotate-180")} />
+              </button>
+
+              {openDropdown === 'company' && (
+                <div className="absolute top-full right-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                  {companyNav.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpenDropdown(null)}
+                      className="p-2.5 rounded-xl hover:bg-slate-50 transition-colors group block"
+                    >
+                      <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-sky-600 transition-colors">
+                        {item.name}
+                      </div>
+                      {item.description && (
+                        <div className="text-[11px] text-slate-500 mt-0.5">{item.description}</div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </nav>
 
-          {/* CTA Button */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Dual Action Buttons */}
+          <div className="flex items-center gap-2">
             <Link
-              id="header-book-call"
-              href="/book-demo"
-              className="px-5 py-2 sm:px-6 sm:py-2 rounded-full bg-[#0d0d0e] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm tracking-tight transition-all shadow-sm whitespace-nowrap"
+              href="/get-quote"
+              className="hidden sm:inline-flex px-4 py-2 rounded-full border border-slate-300 hover:border-black text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all"
             >
-              Book a call
+              Get a Quote
+            </Link>
+
+            <Link
+              href="/book-demo"
+              className="px-5 py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all shadow-sm whitespace-nowrap"
+            >
+              Book a Demo
             </Link>
 
             {/* Mobile Menu Toggle */}
             <button
-              id="mobile-toggle"
               onClick={() => setIsMobileOpen(true)}
-              className="md:hidden p-1.5 text-slate-800 hover:text-[#0d0d0e]"
+              className="lg:hidden p-1.5 text-slate-800 hover:text-[#0d0d0e] ml-1"
               aria-label="Open navigation menu"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-6 h-6" />
             </button>
           </div>
+
         </header>
       </div>
 
-      {/* ── Fixed Floating Asterisk Button (*) on Right Screen Edge ── */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden md:block">
-        <Link
-          href="/book-demo"
-          id="floating-asterisk-cta"
-          aria-label="Book a call"
-          className="w-12 h-12 rounded-full bg-[#fcd34d] text-slate-950 border border-black/10 shadow-xl flex items-center justify-center font-extrabold text-2xl hover:scale-110 hover:rotate-90 transition-all duration-300 group"
-        >
-          <span className="group-hover:rotate-180 transition-transform">✳</span>
-        </Link>
-      </div>
-
       {/* Mobile Drawer */}
-      <div
-        className={cn(
-          'fixed inset-0 z-[60] md:hidden transition-all duration-300',
-          isMobileOpen ? 'visible opacity-100' : 'invisible opacity-0 pointer-events-none'
-        )}
-      >
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
-        <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl">
-          <div>
-            <div className="flex items-center justify-between pb-6 border-b border-slate-100">
-              <img
-                src="/OHO_TECH_LOGO.svg"
-                alt="OHO TECH Logo"
-                className="h-10 max-h-10 w-auto object-contain"
-              />
-              <button onClick={() => setIsMobileOpen(false)} className="p-1 text-slate-400 hover:text-[#0d0d0e]">
-                <X className="w-6 h-6" />
-              </button>
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-[60] lg:hidden transition-all duration-300">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
+          <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl overflow-y-auto">
+            <div>
+              <div className="flex items-center justify-between pb-6 border-b border-slate-100">
+                <img
+                  src="/OHO_TECH_LOGO.svg"
+                  alt="OHO TECH Logo"
+                  className="h-9 max-h-9 w-auto object-contain"
+                />
+                <button onClick={() => setIsMobileOpen(false)} className="p-1 text-slate-400 hover:text-[#0d0d0e]">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="py-6 space-y-4 flex flex-col text-sm font-bold text-slate-700">
+                <Link href="/" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Home</Link>
+                <Link href="/solutions" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Solutions by Industry</Link>
+                <Link href="/services" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Core Services</Link>
+                <Link href="/products" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Products</Link>
+                <Link href="/pricing" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Pricing</Link>
+                <Link href="/about" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">About Us</Link>
+                <Link href="/partner" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Partner With Us</Link>
+                <Link href="/contact" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Contact</Link>
+              </div>
             </div>
-            <div className="py-6 space-y-4 flex flex-col text-sm font-bold text-slate-700">
-              <Link href="#work" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Work & Products</Link>
-              <Link href="/solutions" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Solutions (13 Verticals)</Link>
-              <Link href="/services" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Services (15 Offerings)</Link>
-              <Link href="/pricing" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Pricing</Link>
-              <Link href="#about" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">About</Link>
+
+            <div className="space-y-3 pt-6 border-t border-slate-100">
+              <Link
+                href="/get-quote"
+                onClick={() => setIsMobileOpen(false)}
+                className="block w-full py-3 rounded-full border border-slate-300 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider"
+              >
+                Get a Quote
+              </Link>
+
+              <Link
+                href="/book-demo"
+                onClick={() => setIsMobileOpen(false)}
+                className="block w-full py-3 rounded-full bg-[#0d0d0e] text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md"
+              >
+                Book a Demo
+              </Link>
             </div>
-          </div>
-          <div className="space-y-3">
-            <Link
-              href="/book-demo"
-              onClick={() => setIsMobileOpen(false)}
-              className="block w-full py-3 rounded-full bg-[#0d0d0e] text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md"
-            >
-              Book a call
-            </Link>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
