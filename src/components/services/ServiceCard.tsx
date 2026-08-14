@@ -56,17 +56,17 @@ export function ServiceCard({ service }: ServiceCardProps) {
       className="group block bg-white border border-slate-200/80 rounded-2xl p-7 sm:p-8 hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
     >
       <div>
-        {/* Top Header: Icon & Category Label */}
+        {/* Top Header: Emoji Icon & Category Label */}
         <div className="flex items-center justify-between mb-6">
           <div
             className={cn(
-              "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-200",
+              "w-12 h-12 rounded-2xl flex items-center justify-center text-2xl transition-transform duration-200 group-hover:scale-110 border",
               isTech
-                ? "bg-sky-50 text-sky-600 group-hover:bg-[#0d0d0e] group-hover:text-white"
-                : "bg-amber-50 text-amber-600 group-hover:bg-[#0d0d0e] group-hover:text-white"
+                ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                : "bg-amber-50 text-amber-600 border-amber-200"
             )}
           >
-            <IconComponent className="w-6 h-6" />
+            {service.emoji || '⚙️'}
           </div>
 
           <span
@@ -82,8 +82,9 @@ export function ServiceCard({ service }: ServiceCardProps) {
         </div>
 
         {/* Service Name */}
-        <h4 className="text-lg sm:text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors duration-200">
-          {service.name}
+        <h4 className="text-lg sm:text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors duration-200 flex items-center gap-2">
+          <span>{service.emoji || '⚙️'}</span>
+          <span>{service.name}</span>
         </h4>
 
         {/* Short Description (Max 2 lines) */}
@@ -95,7 +96,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
       {/* Action Footer */}
       <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 group-hover:text-[#0d0d0e] transition-colors">
         <span>Explore Service</span>
-        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-sky-600 group-hover:translate-x-1 transition-all duration-200" />
+        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all duration-200" />
       </div>
     </Link>
   );
