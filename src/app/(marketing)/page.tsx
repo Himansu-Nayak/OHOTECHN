@@ -21,11 +21,11 @@ import { industries } from '@/config/industries';
 import { services } from '@/config/services';
 import { cn } from '@/lib/utils';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
+import { SolutionsSection } from '@/components/solutions/SolutionsSection';
 
 export default function WideStudioPage() {
   const [easterEggActive, setEasterEggActive] = React.useState(false);
   const [clickCount, setClickCount] = React.useState(0);
-  const [selectedIndustry, setSelectedIndustry] = React.useState(industries[0]);
   const [serviceCategory, setServiceCategory] = React.useState<'all' | 'technology' | 'marketing'>('all');
 
   const handleRedButtonPress = () => {
@@ -486,146 +486,8 @@ export default function WideStudioPage() {
 
       </section>
 
-      {/* ── 4. ALL 13 INDUSTRIES & 65+ PRODUCTS (FULL PRODUCT ECOSYSTEM) ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-6 bg-white border border-black/10 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm" id="solutions">
-        
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 font-mono text-xs font-bold uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5" /> Complete Turnkey Ecosystem
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight mb-3">
-            65+ Software Products Across 13 Verticals
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-            Select an industry below to inspect ready-made enterprise software products available for instant SaaS subscription or perpetual license deployment.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* 13 Industry Navigation Tabs */}
-          <div className="lg:col-span-4 space-y-2.5 max-h-[620px] overflow-y-auto pr-2 custom-scrollbar">
-            {industries.map((ind) => (
-              <button
-                key={ind.slug}
-                onClick={() => setSelectedIndustry(ind)}
-                className={cn(
-                  "w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between group",
-                  selectedIndustry.slug === ind.slug
-                    ? "bg-[#0d0d0e] text-white border-black shadow-lg"
-                    : "bg-[#f7f7f5] border-black/5 text-slate-700 hover:bg-[#ebebe8]"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={cn(
-                    "w-8 h-8 rounded-xl flex items-center justify-center text-xs font-mono font-bold transition-colors",
-                    selectedIndustry.slug === ind.slug ? "bg-teal-500 text-slate-950" : "bg-[#ebebe8] text-[#0d0d0e]"
-                  )}>
-                    {ind.products.length}
-                  </span>
-                  <div>
-                    <div className="text-xs sm:text-sm font-bold">{ind.name}</div>
-                    <div className={cn("text-[10px] font-mono", selectedIndustry.slug === ind.slug ? "text-slate-400" : "text-slate-500")}>
-                      {ind.products.length} Enterprise Products
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight className={cn("w-4 h-4 transition-transform", selectedIndustry.slug === ind.slug ? "rotate-90 text-teal-400" : "text-slate-400 group-hover:translate-x-1")} />
-              </button>
-            ))}
-          </div>
-
-          {/* Right Product Grid & Visual Ecosystem Banner */}
-          <div className="launch-card p-6 sm:p-8 lg:col-span-8 bg-[#fafafa] border border-black/10 rounded-3xl">
-            
-            {/* Visual Industry Ecosystem Banner Header */}
-            <div className="relative rounded-2xl overflow-hidden mb-8 border border-black/10 bg-slate-950 text-white p-6 sm:p-8 shadow-md">
-              <div className="absolute inset-0 opacity-40">
-                <NextImage
-                  src={selectedIndustry.slug === 'healthcare' ? '/ecosystem_healthcare.png' : '/ecosystem_education.png'}
-                  alt="Ecosystem Banner"
-                  width={1200}
-                  height={400}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
-              
-              <div className="relative z-10 max-w-xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                    Instant Turnkey Deployment
-                  </span>
-                  <span className="text-[10px] font-mono font-bold text-slate-400">
-                    {selectedIndustry.products.length} Active Modules
-                  </span>
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
-                  {selectedIndustry.name} Ecosystem
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-5">
-                  {selectedIndustry.description}
-                </p>
-                <Link
-                  href={`/solutions/${selectedIndustry.slug}`}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-[#0d0d0e] hover:bg-teal-400 font-extrabold text-xs tracking-tight transition-all shadow-md group"
-                >
-                  <span>Explore All {selectedIndustry.name} Products</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Products Grid with UI Header Bar & Tech Stack Pills */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {selectedIndustry.products.map((prod, pIdx) => (
-                <div key={prod.slug} className="launch-card bg-white border border-black/10 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm group hover:border-black/30 transition-all">
-                  
-                  {/* UI Window Top Header Bar */}
-                  <div>
-                    <div className="bg-[#0d0d0e] text-white px-3.5 py-2 flex items-center justify-between border-b border-black">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-rose-500" />
-                        <span className="w-2 h-2 rounded-full bg-amber-500" />
-                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <span className="text-[10px] font-mono text-slate-400 ml-1 font-bold">{prod.slug}.app</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-teal-400 bg-teal-950 px-2 py-0.5 rounded">
-                        {pIdx % 2 === 0 ? 'Next.js / Node' : 'React / Postgres'}
-                      </span>
-                    </div>
-
-                    <div className="p-4">
-                      <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <h4 className="text-sm font-bold text-[#0d0d0e] group-hover:text-teal-600 transition-colors">
-                          {prod.name}
-                        </h4>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-teal-500 fill-teal-500 stroke-white shrink-0" />
-                      </div>
-                      <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">
-                        {prod.shortDescription}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="px-4 pb-4 pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-bold">
-                    <Link href="/book-demo" className="text-teal-600 hover:underline flex items-center gap-1">
-                      <span>Book Demo</span>
-                    </Link>
-                    <Link href={`/solutions/${selectedIndustry.slug}`} className="text-slate-500 hover:text-black flex items-center gap-1">
-                      <span>Details &rarr;</span>
-                    </Link>
-                  </div>
-
-                </div>
-              ))}
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
+      {/* ── 4. ALL 13 INDUSTRIES & 65+ PRODUCTS (MODERN MINIMAL SOLUTIONS SECTION) ── */}
+      <SolutionsSection />
 
       {/* ── 5. ALL 15 CORE SERVICES (FULL-CYCLE ENGINEERING & MARKETING) ── */}
       <section className="max-w-[1536px] w-full mx-auto mb-6 bg-white border border-black/10 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm" id="services">
