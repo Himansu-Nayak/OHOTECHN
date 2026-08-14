@@ -74,10 +74,10 @@ export function HeroLaunchBackground() {
         {activeTab === 'architecture' && (
           <div className="rounded-2xl overflow-hidden border border-black/10 shadow-2xl bg-white group-hover:scale-[1.005] transition-transform duration-500">
             <NextImage
-              src="/oho_tech_dev_team_background.png"
-              alt="OHO TECH Developers & Engineers working at workstations facing software architecture cloud network background"
-              width={1400}
-              height={700}
+              src="/hero_ecosystem_illustration.jpg"
+              alt="OHO TECH Technology Ecosystem - Abstract Digital Core, AI Neural Networks, Cloud Infrastructure, and Cyber Security"
+              width={1600}
+              height={900}
               style={{ width: '100%', height: 'auto' }}
               className="w-full h-auto object-cover rounded-2xl"
               priority
