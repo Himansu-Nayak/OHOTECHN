@@ -29,7 +29,7 @@ export default function CareersPage() {
             CAREERS AT OHO TECH
           </div>
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-tight">
-            Build what's next with us.
+            Build what&apos;s next with us.
           </h1>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
             Explore opportunities to work on technology, digital products, and business solutions.

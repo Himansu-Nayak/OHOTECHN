@@ -130,7 +130,7 @@ export default async function ServiceDetailPage(props: { params: Promise<{ slug:
             id="final-contact-cta"
             className="inline-flex justify-center items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-slate-900 bg-white hover:bg-neutral-100 transition-colors"
           >
-            Let's Talk <ArrowRight className="ml-2 w-5 h-5" />
+            Let&apos;s Talk <ArrowRight className="ml-2 w-5 h-5" />
           </Link>
         </div>
       </section>

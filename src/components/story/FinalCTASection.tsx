@@ -16,17 +16,17 @@ export function FinalCTASection() {
         {/* Eyebrow */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-sky-300 font-mono text-xs font-bold uppercase tracking-wider mb-6">
           <Sparkles className="w-3.5 h-3.5" />
-          LET'S BUILD SOMETHING
+          LET&apos;S BUILD SOMETHING
         </div>
 
         {/* Headline */}
         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-5">
-          Have an idea? Let's make it real.
+          Have an idea? Let&apos;s make it real.
         </h2>
 
         {/* Description */}
         <p className="text-slate-300 text-base sm:text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-          Whether you need software, a website, a mobile application, or help growing your digital presence, tell us what you're looking to achieve.
+          Whether you need software, a website, a mobile application, or help growing your digital presence, tell us what you&apos;re looking to achieve.
         </p>
 
         {/* Action Buttons */}

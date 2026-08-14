@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { siteConfig } from '@/config/site';
 import { solutionsNav, techServicesNav, growthServicesNav, companyNav, legalNav } from '@/config/navigation';
 
@@ -15,9 +16,11 @@ export default function Footer() {
           {/* Column 1: OHO TECH Brand & Social Links */}
           <div className="lg:col-span-1 space-y-4">
             <Link href="/" className="inline-block">
-              <img
+              <NextImage
                 src="/OHO_TECH_LOGO.svg"
                 alt="OHO TECH Logo"
+                width={140}
+                height={40}
                 className="h-10 w-auto object-contain brightness-0 invert"
               />
             </Link>

@@ -52,7 +52,7 @@ export default function ContactPage() {
               Get in touch
             </h1>
             <p className="text-lg leading-8 text-neutral-600 mb-10">
-              Have a question or want to discuss a project? We'd love to hear from you.
+              Have a question or want to discuss a project? We&apos;d love to hear from you.
             </p>
 
             {submitStatus === 'success' && (

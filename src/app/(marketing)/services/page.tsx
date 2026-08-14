@@ -63,7 +63,7 @@ export default function ServicesHubPage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-white mb-6">Ready to transform your business?</h2>
           <p className="text-primary-100 text-lg mb-8">
-            Let's discuss how our services can help you achieve your goals faster.
+            Let&apos;s discuss how our services can help you achieve your goals faster.
           </p>
           <Link
             href="/contact"

@@ -49,7 +49,7 @@ export default function GetQuotePage() {
               Get a Custom Quote
             </h1>
             <p className="text-lg leading-8 text-neutral-600 mb-10">
-              Tell us about your project requirements, and we'll provide a detailed proposal and cost estimate.
+              Tell us about your project requirements, and we&apos;ll provide a detailed proposal and cost estimate.
             </p>
 
             {submitStatus === 'success' && (
@@ -151,7 +151,7 @@ export default function GetQuotePage() {
               <div className="relative pl-8">
                 <div className="absolute -left-3.5 top-1 h-7 w-7 rounded-full border-[3px] border-white bg-primary text-white flex items-center justify-center text-xs font-bold">2</div>
                 <h3 className="font-semibold text-neutral-900 text-lg">Consultation</h3>
-                <p className="mt-1 text-neutral-600 text-sm">We'll schedule a call to clarify details and understand your vision perfectly.</p>
+                <p className="mt-1 text-neutral-600 text-sm">We&apos;ll schedule a call to clarify details and understand your vision perfectly.</p>
               </div>
               <div className="relative pl-8">
                 <div className="absolute -left-3.5 top-1 h-7 w-7 rounded-full border-[3px] border-white bg-primary text-white flex items-center justify-center text-xs font-bold">3</div>

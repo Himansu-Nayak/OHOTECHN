@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
@@ -36,9 +37,12 @@ export function Header() {
         >
           {/* Logo */}
           <Link href="/" id="logo-link" className="flex items-center shrink-0 group py-0.5">
-            <img
+            <NextImage
               src="/OHO_TECH_LOGO.svg"
               alt="OHO TECH Logo"
+              width={140}
+              height={40}
+              priority
               className="h-8 sm:h-10 max-h-10 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
@@ -371,9 +375,11 @@ export function Header() {
           <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl overflow-y-auto">
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-slate-100">
-                <img
+                <NextImage
                   src="/OHO_TECH_LOGO.svg"
                   alt="OHO TECH Logo"
+                  width={130}
+                  height={36}
                   className="h-9 max-h-9 w-auto object-contain"
                 />
                 <button onClick={() => setIsMobileOpen(false)} className="p-1 text-slate-400 hover:text-[#0d0d0e]">

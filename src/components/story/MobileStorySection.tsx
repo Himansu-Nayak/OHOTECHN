@@ -26,7 +26,7 @@ export function MobileStorySection() {
         {/* Left Column: Text on Left */}
         <div className="lg:col-span-7">
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-6">
-            Your business, in your customer's hands.
+            Your business, in your customer&apos;s hands.
           </h2>
 
           <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed mb-8 max-w-xl">

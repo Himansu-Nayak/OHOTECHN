@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
         <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-900 text-xs leading-relaxed flex items-start gap-3 mb-8">
           <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
           <div>
-            <strong>Notice:</strong> This document represents OHO TECH's standard operational privacy policy guidelines. For specific enterprise client agreements, custom NDA and data processing addendums apply.
+            <strong>Notice:</strong> This document represents OHO TECH&apos;s standard operational privacy policy guidelines. For specific enterprise client agreements, custom NDA and data processing addendums apply.
           </div>
         </div>
 
