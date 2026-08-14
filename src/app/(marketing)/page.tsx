@@ -963,7 +963,7 @@ export default function WideStudioPage() {
 
                 {/* Avatar / Portrait Block */}
                 <div className="relative mb-6 text-center flex flex-col items-center">
-                  <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-tr from-teal-400 via-emerald-500 to-amber-400 p-1 shadow-2xl relative group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-teal-400 via-emerald-500 to-amber-400 p-1 shadow-2xl relative group-hover:scale-105 transition-transform duration-300">
                     <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
                       <NextImage
                         src="/jagabandhu_kampa.jpeg"

@@ -9,7 +9,7 @@ export function HeroLaunchBackground() {
   const [activeTab, setActiveTab] = React.useState<'architecture' | 'code' | 'security'>('architecture');
 
   return (
-    <div className="w-full max-w-[1536px] mx-auto relative rounded-[32px] sm:rounded-[40px] overflow-hidden border border-black/10 bg-[#f4f4f0] shadow-2xl p-6 sm:p-10 min-h-[420px] sm:min-h-[520px] flex flex-col justify-between group selection:bg-black selection:text-white">
+    <div className="w-full max-w-[1536px] mx-auto relative rounded-[32px] sm:rounded-[40px] overflow-hidden border border-black/10 bg-[#f4f4f0] shadow-2xl p-5 sm:p-8 min-h-[360px] sm:min-h-[460px] flex flex-col justify-between group selection:bg-black selection:text-white">
       
       {/* ── 1. DITHERED HALFTONE DOT PATTERN OVERLAY ── */}
       <div 
@@ -72,14 +72,14 @@ export function HeroLaunchBackground() {
       <div className="relative z-20 my-auto py-6">
         
         {activeTab === 'architecture' && (
-          <div className="rounded-2xl overflow-hidden border border-black/10 shadow-2xl bg-white group-hover:scale-[1.005] transition-transform duration-500">
+          <div className="max-w-5xl mx-auto rounded-2xl overflow-hidden border border-black/10 shadow-2xl bg-[#0d0d0e] group-hover:scale-[1.005] transition-transform duration-500">
             <NextImage
               src="/hero_ecosystem_illustration.jpg"
               alt="OHO TECH Technology Ecosystem - Abstract Digital Core, AI Neural Networks, Cloud Infrastructure, and Cyber Security"
               width={1600}
               height={900}
-              style={{ width: '100%', height: 'auto' }}
-              className="w-full h-auto object-cover rounded-2xl"
+              style={{ width: '100%', maxHeight: '420px', objectFit: 'cover' }}
+              className="w-full h-auto max-h-[300px] sm:max-h-[400px] lg:max-h-[440px] object-cover rounded-2xl"
               priority
             />
           </div>

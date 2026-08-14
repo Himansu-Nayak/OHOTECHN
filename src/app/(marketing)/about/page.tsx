@@ -93,7 +93,7 @@ export default async function AboutPage() {
                 </div>
 
                 {/* Avatar Badge */}
-                <div className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-6 rounded-full bg-gradient-to-tr from-teal-400 via-emerald-500 to-amber-400 p-1 shadow-2xl relative">
+                <div className="w-28 h-28 sm:w-36 sm:h-36 mx-auto mb-6 rounded-full bg-gradient-to-tr from-teal-400 via-emerald-500 to-amber-400 p-1 shadow-2xl relative">
                   <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
                     <NextImage
                       src="/jagabandhu_kampa.jpeg"
