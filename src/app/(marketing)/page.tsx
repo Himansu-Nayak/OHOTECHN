@@ -18,6 +18,7 @@ import { ArchitectureDiagram } from '@/components/home/ArchitectureDiagram';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
 import { SolutionsSection } from '@/components/solutions/SolutionsSection';
 import { ServicesSection } from '@/components/services/ServicesSection';
+import { StoryFlowConnector } from '@/components/story/StoryFlowConnector';
 import { SoftwareStorySection } from '@/components/story/SoftwareStorySection';
 import { WebStorySection } from '@/components/story/WebStorySection';
 import { MobileStorySection } from '@/components/story/MobileStorySection';
@@ -365,13 +366,60 @@ export default function WideStudioPage() {
 
       </section>
 
-      {/* ── 06. SERVICE STORY SECTIONS (PROGRESSIVE SHOWCASE) ── */}
+      {/* ── 06. SERVICE STORY SECTIONS (WITH SEQUENTIAL FLOW CONNECTORS) ── */}
       <SoftwareStorySection />
+      <StoryFlowConnector
+        currentNum="01"
+        nextNum="02"
+        nextTitle="WEBSITE DEVELOPMENT"
+        nextEmoji="🌐"
+        nextTargetId="web-story"
+      />
+
       <WebStorySection />
+      <StoryFlowConnector
+        currentNum="02"
+        nextNum="03"
+        nextTitle="MOBILE APP DEVELOPMENT"
+        nextEmoji="📱"
+        nextTargetId="mobile-story"
+      />
+
       <MobileStorySection />
+      <StoryFlowConnector
+        currentNum="03"
+        nextNum="04"
+        nextTitle="ENTERPRISE ERP SYSTEMS"
+        nextEmoji="⚙️"
+        nextTargetId="erp-story"
+      />
+
       <ERPStorySection />
+      <StoryFlowConnector
+        currentNum="04"
+        nextNum="05"
+        nextTitle="UI/UX &amp; SYSTEM INTEGRATION"
+        nextEmoji="🎨"
+        nextTargetId="design-integration-story"
+      />
+
       <DesignIntegrationStorySection />
+      <StoryFlowConnector
+        currentNum="05"
+        nextNum="06"
+        nextTitle="DIGITAL GROWTH &amp; MARKETING"
+        nextEmoji="📈"
+        nextTargetId="growth-story"
+      />
+
       <DigitalGrowthStorySection />
+      <StoryFlowConnector
+        currentNum="06"
+        nextNum="07"
+        nextTitle="HOW WE WORK (PROCESS)"
+        nextEmoji="⚡"
+        nextTargetId="how-we-work"
+      />
 
       {/* ── 07. HOW WE WORK (5-STEP PROCESS) ── */}
       <ProcessSection />

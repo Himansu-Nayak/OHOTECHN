@@ -2,26 +2,26 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ArrowRight, TrendingUp, Search, Share2, Target, Megaphone, PenTool, MessageCircle, Mail } from 'lucide-react';
+import { ArrowRight, TrendingUp } from 'lucide-react';
 
 export function DigitalGrowthStorySection() {
   const capabilities = [
-    { title: 'SEO', desc: 'Data-driven search engine optimization to build long-term organic search visibility.', icon: Search },
-    { title: 'Social Media Marketing', desc: 'Strategic content creation, community engagement, and social channel management.', icon: Share2 },
-    { title: 'Google Ads', desc: 'High-intent search & display advertising campaigns targeting active customer inquiries.', icon: Target },
-    { title: 'Meta Advertising', desc: 'Audience-targeted ad campaigns running across Facebook and Instagram.', icon: Megaphone },
-    { title: 'Branding & Graphic Design', desc: 'Cohesive brand identity design, messaging guidelines, and marketing collateral.', icon: PenTool },
-    { title: 'WhatsApp Marketing', desc: 'Direct customer communication via broadcast campaigns and automated messaging.', icon: MessageCircle },
-    { title: 'Email Marketing', desc: 'Audience-segmented newsletter campaigns and automated customer onboarding flows.', icon: Mail },
+    { title: 'SEO', desc: 'Data-driven search engine optimization to build long-term organic search visibility.', emoji: '🔍' },
+    { title: 'Social Media Marketing', desc: 'Strategic content creation, community engagement, and social channel management.', emoji: '📢' },
+    { title: 'Google Ads', desc: 'High-intent search & display advertising campaigns targeting active customer inquiries.', emoji: '🎯' },
+    { title: 'Meta Advertising', desc: 'Audience-targeted ad campaigns running across Facebook and Instagram.', emoji: '🚀' },
+    { title: 'Branding & Graphic Design', desc: 'Cohesive brand identity design, messaging guidelines, and marketing collateral.', emoji: '🖌️' },
+    { title: 'WhatsApp Marketing', desc: 'Direct customer communication via broadcast campaigns and automated messaging.', emoji: '💬' },
+    { title: 'Email Marketing', desc: 'Audience-segmented newsletter campaigns and automated customer onboarding flows.', emoji: '✉️' },
   ];
 
   return (
     <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden transition-all duration-500" id="growth-story">
       
-      {/* Clear Visual Transition Header Badge */}
+      {/* Eyebrow Label */}
       <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs font-mono font-bold uppercase tracking-wider mb-6">
-        <TrendingUp className="w-4 h-4 text-amber-600" />
-        06 / DIGITAL GROWTH
+        <span>📈</span>
+        <span>06 / DIGITAL GROWTH &amp; MARKETING CAPABILITIES</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-14">
@@ -30,11 +30,11 @@ export function DigitalGrowthStorySection() {
         <div className="lg:col-span-7">
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-6">
             Build your presence.<br />
-            <span className="text-amber-800/60 font-normal">Grow your business.</span>
+            <span className="text-amber-800/60 font-normal">Grow your business. 📈</span>
           </h2>
 
           <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed mb-8 max-w-xl">
-            We help businesses reach the right audience through strategy, digital marketing, advertising, branding, and communication.
+            We help businesses reach the right audience through strategy, digital marketing, advertising, branding, and customer communication.
           </p>
 
           <Link
@@ -99,13 +99,15 @@ export function DigitalGrowthStorySection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {capabilities.map((item, idx) => {
-            const Icon = item.icon;
             return (
-              <div key={idx} className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-amber-400 transition-colors">
-                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3">
-                  <Icon className="w-4 h-4" />
+              <div key={idx} className="p-5 rounded-2xl bg-white border-2 border-slate-200 hover:border-amber-400 transition-all group">
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 text-lg group-hover:scale-110 transition-transform">
+                  {item.emoji}
                 </div>
-                <h5 className="text-xs font-bold text-[#0d0d0e] mb-1.5">{item.title}</h5>
+                <h5 className="text-xs font-bold text-[#0d0d0e] mb-1.5 flex items-center gap-1.5">
+                  <span>{item.emoji}</span>
+                  <span>{item.title}</span>
+                </h5>
                 <p className="text-xs text-slate-500 leading-relaxed">{item.desc}</p>
               </div>
             );
