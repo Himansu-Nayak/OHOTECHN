@@ -9,12 +9,7 @@ import {
   ShoppingBag,
   Cpu,
   CheckCircle2,
-  Sparkles,
   ArrowRight,
-  ShieldCheck,
-  Building2,
-  Layers,
-  Activity,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -23,100 +18,82 @@ export function HeroLaunchBackground() {
 
   const solutions = [
     {
-      id: 'healthcare',
-      title: 'Hospital Management & EMR',
-      tag: 'HEALTHCARE SOLUTION',
-      icon: Stethoscope,
+      id: 'custom-software',
+      title: 'Custom Software Development',
+      tag: 'BESPOKE SOFTWARE',
+      icon: Cpu,
       accent: 'text-sky-400 bg-sky-500/10 border-sky-500/20',
-      badgeBg: 'bg-sky-500',
-      description: 'Centralized OPD/IPD, Electronic Health Records, Pathology Labs & Pharmacy Billing.',
-      features: ['EMR Patient History', 'Lab & Pharmacy Integration', 'GST Invoicing'],
+      description: 'Tailored enterprise software, automated operational workflows, and API integrations.',
+      features: ['Custom Workflow Automation', 'Modular Microservices', 'Enterprise Security'],
+    },
+    {
+      id: 'healthcare',
+      title: 'Hospital & Healthcare EMR',
+      tag: 'HEALTHCARE ERP',
+      icon: Stethoscope,
+      accent: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+      description: 'Centralized OPD/IPD management, EMR patient records, pathology labs & pharmacy billing.',
+      features: ['EMR Medical Records', 'Pathology & Lab Integration', 'GST Pharmacy Billing'],
     },
     {
       id: 'education',
-      title: 'Education & Campus Management',
-      tag: 'EDUCATION SOLUTION',
+      title: 'Education & Campus ERP',
+      tag: 'EDUCATION CLOUD',
       icon: GraduationCap,
       accent: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-      badgeBg: 'bg-amber-500',
-      description: 'Multi-campus university ERP, student admissions, fee automation & online proctored exams.',
-      features: ['Multi-Campus ERP', 'Online Fee Gateway', 'Proctored Exam Engine'],
+      description: 'Multi-campus university ERP, student admissions, online fee collection & exams.',
+      features: ['Multi-Campus Operations', 'Online Fee Gateway', 'Proctored Exam Engine'],
     },
     {
       id: 'retail',
-      title: 'Retail POS & Inventory Management',
-      tag: 'RETAIL & COMMERCE',
+      title: 'Retail POS & Inventory Engine',
+      tag: 'RETAIL COMMERCE',
       icon: ShoppingBag,
-      accent: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-      badgeBg: 'bg-emerald-500',
-      description: 'High-speed retail counter billing, multi-store stock synchronization & barcode inventory.',
-      features: ['Fast GST Counter Billing', 'Multi-Store Inventory Sync', 'Barcode Scanner API'],
-    },
-    {
-      id: 'custom',
-      title: 'Bespoke Enterprise Software & Apps',
-      tag: 'CUSTOM PLATFORMS',
-      icon: Cpu,
       accent: 'text-sky-400 bg-sky-500/10 border-sky-500/20',
-      badgeBg: 'bg-sky-400',
-      description: 'Custom web applications, workflow automation tools, and native iOS/Android mobile apps.',
-      features: ['Tailored Workflow Engine', 'Cross-Platform Mobile Apps', 'Dedicated Support'],
+      description: 'High-speed retail counter billing, multi-store stock sync, and barcode inventory control.',
+      features: ['Fast GST Counter Billing', 'Multi-Store Inventory Sync', 'Barcode Scanner Integration'],
     },
   ];
 
   return (
     <div className="w-full relative rounded-3xl sm:rounded-[36px] overflow-hidden border-2 border-slate-300 bg-[#0c0d0e] shadow-2xl group selection:bg-sky-500 selection:text-white">
       
-      {/* ── 1. BACKGROUND EDITORIAL WORKSPACE IMAGE WITH DRAMATIC LIGHTING OVERLAY ── */}
-      <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[580px] overflow-hidden">
+      {/* ── 1. LUXURY IPAD SHOWCASE PHOTO DISPLAYING OHO TECH WEBSITE UI ── */}
+      <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[600px] overflow-hidden">
         <NextImage
-          src="/hero_workspace_editorial.jpg"
-          alt="OHO TECH Engineering Team & Technology Studio Workspace"
+          src="/hero_ipad_mockup_ohotech.jpg"
+          alt="OHO TECH Website UI Showcase on Tablet Device - Software, Digital Solutions & Business Growth"
           fill
           priority
-          className="object-cover object-center brightness-[0.72] contrast-[1.08] group-hover:scale-[1.015] transition-transform duration-700 ease-out"
+          className="object-cover object-center brightness-[0.95] contrast-[1.03] group-hover:scale-[1.015] transition-transform duration-700 ease-out"
         />
         
-        {/* Subtle Dark Gradient Overlay for High Text Readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d0e] via-[#0c0d0e]/60 to-[#0c0d0e]/40 pointer-events-none" />
-        <div className="absolute inset-0 bg-radial from-transparent via-[#0c0d0e]/30 to-[#0c0d0e]/80 pointer-events-none" />
+        {/* Subtle Dark Gradient Foot Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d0e] via-[#0c0d0e]/40 to-transparent pointer-events-none" />
       </div>
 
-      {/* ── 2. OVERLAY HEADER BAR (STUDIO BADGE & SOLUTION SELECTORS) ── */}
+      {/* ── 2. TOP HEADER BADGE ── */}
       <div className="absolute top-4 sm:top-6 inset-x-4 sm:inset-x-6 z-20 flex flex-wrap items-center justify-between gap-3">
         
         {/* Brand Badge */}
-        <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/80 backdrop-blur-xl border border-white/20 text-white font-mono text-xs font-bold shadow-lg">
+        <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white font-mono text-xs font-bold shadow-lg">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
-          <span>OHO TECH Technology Studio</span>
-          <span className="text-slate-400 font-normal border-l border-white/20 pl-2 hidden sm:inline">Solutions We Build</span>
+          <span>OHO TECH Platform Solutions</span>
+          <span className="text-slate-400 font-normal border-l border-white/20 pl-2.5 hidden sm:inline">Software • Web • Mobile • Growth</span>
         </div>
 
-        {/* Interactive Solution Selector Pills */}
-        <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 shadow-lg">
-          {solutions.map((item, idx) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveSolution(idx)}
-              className={cn(
-                "px-3 py-1 rounded-full text-xs font-mono font-bold transition-all duration-300 flex items-center gap-1.5",
-                activeSolution === idx
-                  ? "bg-white text-[#0c0d0e] shadow-md"
-                  : "text-slate-300 hover:text-white hover:bg-white/10"
-              )}
-            >
-              <item.icon className="w-3.5 h-3.5" />
-              <span>{item.id.toUpperCase()}</span>
-            </button>
-          ))}
+        {/* Live Indicator */}
+        <div className="hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/80 backdrop-blur-xl border border-white/15 text-slate-300 font-mono text-[11px]">
+          <span>Enterprise Studio</span>
+          <span className="text-sky-400 font-bold">• Active Production</span>
         </div>
 
       </div>
 
-      {/* ── 3. HERO OVERLAY CONTENT: ACTIVE FEATURED SOLUTION CARD SHOWCASE ── */}
+      {/* ── 3. BOTTOM OVERLAY SHOWCASE: OHO TECH SOLUTIONS CARDS ── */}
       <div className="absolute bottom-4 sm:bottom-6 inset-x-4 sm:inset-x-6 z-20">
         
-        {/* Solution Feature Cards Grid */}
+        {/* Solutions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
           {solutions.map((sol, index) => {
             const Icon = sol.icon;
@@ -127,10 +104,10 @@ export function HeroLaunchBackground() {
                 key={sol.id}
                 onClick={() => setActiveSolution(index)}
                 className={cn(
-                  "p-4 sm:p-5 rounded-2xl transition-all duration-300 cursor-pointer backdrop-blur-xl border flex flex-col justify-between group/card",
+                  "p-4 sm:p-5 rounded-2xl transition-all duration-300 cursor-pointer backdrop-blur-2xl border flex flex-col justify-between group/card",
                   isActive
                     ? "bg-[#0c0d0e]/95 border-sky-400 shadow-2xl ring-2 ring-sky-400/30 scale-[1.02]"
-                    : "bg-[#0c0d0e]/75 hover:bg-[#0c0d0e]/90 border-white/15 hover:border-white/30"
+                    : "bg-[#0c0d0e]/80 hover:bg-[#0c0d0e]/95 border-white/15 hover:border-white/30"
                 )}
               >
                 <div>
@@ -174,19 +151,19 @@ export function HeroLaunchBackground() {
         </div>
 
         {/* Bottom Directive Bar */}
-        <div className="bg-[#0c0d0e]/90 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
+        <div className="bg-[#0c0d0e]/90 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
           <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono font-semibold text-slate-300">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-sky-400" />
-              Custom Enterprise Systems
+              Bespoke Software &amp; Mobile Apps
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              Hospital, School &amp; Retail Solutions
+              Hospital, Campus &amp; Retail Systems
             </span>
             <span className="flex items-center gap-2 hidden lg:flex">
               <span className="w-2 h-2 rounded-full bg-amber-400" />
-              Digital Growth &amp; App Development
+              Data-Driven Growth Strategies
             </span>
           </div>
 
@@ -194,7 +171,7 @@ export function HeroLaunchBackground() {
             href="/solutions"
             className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-sky-400 text-[#0c0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md group shrink-0"
           >
-            <span>Explore All OHO TECH Solutions</span>
+            <span>View All OHO TECH Solutions</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
