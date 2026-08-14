@@ -47,32 +47,45 @@ export function Header() {
           <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-700">
             
             {/* 1. Solutions Dropdown */}
-            <div className="relative group/menu" onMouseLeave={() => setOpenDropdown(null)}>
-              <div className="flex items-center">
+            <div
+              className="relative group/solutions"
+              onMouseEnter={() => setOpenDropdown('solutions')}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-1 px-3.5 py-1.5 rounded-full transition-all cursor-pointer",
+                  openDropdown === 'solutions' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                )}
+              >
                 <Link
                   href="/solutions"
                   onClick={() => setOpenDropdown(null)}
-                  onMouseEnter={() => setOpenDropdown('solutions')}
-                  className={cn(
-                    "px-3.5 py-1.5 rounded-full flex items-center gap-1 transition-all",
-                    openDropdown === 'solutions' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
-                  )}
+                  className="hover:text-sky-600 transition-colors"
                 >
-                  <span>Solutions</span>
+                  Solutions
                 </Link>
                 <button
                   type="button"
-                  onClick={() => toggleDropdown('solutions')}
-                  onMouseEnter={() => setOpenDropdown('solutions')}
-                  className="p-1 text-slate-400 hover:text-black transition-colors"
-                  aria-label="Toggle Solutions Menu"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleDropdown('solutions');
+                  }}
+                  aria-label="Toggle Solutions Dropdown"
+                  className="p-0.5 text-slate-400 hover:text-black transition-colors"
                 >
                   <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'solutions' && "rotate-180")} />
                 </button>
               </div>
 
-              {openDropdown === 'solutions' && (
-                <div className="absolute top-full left-0 mt-3 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              {/* Seamless Hover Bridge Wrapper (pt-2 prevents mouse gap) */}
+              <div
+                className={cn(
+                  "absolute top-full left-0 pt-2 w-80 z-50 transition-all duration-150",
+                  openDropdown === 'solutions' ? "block opacity-100 pointer-events-auto" : "hidden opacity-0 pointer-events-none"
+                )}
+              >
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-4 grid grid-cols-1 gap-1">
                   <div className="text-[11px] font-mono font-bold text-sky-600 uppercase px-3 py-1 mb-1">
                     Solutions by Industry
                   </div>
@@ -101,36 +114,49 @@ export function Header() {
                     </Link>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* 2. Services Mega Dropdown */}
-            <div className="relative group/menu" onMouseLeave={() => setOpenDropdown(null)}>
-              <div className="flex items-center">
+            <div
+              className="relative group/services"
+              onMouseEnter={() => setOpenDropdown('services')}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-1 px-3.5 py-1.5 rounded-full transition-all cursor-pointer",
+                  openDropdown === 'services' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                )}
+              >
                 <Link
                   href="/services"
                   onClick={() => setOpenDropdown(null)}
-                  onMouseEnter={() => setOpenDropdown('services')}
-                  className={cn(
-                    "px-3.5 py-1.5 rounded-full flex items-center gap-1 transition-all",
-                    openDropdown === 'services' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
-                  )}
+                  className="hover:text-sky-600 transition-colors"
                 >
-                  <span>Services</span>
+                  Services
                 </Link>
                 <button
                   type="button"
-                  onClick={() => toggleDropdown('services')}
-                  onMouseEnter={() => setOpenDropdown('services')}
-                  className="p-1 text-slate-400 hover:text-black transition-colors"
-                  aria-label="Toggle Services Menu"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleDropdown('services');
+                  }}
+                  aria-label="Toggle Services Dropdown"
+                  className="p-0.5 text-slate-400 hover:text-black transition-colors"
                 >
                   <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'services' && "rotate-180")} />
                 </button>
               </div>
 
-              {openDropdown === 'services' && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[560px] bg-white border border-slate-200 rounded-2xl shadow-xl p-5 grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              {/* Seamless Hover Bridge Wrapper (pt-2 prevents mouse gap) */}
+              <div
+                className={cn(
+                  "absolute top-full left-1/2 -translate-x-1/2 pt-2 w-[560px] z-50 transition-all duration-150",
+                  openDropdown === 'services' ? "block opacity-100 pointer-events-auto" : "hidden opacity-0 pointer-events-none"
+                )}
+              >
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-5 grid grid-cols-2 gap-6">
                   {/* Column 1: Tech Services */}
                   <div>
                     <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-sky-600 uppercase px-2 mb-2">
@@ -181,7 +207,7 @@ export function Header() {
                     </Link>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* 3. Products Link */}
@@ -190,32 +216,45 @@ export function Header() {
             </Link>
 
             {/* 4. Resources Dropdown */}
-            <div className="relative group/menu" onMouseLeave={() => setOpenDropdown(null)}>
-              <div className="flex items-center">
+            <div
+              className="relative group/resources"
+              onMouseEnter={() => setOpenDropdown('resources')}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-1 px-3.5 py-1.5 rounded-full transition-all cursor-pointer",
+                  openDropdown === 'resources' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                )}
+              >
                 <Link
                   href="/pricing"
                   onClick={() => setOpenDropdown(null)}
-                  onMouseEnter={() => setOpenDropdown('resources')}
-                  className={cn(
-                    "px-3.5 py-1.5 rounded-full flex items-center gap-1 transition-all",
-                    openDropdown === 'resources' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
-                  )}
+                  className="hover:text-sky-600 transition-colors"
                 >
-                  <span>Resources</span>
+                  Resources
                 </Link>
                 <button
                   type="button"
-                  onClick={() => toggleDropdown('resources')}
-                  onMouseEnter={() => setOpenDropdown('resources')}
-                  className="p-1 text-slate-400 hover:text-black transition-colors"
-                  aria-label="Toggle Resources Menu"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleDropdown('resources');
+                  }}
+                  aria-label="Toggle Resources Dropdown"
+                  className="p-0.5 text-slate-400 hover:text-black transition-colors"
                 >
                   <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'resources' && "rotate-180")} />
                 </button>
               </div>
 
-              {openDropdown === 'resources' && (
-                <div className="absolute top-full left-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              {/* Seamless Hover Bridge Wrapper (pt-2 prevents mouse gap) */}
+              <div
+                className={cn(
+                  "absolute top-full left-0 pt-2 w-64 z-50 transition-all duration-150",
+                  openDropdown === 'resources' ? "block opacity-100 pointer-events-auto" : "hidden opacity-0 pointer-events-none"
+                )}
+              >
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-3 grid grid-cols-1 gap-1">
                   {resourcesNav.map((item) => (
                     <Link
                       key={item.href}
@@ -232,36 +271,49 @@ export function Header() {
                     </Link>
                   ))}
                 </div>
-              )}
+              </div>
             </div>
 
             {/* 5. Company Dropdown */}
-            <div className="relative group/menu" onMouseLeave={() => setOpenDropdown(null)}>
-              <div className="flex items-center">
+            <div
+              className="relative group/company"
+              onMouseEnter={() => setOpenDropdown('company')}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-1 px-3.5 py-1.5 rounded-full transition-all cursor-pointer",
+                  openDropdown === 'company' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                )}
+              >
                 <Link
                   href="/about"
                   onClick={() => setOpenDropdown(null)}
-                  onMouseEnter={() => setOpenDropdown('company')}
-                  className={cn(
-                    "px-3.5 py-1.5 rounded-full flex items-center gap-1 transition-all",
-                    openDropdown === 'company' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
-                  )}
+                  className="hover:text-sky-600 transition-colors"
                 >
-                  <span>Company</span>
+                  Company
                 </Link>
                 <button
                   type="button"
-                  onClick={() => toggleDropdown('company')}
-                  onMouseEnter={() => setOpenDropdown('company')}
-                  className="p-1 text-slate-400 hover:text-black transition-colors"
-                  aria-label="Toggle Company Menu"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleDropdown('company');
+                  }}
+                  aria-label="Toggle Company Dropdown"
+                  className="p-0.5 text-slate-400 hover:text-black transition-colors"
                 >
                   <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'company' && "rotate-180")} />
                 </button>
               </div>
 
-              {openDropdown === 'company' && (
-                <div className="absolute top-full right-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              {/* Seamless Hover Bridge Wrapper (pt-2 prevents mouse gap) */}
+              <div
+                className={cn(
+                  "absolute top-full right-0 pt-2 w-64 z-50 transition-all duration-150",
+                  openDropdown === 'company' ? "block opacity-100 pointer-events-auto" : "hidden opacity-0 pointer-events-none"
+                )}
+              >
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-3 grid grid-cols-1 gap-1">
                   {companyNav.map((item) => (
                     <Link
                       key={item.href}
@@ -278,7 +330,7 @@ export function Header() {
                     </Link>
                   ))}
                 </div>
-              )}
+              </div>
             </div>
 
           </nav>
