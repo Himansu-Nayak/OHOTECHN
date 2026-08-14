@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, BookOpen, Users, ShieldCheck } from 'lucide-react';
+import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
 
@@ -46,24 +46,34 @@ export function Header() {
           {/* Desktop Navigation Links with Dropdowns */}
           <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-700">
             
-            {/* Solutions Dropdown */}
-            <div className="relative" onMouseLeave={() => setOpenDropdown(null)}>
-              <button
-                onClick={() => toggleDropdown('solutions')}
-                onMouseEnter={() => setOpenDropdown('solutions')}
-                aria-expanded={openDropdown === 'solutions'}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-full flex items-center gap-1.5 transition-all",
-                  openDropdown === 'solutions' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
-                )}
-              >
-                <span>Solutions</span>
-                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'solutions' && "rotate-180")} />
-              </button>
+            {/* 1. Solutions Dropdown */}
+            <div className="relative group/menu" onMouseLeave={() => setOpenDropdown(null)}>
+              <div className="flex items-center">
+                <Link
+                  href="/solutions"
+                  onClick={() => setOpenDropdown(null)}
+                  onMouseEnter={() => setOpenDropdown('solutions')}
+                  className={cn(
+                    "px-3.5 py-1.5 rounded-full flex items-center gap-1 transition-all",
+                    openDropdown === 'solutions' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                  )}
+                >
+                  <span>Solutions</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown('solutions')}
+                  onMouseEnter={() => setOpenDropdown('solutions')}
+                  className="p-1 text-slate-400 hover:text-black transition-colors"
+                  aria-label="Toggle Solutions Menu"
+                >
+                  <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'solutions' && "rotate-180")} />
+                </button>
+              </div>
 
               {openDropdown === 'solutions' && (
                 <div className="absolute top-full left-0 mt-3 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-                  <div className="text-[11px] font-mono font-bold text-slate-400 uppercase px-3 py-1 mb-1">
+                  <div className="text-[11px] font-mono font-bold text-sky-600 uppercase px-3 py-1 mb-1">
                     Solutions by Industry
                   </div>
                   {solutionsNav.slice(0, 6).map((item) => (
@@ -71,9 +81,9 @@ export function Header() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setOpenDropdown(null)}
-                      className="p-2.5 rounded-xl hover:bg-slate-50 transition-colors group block"
+                      className="p-2.5 rounded-xl hover:bg-sky-50 transition-colors group/item block"
                     >
-                      <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-sky-600 transition-colors">
+                      <div className="text-xs font-bold text-[#0d0d0e] group-hover/item:text-sky-600 transition-colors">
                         {item.name}
                       </div>
                       {item.description && (
@@ -87,27 +97,37 @@ export function Header() {
                       onClick={() => setOpenDropdown(null)}
                       className="text-xs font-bold text-sky-600 hover:text-sky-700 px-3 py-1 block"
                     >
-                      View All 13 Industry Solutions →
+                      View All Industry Solutions →
                     </Link>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Services Mega Dropdown */}
-            <div className="relative" onMouseLeave={() => setOpenDropdown(null)}>
-              <button
-                onClick={() => toggleDropdown('services')}
-                onMouseEnter={() => setOpenDropdown('services')}
-                aria-expanded={openDropdown === 'services'}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-full flex items-center gap-1.5 transition-all",
-                  openDropdown === 'services' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
-                )}
-              >
-                <span>Services</span>
-                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'services' && "rotate-180")} />
-              </button>
+            {/* 2. Services Mega Dropdown */}
+            <div className="relative group/menu" onMouseLeave={() => setOpenDropdown(null)}>
+              <div className="flex items-center">
+                <Link
+                  href="/services"
+                  onClick={() => setOpenDropdown(null)}
+                  onMouseEnter={() => setOpenDropdown('services')}
+                  className={cn(
+                    "px-3.5 py-1.5 rounded-full flex items-center gap-1 transition-all",
+                    openDropdown === 'services' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                  )}
+                >
+                  <span>Services</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown('services')}
+                  onMouseEnter={() => setOpenDropdown('services')}
+                  className="p-1 text-slate-400 hover:text-black transition-colors"
+                  aria-label="Toggle Services Menu"
+                >
+                  <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'services' && "rotate-180")} />
+                </button>
+              </div>
 
               {openDropdown === 'services' && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[560px] bg-white border border-slate-200 rounded-2xl shadow-xl p-5 grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
@@ -123,9 +143,9 @@ export function Header() {
                           key={item.href}
                           href={item.href}
                           onClick={() => setOpenDropdown(null)}
-                          className="p-2 rounded-lg hover:bg-slate-50 block transition-colors group"
+                          className="p-2 rounded-lg hover:bg-sky-50 block transition-colors group/item"
                         >
-                          <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-sky-600 transition-colors">
+                          <div className="text-xs font-bold text-[#0d0d0e] group-hover/item:text-sky-600 transition-colors">
                             {item.name}
                           </div>
                         </Link>
@@ -145,9 +165,9 @@ export function Header() {
                           key={item.href}
                           href={item.href}
                           onClick={() => setOpenDropdown(null)}
-                          className="p-2 rounded-lg hover:bg-slate-50 block transition-colors group"
+                          className="p-2 rounded-lg hover:bg-amber-50 block transition-colors group/item"
                         >
-                          <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-amber-600 transition-colors">
+                          <div className="text-xs font-bold text-[#0d0d0e] group-hover/item:text-amber-600 transition-colors">
                             {item.name}
                           </div>
                         </Link>
@@ -164,25 +184,35 @@ export function Header() {
               )}
             </div>
 
-            {/* Products Link */}
+            {/* 3. Products Link */}
             <Link href="/products" className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 hover:text-black transition-all">
               Products
             </Link>
 
-            {/* Resources Dropdown */}
-            <div className="relative" onMouseLeave={() => setOpenDropdown(null)}>
-              <button
-                onClick={() => toggleDropdown('resources')}
-                onMouseEnter={() => setOpenDropdown('resources')}
-                aria-expanded={openDropdown === 'resources'}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-full flex items-center gap-1.5 transition-all",
-                  openDropdown === 'resources' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
-                )}
-              >
-                <span>Resources</span>
-                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'resources' && "rotate-180")} />
-              </button>
+            {/* 4. Resources Dropdown */}
+            <div className="relative group/menu" onMouseLeave={() => setOpenDropdown(null)}>
+              <div className="flex items-center">
+                <Link
+                  href="/pricing"
+                  onClick={() => setOpenDropdown(null)}
+                  onMouseEnter={() => setOpenDropdown('resources')}
+                  className={cn(
+                    "px-3.5 py-1.5 rounded-full flex items-center gap-1 transition-all",
+                    openDropdown === 'resources' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                  )}
+                >
+                  <span>Resources</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown('resources')}
+                  onMouseEnter={() => setOpenDropdown('resources')}
+                  className="p-1 text-slate-400 hover:text-black transition-colors"
+                  aria-label="Toggle Resources Menu"
+                >
+                  <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'resources' && "rotate-180")} />
+                </button>
+              </div>
 
               {openDropdown === 'resources' && (
                 <div className="absolute top-full left-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
@@ -191,9 +221,9 @@ export function Header() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setOpenDropdown(null)}
-                      className="p-2.5 rounded-xl hover:bg-slate-50 transition-colors group block"
+                      className="p-2.5 rounded-xl hover:bg-sky-50 transition-colors group/item block"
                     >
-                      <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-sky-600 transition-colors">
+                      <div className="text-xs font-bold text-[#0d0d0e] group-hover/item:text-sky-600 transition-colors">
                         {item.name}
                       </div>
                       {item.description && (
@@ -205,20 +235,30 @@ export function Header() {
               )}
             </div>
 
-            {/* Company Dropdown */}
-            <div className="relative" onMouseLeave={() => setOpenDropdown(null)}>
-              <button
-                onClick={() => toggleDropdown('company')}
-                onMouseEnter={() => setOpenDropdown('company')}
-                aria-expanded={openDropdown === 'company'}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-full flex items-center gap-1.5 transition-all",
-                  openDropdown === 'company' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
-                )}
-              >
-                <span>Company</span>
-                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'company' && "rotate-180")} />
-              </button>
+            {/* 5. Company Dropdown */}
+            <div className="relative group/menu" onMouseLeave={() => setOpenDropdown(null)}>
+              <div className="flex items-center">
+                <Link
+                  href="/about"
+                  onClick={() => setOpenDropdown(null)}
+                  onMouseEnter={() => setOpenDropdown('company')}
+                  className={cn(
+                    "px-3.5 py-1.5 rounded-full flex items-center gap-1 transition-all",
+                    openDropdown === 'company' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
+                  )}
+                >
+                  <span>Company</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown('company')}
+                  onMouseEnter={() => setOpenDropdown('company')}
+                  className="p-1 text-slate-400 hover:text-black transition-colors"
+                  aria-label="Toggle Company Menu"
+                >
+                  <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'company' && "rotate-180")} />
+                </button>
+              </div>
 
               {openDropdown === 'company' && (
                 <div className="absolute top-full right-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
@@ -227,9 +267,9 @@ export function Header() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setOpenDropdown(null)}
-                      className="p-2.5 rounded-xl hover:bg-slate-50 transition-colors group block"
+                      className="p-2.5 rounded-xl hover:bg-sky-50 transition-colors group/item block"
                     >
-                      <div className="text-xs font-bold text-[#0d0d0e] group-hover:text-sky-600 transition-colors">
+                      <div className="text-xs font-bold text-[#0d0d0e] group-hover/item:text-sky-600 transition-colors">
                         {item.name}
                       </div>
                       {item.description && (
@@ -290,14 +330,15 @@ export function Header() {
               </div>
 
               <div className="py-6 space-y-4 flex flex-col text-sm font-bold text-slate-700">
-                <Link href="/" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Home</Link>
-                <Link href="/solutions" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Solutions by Industry</Link>
-                <Link href="/services" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Core Services</Link>
-                <Link href="/products" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Products</Link>
-                <Link href="/pricing" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Pricing</Link>
-                <Link href="/about" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">About Us</Link>
-                <Link href="/partner" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Partner With Us</Link>
-                <Link href="/contact" onClick={() => setIsMobileOpen(false)} className="hover:text-[#0d0d0e]">Contact</Link>
+                <Link href="/" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Home</Link>
+                <Link href="/solutions" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Solutions by Industry</Link>
+                <Link href="/services" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Core Services</Link>
+                <Link href="/products" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Products</Link>
+                <Link href="/pricing" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Pricing &amp; Plans</Link>
+                <Link href="/about" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">About Us</Link>
+                <Link href="/partner" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Partner With Us</Link>
+                <Link href="/careers" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Careers</Link>
+                <Link href="/contact" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Contact</Link>
               </div>
             </div>
 
@@ -305,7 +346,7 @@ export function Header() {
               <Link
                 href="/get-quote"
                 onClick={() => setIsMobileOpen(false)}
-                className="block w-full py-3 rounded-full border border-slate-300 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider"
+                className="block w-full py-3 rounded-full border border-slate-300 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider hover:bg-slate-50"
               >
                 Get a Quote
               </Link>
@@ -313,7 +354,7 @@ export function Header() {
               <Link
                 href="/book-demo"
                 onClick={() => setIsMobileOpen(false)}
-                className="block w-full py-3 rounded-full bg-[#0d0d0e] text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md"
+                className="block w-full py-3 rounded-full bg-[#0d0d0e] text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-sky-600"
               >
                 Book a Demo
               </Link>
