@@ -1,189 +1,219 @@
+// src/app/(marketing)/pricing/page.tsx
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { CheckCircle2, Sparkles, ArrowRight, ShieldCheck, Code2, Layers, TrendingUp } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Pricing | OHO TECH',
-  description: 'Flexible pricing plans for our software products and services.',
+  title: 'Pricing & Engagement Models | OHO TECH',
+  description: 'Transparent enterprise software engagement models, project-based engineering, dedicated developer pods, and managed digital growth retainers.',
 };
 
-const tiers = [
+const engagementModels = [
   {
-    name: 'Starter',
-    id: 'tier-starter',
-    price: '₹9,999/mo',
-    description: 'Perfect for small businesses getting started with digital transformation.',
+    id: 'custom-project',
+    name: 'Custom Project Engineering',
+    tag: 'FIXED SCOPE & MILESTONES',
+    description: 'Ideal for building bespoke software applications, web portals, mobile apps, or enterprise ERP systems with clear specifications.',
+    badge: 'Popular for Software',
+    icon: Code2,
     features: [
-      'Core software features',
-      'Up to 5 users',
-      'Basic reporting',
-      'Email support',
-      'Standard integrations',
+      'Tailored System Architecture & DB Schema',
+      'End-to-End Frontend & Backend Development',
+      'Quality Assurance & Security Audit',
+      'Deployment & Server Setup',
+      'Post-Launch Warranty & Documentation',
     ],
-    cta: 'Start Free Trial',
-    href: '/book-demo',
-    mostPopular: false,
+    cta: 'Request Project Quote',
+    href: '/get-quote',
+    highlighted: false,
   },
   {
-    name: 'Professional',
-    id: 'tier-professional',
-    price: '₹24,999/mo',
-    description: 'Ideal for growing companies needing advanced capabilities and scale.',
+    id: 'dedicated-pod',
+    name: 'Dedicated Developer Pod',
+    tag: 'LONG-TERM PLATFORM TEAM',
+    description: 'Full-time dedicated software developers, mobile engineers, and lead architects acting as an extension of your team.',
+    badge: 'Best for Scaling Apps',
+    icon: Layers,
     features: [
-      'Everything in Starter',
-      'Up to 25 users',
-      'Advanced analytics',
-      'Priority email & phone support',
-      'Custom integrations',
-      'API access',
+      'Dedicated Senior Engineers & Tech Lead',
+      'Agile Sprint Planning & Weekly Demos',
+      'Direct Communication via Slack/Teams',
+      'Continuous Integration & Code Reviews',
+      'Flexible Scaling (Add/Remove Engineers)',
     ],
-    cta: 'Get Started',
+    cta: 'Book Technical Consultation',
     href: '/book-demo',
-    mostPopular: true,
+    highlighted: true,
   },
   {
-    name: 'Enterprise',
-    id: 'tier-enterprise',
-    price: 'Custom',
-    description: 'Tailored solutions for large organizations with complex requirements.',
+    id: 'growth-retainer',
+    name: 'Managed Digital Growth',
+    tag: 'MONTHLY PERFORMANCE RETAINER',
+    description: 'Strategic search engine optimization, Google & Meta advertising campaign management, and conversion rate optimization.',
+    badge: 'Best for Customer Reach',
+    icon: TrendingUp,
     features: [
-      'Everything in Professional',
-      'Unlimited users',
-      'Custom reporting & BI',
-      '24/7 dedicated support',
-      'On-premise deployment option',
-      'SLA guarantee',
-      'Dedicated success manager',
+      'Data-Driven Technical & Content SEO',
+      'Google Ads & Meta Ads Campaign Setup',
+      'Landing Page Conversion Optimization',
+      'Monthly Analytics & Performance Reports',
+      'Dedicated Marketing Strategist',
     ],
-    cta: 'Contact Sales',
+    cta: 'Explore Growth Plans',
     href: '/contact',
-    mostPopular: false,
+    highlighted: false,
   },
 ];
 
 const faqs = [
   {
-    question: 'Are custom development services included in these plans?',
-    answer: 'No, these plans are for our standard software products. Custom development and digital marketing services are quoted separately per project. Visit our Get a Quote page for more details.',
+    question: 'How are custom software development projects priced?',
+    answer: 'Custom projects are estimated based on technical requirements, feature scope, third-party integrations, and timeline. We provide a comprehensive milestone-based proposal after an initial discovery phase.',
   },
   {
-    question: 'Can I change my plan later?',
-    answer: 'Yes, you can upgrade or downgrade your plan at any time. Prorated charges will be applied to your next billing cycle.',
+    question: 'What is included in a Dedicated Developer Pod?',
+    answer: 'A dedicated pod gives you full-time access to experienced software developers, UI designers, and a lead architect managed under OHO TECH engineering standards.',
   },
   {
-    question: 'Is there a long-term contract?',
-    answer: 'Our standard plans are billed month-to-month or annually. Annual plans come with a significant discount. Enterprise plans typically require a minimum 12-month commitment.',
+    question: 'Do you provide post-launch maintenance and support?',
+    answer: 'Yes, all custom engineering projects include post-launch support. We also offer dedicated SLA maintenance retainers for continuous updates and server monitoring.',
   },
   {
-    question: 'Do you offer a free trial?',
-    answer: 'Yes, we offer a 14-day free trial for our Starter and Professional plans so you can evaluate our software before committing.',
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer: 'We accept all major credit cards, UPI, and bank transfers for annual subscriptions.',
+    question: 'Can we combine custom software development with digital growth services?',
+    answer: 'Absolutely. Many client partners build custom web or mobile platforms with our engineering team and concurrently run managed SEO and advertising campaigns to acquire customers.',
   },
 ];
 
 export default async function PricingPage() {
   return (
-    <div className="bg-white">
-      {/* Header */}
-      <div className="pt-20 pb-16 text-center lg:pt-28 lg:pb-24 px-6 lg:px-8 max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">
-          Simple, transparent pricing
-        </h1>
-        <p className="mt-6 max-w-2xl mx-auto text-lg leading-8 text-neutral-600">
-          Choose the plan that best fits your business needs. Custom development and digital marketing services are quoted per project.
-        </p>
-      </div>
-
-      {/* Pricing Grid */}
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-20 lg:pb-28">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 items-center">
-          {tiers.map((tier) => (
-            <div
-              key={tier.id}
-              className={`rounded-3xl p-8 ring-1 ${
-                tier.mostPopular
-                  ? 'bg-neutral-900 ring-neutral-900 text-white lg:scale-105 z-10'
-                  : 'bg-white ring-neutral-200 text-neutral-900'
-              } shadow-xl`}
-            >
-              <h3
-                id={tier.id}
-                className={`text-lg font-semibold leading-8 ${
-                  tier.mostPopular ? 'text-white' : 'text-primary'
-                }`}
-              >
-                {tier.name}
-              </h3>
-              {tier.mostPopular && (
-                <p className="mt-2 text-sm font-semibold text-primary">Most Popular</p>
-              )}
-              <p className="mt-4 flex items-baseline gap-x-2">
-                <span className="text-4xl font-bold tracking-tight">{tier.price}</span>
-              </p>
-              <p className={`mt-4 text-sm leading-6 ${tier.mostPopular ? 'text-neutral-300' : 'text-neutral-600'}`}>
-                {tier.description}
-              </p>
-              <ul className="mt-8 space-y-3 text-sm leading-6">
-                {tier.features.map((feature) => (
-                  <li key={feature} className="flex gap-x-3">
-                    <svg
-                      className={`h-6 w-5 flex-none ${tier.mostPopular ? 'text-primary' : 'text-primary'}`}
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className={tier.mostPopular ? 'text-neutral-300' : 'text-neutral-600'}>
-                      {feature}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href={tier.href}
-                className={`mt-8 block rounded-lg px-3 py-2.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                  tier.mostPopular
-                    ? 'bg-primary text-white hover:bg-primary/90 focus-visible:outline-primary'
-                    : 'bg-primary/10 text-primary hover:bg-primary/20 focus-visible:outline-primary'
-                }`}
-                id={`btn-${tier.id}`}
-              >
-                {tier.cta}
-              </Link>
+    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
+      <main className="max-w-[1536px] w-full mx-auto" id="pricing-main">
+        
+        {/* Header Hero Section */}
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="pricing-hero">
+          <div className="max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+              TRANSPARENT ENGAGEMENT MODELS
             </div>
-          ))}
-        </div>
-      </div>
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-[1.08]">
+              Transparent Software &amp; Growth Models.
+            </h1>
+            <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal max-w-2xl mx-auto leading-relaxed">
+              We offer structured project-based quotes, dedicated engineering teams, and performance marketing retainers tailored to your business stage.
+            </p>
+          </div>
+        </section>
 
-      {/* FAQs */}
-      <div className="bg-neutral-50 py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl divide-y divide-neutral-900/10">
-            <h2 className="text-2xl font-bold leading-10 tracking-tight text-neutral-900 text-center mb-10">
-              Frequently asked questions
-            </h2>
-            <dl className="mt-10 space-y-6 divide-y divide-neutral-900/10">
+        {/* Engagement Models Grid */}
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm mb-10" id="engagement-models-section">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
+            <div>
+              <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">
+                ENGAGEMENT OPTIONS
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
+                How We Partner With You
+              </h2>
+            </div>
+            <p className="text-xs font-mono text-slate-500">
+              No Hidden Fees • Milestone Based Delivery
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+            {engagementModels.map((model) => {
+              const Icon = model.icon;
+
+              return (
+                <div
+                  key={model.id}
+                  className={`p-8 rounded-3xl border-2 flex flex-col justify-between transition-all duration-300 ${
+                    model.highlighted
+                      ? 'bg-[#0d0d0e] text-white border-slate-700 shadow-2xl ring-2 ring-sky-400/30'
+                      : 'bg-[#fafafa] text-[#0d0d0e] border-slate-200 hover:border-sky-500 hover:shadow-lg'
+                  }`}
+                >
+                  <div>
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className={`text-[10px] font-mono font-bold px-3 py-1 rounded-full border uppercase tracking-wider ${
+                        model.highlighted ? 'text-sky-300 bg-sky-500/10 border-sky-500/20' : 'text-sky-700 bg-sky-50 border-sky-200'
+                      }`}>
+                        {model.tag}
+                      </span>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                        model.highlighted ? 'bg-white/10 text-white' : 'bg-sky-50 text-sky-600 border border-sky-100'
+                      }`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                    </div>
+
+                    <h3 className="text-2xl font-black mb-3">{model.name}</h3>
+                    <p className={`text-xs leading-relaxed mb-6 ${model.highlighted ? 'text-slate-300' : 'text-slate-600'}`}>
+                      {model.description}
+                    </p>
+
+                    {/* Features list */}
+                    <div className="pt-4 border-t border-slate-200/40 space-y-3 mb-8">
+                      <div className={`text-[11px] font-mono font-bold uppercase tracking-wider mb-2 ${
+                        model.highlighted ? 'text-slate-400' : 'text-slate-500'
+                      }`}>
+                        KEY DELIVERABLES &amp; INCLUSIONS
+                      </div>
+                      {model.features.map((feature, fIdx) => (
+                        <div key={fIdx} className="flex items-start gap-2.5 text-xs font-medium">
+                          <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${model.highlighted ? 'text-sky-400' : 'text-sky-600'}`} />
+                          <span className={model.highlighted ? 'text-slate-200' : 'text-slate-700'}>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA Link */}
+                  <Link
+                    href={model.href}
+                    className={`w-full py-4 rounded-full text-center font-extrabold text-xs uppercase tracking-wider transition-all shadow-md inline-flex items-center justify-center gap-2 ${
+                      model.highlighted
+                        ? 'bg-white hover:bg-sky-400 text-[#0d0d0e]'
+                        : 'bg-[#0d0d0e] hover:bg-sky-600 text-white'
+                    }`}
+                  >
+                    <span>{model.cta}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+
+        </section>
+
+        {/* FAQs Section */}
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="faqs-section">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">
+                FREQUENTLY ASKED QUESTIONS
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
+                Clear Answers to Common Questions
+              </h2>
+            </div>
+
+            <div className="space-y-6">
               {faqs.map((faq, index) => (
-                <div key={index} className="pt-6">
-                  <dt>
-                    <span className="font-semibold text-neutral-900">{faq.question}</span>
-                  </dt>
-                  <dd className="mt-2">
-                    <p className="text-base leading-7 text-neutral-600">{faq.answer}</p>
-                  </dd>
+                <div key={index} className="p-7 bg-[#fafafa] border-2 border-slate-200 rounded-3xl">
+                  <h3 className="text-lg font-bold text-[#0d0d0e] mb-2">{faq.question}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">{faq.answer}</p>
                 </div>
               ))}
-            </dl>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
+
+      </main>
     </div>
   );
 }
