@@ -125,7 +125,7 @@ export default function WideStudioPage() {
           <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-sky-600 uppercase tracking-wider mb-2">Healthcare</div>
-              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">HealthOS EMR &amp; Hospital ERP</h3>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">Hospital Management &amp; EMR System</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
                 Centralized hospital administration, outpatient/inpatient management, lab reporting, and pharmacy billing.
               </p>
@@ -139,7 +139,7 @@ export default function WideStudioPage() {
           <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-amber-600 uppercase tracking-wider mb-2">Education</div>
-              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-amber-600 transition-colors">SchoolCloud Campus ERP</h3>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-amber-600 transition-colors">Education &amp; Campus Management System</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
                 Multi-campus university management, student admissions, online examination, and automated fee collection.
               </p>
@@ -153,7 +153,7 @@ export default function WideStudioPage() {
           <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Retail &amp; Commerce</div>
-              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">RetailPOS &amp; Inventory Sync</h3>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Retail POS &amp; Inventory Management System</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
                 High-speed retail billing, multi-store stock tracking, supplier reordering, and automated GST invoicing.
               </p>
@@ -167,7 +167,7 @@ export default function WideStudioPage() {
           <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-sky-600 uppercase tracking-wider mb-2">Finance &amp; Banking</div>
-              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">FinCore NBFC &amp; Loan System</h3>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">NBFC &amp; Loan Management System</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
                 Loan origination workflows, borrower verification, automated EMI recovery schedules, and audit reporting.
               </p>
@@ -181,7 +181,7 @@ export default function WideStudioPage() {
           <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-amber-600 uppercase tracking-wider mb-2">Fitness &amp; Wellness</div>
-              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-amber-600 transition-colors">Gym &amp; Club Management</h3>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-amber-600 transition-colors">Fitness &amp; Club Management System</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
                 Membership scheduling, biometric turnstile integrations, trainer assignments, and automated billing.
               </p>
@@ -195,7 +195,7 @@ export default function WideStudioPage() {
           <div className="p-8 rounded-3xl bg-[#fafafa] border border-slate-200/80 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
               <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Logistics</div>
-              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Warehouse &amp; Dispatch ERP</h3>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Warehouse &amp; Dispatch Logistics System</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
                 Consignment dispatch tracking, fleet operations, warehouse barcode scanning, and delivery updates.
               </p>
