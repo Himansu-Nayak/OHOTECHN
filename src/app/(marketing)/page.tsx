@@ -22,11 +22,11 @@ import { services } from '@/config/services';
 import { cn } from '@/lib/utils';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
 import { SolutionsSection } from '@/components/solutions/SolutionsSection';
+import { ServicesSection } from '@/components/services/ServicesSection';
 
 export default function WideStudioPage() {
   const [easterEggActive, setEasterEggActive] = React.useState(false);
   const [clickCount, setClickCount] = React.useState(0);
-  const [serviceCategory, setServiceCategory] = React.useState<'all' | 'technology' | 'marketing'>('all');
 
   const handleRedButtonPress = () => {
     setClickCount((prev) => prev + 1);
@@ -146,11 +146,6 @@ export default function WideStudioPage() {
       href: '/services'
     }
   ];
-
-  const filteredServicesList = services.filter((s) => {
-    if (serviceCategory === 'all') return true;
-    return s.category === serviceCategory;
-  });
 
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-6 pt-4 px-2 sm:px-4 lg:px-6 selection:bg-[#0d0d0e] selection:text-white">
@@ -489,116 +484,8 @@ export default function WideStudioPage() {
       {/* ── 4. ALL 13 INDUSTRIES & 65+ PRODUCTS (MODERN MINIMAL SOLUTIONS SECTION) ── */}
       <SolutionsSection />
 
-      {/* ── 5. ALL 15 CORE SERVICES (FULL-CYCLE ENGINEERING & MARKETING) ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-6 bg-white border border-black/10 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm" id="services">
-        
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-mono text-xs font-bold uppercase tracking-wider mb-3">
-              <Code2 className="w-3.5 h-3.5" /> Full-Cycle Engineering & Marketing
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight">
-              Our 15 Core Offerings
-            </h2>
-          </div>
-
-          {/* Service Category Filter Buttons */}
-          <div className="mt-6 md:mt-0 flex items-center gap-1.5 bg-[#f7f7f5] p-1.5 rounded-full border border-black/10 shadow-xs">
-            <button
-              onClick={() => setServiceCategory('all')}
-              className={cn("px-5 py-2 text-xs font-extrabold rounded-full transition-all", serviceCategory === 'all' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:text-black")}
-            >
-              All Offerings (15)
-            </button>
-            <button
-              onClick={() => setServiceCategory('technology')}
-              className={cn("px-5 py-2 text-xs font-extrabold rounded-full transition-all", serviceCategory === 'technology' ? "bg-teal-600 text-white shadow-sm" : "text-slate-600 hover:text-black")}
-            >
-              Software Tech (8)
-            </button>
-            <button
-              onClick={() => setServiceCategory('marketing')}
-              className={cn("px-5 py-2 text-xs font-extrabold rounded-full transition-all", serviceCategory === 'marketing' ? "bg-indigo-600 text-white shadow-sm" : "text-slate-600 hover:text-black")}
-            >
-              Digital Growth (7)
-            </button>
-          </div>
-        </div>
-
-        {/* 15 Services Grid with Feature Badges */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
-          {filteredServicesList.map((service) => (
-            <Link
-              key={service.slug}
-              href={`/services/${service.slug}`}
-              className="launch-card p-6 flex flex-col justify-between group bg-[#fafafa] border border-black/10 rounded-3xl hover:border-black/30 hover:shadow-md transition-all"
-            >
-              <div>
-                {/* Icon Avatar + Category Tag */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center border shadow-xs group-hover:scale-110 transition-transform",
-                    service.category === 'technology'
-                      ? "bg-teal-50 border-teal-200 text-teal-600"
-                      : "bg-indigo-50 border-indigo-200 text-indigo-600"
-                  )}>
-                    {service.category === 'technology' ? <Code2 className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
-                  </div>
-                  <span className={cn(
-                    "text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border",
-                    service.category === 'technology'
-                      ? "bg-teal-50 text-teal-700 border-teal-200"
-                      : "bg-indigo-50 text-indigo-700 border-indigo-200"
-                  )}>
-                    {service.category === 'technology' ? 'Engineering' : 'Growth & Ads'}
-                  </span>
-                </div>
-
-                {/* Title & Description */}
-                <h3 className="text-base font-extrabold text-[#0d0d0e] mb-2 group-hover:text-teal-600 transition-colors">
-                  {service.name}
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed mb-5 line-clamp-3">
-                  {service.description}
-                </p>
-
-                {/* Feature Deliverable Pills */}
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {service.features.slice(0, 3).map((feat, fIdx) => (
-                    <span key={fIdx} className="text-[10px] font-mono bg-white border border-black/5 text-slate-600 px-2 py-0.5 rounded-md">
-                      ✓ {feat}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Bottom Action Footer */}
-              <div className="pt-3 border-t border-black/5 flex items-center justify-between text-xs font-mono font-bold text-teal-600 group-hover:text-teal-700">
-                <span>Explore Service Scope</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Bottom SLA & Enterprise Production Guarantee Bar */}
-        <div className="p-6 rounded-2xl bg-[#0d0d0e] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg border border-black">
-          <div className="flex items-center gap-3">
-            <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping shrink-0" />
-            <div>
-              <div className="text-xs font-mono font-bold text-teal-400 uppercase tracking-widest">Enterprise Delivery SLA</div>
-              <div className="text-xs text-slate-300 font-bold mt-0.5">24/7 Production Support • Dedicated Lead Architect • 48-Hour Sprint Kickoff</div>
-            </div>
-          </div>
-          <Link
-            href="/get-quote"
-            className="px-6 py-2.5 rounded-full bg-white text-[#0d0d0e] hover:bg-teal-400 font-extrabold text-xs tracking-tight transition-all text-center whitespace-nowrap shadow-md"
-          >
-            Get Custom Project Estimate →
-          </Link>
-        </div>
-
-      </section>
+      {/* ── 5. ALL 15 CORE SERVICES (MODERN MINIMAL SERVICES SECTION) ── */}
+      <ServicesSection />
 
       {/* ── 6. THREE CUSTOMER JOURNEYS (STRUCTURED ENGAGEMENT PATHWAYS) ── */}
       <section className="max-w-[1536px] w-full mx-auto mb-6 bg-[#ebebe8] border border-black/10 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm" id="flows">
