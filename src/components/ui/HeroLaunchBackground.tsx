@@ -13,12 +13,14 @@ import {
   Play,
   Pause,
   Tv,
+  Film,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function HeroLaunchBackground() {
   const [activeSolution, setActiveSolution] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(true);
+  const [videoSeconds, setVideoSeconds] = React.useState<number>(14);
 
   const solutions = React.useMemo(() => [
     {
@@ -74,21 +76,74 @@ export function HeroLaunchBackground() {
     return () => clearInterval(interval);
   }, [isPlaying, solutions.length]);
 
+  // Video Time Counter Interval
+  React.useEffect(() => {
+    if (!isPlaying) return;
+
+    const timer = setInterval(() => {
+      setVideoSeconds((prev) => (prev >= 180 ? 0 : prev + 1));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isPlaying]);
+
+  const formatTime = (totalSeconds: number) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `0${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
   return (
     <div className="w-full relative rounded-3xl sm:rounded-[36px] overflow-hidden border-2 border-slate-300 bg-[#0c0d0e] shadow-2xl group selection:bg-emerald-500 selection:text-white">
       
-      {/* ── 1. LUXURY IPAD SHOWCASE PHOTO DISPLAYING OHO TECH WEBSITE UI ── */}
+      {/* ── 1. LUXURY TABLET DEMO STREAM DISPLAY (LIVE MOTION VIDEO DISPLAY) ── */}
       <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[600px] overflow-hidden">
+        
+        {/* Animated Motion Video Screen Image */}
         <NextImage
           src="/hero_ipad_mockup_ohotech.jpg"
           alt="OHO TECH Website UI Showcase on Tablet Device - Software, Digital Solutions & Business Growth"
           fill
           priority
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-          className="object-cover object-center brightness-[0.95] contrast-[1.03] group-hover:scale-[1.015] transition-transform duration-700 ease-out"
+          className={cn(
+            "object-cover object-center brightness-[0.95] contrast-[1.03] transition-all duration-1000 ease-in-out",
+            isPlaying ? "scale-105" : "scale-100"
+          )}
         />
+
+        {/* Live Scanning Laser & Video Shimmer Motion Effect */}
+        {isPlaying && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* Top-to-Bottom Moving Video Scanner Light */}
+            <div className="w-full h-40 bg-gradient-to-b from-transparent via-emerald-400/20 to-transparent transform -translate-y-full animate-[scan_4s_ease-in-out_infinite]" />
+            
+            {/* Ambient Pulse Light */}
+            <div className="absolute inset-0 bg-emerald-500/5 animate-pulse" />
+          </div>
+        )}
+
+        {/* Video HUD Overlay: Live Stream HUD Bar */}
+        <div className="absolute top-20 sm:top-24 left-6 sm:left-10 z-20 pointer-events-none flex items-center gap-3">
+          <div className="px-3 py-1 rounded-full bg-[#0c0d0e]/90 backdrop-blur-md border border-emerald-500/40 text-white font-mono text-[11px] font-bold flex items-center gap-2 shadow-xl">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+            <span className="text-red-400 font-black">REC</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-emerald-400">{formatTime(videoSeconds)} / 03:00</span>
+          </div>
+
+          {/* Equalizer Waveform Animation */}
+          {isPlaying && (
+            <div className="hidden sm:flex items-center gap-1 bg-[#0c0d0e]/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15">
+              <span className="w-1 h-3 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_100ms]" />
+              <span className="w-1 h-4 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_200ms]" />
+              <span className="w-1 h-2 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_300ms]" />
+              <span className="w-1 h-5 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_150ms]" />
+            </div>
+          )}
+        </div>
         
-        {/* Ambient Video Glow Overlay */}
+        {/* Subtle Dark Gradient Foot Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d0e] via-[#0c0d0e]/40 to-transparent pointer-events-none" />
       </div>
 
@@ -106,17 +161,27 @@ export function HeroLaunchBackground() {
         <div className="flex items-center gap-2">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-emerald-500/40 text-emerald-400 font-mono text-[11px] font-bold shadow-lg">
             <Tv className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-            <span className="hidden sm:inline">🔴 LIVE DEMO STREAM</span>
-            <span>• AUTOPLAYING</span>
+            <span className="hidden sm:inline">🔴 LIVE STREAM DISPLAY</span>
+            <span>• 60 FPS AUTOPLAY</span>
           </div>
 
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="w-8 h-8 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white hover:text-emerald-400 flex items-center justify-center transition-colors shadow-lg"
+            className="px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white hover:text-emerald-400 flex items-center gap-2 text-xs font-mono font-bold transition-colors shadow-lg"
             title={isPlaying ? 'Pause Demo Stream' : 'Play Demo Stream'}
           >
-            {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
+            {isPlaying ? (
+              <>
+                <Pause className="w-3.5 h-3.5 text-emerald-400" />
+                <span>PAUSE</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-3.5 h-3.5 text-emerald-400" />
+                <span>PLAY STREAM</span>
+              </>
+            )}
           </button>
         </div>
 
