@@ -21,9 +21,9 @@ export default function ServicesHubPage() {
         {/* Services Hero Section */}
         <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="services-hero">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
-              OHO TECH CORE SERVICES
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              OHO TECH CORE SERVICES ⚙️
             </div>
             
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-[1.08]" id="services-hero-heading">
@@ -41,8 +41,8 @@ export default function ServicesHubPage() {
           <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm mb-10" id="tech-services-section">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
               <div>
-                <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">
-                  01 / SOFTWARE &amp; ENGINEERING
+                <div className="inline-block text-xs font-mono font-bold text-emerald-600 uppercase tracking-widest mb-2">
+                  01 / SOFTWARE &amp; ENGINEERING 🛠️
                 </div>
                 <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
                   Technology Development Services
@@ -67,7 +67,7 @@ export default function ServicesHubPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
               <div>
                 <div className="inline-block text-xs font-mono font-bold text-amber-600 uppercase tracking-widest mb-2">
-                  02 / DIGITAL GROWTH &amp; MARKETING
+                  02 / DIGITAL GROWTH &amp; MARKETING 📈
                 </div>
                 <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
                   Customer Acquisition &amp; Brand Growth
@@ -96,7 +96,7 @@ export default function ServicesHubPage() {
             <Link
               href="/contact"
               id="services-contact-cta"
-              className="px-8 py-4 rounded-full bg-white hover:bg-sky-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg inline-flex items-center gap-2"
+              className="px-8 py-4 rounded-full bg-white hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg inline-flex items-center gap-2"
             >
               <span>Schedule a Consultation</span>
               <ArrowRight className="w-4 h-4" />
@@ -114,20 +114,20 @@ function ServiceCard({ service }: { service: Service }) {
     <Link
       href={`/services/${service.slug}`}
       id={`service-card-${service.slug}`}
-      className="group p-8 bg-[#fafafa] border-2 border-slate-200 hover:border-sky-500 rounded-3xl transition-all duration-300 flex flex-col justify-between hover:shadow-lg relative overflow-hidden"
+      className="group p-8 bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-3xl transition-all duration-300 flex flex-col justify-between hover:shadow-lg relative overflow-hidden"
     >
       <div>
-        <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all duration-300">
-          <DynamicIcon name={service.iconName} className="w-6 h-6" />
+        <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300 text-2xl">
+          ⚙️
         </div>
-        <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">{service.name}</h3>
+        <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">{service.name}</h3>
         <p className="text-xs text-slate-600 leading-relaxed mb-6 line-clamp-3">{service.description}</p>
         
         {service.features && service.features.length > 0 && (
           <ul className="mb-6 space-y-2">
             {service.features.slice(0, 3).map((feature: string, idx: number) => (
               <li key={idx} className="flex items-start text-xs text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 mr-2 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 mr-2 flex-shrink-0 mt-0.5" />
                 <span className="line-clamp-1">{feature}</span>
               </li>
             ))}
@@ -135,7 +135,7 @@ function ServiceCard({ service }: { service: Service }) {
         )}
       </div>
 
-      <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs font-bold text-slate-800 group-hover:text-sky-600">
+      <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs font-bold text-slate-800 group-hover:text-emerald-600">
         <span>Learn More</span>
         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
       </div>

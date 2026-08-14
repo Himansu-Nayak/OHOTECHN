@@ -33,8 +33,8 @@ export default function SolutionsHubPage() {
         {/* Top Header Hero Container */}
         <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="solutions-hero">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
               SOLUTIONS BY INDUSTRY ⚡
             </div>
             
@@ -53,7 +53,7 @@ export default function SolutionsHubPage() {
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
             <div>
-              <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">
+              <div className="inline-block text-xs font-mono font-bold text-emerald-600 uppercase tracking-widest mb-2">
                 13 INDUSTRY VERTICALS
               </div>
               <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
@@ -71,21 +71,21 @@ export default function SolutionsHubPage() {
                 key={industry.slug}
                 href={`/solutions/${industry.slug}`}
                 id={`solution-card-${industry.slug}`}
-                className="group p-8 bg-[#fafafa] border-2 border-slate-200 hover:border-sky-500 rounded-3xl transition-all duration-300 flex flex-col justify-between hover:shadow-lg relative overflow-hidden"
+                className="group p-8 bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-3xl transition-all duration-300 flex flex-col justify-between hover:shadow-lg relative overflow-hidden"
               >
                 <div>
                   {/* Card Header & Icon */}
                   <div className="flex items-center justify-between mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-all duration-300">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-all duration-300">
                       {industryEmojis[industry.slug] || '⚡'}
                     </div>
-                    <span className="text-[11px] font-mono font-bold text-sky-700 bg-sky-50 border border-sky-200 px-3 py-1 rounded-full">
+                    <span className="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
                       {industry.products.length} {industry.products.length === 1 ? 'Solution' : 'Solutions'}
                     </span>
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors flex items-center gap-2">
+                  <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors flex items-center gap-2">
                     <span>{industryEmojis[industry.slug] || '⚡'}</span>
                     <span>{industry.name}</span>
                   </h3>
@@ -95,7 +95,7 @@ export default function SolutionsHubPage() {
                 </div>
 
                 {/* Card Action Link Footer */}
-                <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs font-bold text-slate-800 group-hover:text-sky-600">
+                <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs font-bold text-slate-800 group-hover:text-emerald-600">
                   <span>Explore Architecture</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>

@@ -23,7 +23,7 @@ export function HeroLaunchBackground() {
       tag: 'BESPOKE SOFTWARE',
       emoji: '🛠️',
       icon: Cpu,
-      accent: 'text-sky-400 bg-sky-500/10 border-sky-500/20',
+      accent: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
       description: 'Tailored enterprise software, automated operational workflows, and API integrations.',
       features: ['Custom Workflow Automation', 'Modular Microservices', 'Enterprise Security'],
     },
@@ -53,7 +53,7 @@ export function HeroLaunchBackground() {
       tag: 'RETAIL COMMERCE',
       emoji: '🛒',
       icon: ShoppingBag,
-      accent: 'text-sky-400 bg-sky-500/10 border-sky-500/20',
+      accent: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
       description: 'High-speed retail counter billing, multi-store stock sync, and barcode inventory control.',
       features: ['Fast GST Counter Billing', 'Multi-Store Inventory Sync', 'Barcode Scanner Integration'],
     },
@@ -90,7 +90,7 @@ export function HeroLaunchBackground() {
         {/* Live Indicator */}
         <div className="hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/80 backdrop-blur-xl border border-white/15 text-slate-300 font-mono text-[11px]">
           <span>Enterprise Studio</span>
-          <span className="text-sky-400 font-bold">• Active Production</span>
+          <span className="text-emerald-400 font-bold">• Active Production</span>
         </div>
 
       </div>
@@ -111,7 +111,7 @@ export function HeroLaunchBackground() {
                 className={cn(
                   "p-4 sm:p-5 rounded-2xl transition-all duration-300 cursor-pointer backdrop-blur-2xl border flex flex-col justify-between group/card",
                   isActive
-                    ? "bg-[#0c0d0e]/95 border-sky-400 shadow-2xl ring-2 ring-sky-400/30 scale-[1.02]"
+                    ? "bg-[#0c0d0e]/95 border-emerald-400 shadow-2xl ring-2 ring-emerald-400/30 scale-[1.02]"
                     : "bg-[#0c0d0e]/80 hover:bg-[#0c0d0e]/95 border-white/15 hover:border-white/30"
                 )}
               >
@@ -133,7 +133,7 @@ export function HeroLaunchBackground() {
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="text-sm sm:text-base font-extrabold text-white mb-1.5 leading-snug group-hover/card:text-sky-300 transition-colors flex items-center gap-1.5">
+                  <h3 className="text-sm sm:text-base font-extrabold text-white mb-1.5 leading-snug group-hover/card:text-emerald-300 transition-colors flex items-center gap-1.5">
                     <span>{sol.emoji}</span>
                     <span>{sol.title}</span>
                   </h3>
@@ -146,7 +146,7 @@ export function HeroLaunchBackground() {
                 <div className="pt-2.5 border-t border-white/10 space-y-1">
                   {sol.features.slice(0, 2).map((feat, fIdx) => (
                     <div key={fIdx} className="flex items-center gap-1.5 text-[11px] font-mono text-slate-300">
-                      <CheckCircle2 className="w-3 h-3 text-sky-400 shrink-0" />
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
                       <span className="truncate">{feat}</span>
                     </div>
                   ))}
@@ -160,7 +160,7 @@ export function HeroLaunchBackground() {
         <div className="bg-[#0c0d0e]/90 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
           <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono font-semibold text-slate-300">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-sky-400" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
               Bespoke Software &amp; Mobile Apps
             </span>
             <span className="flex items-center gap-2">
@@ -175,7 +175,7 @@ export function HeroLaunchBackground() {
 
           <Link
             href="/solutions"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-sky-400 text-[#0c0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md group shrink-0"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-emerald-400 text-[#0c0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md group shrink-0"
           >
             <span>View All OHO TECH Solutions</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

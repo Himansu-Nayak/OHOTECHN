@@ -56,7 +56,7 @@ export default function WideStudioPage() {
           <Link
             id="hero-get-quote"
             href="/get-quote"
-            className="px-8 py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105"
+            className="px-8 py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105"
           >
             Get a Quote →
           </Link>
@@ -82,8 +82,8 @@ export default function WideStudioPage() {
         
         {/* Section Header */}
         <div className="max-w-4xl mb-12 text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
             02 / ABOUT OHO TECH &amp; STRATEGIC DIRECTION
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-5">
@@ -98,12 +98,12 @@ export default function WideStudioPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           
           {/* Pillar 1 */}
-          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-sky-400 transition-all flex flex-col justify-between group">
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
                 🛠️
               </div>
-              <div className="text-[11px] font-mono font-bold text-sky-600 uppercase tracking-wider mb-1">
+              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
                 DIRECTION 01
               </div>
               <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
@@ -116,23 +116,23 @@ export default function WideStudioPage() {
             </div>
             <div className="pt-4 border-t border-slate-200/80 space-y-2">
               <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Custom Architecture</span>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Workflow Automation</span>
               </div>
             </div>
           </div>
 
           {/* Pillar 2 */}
-          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-sky-400 transition-all flex flex-col justify-between group">
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
                 🌐
               </div>
-              <div className="text-[11px] font-mono font-bold text-sky-600 uppercase tracking-wider mb-1">
+              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
                 DIRECTION 02
               </div>
               <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
@@ -145,11 +145,11 @@ export default function WideStudioPage() {
             </div>
             <div className="pt-4 border-t border-slate-200/80 space-y-2">
               <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Fluid Responsive UI</span>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Cross-Platform Sync</span>
               </div>
             </div>
@@ -185,12 +185,12 @@ export default function WideStudioPage() {
           </div>
 
           {/* Pillar 4 */}
-          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-sky-400 transition-all flex flex-col justify-between group">
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
                 🛡️
               </div>
-              <div className="text-[11px] font-mono font-bold text-sky-600 uppercase tracking-wider mb-1">
+              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
                 DIRECTION 04
               </div>
               <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
@@ -203,11 +203,11 @@ export default function WideStudioPage() {
             </div>
             <div className="pt-4 border-t border-slate-200/80 space-y-2">
               <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Modular Microservices</span>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Continuous Support</span>
               </div>
             </div>
@@ -218,8 +218,8 @@ export default function WideStudioPage() {
         {/* Bottom Directional Bar */}
         <div className="bg-[#fafafa] border-2 border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-6 text-xs font-mono font-bold text-slate-700">
-            <span className="flex items-center gap-2 text-sky-600">
-              <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+            <span className="flex items-center gap-2 text-emerald-600">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Goal-Oriented Software
             </span>
             <span className="flex items-center gap-2 text-emerald-600">
@@ -234,7 +234,7 @@ export default function WideStudioPage() {
 
           <Link
             href="/about"
-            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-sky-600 hover:text-sky-700 uppercase tracking-wider group shrink-0"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-wider group shrink-0"
           >
             <span>Learn More About Us</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -254,7 +254,7 @@ export default function WideStudioPage() {
         
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200/80">
           <div>
-            <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-3">
+            <div className="inline-block text-xs font-mono font-bold text-emerald-600 uppercase tracking-widest mb-3">
               TECHNOLOGY SOLUTIONS WE BUILD
             </div>
             <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight">
@@ -263,7 +263,7 @@ export default function WideStudioPage() {
           </div>
           <Link
             href="/solutions"
-            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-sky-600 hover:text-sky-700 uppercase tracking-wider group"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-wider group"
           >
             <span>View All Solution Concepts</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -275,13 +275,13 @@ export default function WideStudioPage() {
           
           <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
-              <div className="text-xs font-mono font-bold text-sky-600 uppercase tracking-wider mb-2">Healthcare</div>
-              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">Hospital Management &amp; EMR System</h3>
+              <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Healthcare</div>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Hospital Management &amp; EMR System</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
                 Centralized hospital administration, outpatient/inpatient management, lab reporting, and pharmacy billing.
               </p>
             </div>
-            <Link href="/solutions/healthcare" className="text-xs font-bold text-slate-800 group-hover:text-sky-600 inline-flex items-center gap-1">
+            <Link href="/solutions/healthcare" className="text-xs font-bold text-slate-800 group-hover:text-emerald-600 inline-flex items-center gap-1">
               <span>View Healthcare Architecture</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -317,13 +317,13 @@ export default function WideStudioPage() {
 
           <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
-              <div className="text-xs font-mono font-bold text-sky-600 uppercase tracking-wider mb-2">Finance &amp; Banking</div>
-              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">NBFC &amp; Loan Management System</h3>
+              <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Finance &amp; Banking</div>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">NBFC &amp; Loan Management System</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
                 Loan origination workflows, borrower verification, automated EMI recovery schedules, and audit reporting.
               </p>
             </div>
-            <Link href="/solutions/finance-nbfc" className="text-xs font-bold text-slate-800 group-hover:text-sky-600 inline-flex items-center gap-1">
+            <Link href="/solutions/finance-nbfc" className="text-xs font-bold text-slate-800 group-hover:text-emerald-600 inline-flex items-center gap-1">
               <span>View Finance Architecture</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -382,7 +382,7 @@ export default function WideStudioPage() {
       <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#0d0d0e] text-white border border-black/20 rounded-[32px] sm:rounded-[44px] p-8 sm:p-16 lg:p-20 shadow-2xl relative overflow-hidden grid-pattern-dark" id="founder">
         
         {/* Glow Accents */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto">
@@ -390,7 +390,7 @@ export default function WideStudioPage() {
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 pb-8 border-b border-white/10">
             <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-300 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-xs font-bold uppercase tracking-wider mb-4">
                 <User className="w-3.5 h-3.5" />
                 Leadership &amp; Engineering Philosophy
               </div>
@@ -403,7 +403,7 @@ export default function WideStudioPage() {
             </div>
             <Link
               href="/about"
-              className="inline-flex items-center gap-2 text-xs font-mono font-bold text-sky-400 hover:text-sky-300 transition-colors uppercase tracking-wider group"
+              className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-wider group"
             >
               <span>Explore Full Story</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -415,22 +415,22 @@ export default function WideStudioPage() {
             
             {/* Left: Founder Profile Card */}
             <div className="lg:col-span-5">
-              <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 shadow-xl relative overflow-hidden group hover:border-sky-500/40 transition-all">
+              <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 shadow-xl relative overflow-hidden group hover:border-emerald-500/40 transition-all">
                 
                 {/* Top Founder Label */}
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 uppercase tracking-widest">
+                  <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest">
                     Founder &amp; Director
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs text-sky-400 font-mono font-semibold">
-                    <CheckCircle2 className="w-4 h-4 text-sky-400" />
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono font-semibold">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     <span>Direct Leadership</span>
                   </div>
                 </div>
 
                 {/* Avatar / Portrait Block */}
                 <div className="relative mb-6 text-center flex flex-col items-center">
-                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-sky-400 via-emerald-500 to-amber-400 p-1 shadow-2xl relative group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-amber-400 p-1 shadow-2xl relative group-hover:scale-105 transition-transform duration-300">
                     <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
                       <NextImage
                         src="/jagabandhu_kampa.jpeg"
@@ -449,7 +449,7 @@ export default function WideStudioPage() {
                   <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                     Jagabandhu Kampa
                   </h3>
-                  <p className="text-xs font-mono text-sky-400 font-bold uppercase tracking-wider mt-1">
+                  <p className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mt-1">
                     Founder &amp; Director
                   </p>
                   <p className="text-xs text-slate-400 mt-2">
@@ -461,7 +461,7 @@ export default function WideStudioPage() {
                 <div className="flex items-center justify-center gap-3">
                   <Link
                     href="/contact"
-                    className="flex-1 py-2.5 rounded-full bg-sky-500 hover:bg-sky-400 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider transition-all shadow-md"
+                    className="flex-1 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider transition-all shadow-md"
                   >
                     Contact Founder
                   </Link>
@@ -480,14 +480,14 @@ export default function WideStudioPage() {
             <div className="lg:col-span-7 flex flex-col justify-between space-y-8">
               
               <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 sm:p-10 shadow-xl relative">
-                <Quote className="w-10 h-10 text-sky-500/30 mb-4" />
+                <Quote className="w-10 h-10 text-emerald-500/30 mb-4" />
                 <p className="text-lg sm:text-xl font-medium text-slate-200 leading-relaxed italic">&quot;At OHO TECH, our mission is to deliver straightforward, high-performance software engineering for businesses. Under Jagabandhu Kampa&apos;s leadership, we build digital systems that provide real operational clarity across healthcare, education, retail, and enterprise sectors.&quot;</p>
                 <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
                   <div>
                     <div className="text-sm font-bold text-white">Jagabandhu Kampa</div>
                     <div className="text-xs font-mono text-slate-400">Founder &amp; Director, OHO TECH</div>
                   </div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sky-400 text-xs font-mono">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono">
                     <ShieldCheck className="w-3.5 h-3.5" /> Direct Leadership
                   </div>
                 </div>
