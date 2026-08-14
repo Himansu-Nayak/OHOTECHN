@@ -21,13 +21,13 @@ export function SolutionsSection() {
     >
       {/* 1. Section Header */}
       <div className="max-w-3xl mb-14 text-left">
-        <div className="inline-block text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-4">
+        <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-4">
           COMPLETE SOFTWARE ECOSYSTEM
         </div>
 
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-5">
           65+ Software Solutions.<br />
-          <span className="text-slate-400 font-bold">One Technology Partner.</span>
+          <span className="text-sky-600 font-bold">One Technology Partner.</span>
         </h2>
 
         <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed">

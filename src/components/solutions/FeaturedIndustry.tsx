@@ -26,8 +26,8 @@ export function FeaturedIndustry({ industry }: FeaturedIndustryProps) {
         <div className="lg:col-span-7 flex flex-col justify-center">
           
           {/* Eyebrow Tag */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-teal-300 text-xs font-mono font-bold uppercase tracking-wider mb-5 self-start">
-            <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-sky-300 text-xs font-mono font-bold uppercase tracking-wider mb-5 self-start">
+            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
             INDUSTRY SOLUTIONS
           </div>
 
