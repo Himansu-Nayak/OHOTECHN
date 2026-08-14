@@ -77,19 +77,166 @@ export default function WideStudioPage() {
 
       </section>
 
-      {/* ── 02. INTRODUCTION / POSITIONING STATEMENT ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-16 text-center shadow-sm" id="about-intro">
-        <div className="max-w-4xl mx-auto">
-          <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-3">
-            ABOUT OHO TECH
+      {/* ── 02. INTRODUCTION / ABOUT OHO TECH & STRATEGIC DIRECTION ── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="about-intro">
+        
+        {/* Section Header */}
+        <div className="max-w-4xl mb-12 text-left">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+            02 / ABOUT OHO TECH &amp; STRATEGIC DIRECTION
           </div>
-          <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight leading-snug mb-4">
-            OHO TECH is an enterprise technology studio delivering custom software applications, digital platforms, and customer acquisition strategies.
+          <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-5">
+            Engineering precision meets data-driven growth.
           </h2>
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            We help companies replace manual work with automated software systems, modernize legacy web applications, and build a strong online market presence.
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+            OHO TECH is an enterprise technology studio delivering custom software applications, digital platforms, and customer acquisition strategies tailored to your operational business goals.
           </p>
         </div>
+
+        {/* 4 Strategic Direction & Feature Pillars */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          
+          {/* Pillar 1 */}
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-sky-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Code2 className="w-6 h-6" />
+              </div>
+              <div className="text-[11px] font-mono font-bold text-sky-600 uppercase tracking-wider mb-1">
+                DIRECTION 01
+              </div>
+              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3">
+                Bespoke Software Engineering
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Tailored software applications engineered around exact client operational workflows rather than rigid off-the-shelf templates.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span>Custom Architecture</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span>Workflow Automation</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Pillar 2 */}
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-sky-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div className="text-[11px] font-mono font-bold text-sky-600 uppercase tracking-wider mb-1">
+                DIRECTION 02
+              </div>
+              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3">
+                Web &amp; Mobile Platforms
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                High-performance web applications, customer portals, and native mobile apps designed for daily user productivity.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span>Fluid Responsive UI</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span>Cross-Platform Sync</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Pillar 3 */}
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-amber-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Layers className="w-6 h-6" />
+              </div>
+              <div className="text-[11px] font-mono font-bold text-amber-600 uppercase tracking-wider mb-1">
+                DIRECTION 03
+              </div>
+              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3">
+                Digital Growth Engine
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Data-focused search engine optimization, Google &amp; Meta advertising campaigns, and strategic brand positioning.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Targeted Acquisition</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Conversion Optimization</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Pillar 4 */}
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-sky-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <div className="text-[11px] font-mono font-bold text-sky-600 uppercase tracking-wider mb-1">
+                DIRECTION 04
+              </div>
+              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3">
+                Long-Term Scalability
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Modular software infrastructure and technical support ensuring your digital products scale cleanly as your business expands.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span>Modular Microservices</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span>Continuous Support</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Bottom Directional Bar */}
+        <div className="bg-[#fafafa] border-2 border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-6 text-xs font-mono font-bold text-slate-700">
+            <span className="flex items-center gap-2 text-sky-600">
+              <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+              Goal-Oriented Software
+            </span>
+            <span className="flex items-center gap-2 text-emerald-600">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Clean Code Architecture
+            </span>
+            <span className="flex items-center gap-2 text-amber-600">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              Direct Founder Leadership
+            </span>
+          </div>
+
+          <Link
+            href="/about"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-sky-600 hover:text-sky-700 uppercase tracking-wider group shrink-0"
+          >
+            <span>Learn More About Us</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
       </section>
 
       {/* ── 03. CORE OFFERINGS (CORE SERVICES) ── */}
