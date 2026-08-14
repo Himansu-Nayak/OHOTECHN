@@ -10,13 +10,17 @@ import {
   Cpu,
   CheckCircle2,
   ArrowRight,
+  Play,
+  Pause,
+  Tv,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function HeroLaunchBackground() {
   const [activeSolution, setActiveSolution] = React.useState<number>(0);
+  const [isPlaying, setIsPlaying] = React.useState<boolean>(true);
 
-  const solutions = [
+  const solutions = React.useMemo(() => [
     {
       id: 'custom-software',
       title: 'Custom Software Development',
@@ -57,10 +61,21 @@ export function HeroLaunchBackground() {
       description: 'High-speed retail counter billing, multi-store stock sync, and barcode inventory control.',
       features: ['Fast GST Counter Billing', 'Multi-Store Inventory Sync', 'Barcode Scanner Integration'],
     },
-  ];
+  ], []);
+
+  // Automatic Video Loop: Cycles activeSolution every 3.5 seconds continuously
+  React.useEffect(() => {
+    if (!isPlaying) return;
+
+    const interval = setInterval(() => {
+      setActiveSolution((prev) => (prev + 1) % solutions.length);
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isPlaying, solutions.length]);
 
   return (
-    <div className="w-full relative rounded-3xl sm:rounded-[36px] overflow-hidden border-2 border-slate-300 bg-[#0c0d0e] shadow-2xl group selection:bg-sky-500 selection:text-white">
+    <div className="w-full relative rounded-3xl sm:rounded-[36px] overflow-hidden border-2 border-slate-300 bg-[#0c0d0e] shadow-2xl group selection:bg-emerald-500 selection:text-white">
       
       {/* ── 1. LUXURY IPAD SHOWCASE PHOTO DISPLAYING OHO TECH WEBSITE UI ── */}
       <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[600px] overflow-hidden">
@@ -73,29 +88,41 @@ export function HeroLaunchBackground() {
           className="object-cover object-center brightness-[0.95] contrast-[1.03] group-hover:scale-[1.015] transition-transform duration-700 ease-out"
         />
         
-        {/* Subtle Dark Gradient Foot Overlay */}
+        {/* Ambient Video Glow Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d0e] via-[#0c0d0e]/40 to-transparent pointer-events-none" />
       </div>
 
-      {/* ── 2. TOP HEADER BADGE ── */}
+      {/* ── 2. TOP HEADER BADGE WITH LIVE VIDEO STREAM CONTROLS ── */}
       <div className="absolute top-4 sm:top-6 inset-x-4 sm:inset-x-6 z-20 flex flex-wrap items-center justify-between gap-3">
         
         {/* Brand Badge */}
         <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white font-mono text-xs font-bold shadow-lg">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shadow-sm shadow-emerald-400/50" />
           <span>OHO TECH Platform Solutions</span>
           <span className="text-slate-400 font-normal border-l border-white/20 pl-2.5 hidden sm:inline">Software • Web • Mobile • Growth</span>
         </div>
 
-        {/* Live Indicator */}
-        <div className="hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/80 backdrop-blur-xl border border-white/15 text-slate-300 font-mono text-[11px]">
-          <span>Enterprise Studio</span>
-          <span className="text-emerald-400 font-bold">• Active Production</span>
+        {/* Live Auto-Play Stream Badge & Play/Pause Controls */}
+        <div className="flex items-center gap-2">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-emerald-500/40 text-emerald-400 font-mono text-[11px] font-bold shadow-lg">
+            <Tv className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+            <span className="hidden sm:inline">🔴 LIVE DEMO STREAM</span>
+            <span>• AUTOPLAYING</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsPlaying(!isPlaying)}
+            className="w-8 h-8 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white hover:text-emerald-400 flex items-center justify-center transition-colors shadow-lg"
+            title={isPlaying ? 'Pause Demo Stream' : 'Play Demo Stream'}
+          >
+            {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
+          </button>
         </div>
 
       </div>
 
-      {/* ── 3. BOTTOM OVERLAY SHOWCASE: OHO TECH SOLUTIONS CARDS ── */}
+      {/* ── 3. BOTTOM OVERLAY SHOWCASE: LIVE AUTO-PLAYING SOLUTIONS CARDS ── */}
       <div className="absolute bottom-4 sm:bottom-6 inset-x-4 sm:inset-x-6 z-20">
         
         {/* Solutions Grid */}
@@ -107,14 +134,22 @@ export function HeroLaunchBackground() {
             return (
               <div
                 key={sol.id}
-                onClick={() => setActiveSolution(index)}
+                onClick={() => {
+                  setActiveSolution(index);
+                  setIsPlaying(false);
+                }}
                 className={cn(
-                  "p-4 sm:p-5 rounded-2xl transition-all duration-300 cursor-pointer backdrop-blur-2xl border flex flex-col justify-between group/card",
+                  "p-4 sm:p-5 rounded-2xl transition-all duration-500 cursor-pointer backdrop-blur-2xl border flex flex-col justify-between group/card relative overflow-hidden",
                   isActive
-                    ? "bg-[#0c0d0e]/95 border-emerald-400 shadow-2xl ring-2 ring-emerald-400/30 scale-[1.02]"
+                    ? "bg-[#0c0d0e]/95 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)] ring-2 ring-emerald-400/40 scale-[1.02]"
                     : "bg-[#0c0d0e]/80 hover:bg-[#0c0d0e]/95 border-white/15 hover:border-white/30"
                 )}
               >
+                {/* Live Video Animated Progress Line on Active Card */}
+                {isActive && isPlaying && (
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-emerald-400 animate-[progress_3.5s_linear_infinite]" />
+                )}
+
                 <div>
                   {/* Card Header Badge */}
                   <div className="flex items-center justify-between mb-2">
@@ -126,7 +161,7 @@ export function HeroLaunchBackground() {
                     </span>
                     <div className={cn(
                       "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
-                      isActive ? "bg-white text-[#0c0d0e]" : "bg-white/10 text-white"
+                      isActive ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/50" : "bg-white/10 text-white"
                     )}>
                       <Icon className="w-4 h-4" />
                     </div>
@@ -160,15 +195,15 @@ export function HeroLaunchBackground() {
         <div className="bg-[#0c0d0e]/90 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
           <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono font-semibold text-slate-300">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Bespoke Software &amp; Mobile Apps
             </span>
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Hospital, Campus &amp; Retail Systems
             </span>
             <span className="flex items-center gap-2 hidden lg:flex">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
               Data-Driven Growth Strategies
             </span>
           </div>
