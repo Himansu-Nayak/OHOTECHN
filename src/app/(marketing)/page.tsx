@@ -18,13 +18,7 @@ import { ArchitectureDiagram } from '@/components/home/ArchitectureDiagram';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
 import { SolutionsSection } from '@/components/solutions/SolutionsSection';
 import { ServicesSection } from '@/components/services/ServicesSection';
-import { StoryFlowConnector } from '@/components/story/StoryFlowConnector';
-import { SoftwareStorySection } from '@/components/story/SoftwareStorySection';
-import { WebStorySection } from '@/components/story/WebStorySection';
-import { MobileStorySection } from '@/components/story/MobileStorySection';
-import { ERPStorySection } from '@/components/story/ERPStorySection';
-import { DesignIntegrationStorySection } from '@/components/story/DesignIntegrationStorySection';
-import { DigitalGrowthStorySection } from '@/components/story/DigitalGrowthStorySection';
+import { ServiceStoryTimeline } from '@/components/story/ServiceStoryTimeline';
 import { ProcessSection } from '@/components/home/ProcessSection';
 import { WhyChooseSection } from '@/components/home/WhyChooseSection';
 import { PartnerSection } from '@/components/home/PartnerSection';
@@ -366,24 +360,8 @@ export default function WideStudioPage() {
 
       </section>
 
-      {/* ── 06. SERVICE STORY SECTIONS (WITH SEQUENTIAL FLOW CONNECTORS) ── */}
-      <SoftwareStorySection />
-      <StoryFlowConnector nextTargetId="web-story" />
-
-      <WebStorySection />
-      <StoryFlowConnector nextTargetId="mobile-story" />
-
-      <MobileStorySection />
-      <StoryFlowConnector nextTargetId="erp-story" />
-
-      <ERPStorySection />
-      <StoryFlowConnector nextTargetId="design-integration-story" />
-
-      <DesignIntegrationStorySection />
-      <StoryFlowConnector nextTargetId="growth-story" />
-
-      <DigitalGrowthStorySection />
-      <StoryFlowConnector nextTargetId="how-we-work" />
+      {/* ── 06. SERVICE CAPABILITIES ROADMAP TIMELINE ── */}
+      <ServiceStoryTimeline />
 
       {/* ── 07. HOW WE WORK (5-STEP PROCESS) ── */}
       <ProcessSection />
