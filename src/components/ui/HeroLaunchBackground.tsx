@@ -21,6 +21,7 @@ export function HeroLaunchBackground() {
       id: 'custom-software',
       title: 'Custom Software Development',
       tag: 'BESPOKE SOFTWARE',
+      emoji: '🛠️',
       icon: Cpu,
       accent: 'text-sky-400 bg-sky-500/10 border-sky-500/20',
       description: 'Tailored enterprise software, automated operational workflows, and API integrations.',
@@ -28,17 +29,19 @@ export function HeroLaunchBackground() {
     },
     {
       id: 'healthcare',
-      title: 'Hospital & Healthcare EMR',
+      title: 'Hospital & IVF Healthcare EMR',
       tag: 'HEALTHCARE ERP',
+      emoji: '🏥',
       icon: Stethoscope,
       accent: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-      description: 'Centralized OPD/IPD management, EMR patient records, pathology labs & pharmacy billing.',
-      features: ['EMR Medical Records', 'Pathology & Lab Integration', 'GST Pharmacy Billing'],
+      description: 'OPD/IPD management, IVF fertility cycle tracking, pathology labs & pharmacy billing.',
+      features: ['IVF Cycle & EMR Records', 'Pathology & Lab Integration', 'GST Pharmacy Billing'],
     },
     {
       id: 'education',
       title: 'Education & Campus ERP',
       tag: 'EDUCATION CLOUD',
+      emoji: '🎓',
       icon: GraduationCap,
       accent: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
       description: 'Multi-campus university ERP, student admissions, online fee collection & exams.',
@@ -48,6 +51,7 @@ export function HeroLaunchBackground() {
       id: 'retail',
       title: 'Retail POS & Inventory Engine',
       tag: 'RETAIL COMMERCE',
+      emoji: '🛒',
       icon: ShoppingBag,
       accent: 'text-sky-400 bg-sky-500/10 border-sky-500/20',
       description: 'High-speed retail counter billing, multi-store stock sync, and barcode inventory control.',
@@ -129,8 +133,9 @@ export function HeroLaunchBackground() {
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="text-sm sm:text-base font-extrabold text-white mb-1.5 leading-snug group-hover/card:text-sky-300 transition-colors">
-                    {sol.title}
+                  <h3 className="text-sm sm:text-base font-extrabold text-white mb-1.5 leading-snug group-hover/card:text-sky-300 transition-colors flex items-center gap-1.5">
+                    <span>{sol.emoji}</span>
+                    <span>{sol.title}</span>
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed mb-3 line-clamp-2">
                     {sol.description}

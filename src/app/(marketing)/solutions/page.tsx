@@ -10,6 +10,21 @@ function DynamicIcon({ name, ...props }: { name: string } & Icons.LucideProps) {
   return <Icon {...props} />;
 }
 
+const industryEmojis: Record<string, string> = {
+  healthcare: '🏥',
+  education: '🎓',
+  'hotel-hospitality': '🏨',
+  'retail-ecommerce': '🛒',
+  manufacturing: '🏭',
+  'business-enterprise': '🏢',
+  finance: '🏦',
+  logistics: '🚛',
+  fitness: '🏋️',
+  'real-estate': '🏢',
+  food: '🍔',
+  automotive: '🚗',
+};
+
 export default function SolutionsHubPage() {
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
@@ -20,7 +35,7 @@ export default function SolutionsHubPage() {
           <div className="max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
               <Sparkles className="w-3.5 h-3.5 text-sky-600" />
-              SOLUTIONS BY INDUSTRY
+              SOLUTIONS BY INDUSTRY ⚡
             </div>
             
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-[1.08]" id="solutions-hero-heading">
@@ -61,8 +76,8 @@ export default function SolutionsHubPage() {
                 <div>
                   {/* Card Header & Icon */}
                   <div className="flex items-center justify-between mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all duration-300">
-                      <DynamicIcon name={industry.iconName} className="w-6 h-6" />
+                    <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-all duration-300">
+                      {industryEmojis[industry.slug] || '⚡'}
                     </div>
                     <span className="text-[11px] font-mono font-bold text-sky-700 bg-sky-50 border border-sky-200 px-3 py-1 rounded-full">
                       {industry.products.length} {industry.products.length === 1 ? 'Solution' : 'Solutions'}
@@ -70,8 +85,9 @@ export default function SolutionsHubPage() {
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors">
-                    {industry.name}
+                  <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-3 group-hover:text-sky-600 transition-colors flex items-center gap-2">
+                    <span>{industryEmojis[industry.slug] || '⚡'}</span>
+                    <span>{industry.name}</span>
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed mb-6">
                     {industry.description}
