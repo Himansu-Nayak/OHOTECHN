@@ -64,9 +64,31 @@ export default function BookDemoPage() {
                 Book a Live Product Demo.
               </h1>
               
-              <p className="text-sm sm:text-base text-slate-600 mb-8 leading-relaxed">
-                Schedule a live walkthrough of our software platforms (Hospital EMR, Campus ERP, Retail POS, NBFC Systems) with a technical specialist.
+              <p className="text-sm sm:text-base text-slate-600 mb-6 leading-relaxed">
+                Schedule a live walkthrough of our software platforms with a technical specialist, or test drive our 28 live product environments right away.
               </p>
+
+              {/* 28 Live Demos Fast Banner */}
+              <div className="mb-8 p-6 rounded-3xl bg-[#0d0d0e] text-white border border-black shadow-lg relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest block mb-1">
+                    INSTANT ACCESS (NO WAITING)
+                  </span>
+                  <h4 className="text-base font-extrabold text-white tracking-tight">
+                    Want to test our 28 Live Software Products now?
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Direct admin &amp; user login credentials available instantly.
+                  </p>
+                </div>
+                <Link
+                  href="/products"
+                  className="px-5 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md shrink-0 text-center inline-flex items-center gap-2"
+                >
+                  <span>Explore 28 Live Demos</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
 
               {submitStatus === 'success' && (
                 <div className="mb-8 p-4 rounded-2xl bg-emerald-50 text-emerald-800 border-2 border-emerald-200 text-xs font-mono font-bold">
