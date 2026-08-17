@@ -83,10 +83,10 @@ export default function BookDemoPage() {
                 </div>
                 <Link
                   href="/products"
-                  className="px-5 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md shrink-0 text-center inline-flex items-center gap-2"
+                  className="w-full sm:w-auto px-5 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md shrink-0 text-center inline-flex items-center justify-center gap-2"
                 >
                   <span>Explore 28 Live Demos</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                 </Link>
               </div>
 
