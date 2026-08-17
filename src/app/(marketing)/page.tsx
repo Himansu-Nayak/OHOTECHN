@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { ArchitectureDiagram } from '@/components/home/ArchitectureDiagram';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
+import { StrategicPillarsSection } from '@/components/home/StrategicPillarsSection';
 import { SolutionsSection } from '@/components/solutions/SolutionsSection';
 import { ServicesSection } from '@/components/services/ServicesSection';
 import { ServiceStoryTimeline } from '@/components/story/ServiceStoryTimeline';
@@ -93,126 +94,8 @@ export default function WideStudioPage() {
         {/* High Visibility Architecture Diagram */}
         <ArchitectureDiagram />
 
-        {/* 4 Strategic Direction & Feature Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          
-          {/* Pillar 1 */}
-          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
-                🛠️
-              </div>
-              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
-                DIRECTION 01
-              </div>
-              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
-                <span>🛠️</span>
-                <span>Bespoke Software Engineering</span>
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed mb-6">
-                Tailored software applications engineered around exact client operational workflows rather than rigid off-the-shelf templates.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-slate-200/80 space-y-2">
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Custom Architecture</span>
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Workflow Automation</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Pillar 2 */}
-          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
-                🌐
-              </div>
-              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
-                DIRECTION 02
-              </div>
-              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
-                <span>🌐</span>
-                <span>Web &amp; Mobile Platforms</span>
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed mb-6">
-                High-performance web applications, customer portals, and native mobile apps designed for daily user productivity.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-slate-200/80 space-y-2">
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Fluid Responsive UI</span>
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Cross-Platform Sync</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Pillar 3 */}
-          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-amber-400 transition-all flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
-                📈
-              </div>
-              <div className="text-[11px] font-mono font-bold text-amber-600 uppercase tracking-wider mb-1">
-                DIRECTION 03
-              </div>
-              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
-                <span>📈</span>
-                <span>Digital Growth Engine</span>
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed mb-6">
-                Data-focused search engine optimization, Google &amp; Meta advertising campaigns, and strategic brand positioning.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-slate-200/80 space-y-2">
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>Targeted Acquisition</span>
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>Conversion Optimization</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Pillar 4 */}
-          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
-                🛡️
-              </div>
-              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
-                DIRECTION 04
-              </div>
-              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
-                <span>🛡️</span>
-                <span>Long-Term Scalability</span>
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed mb-6">
-                Modular software infrastructure and technical support ensuring your digital products scale cleanly as your business expands.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-slate-200/80 space-y-2">
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Modular Microservices</span>
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Continuous Support</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
+        {/* Interactive Scrollable Strategic Direction Pillars */}
+        <StrategicPillarsSection />
 
         {/* Bottom Directional Bar */}
         <div className="bg-[#fafafa] border-2 border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
