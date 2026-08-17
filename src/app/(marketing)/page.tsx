@@ -374,56 +374,106 @@ export default function WideStudioPage() {
 
           </div>
 
-          {/* ── CORE ENGINEERING TEAM MEMBER: HIMANSU NAYAK ── */}
-          <div className="mt-12 pt-12 border-t border-white/10">
-            <div className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest mb-6">
-              CORE ENGINEERING LEADERSHIP &amp; DEVELOPMENT TEAM
+          {/* ── FULL 2-COLUMN EXPANDED SPOTLIGHT: HIMANSU NAYAK (FULL-STACK DEVELOPER) ── */}
+          <div className="mt-16 pt-16 border-t border-white/10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-xs font-bold uppercase tracking-wider mb-6">
+              <User className="w-3.5 h-3.5" />
+              Core Engineering Team Spotlight
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Himansu Nayak Card */}
-              <div className="bg-[#141416] border border-white/10 hover:border-emerald-500/40 rounded-3xl p-7 transition-all duration-300 flex flex-col justify-between group">
-                <div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              
+              {/* Left Column: Profile Card */}
+              <div className="lg:col-span-5">
+                <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 shadow-xl relative overflow-hidden group hover:border-emerald-500/40 transition-all text-center">
+                  
+                  {/* Top Status Badges */}
                   <div className="flex items-center justify-between mb-6">
                     <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest">
                       Full-Stack Developer
                     </span>
-                    <span className="text-[11px] font-mono text-slate-400 font-semibold">
-                      MCA Graduate
-                    </span>
-                  </div>
-
-                  {/* Profile Picture */}
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-amber-400 p-1 mx-auto mb-5 shadow-xl group-hover:scale-105 transition-transform duration-300">
-                    <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
-                      <NextImage
-                        src="/himansu_nayak.png"
-                        alt="Himansu Nayak - Full-Stack Developer OHO TECH"
-                        width={200}
-                        height={200}
-                        className="w-full h-full object-cover object-top"
-                      />
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono font-semibold">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>MCA Graduate</span>
                     </div>
                   </div>
 
-                  <div className="text-center mb-4">
-                    <h3 className="text-xl font-extrabold text-white tracking-tight">
+                  {/* Avatar Portrait Block */}
+                  <div className="relative mb-6 text-center flex flex-col items-center">
+                    <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-amber-400 p-1 shadow-2xl relative group-hover:scale-105 transition-transform duration-300">
+                      <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
+                        <NextImage
+                          src="/himansu_nayak.png"
+                          alt="Himansu Nayak - Full-Stack Developer OHO TECH"
+                          width={250}
+                          height={250}
+                          className="w-full h-full object-cover object-top"
+                          priority
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info Block */}
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                       Himansu Nayak
                     </h3>
-                    <p className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
-                      Full-Stack Developer
+                    <p className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mt-1">
+                      Full-Stack Developer (MCA)
                     </p>
-                    <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
-                      Completed MCA (Master of Computer Applications). Specializing in full-stack web application development, responsive UI engineering, and high-performance API integration.
+                    <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                      Architecting Scalable Web Applications, API Engines &amp; Responsive Digital Products
                     </p>
                   </div>
-                </div>
 
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
-                  <span>OHO TECH Engineering</span>
-                  <span className="text-emerald-400 font-semibold">Full-Stack Core</span>
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-center gap-3">
+                    <Link
+                      href="/contact"
+                      className="flex-1 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider transition-all shadow-md"
+                    >
+                      Connect Developer
+                    </Link>
+                    <Link
+                      href="/services"
+                      className="py-2.5 px-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-mono text-xs text-center font-bold border border-white/10 transition-all"
+                    >
+                      View Stack
+                    </Link>
+                  </div>
+
                 </div>
               </div>
+
+              {/* Right Column: Detailed Narrative & Engineering Highlights */}
+              <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+                <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 sm:p-10 shadow-xl relative">
+                  <Quote className="w-10 h-10 text-emerald-500/30 mb-4" />
+                  <p className="text-lg sm:text-xl font-medium text-slate-200 leading-relaxed italic mb-6">
+                    &quot;Building clean, scalable full-stack applications with exceptional user experiences and robust backend performance across OHO TECH products.&quot;
+                  </p>
+                  
+                  <div className="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
+                    <p>
+                      <strong className="text-white font-semibold">Himansu Nayak</strong> holds a <strong className="text-emerald-300 font-semibold">Master of Computer Applications (MCA)</strong> degree and serves as a core Full-Stack Developer at OHO TECH, leading end-to-end web product development.
+                    </p>
+                    <p>
+                      He specializes in modern full-stack technologies including React, Next.js, TypeScript, Tailwind CSS, Node.js, and database engineering. Himansu drives the design and implementation of responsive user interfaces, high-performance customer portals, and enterprise software solutions.
+                    </p>
+                  </div>
+
+                  <div className="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-300">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400">
+                      <ShieldCheck className="w-3.5 h-3.5" /> MCA Degree Qualified
+                    </div>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400">
+                      <Code2 className="w-3.5 h-3.5" /> Full-Stack Core Lead
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
