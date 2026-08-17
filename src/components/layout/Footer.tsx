@@ -15,15 +15,19 @@ export default function Footer() {
           
           {/* Column 1: OHO TECH Brand & Social Links */}
           <div className="lg:col-span-1 space-y-4">
-            <Link href="/" className="inline-block">
-              <NextImage
-                src="/OHO_TECH_LOGO.png"
-                alt="OHO TECH Logo"
-                width={140}
-                height={40}
-                style={{ width: 'auto', height: 'auto' }}
-                className="h-10 w-auto object-contain brightness-0 invert"
-              />
+            <Link href="/" className="inline-block group mb-2">
+              <div className="bg-white px-4 py-2.5 rounded-2xl shadow-md border border-white/20 inline-flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                <NextImage
+                  src="/OHO_TECH_LOGO.png"
+                  alt="OHO TECH Logo"
+                  width={200}
+                  height={60}
+                  priority
+                  quality={100}
+                  unoptimized
+                  className="h-10 sm:h-12 w-auto object-contain"
+                />
+              </div>
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed max-w-xs">
               {siteConfig.description}
