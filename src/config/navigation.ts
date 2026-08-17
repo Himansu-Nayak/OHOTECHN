@@ -4,42 +4,56 @@ export interface NavLink {
   description?: string;
 }
 
-export const mainNav: NavLink[] = [
-  { name: 'Solutions', href: '/solutions' },
-  { name: 'Services', href: '/services' },
-  { name: 'Industries', href: '/solutions#industries' },
-  { name: 'About', href: '/about' },
-  { name: 'Careers', href: '/careers' },
-];
+export interface NavGroup {
+  name: string;
+  href: string;
+  children?: NavLink[];
+}
 
 export const solutionsNav: NavLink[] = [
-  { name: 'Enterprise Technology', href: '/solutions/business-enterprise', description: 'Digital systems designed for operational efficiency.' },
-  { name: 'Critical Infrastructure', href: '/solutions/logistics-transport', description: 'Reliable systems built for long-term growth.' },
-  { name: 'Renewable Energy & Utilities', href: '/solutions/manufacturing', description: 'Smarter energy solutions for a sustainable future.' },
-  { name: 'Healthcare & EMR Systems', href: '/solutions/healthcare', description: 'Integrated clinical software and patient systems.' },
-  { name: 'Education & Institutional ERP', href: '/solutions/education', description: 'Campus automation and learning platforms.' },
-  { name: 'Financial Infrastructure', href: '/solutions/finance-nbfc', description: 'Core financial workflows and secure transaction processing.' },
+  { name: 'Education & LMS', href: '/solutions/education', description: 'SchoolCloud ERP, online exams & fee collection.' },
+  { name: 'Healthcare & EMR', href: '/solutions/healthcare', description: 'HealthOS hospital management & patient billing.' },
+  { name: 'Hotel & Hospitality', href: '/solutions/hotel-hospitality', description: 'Property management, room booking & POS.' },
+  { name: 'Retail & E-Commerce', href: '/solutions/retail-ecommerce', description: 'RetailPOS billing, stock sync & online stores.' },
+  { name: 'Manufacturing', href: '/solutions/manufacturing', description: 'Production planning, inventory & supplier tracking.' },
+  { name: 'Business Enterprise', href: '/solutions/business-enterprise', description: 'Custom ERP, HRMS payroll & workflow tools.' },
+  { name: 'Real Estate', href: '/solutions/real-estate', description: 'Property CRM, lead tracking & tenant management.' },
+  { name: 'Finance & NBFC', href: '/solutions/finance-nbfc', description: 'FinCore microfinance, loan origination & EMI sync.' },
+  { name: 'Logistics & Transport', href: '/solutions/logistics-transport', description: 'Fleet management, dispatch & consignment tracking.' },
 ];
 
 export const techServicesNav: NavLink[] = [
-  { name: 'Software Engineering', href: '/services/software-development', description: 'Custom enterprise applications engineered for scale.' },
-  { name: 'Cloud & Infrastructure', href: '/services/erp-solutions', description: 'Resilient digital architecture and ERP deployment.' },
-  { name: 'Web Application Platforms', href: '/services/website-development', description: 'High-performance web applications and portals.' },
-  { name: 'Mobile Systems (iOS & Android)', href: '/services/android-app-development', description: 'Native and cross-platform mobile solutions.' },
+  { name: 'Software Development', href: '/services/software-development', description: 'Bespoke software engineered for business operations.' },
+  { name: 'Website Development', href: '/services/website-development', description: 'High-performance corporate sites & web applications.' },
+  { name: 'Android App Development', href: '/services/android-app-development', description: 'Native Kotlin mobile applications.' },
+  { name: 'iOS App Development', href: '/services/ios-app-development', description: 'Native iOS applications for Apple ecosystem.' },
+  { name: 'Custom Software', href: '/services/custom-software-development', description: 'Tailored software tools built for your workflows.' },
+  { name: 'ERP Solutions', href: '/services/erp-solutions', description: 'Centralized enterprise operations platforms.' },
+  { name: 'UI/UX Design', href: '/services/ui-ux-design', description: 'User-centered interface design & design systems.' },
+  { name: 'API Integration', href: '/services/api-integration', description: 'Connecting software tools & payment gateways.' },
 ];
 
 export const growthServicesNav: NavLink[] = [
-  { name: 'Digital Strategy & Integration', href: '/services/api-integration', description: 'Connecting complex systems and enterprise workflows.' },
-  { name: 'UI/UX Design Systems', href: '/services/ui-ux-design', description: 'Human-centered interfaces built for efficiency.' },
-  { name: 'Data & Growth Systems', href: '/services/seo', description: 'Performance optimization and analytical clarity.' },
+  { name: 'SEO', href: '/services/seo', description: 'Organic search engine ranking & visibility.' },
+  { name: 'Social Media Marketing', href: '/services/social-media-marketing', description: 'Strategic social content & community reach.' },
+  { name: 'Google Ads', href: '/services/google-ads', description: 'Targeted search & display lead campaigns.' },
+  { name: 'Meta Advertising', href: '/services/facebook-meta-ads', description: 'Facebook & Instagram ad campaigns.' },
+  { name: 'Branding & Design', href: '/services/branding-graphic-design', description: 'Brand identity & visual marketing collateral.' },
+  { name: 'WhatsApp Marketing', href: '/services/whatsapp-marketing', description: 'Broadcast messaging & customer updates.' },
+  { name: 'Email Marketing', href: '/services/email-marketing', description: 'Segmented email campaigns & lead nurture.' },
+];
+
+export const resourcesNav: NavLink[] = [
+  { name: 'Blog', href: '/resources/blog', description: 'Articles on software engineering & growth.' },
+  { name: 'Case Studies', href: '/case-studies', description: 'Real-world software implementation summaries.' },
+  { name: 'FAQ', href: '/resources/faq', description: 'Frequently asked questions about our process.' },
 ];
 
 export const companyNav: NavLink[] = [
-  { name: 'About OHO TECHN', href: '/about', description: 'Our engineering principles and leadership vision.' },
-  { name: 'Leadership & Team', href: '/about#leadership', description: 'Meet the people driving technical excellence.' },
-  { name: 'Careers', href: '/careers', description: 'Join our team building modern infrastructure.' },
-  { name: 'Partner Program', href: '/partner', description: 'Strategic alliances for technology and implementation.' },
-  { name: 'Contact Us', href: '/contact', description: 'Get in touch with our solutions team.' },
+  { name: 'About Us', href: '/about', description: 'Our mission, leadership, and engineering principles.' },
+  { name: 'Careers', href: '/careers', description: 'Join our technology & growth engineering team.' },
+  { name: 'Partner With Us', href: '/partner', description: 'Channel partnerships for agencies & developers.' },
+  { name: 'Contact', href: '/contact', description: 'Get in touch with our team for project inquiries.' },
 ];
 
 export const legalNav: NavLink[] = [
@@ -49,4 +63,3 @@ export const legalNav: NavLink[] = [
   { name: 'Cookie Policy', href: '/cookie-policy' },
   { name: 'Disclaimer', href: '/disclaimer' },
 ];
-
