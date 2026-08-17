@@ -92,9 +92,9 @@ export default function SolutionsHubPage() {
 
                 <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
                   <div className="text-2xl mb-2">🎓</div>
-                  <h4 className="text-base font-bold text-white mb-1">Vocational Skill ERP</h4>
+                  <h4 className="text-base font-bold text-white mb-1">Vocational Skill &amp; e-Governance ERP</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    e-Learning, Digital Assessment, Skill Development continuum, and e-Governance portals.
+                    Transformational digital solutions for the entire continuum of Vocational Education &amp; Skill Development—e-Learning, Digital Assessment, and e-Governance platforms enhancing employability, accessibility &amp; inclusion.
                   </p>
                 </div>
               </div>

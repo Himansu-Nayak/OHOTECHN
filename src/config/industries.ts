@@ -18,7 +18,7 @@ export const industries: Industry[] = [
     slug: 'education',
     name: 'Education & Vocational Skill Continuum',
     description:
-      'Transformational digital solutions for the entire continuum of Vocational Education, Skill Development, e-Learning, Digital Assessment, and e-Governance.',
+      'We enable the creation of a better future across the globe by providing transformational and innovative digital solutions for the entire education Continuum of Vocational Education and Skill Development. We address key global challenges like Accessibility & Inclusion, Increasing Employability, Enhancing Learning Experience, and Literacy through e-Learning, Digital Assessment, and e-Governance.',
     iconName: 'GraduationCap',
     color: 'primary',
     products: [
