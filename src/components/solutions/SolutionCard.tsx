@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { Product } from '@/config/industries';
-import { ArrowRight, Box } from 'lucide-react';
+import { ArrowRight, Cpu, Layers } from 'lucide-react';
 
 interface SolutionCardProps {
   product: Product;
@@ -14,34 +14,38 @@ export function SolutionCard({ product, industrySlug }: SolutionCardProps) {
   return (
     <Link
       href={`/solutions/${industrySlug}`}
-      className="group block bg-white border border-slate-200/80 rounded-2xl p-7 hover:border-slate-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+      className="group relative rounded-3xl bg-gradient-to-b from-[#131b2e] via-[#0d1424] to-[#090d18] border border-slate-800/90 text-white p-7 sm:p-8 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xl hover:border-cyan-500/40 hover:shadow-2xl"
     >
+      {/* Top Subtle Cyan Glow Line */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500/80 via-cyan-400 to-cyan-500/80 opacity-80 group-hover:opacity-100 transition-opacity" />
+
       <div>
-        {/* Top Row: Icon Badge & Optional Platform Tag */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-[#0d0d0e] group-hover:text-white text-[#0d0d0e] flex items-center justify-center transition-colors duration-200">
-            <Box className="w-5 h-5" />
+        {/* Top Row: Icon Badge & Turnkey Module Tag */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="w-12 h-12 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-400 group-hover:text-slate-950 flex items-center justify-center transition-all duration-300 shadow-md">
+            <Cpu className="w-6 h-6 stroke-[2]" />
           </div>
-          <span className="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60 group-hover:border-slate-300 transition-colors">
+
+          <span className="text-[11px] font-mono font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider">
             Turnkey Module
           </span>
         </div>
 
         {/* Product Name */}
-        <h4 className="text-lg font-bold text-[#0d0d0e] mb-2 group-hover:text-teal-600 transition-colors duration-200">
+        <h4 className="text-xl font-bold text-white mb-3 tracking-tight group-hover:text-white transition-colors duration-200">
           {product.name}
         </h4>
 
         {/* Short Description */}
-        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2 mb-6">
+        <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 mb-8 font-normal">
           {product.shortDescription}
         </p>
       </div>
 
       {/* Action Footer */}
-      <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700 group-hover:text-[#0d0d0e] transition-colors">
-        <span>Explore Solution</span>
-        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-teal-600 group-hover:translate-x-1 transition-all duration-200" />
+      <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono font-bold text-slate-400 group-hover:text-white transition-colors">
+        <span>EXPLORE SOLUTION</span>
+        <ArrowRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-1 transition-all duration-200" />
       </div>
     </Link>
   );

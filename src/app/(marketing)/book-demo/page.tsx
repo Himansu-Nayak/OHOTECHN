@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Sparkles, CheckCircle2 } from 'lucide-react';
 
 const industriesList = [
   'Healthcare & EMR', 'Education & Campus', 'Retail & POS', 'Financial & NBFC',
@@ -42,21 +41,21 @@ export default function BookDemoPage() {
     }, 1000);
   };
 
-  const inputClass = 'w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors';
+  const inputClass = 'w-full px-4 py-3.5 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-sm font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors min-h-[48px]';
   const labelClass = 'block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2';
 
   return (
-    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
+    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-24 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
       <main className="max-w-[1536px] w-full mx-auto" id="book-demo-main">
         
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="demo-section">
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-14 lg:p-20 shadow-sm" id="demo-section">
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             
             {/* Form Column */}
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
-                <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
                 INTERACTIVE DEMO SESSION
               </div>
               
@@ -77,29 +76,29 @@ export default function BookDemoPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="demo-name" className={labelClass}>Full Name</label>
-                    <input type="text" name="name" id="demo-name" value={formData.name} onChange={handleChange} className={inputClass} required />
+                    <label htmlFor="demo-name" className={labelClass}>Full Name *</label>
+                    <input type="text" name="name" id="demo-name" value={formData.name} onChange={handleChange} className={inputClass} placeholder="Jagabandhu Kampa" required />
                   </div>
                   <div>
-                    <label htmlFor="demo-email" className={labelClass}>Work Email</label>
-                    <input type="email" name="email" id="demo-email" value={formData.email} onChange={handleChange} className={inputClass} required />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="demo-phone" className={labelClass}>Phone Number</label>
-                    <input type="tel" name="phone" id="demo-phone" value={formData.phone} onChange={handleChange} className={inputClass} required />
-                  </div>
-                  <div>
-                    <label htmlFor="demo-company" className={labelClass}>Company Name</label>
-                    <input type="text" name="company" id="demo-company" value={formData.company} onChange={handleChange} className={inputClass} required />
+                    <label htmlFor="demo-email" className={labelClass}>Work Email *</label>
+                    <input type="email" name="email" id="demo-email" value={formData.email} onChange={handleChange} className={inputClass} placeholder="name@company.com" required />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="demo-industry" className={labelClass}>Industry Sector</label>
+                    <label htmlFor="demo-phone" className={labelClass}>Phone Number *</label>
+                    <input type="tel" name="phone" id="demo-phone" value={formData.phone} onChange={handleChange} className={inputClass} placeholder="+91 98765 43210" required />
+                  </div>
+                  <div>
+                    <label htmlFor="demo-company" className={labelClass}>Company Name *</label>
+                    <input type="text" name="company" id="demo-company" value={formData.company} onChange={handleChange} className={inputClass} placeholder="Company Ltd" required />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="demo-industry" className={labelClass}>Industry Sector *</label>
                     <select name="industry" id="demo-industry" value={formData.industry} onChange={handleChange} className={inputClass} required>
                       <option value="" disabled>Select sector</option>
                       {industriesList.map(ind => (
@@ -108,18 +107,18 @@ export default function BookDemoPage() {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="demo-product" className={labelClass}>Product Interest</label>
+                    <label htmlFor="demo-product" className={labelClass}>Product Interest *</label>
                     <input type="text" name="productInterest" id="demo-product" value={formData.productInterest} onChange={handleChange} className={inputClass} placeholder="e.g. Hospital EMR, POS, ERP" required />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="demo-date" className={labelClass}>Preferred Date</label>
+                    <label htmlFor="demo-date" className={labelClass}>Preferred Date *</label>
                     <input type="date" name="preferredDate" id="demo-date" value={formData.preferredDate} onChange={handleChange} className={inputClass} required />
                   </div>
                   <div>
-                    <label htmlFor="demo-time" className={labelClass}>Preferred Time Slot</label>
+                    <label htmlFor="demo-time" className={labelClass}>Preferred Time Slot *</label>
                     <input type="time" name="preferredTime" id="demo-time" value={formData.preferredTime} onChange={handleChange} className={inputClass} required />
                   </div>
                 </div>
@@ -128,7 +127,7 @@ export default function BookDemoPage() {
                   type="submit"
                   id="demo-submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg disabled:opacity-70"
+                  className="w-full min-h-[52px] py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg disabled:opacity-70 cursor-pointer"
                 >
                   {isSubmitting ? 'Booking Demo...' : 'Confirm Demo Session →'}
                 </button>
@@ -136,7 +135,7 @@ export default function BookDemoPage() {
             </div>
 
             {/* Right Column */}
-            <div className="lg:col-span-5 bg-[#fafafa] border-2 border-slate-200 rounded-3xl p-8 sm:p-10 space-y-8">
+            <div className="lg:col-span-5 bg-[#fafafa] border-2 border-slate-200 rounded-3xl p-6 sm:p-10 space-y-8">
               <div>
                 <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-2">What to Expect</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
@@ -146,16 +145,16 @@ export default function BookDemoPage() {
 
               <div className="space-y-6">
                 <div className="flex items-start gap-3 text-xs text-slate-700">
-                  <CheckCircle2 className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                   <span>Interactive walkthrough of core system workflows and modules</span>
                 </div>
                 <div className="flex items-start gap-3 text-xs text-slate-700">
-                  <CheckCircle2 className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-                  <span>Q&amp;A on database migration, API integration, and security compliance</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>Custom Q&amp;A on system integration, API bridges, and security</span>
                 </div>
                 <div className="flex items-start gap-3 text-xs text-slate-700">
-                  <CheckCircle2 className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-                  <span>Demonstration of live admin controls and multi-branch dashboards</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>Transparent deployment timeline and pricing breakdown</span>
                 </div>
               </div>
             </div>

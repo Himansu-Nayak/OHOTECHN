@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import NextImage from 'next/image';
 import { Cpu, Layers, Database, ShieldCheck, ArrowDown, Sparkles, CheckCircle2, Server, Globe, Smartphone, Lock, Activity } from 'lucide-react';
 
 export function ArchitectureDiagram() {
@@ -16,7 +17,7 @@ export function ArchitectureDiagram() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            ENTERPRISE ARCHITECTURE BLUEPRINT
+            ENTERPRISE ARCHITECTURE BLUEPRINT (4K ULTRA-HIGH DEFINITION)
           </div>
           <h3 className="text-xl sm:text-3xl font-black text-white tracking-tight">
             OHO TECH Scalable System Architecture
@@ -30,6 +31,27 @@ export function ArchitectureDiagram() {
           </span>
           <span>•</span>
           <span className="text-slate-300">Modular Microservices</span>
+        </div>
+      </div>
+
+      {/* 4K AI Generated Cloud Data Architecture Graphic Display */}
+      <div className="w-full relative h-[320px] sm:h-[420px] rounded-2xl overflow-hidden border border-white/15 mb-8 shadow-2xl group">
+        <NextImage
+          src="/ai_cloud_architecture.jpg"
+          alt="OHO TECH 4K Enterprise AI Cloud Infrastructure & Microservices Core"
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-700 brightness-[0.95] contrast-[1.05]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0e] via-transparent to-transparent pointer-events-none" />
+        <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between">
+          <span className="text-xs font-mono font-bold text-emerald-400 bg-[#0d0d0e]/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-emerald-500/30">
+            ⚡ AI Intelligence Core &amp; Microservices Node Topology
+          </span>
+          <span className="text-[10px] font-mono text-slate-300 bg-[#0d0d0e]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 hidden sm:inline">
+            4K UHD INFRASTRUCTURE RENDER
+          </span>
         </div>
       </div>
 
