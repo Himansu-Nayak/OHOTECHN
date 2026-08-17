@@ -24,7 +24,6 @@ import { ServiceStoryTimeline } from '@/components/story/ServiceStoryTimeline';
 import { ProcessSection } from '@/components/home/ProcessSection';
 import { WhyChooseSection } from '@/components/home/WhyChooseSection';
 import { PartnerSection } from '@/components/home/PartnerSection';
-import { LogoCloudSection } from '@/components/home/LogoCloudSection';
 import { FinalCTASection } from '@/components/story/FinalCTASection';
 
 export default function WideStudioPage() {
@@ -75,11 +74,6 @@ export default function WideStudioPage() {
         </div>
 
       </section>
-
-      {/* ── 02. OHO TECH LOGO & BRAND ECOSYSTEM CLOUD ── */}
-      <div className="max-w-[1536px] w-full mx-auto">
-        <LogoCloudSection />
-      </div>
 
       {/* ── ABOUT OHO TECH & STRATEGIC DIRECTION ── */}
       <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="about-intro">
