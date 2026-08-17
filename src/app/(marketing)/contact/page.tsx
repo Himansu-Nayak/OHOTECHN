@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, Mail, Phone, MapPin, Clock } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, Sparkles, Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 export default function ContactPage() {
@@ -39,21 +40,21 @@ export default function ContactPage() {
     }, 1000);
   };
 
-  const inputClass = 'w-full px-4 py-3.5 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-sm font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors min-h-[48px]';
+  const inputClass = 'w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors';
   const labelClass = 'block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2';
 
   return (
-    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-24 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
+    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
       <main className="max-w-[1536px] w-full mx-auto" id="contact-main">
         
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-14 lg:p-20 shadow-sm" id="contact-section">
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="contact-section">
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             
             {/* Form Column */}
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+                <Sparkles className="w-3.5 h-3.5 text-sky-600" />
                 GET IN TOUCH WITH OHO TECH
               </div>
               
@@ -74,28 +75,28 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="contact-name" className={labelClass}>Full Name *</label>
+                    <label htmlFor="contact-name" className={labelClass}>Full Name</label>
                     <input type="text" name="name" id="contact-name" value={formData.name} onChange={handleChange} className={inputClass} placeholder="e.g. Rahul Sharma" required />
                   </div>
                   <div>
-                    <label htmlFor="contact-email" className={labelClass}>Email Address *</label>
+                    <label htmlFor="contact-email" className={labelClass}>Email Address</label>
                     <input type="email" name="email" id="contact-email" value={formData.email} onChange={handleChange} className={inputClass} placeholder="rahul@company.com" required />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="contact-phone" className={labelClass}>Phone Number *</label>
+                    <label htmlFor="contact-phone" className={labelClass}>Phone Number</label>
                     <input type="tel" name="phone" id="contact-phone" value={formData.phone} onChange={handleChange} className={inputClass} placeholder="+91 98765 43210" required />
                   </div>
                   <div>
-                    <label htmlFor="contact-company" className={labelClass}>Company Name *</label>
+                    <label htmlFor="contact-company" className={labelClass}>Company Name</label>
                     <input type="text" name="company" id="contact-company" value={formData.company} onChange={handleChange} className={inputClass} placeholder="Acme Enterprises" required />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="contact-service" className={labelClass}>Area of Interest *</label>
+                  <label htmlFor="contact-service" className={labelClass}>Area of Interest</label>
                   <select name="serviceInterest" id="contact-service" value={formData.serviceInterest} onChange={handleChange} className={inputClass} required>
                     <option value="" disabled>Select area of interest</option>
                     <option value="custom-software">Custom Software &amp; Enterprise ERP</option>
@@ -109,7 +110,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="contact-message" className={labelClass}>Project Message *</label>
+                  <label htmlFor="contact-message" className={labelClass}>Project Message</label>
                   <textarea name="message" id="contact-message" rows={4} value={formData.message} onChange={handleChange} className={inputClass} placeholder="Briefly describe your project requirements..." required />
                 </div>
 
@@ -117,7 +118,7 @@ export default function ContactPage() {
                   type="submit"
                   id="contact-submit"
                   disabled={isSubmitting}
-                  className="w-full min-h-[52px] py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg disabled:opacity-70 cursor-pointer"
+                  className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg disabled:opacity-70"
                 >
                   {isSubmitting ? 'Sending Message...' : 'Send Message to Engineering Team →'}
                 </button>
@@ -125,7 +126,7 @@ export default function ContactPage() {
             </div>
 
             {/* Information Column */}
-            <div className="lg:col-span-5 bg-[#fafafa] border-2 border-slate-200 rounded-3xl p-6 sm:p-10 space-y-8">
+            <div className="lg:col-span-5 bg-[#fafafa] border-2 border-slate-200 rounded-3xl p-8 sm:p-10 space-y-8">
               <div>
                 <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-4">Direct Contact Details</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
@@ -135,27 +136,27 @@ export default function ContactPage() {
 
               <div className="space-y-4 text-xs font-mono">
                 <div className="flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <Mail className="w-4 h-4 text-sky-600 shrink-0" />
                   <span className="text-slate-800">{siteConfig.contact.email}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <Phone className="w-4 h-4 text-sky-600 shrink-0" />
                   <span className="text-slate-800">{siteConfig.contact.phone}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <MapPin className="w-4 h-4 text-sky-600 shrink-0" />
                   <span className="text-slate-800">{siteConfig.contact.address}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <Clock className="w-4 h-4 text-sky-600 shrink-0" />
                   <span className="text-slate-800">{siteConfig.contact.hours}</span>
                 </div>
               </div>
 
               <div className="pt-6 border-t border-slate-200">
-                <h4 className="text-xs font-bold text-[#0d0d0e] mb-2">Director &amp; Leadership</h4>
+                <h4 className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">FOUNDER LEADERSHIP</h4>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Founded &amp; Directed by Jagabandhu Kampa. Delivering bespoke software solutions and digital growth to businesses nationwide.
+                  Jagabandhu Kampa — Director, OHO TECH
                 </p>
               </div>
             </div>

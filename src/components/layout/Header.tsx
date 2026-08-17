@@ -6,7 +6,6 @@ import NextImage from 'next/image';
 import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
-import { MobileNav } from './MobileNav';
 
 export function Header() {
   const [openDropdown, setOpenDropdown] = React.useState<string | null>(null);
@@ -370,8 +369,59 @@ export function Header() {
         </header>
       </div>
 
-      {/* Mobile Navigation Drawer */}
-      <MobileNav isOpen={isMobileOpen} onClose={() => setIsMobileOpen(false)} />
+      {/* Mobile Drawer */}
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-[60] lg:hidden transition-all duration-300">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
+          <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl overflow-y-auto">
+            <div>
+              <div className="flex items-center justify-between pb-6 border-b border-slate-100">
+                <NextImage
+                  src="/OHO_TECH_LOGO.svg"
+                  alt="OHO TECH Logo"
+                  width={130}
+                  height={36}
+                  style={{ width: 'auto', height: 'auto' }}
+                  className="h-9 max-h-9 w-auto object-contain"
+                />
+                <button onClick={() => setIsMobileOpen(false)} className="p-1 text-slate-400 hover:text-[#0d0d0e]">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="py-6 space-y-4 flex flex-col text-sm font-bold text-slate-700">
+                <Link href="/" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Home</Link>
+                <Link href="/solutions" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Solutions by Industry</Link>
+                <Link href="/services" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Core Services</Link>
+                <Link href="/products" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Products</Link>
+                <Link href="/pricing" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Pricing &amp; Plans</Link>
+                <Link href="/about" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">About Us</Link>
+                <Link href="/partner" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Partner With Us</Link>
+                <Link href="/careers" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Careers</Link>
+                <Link href="/contact" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Contact</Link>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-6 border-t border-slate-100">
+              <Link
+                href="/get-quote"
+                onClick={() => setIsMobileOpen(false)}
+                className="block w-full py-3 rounded-full border border-slate-300 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider hover:bg-slate-50"
+              >
+                Get a Quote
+              </Link>
+
+              <Link
+                href="/book-demo"
+                onClick={() => setIsMobileOpen(false)}
+                className="block w-full py-3 rounded-full bg-[#0d0d0e] text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-sky-600"
+              >
+                Book a Demo
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -45,7 +45,7 @@ export function FeaturedServiceCard({ service }: FeaturedServiceCardProps) {
         </p>
 
         {/* Feature Highlights */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
           {service.features.slice(0, 3).map((feat, idx) => (
             <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-slate-200 flex items-center gap-2">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />

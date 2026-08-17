@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import NextImage from 'next/image';
 import { Industry } from '@/config/industries';
 import { ArrowRight, Sparkles, Cpu, ShieldCheck, Database, Layers } from 'lucide-react';
 
@@ -55,26 +54,54 @@ export function FeaturedIndustry({ industry }: FeaturedIndustryProps) {
 
         </div>
 
-        {/* Right Column: 4K Ultra-High Definition AI Artwork Display */}
+        {/* Right Column: Premium Abstract Ecosystem Architecture Graphic */}
         <div className="lg:col-span-5 flex justify-center items-center">
-          <div className="w-full h-72 sm:h-80 relative rounded-2xl overflow-hidden border border-white/15 shadow-2xl group hover:border-teal-500/50 transition-all duration-300">
-            <NextImage
-              src="/hero_tech_ecosystem.jpg"
-              alt={`${industry.name} 4K AI Enterprise Solution Architecture System`}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 500px"
-              className="object-cover object-center group-hover:scale-105 transition-transform duration-700 brightness-[0.95] contrast-[1.05]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#111113] via-transparent to-transparent pointer-events-none" />
-            <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-between">
-              <span className="text-[11px] font-mono font-bold text-teal-400 bg-[#111113]/90 backdrop-blur-md px-3 py-1 rounded-full border border-teal-500/30">
-                ⚡ 4K {industry.name.toUpperCase()} ECOSYSTEM
-              </span>
-              <span className="text-[10px] font-mono text-slate-300 bg-[#111113]/90 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
-                {industry.products.length} MODULES
+          <div className="w-full max-w-sm bg-[#1a1a1e] border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden group hover:border-teal-500/40 transition-all duration-300">
+            
+            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-3 h-3 rounded-full bg-teal-400 animate-pulse" />
+                <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+                  {industry.slug}_stack.sys
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">
+                {industry.products.length} Modules
               </span>
             </div>
+
+            {/* Architecture Visual Nodes */}
+            <div className="space-y-3 font-mono text-xs">
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Cpu className="w-4 h-4 text-teal-400" />
+                  <span className="text-slate-200 font-semibold">{industry.name} Core Engine</span>
+                </div>
+                <span className="text-[10px] text-emerald-400">ONLINE</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Database className="w-4 h-4 text-sky-400" />
+                  <span className="text-slate-200 font-semibold">Real-Time Data Lake</span>
+                </div>
+                <span className="text-[10px] text-sky-400">SYNCED</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <span className="text-slate-200 font-semibold">Enterprise SLA &amp; Auth</span>
+                </div>
+                <span className="text-[10px] text-amber-400">SECURE</span>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-slate-400">
+              <span>SLA: 99.99% UPTIME</span>
+              <span className="text-teal-400">DEPLOY READY &rarr;</span>
+            </div>
+
           </div>
         </div>
 
