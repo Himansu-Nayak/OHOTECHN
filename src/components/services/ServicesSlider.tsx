@@ -8,13 +8,11 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface ServicesSliderProps {
   servicesList: Service[];
-  categoryTitle?: string;
   badgeColor?: 'emerald' | 'amber';
 }
 
 export function ServicesSlider({
   servicesList,
-  categoryTitle,
   badgeColor = 'emerald',
 }: ServicesSliderProps) {
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -23,31 +21,34 @@ export function ServicesSlider({
   const cardRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
   // Center the active card in the horizontal container
-  const scrollToIndex = (index: number) => {
-    setActiveIndex(index);
-    const container = containerRef.current;
-    const card = cardRefs.current[index];
+  const scrollToIndex = React.useCallback(
+    (index: number) => {
+      setActiveIndex(index);
+      const container = containerRef.current;
+      const card = cardRefs.current[index];
 
-    if (container && card) {
-      const containerWidth = container.offsetWidth;
-      const cardLeft = card.offsetLeft;
-      const cardWidth = card.offsetWidth;
-      const scrollPosition = cardLeft - containerWidth / 2 + cardWidth / 2;
+      if (container && card) {
+        const containerWidth = container.offsetWidth;
+        const cardLeft = card.offsetLeft;
+        const cardWidth = card.offsetWidth;
+        const scrollPosition = cardLeft - containerWidth / 2 + cardWidth / 2;
 
-      container.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth',
-      });
-    }
-  };
+        container.scrollTo({
+          left: scrollPosition,
+          behavior: 'smooth',
+        });
+      }
+    },
+    []
+  );
 
   // Center initial card on mount
   React.useEffect(() => {
     const timer = setTimeout(() => {
       scrollToIndex(0);
-    }, 100);
+    }, 150);
     return () => clearTimeout(timer);
-  }, [servicesList]);
+  }, [servicesList, scrollToIndex]);
 
   // Update active index based on scroll position
   const handleScroll = () => {
@@ -73,7 +74,7 @@ export function ServicesSlider({
     }
   };
 
-  // Auto scroll feature (pauses on hover)
+  // Auto-scroll loop (4.5 seconds, pauses on mouse hover)
   React.useEffect(() => {
     if (isHovered || servicesList.length <= 1) return;
     const autoInterval = setInterval(() => {
@@ -82,9 +83,9 @@ export function ServicesSlider({
         scrollToIndex(next);
         return next;
       });
-    }, 6000);
+    }, 4500);
     return () => clearInterval(autoInterval);
-  }, [isHovered, servicesList.length]);
+  }, [isHovered, servicesList.length, scrollToIndex]);
 
   return (
     <div
@@ -93,16 +94,16 @@ export function ServicesSlider({
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Left Side Cloud Fog Masking Overlay */}
-      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 lg:w-44 bg-gradient-to-r from-[#fafafa] via-[#fafafa]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 lg:w-36 bg-gradient-to-r from-[#fafafa] via-[#fafafa]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
       {/* Right Side Cloud Fog Masking Overlay */}
-      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 lg:w-44 bg-gradient-to-l from-[#fafafa] via-[#fafafa]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 lg:w-36 bg-gradient-to-l from-[#fafafa] via-[#fafafa]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
       {/* Horizontal Scroll Track */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="flex gap-6 sm:gap-8 overflow-x-auto scroll-smooth py-6 px-[12vw] sm:px-[28vw] md:px-[34vw] no-scrollbar snap-x snap-mandatory focus:outline-none"
+        className="flex gap-6 sm:gap-8 overflow-x-auto scroll-smooth py-6 px-[12vw] sm:px-[25vw] md:px-[30vw] no-scrollbar snap-x snap-mandatory focus:outline-none"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {servicesList.map((service, index) => {
@@ -117,13 +118,13 @@ export function ServicesSlider({
               }}
               onClick={() => scrollToIndex(index)}
               className={cn(
-                'snap-center shrink-0 w-[290px] sm:w-[340px] md:w-[380px] p-7 rounded-[28px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden',
+                'snap-center shrink-0 w-[280px] sm:w-[330px] md:w-[360px] p-7 rounded-[28px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden',
                 isActive
                   ? 'bg-white border-2 border-emerald-500 shadow-2xl shadow-emerald-500/20 ring-4 ring-emerald-500/15 scale-105 opacity-100 z-30 blur-0'
                   : 'bg-white/80 border-2 border-slate-200/90 opacity-45 hover:opacity-85 hover:border-slate-300 scale-90 z-10 blur-[1.5px]'
               )}
             >
-              {/* Background Ambient Glow */}
+              {/* Background Ambient Glow when Active */}
               {isActive && (
                 <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/5 via-teal-500/3 to-transparent pointer-events-none" />
               )}
@@ -133,7 +134,7 @@ export function ServicesSlider({
                 <div className="flex items-center justify-between mb-6">
                   <div
                     className={cn(
-                      'w-13 h-13 rounded-2xl flex items-center justify-center text-3xl transition-all duration-300 shadow-xs',
+                      'w-12 h-12 rounded-2xl flex items-center justify-center text-3xl transition-all duration-300 shadow-xs',
                       isTech
                         ? 'bg-emerald-50 border border-emerald-200/80 text-emerald-600'
                         : 'bg-amber-50 border border-amber-200/80 text-amber-600',

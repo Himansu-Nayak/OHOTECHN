@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { technologyServices, marketingServices } from '@/config/services';
 import { ServicesCategorySwitcher, CategoryFilter } from './ServicesCategorySwitcher';
+import { FeaturedServiceCard } from './FeaturedServiceCard';
 import { ServicesSlider } from './ServicesSlider';
 import { ArrowRight, Code2, TrendingUp, Sparkles } from 'lucide-react';
 
@@ -45,7 +46,7 @@ export function ServicesSection() {
       {/* 3. Core Technology Services Group */}
       {showTech && (
         <div className="mb-16">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200/80">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200/80">
             <div>
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-sky-600 uppercase tracking-wider mb-1">
                 <Code2 className="w-4 h-4" />
@@ -60,15 +61,25 @@ export function ServicesSection() {
             </span>
           </div>
 
-          {/* Interactive 4K Cloud-Masked Horizontal Slider */}
-          <ServicesSlider servicesList={technologyServices} badgeColor="emerald" />
+          {/* Premium Flagship Featured Service Card */}
+          <div className="mb-8">
+            <FeaturedServiceCard service={technologyServices[0]} />
+          </div>
+
+          {/* Auto-Scrolling 4K Cloud-Masked Horizontal Slider */}
+          <div className="mt-4">
+            <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">
+              Explore Additional Technology Capabilities (Auto-Scrolling)
+            </div>
+            <ServicesSlider servicesList={technologyServices.slice(1)} badgeColor="emerald" />
+          </div>
         </div>
       )}
 
       {/* 4. Digital Growth Services Group */}
       {showGrowth && (
         <div className="mb-16">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200/80">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200/80">
             <div>
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-600 uppercase tracking-wider mb-1">
                 <TrendingUp className="w-4 h-4" />
@@ -83,8 +94,18 @@ export function ServicesSection() {
             </span>
           </div>
 
-          {/* Interactive 4K Cloud-Masked Horizontal Slider */}
-          <ServicesSlider servicesList={marketingServices} badgeColor="amber" />
+          {/* Premium Flagship Featured Service Card */}
+          <div className="mb-8">
+            <FeaturedServiceCard service={marketingServices[0]} />
+          </div>
+
+          {/* Auto-Scrolling 4K Cloud-Masked Horizontal Slider */}
+          <div className="mt-4">
+            <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">
+              Explore Additional Growth Capabilities (Auto-Scrolling)
+            </div>
+            <ServicesSlider servicesList={marketingServices.slice(1)} badgeColor="amber" />
+          </div>
         </div>
       )}
 
