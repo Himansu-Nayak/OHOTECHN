@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, CheckCircle2 } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 export default function ContactPage() {
@@ -36,133 +36,190 @@ export default function ContactPage() {
         serviceInterest: '',
         message: '',
       });
-    }, 1000);
+    }, 800);
   };
 
-  const inputClass = 'w-full px-4 py-3.5 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-sm font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors min-h-[48px]';
-  const labelClass = 'block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2';
+  const inputClass = 'w-full px-4 py-3 rounded-md bg-white border border-slate-300/80 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 transition-colors';
+  const labelClass = 'block text-xs font-semibold text-slate-700 mb-1.5';
 
   return (
-    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-24 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
-      <main className="max-w-[1536px] w-full mx-auto" id="contact-main">
+    <div className="bg-[#f8f9fb] text-[#0f172a] min-h-screen pb-20 pt-28 sm:pt-36 px-4 sm:px-6 lg:px-8 selection:bg-slate-900 selection:text-white">
+      <main className="max-w-7xl mx-auto" id="contact-main">
         
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-14 lg:p-20 shadow-sm" id="contact-section">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <span className="text-xs font-semibold uppercase tracking-wider text-teal-700 block mb-2">
+            Contact OHO TECHN
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-bold text-slate-950 tracking-tight mb-4">
+            Start a Conversation.
+          </h1>
+          <p className="text-base text-slate-600 leading-relaxed">
+            Have a project, engineering challenge, or operational requirement? Let’s explore how OHO TECHN can help.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-            
-            {/* Form Column */}
-            <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                GET IN TOUCH WITH OHO TECH
+          {/* Form */}
+          <div className="lg:col-span-7 corporate-card p-6 sm:p-10">
+            {submitStatus === 'success' ? (
+              <div className="p-8 text-center space-y-4">
+                <CheckCircle2 className="w-12 h-12 text-teal-700 mx-auto" />
+                <h2 className="text-2xl font-bold text-slate-950">Thank You</h2>
+                <p className="text-sm text-slate-600 max-w-md mx-auto">
+                  Your inquiry has been received. Our technical team will review your message and reach out shortly.
+                </p>
               </div>
-              
-              <h1 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight mb-4 leading-[1.08]">
-                Let&apos;s discuss your software project.
-              </h1>
-              
-              <p className="text-sm sm:text-base text-slate-600 mb-8 leading-relaxed">
-                Have a question or want to discuss a custom software engineering requirement? Send us a message and our lead architect will respond within 24 hours.
-              </p>
-
-              {submitStatus === 'success' && (
-                <div className="mb-8 p-4 rounded-2xl bg-emerald-50 text-emerald-800 border-2 border-emerald-200 text-xs font-mono font-bold">
-                  Thank you for your message! Our engineering team will contact you shortly.
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label className={labelClass}>Full Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Jane Doe"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Work Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="jane@company.com"
+                      className={inputClass}
+                    />
+                  </div>
                 </div>
-              )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label htmlFor="contact-name" className={labelClass}>Full Name *</label>
-                    <input type="text" name="name" id="contact-name" value={formData.name} onChange={handleChange} className={inputClass} placeholder="e.g. Rahul Sharma" required />
+                    <label className={labelClass}>Phone Number</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+1 (555) 000-0000"
+                      className={inputClass}
+                    />
                   </div>
                   <div>
-                    <label htmlFor="contact-email" className={labelClass}>Email Address *</label>
-                    <input type="email" name="email" id="contact-email" value={formData.email} onChange={handleChange} className={inputClass} placeholder="rahul@company.com" required />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="contact-phone" className={labelClass}>Phone Number *</label>
-                    <input type="tel" name="phone" id="contact-phone" value={formData.phone} onChange={handleChange} className={inputClass} placeholder="+91 98765 43210" required />
-                  </div>
-                  <div>
-                    <label htmlFor="contact-company" className={labelClass}>Company Name *</label>
-                    <input type="text" name="company" id="contact-company" value={formData.company} onChange={handleChange} className={inputClass} placeholder="Acme Enterprises" required />
+                    <label className={labelClass}>Company / Organization</label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      placeholder="Acme Corp"
+                      className={inputClass}
+                    />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="contact-service" className={labelClass}>Area of Interest *</label>
-                  <select name="serviceInterest" id="contact-service" value={formData.serviceInterest} onChange={handleChange} className={inputClass} required>
-                    <option value="" disabled>Select area of interest</option>
-                    <option value="custom-software">Custom Software &amp; Enterprise ERP</option>
-                    <option value="web-development">Web Platform &amp; Customer Portal</option>
-                    <option value="mobile-apps">iOS / Android Mobile Application</option>
-                    <option value="hospital-emr">Healthcare EMR &amp; Hospital System</option>
-                    <option value="education-erp">Education &amp; Campus ERP</option>
-                    <option value="retail-pos">Retail POS &amp; Inventory Sync</option>
-                    <option value="digital-growth">Digital Growth &amp; Performance SEO</option>
+                  <label className={labelClass}>Area of Interest</label>
+                  <select
+                    name="serviceInterest"
+                    value={formData.serviceInterest}
+                    onChange={handleChange}
+                    className={inputClass}
+                  >
+                    <option value="">Select a domain</option>
+                    <option value="technology">Technology Solutions & Software</option>
+                    <option value="infrastructure">Infrastructure & ERP</option>
+                    <option value="energy">Renewable Energy Solutions</option>
+                    <option value="digital">Digital Transformation</option>
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="contact-message" className={labelClass}>Project Message *</label>
-                  <textarea name="message" id="contact-message" rows={4} value={formData.message} onChange={handleChange} className={inputClass} placeholder="Briefly describe your project requirements..." required />
+                  <label className={labelClass}>Project / Requirement Summary *</label>
+                  <textarea
+                    name="message"
+                    required
+                    rows={4}
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Briefly describe your objectives or questions..."
+                    className={inputClass}
+                  />
                 </div>
 
                 <button
                   type="submit"
-                  id="contact-submit"
                   disabled={isSubmitting}
-                  className="w-full min-h-[52px] py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg disabled:opacity-70 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-md bg-[#090a0f] hover:bg-slate-800 text-white font-semibold text-sm transition-colors shadow-xs"
                 >
-                  {isSubmitting ? 'Sending Message...' : 'Send Message to Engineering Team →'}
+                  {isSubmitting ? 'Sending...' : 'Submit Inquiry'}
                 </button>
               </form>
-            </div>
-
-            {/* Information Column */}
-            <div className="lg:col-span-5 bg-[#fafafa] border-2 border-slate-200 rounded-3xl p-6 sm:p-10 space-y-8">
-              <div>
-                <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-4">Direct Contact Details</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Reach out directly to OHO TECH for enterprise partnerships or consultation.
-                </p>
-              </div>
-
-              <div className="space-y-4 text-xs font-mono">
-                <div className="flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="text-slate-800">{siteConfig.contact.email}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="text-slate-800">{siteConfig.contact.phone}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="text-slate-800">{siteConfig.contact.address}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="text-slate-800">{siteConfig.contact.hours}</span>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-slate-200">
-                <h4 className="text-xs font-bold text-[#0d0d0e] mb-2">Director &amp; Leadership</h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Founded &amp; Directed by Jagabandhu Kampa. Delivering bespoke software solutions and digital growth to businesses nationwide.
-                </p>
-              </div>
-            </div>
-
+            )}
           </div>
 
-        </section>
+          {/* Direct Contact Info */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="corporate-card p-6 sm:p-8 space-y-6">
+              <h2 className="text-xl font-bold text-slate-950">
+                Direct Contact
+              </h2>
+              
+              <div className="space-y-4 text-sm text-slate-600">
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-semibold text-slate-900">General Inquiries</div>
+                    <div>{siteConfig.contact.email}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-semibold text-slate-900">Phone & Support</div>
+                    <div>{siteConfig.contact.phone}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-semibold text-slate-900">Registered Office</div>
+                    <div>{siteConfig.contact.address}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-semibold text-slate-900">Business Hours</div>
+                    <div>{siteConfig.contact.hours}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-xl bg-slate-900 text-white space-y-3">
+              <div className="text-xs font-semibold uppercase tracking-wider text-teal-400">
+                Executive Leadership
+              </div>
+              <div className="text-sm font-semibold text-white">
+                Jagabandhu Kampa — Founder & Director
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Direct engagement on strategic enterprise initiatives and large-scale infrastructure deployments.
+              </p>
+            </div>
+          </div>
+
+        </div>
 
       </main>
     </div>
