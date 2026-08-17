@@ -2,10 +2,9 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { services, technologyServices, marketingServices } from '@/config/services';
+import { technologyServices, marketingServices } from '@/config/services';
 import { ServicesCategorySwitcher, CategoryFilter } from './ServicesCategorySwitcher';
-import { ServiceCard } from './ServiceCard';
-import { FeaturedServiceCard } from './FeaturedServiceCard';
+import { ServicesSlider } from './ServicesSlider';
 import { ArrowRight, Code2, TrendingUp, Sparkles } from 'lucide-react';
 
 export function ServicesSection() {
@@ -46,7 +45,7 @@ export function ServicesSection() {
       {/* 3. Core Technology Services Group */}
       {showTech && (
         <div className="mb-16">
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200/80">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200/80">
             <div>
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-sky-600 uppercase tracking-wider mb-1">
                 <Code2 className="w-4 h-4" />
@@ -61,22 +60,15 @@ export function ServicesSection() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Featured Card */}
-            <FeaturedServiceCard service={technologyServices[0]} />
-
-            {/* Remaining Technology Cards */}
-            {technologyServices.slice(1).map((service) => (
-              <ServiceCard key={service.slug} service={service} />
-            ))}
-          </div>
+          {/* Interactive 4K Cloud-Masked Horizontal Slider */}
+          <ServicesSlider servicesList={technologyServices} badgeColor="emerald" />
         </div>
       )}
 
       {/* 4. Digital Growth Services Group */}
       {showGrowth && (
         <div className="mb-16">
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200/80">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200/80">
             <div>
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-600 uppercase tracking-wider mb-1">
                 <TrendingUp className="w-4 h-4" />
@@ -91,15 +83,8 @@ export function ServicesSection() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Featured Card */}
-            <FeaturedServiceCard service={marketingServices[0]} />
-
-            {/* Remaining Growth Cards */}
-            {marketingServices.slice(1).map((service) => (
-              <ServiceCard key={service.slug} service={service} />
-            ))}
-          </div>
+          {/* Interactive 4K Cloud-Masked Horizontal Slider */}
+          <ServicesSlider servicesList={marketingServices} badgeColor="amber" />
         </div>
       )}
 
