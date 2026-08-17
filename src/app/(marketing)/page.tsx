@@ -240,6 +240,32 @@ export default function WideStudioPage() {
             </Link>
           </div>
 
+          {/* ── 28 LIVE SOFTWARE PRODUCTS FAST ACCESS HUB ── */}
+          <div className="mt-12 p-8 sm:p-12 rounded-[32px] bg-[#0d0d0e] text-white border border-black shadow-xl relative overflow-hidden flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-bold uppercase tracking-wider mb-4">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                28 TURNKEY PRODUCTS READY FOR INSTANT DEMO
+              </div>
+              <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tight mb-3">
+                Test Drive 28 Live Software Environments Right Now.
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                School Management, Hospital HMS, University ERP, HR &amp; Payroll, Gym POS, Pathology Lab, Real Estate Booking, Dental Clinic, Microfinance CRM, Garments Billing &amp; more—complete with live URLs and 1-click admin credentials.
+              </p>
+            </div>
+            <div className="relative z-10 shrink-0">
+              <Link
+                href="/products"
+                className="px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105 inline-flex items-center gap-2"
+              >
+                <span>Browse All 28 Live Demos</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
         </div>
 
       </section>
