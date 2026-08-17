@@ -5,470 +5,498 @@ import Link from 'next/link';
 import NextImage from 'next/image';
 import {
   ArrowRight,
-  Cpu,
-  Layers,
-  Zap,
-  Globe,
-  Building2,
+  CheckCircle2,
+  Code2,
+  User,
+  Quote,
   ShieldCheck,
-  Server,
-  ChevronRight,
+  Building2,
+  Layers,
+  Sparkles,
 } from 'lucide-react';
+import { ArchitectureDiagram } from '@/components/home/ArchitectureDiagram';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
+import { SolutionsSection } from '@/components/solutions/SolutionsSection';
+import { ServicesSection } from '@/components/services/ServicesSection';
+import { ServiceStoryTimeline } from '@/components/story/ServiceStoryTimeline';
+import { ProcessSection } from '@/components/home/ProcessSection';
+import { WhyChooseSection } from '@/components/home/WhyChooseSection';
+import { PartnerSection } from '@/components/home/PartnerSection';
+import { FinalCTASection } from '@/components/story/FinalCTASection';
 
-export default function CorporateHomePage() {
+export default function WideStudioPage() {
   return (
-    <div className="bg-[#f8f9fb] text-[#0f172a] min-h-screen selection:bg-slate-900 selection:text-white">
+    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-6 pt-4 px-2 sm:px-4 lg:px-6 selection:bg-[#0d0d0e] selection:text-white">
       
-      {/* ── SECTION 1: HOMEPAGE HERO (Substantially reduced height, single viewport desktop) ── */}
-      <section className="pt-28 sm:pt-36 pb-12 lg:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-4xl mx-auto mb-10">
-          
-          {/* Small Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200/60 border border-slate-300/60 text-slate-700 text-xs font-semibold uppercase tracking-wider mb-6">
-            DIGITAL INFRASTRUCTURE &amp; TECHNOLOGY
-          </div>
-
-          {/* Main Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-950 leading-[1.1] mb-5">
-            Building Smarter Digital Infrastructure for Modern Business.
-          </h1>
-
-          {/* Supporting Copy */}
-          <p className="text-base sm:text-lg text-slate-600 font-normal max-w-2xl mx-auto mb-8 leading-relaxed">
-            OHO TECHN delivers technology, infrastructure and digital solutions that help businesses operate smarter, faster and more efficiently.
-          </p>
-
-          {/* Primary & Secondary CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/solutions"
-              className="px-7 py-3.5 rounded-md bg-[#090a0f] hover:bg-slate-800 text-white font-medium text-sm transition-all shadow-xs inline-flex items-center gap-2"
-            >
-              <span>Explore Solutions</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-
-            <Link
-              href="/contact"
-              className="px-7 py-3.5 rounded-md bg-white hover:bg-slate-100 text-slate-900 font-medium text-sm border border-slate-300/80 transition-all shadow-2xs"
-            >
-              Talk to Our Team
-            </Link>
-          </div>
-
+      {/* ── 01. HERO SECTION ── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-10 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm pt-24 sm:pt-32 text-center relative overflow-hidden grid-pattern-light" id="hero">
+        
+        {/* Category Pill */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#f0f0eb] border border-black/10 text-[#0d0d0e] font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          Software, Digital Solutions &amp; Business Growth
         </div>
 
-        {/* Hero Visual Block */}
-        <div className="mt-8">
+        {/* Clear Headline */}
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight max-w-5xl mx-auto mb-6 text-[#0d0d0e] leading-[1.06]">
+          We build software, digital platforms and growth solutions for businesses.
+        </h1>
+
+        {/* Clear Subheadline */}
+        <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal max-w-2xl mx-auto mb-8 leading-relaxed">
+          Custom software development, mobile applications, web platforms, and digital growth strategies tailored to your operational goals.
+        </p>
+
+        {/* Dual Primary CTAs */}
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
+          <Link
+            id="hero-get-quote"
+            href="/get-quote"
+            className="px-8 py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105"
+          >
+            Get a Quote →
+          </Link>
+
+          <Link
+            id="hero-book-demo"
+            href="/book-demo"
+            className="px-8 py-4 rounded-full bg-[#ebebe8] hover:bg-[#e2e2de] text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all hover:scale-105"
+          >
+            Book a Demo
+          </Link>
+        </div>
+
+        {/* Full Width Hero Artwork Container */}
+        <div className="w-full">
           <HeroLaunchBackground />
         </div>
 
       </section>
 
-      {/* ── SECTION 2: CAPABILITY STRIP ── */}
-      <section className="py-8 bg-white border-y border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-around gap-6 sm:gap-8 text-xs sm:text-sm font-semibold text-slate-600">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
-              <span>Technology</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
-              <span>Infrastructure</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
-              <span>Digital Solutions</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
-              <span>Renewable Energy</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
-              <span>Enterprise Services</span>
-            </div>
+      {/* ── ABOUT OHO TECH & STRATEGIC DIRECTION ── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="about-intro">
+        
+        {/* Section Header */}
+        <div className="max-w-4xl mb-10 text-left">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            ABOUT OHO TECH &amp; STRATEGIC DIRECTION 🏗️
           </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 3: WHAT WE DO ── */}
-      <section className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-semibold uppercase tracking-wider text-teal-700 block mb-2">
-            Core Capabilities
-          </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-950 tracking-tight leading-tight mb-4">
-            Technology That Moves Business Forward.
+          <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-5">
+            Engineering precision meets data-driven growth.
           </h2>
-          <p className="text-base text-slate-600 leading-relaxed">
-            OHO TECHN combines technology, infrastructure and digital expertise to help organizations solve practical business challenges.
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+            OHO TECH is an enterprise technology studio delivering custom software applications, digital platforms, and customer acquisition strategies tailored to your operational business goals.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1 */}
-          <Link href="/services" className="corporate-card p-7 group flex flex-col justify-between">
-            <div>
-              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-900 mb-5 group-hover:bg-teal-50 group-hover:text-teal-700 transition-colors">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-950 mb-2 group-hover:text-teal-700 transition-colors">
-                Technology Solutions
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-6">
-                Tailored software and enterprise platforms built to streamline complex operational workflows.
-              </p>
-            </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-slate-900 group-hover:text-teal-700">
-              <span>Learn more</span>
-              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
+        {/* High Visibility Architecture Diagram */}
+        <ArchitectureDiagram />
 
-          {/* Card 2 */}
-          <Link href="/services/erp-solutions" className="corporate-card p-7 group flex flex-col justify-between">
+        {/* 4 Strategic Direction & Feature Pillars */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          
+          {/* Pillar 1 */}
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
             <div>
-              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-900 mb-5 group-hover:bg-teal-50 group-hover:text-teal-700 transition-colors">
-                <Server className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
+                🛠️
               </div>
-              <h3 className="text-lg font-bold text-slate-950 mb-2 group-hover:text-teal-700 transition-colors">
-                Infrastructure
+              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
+                DIRECTION 01
+              </div>
+              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
+                <span>🛠️</span>
+                <span>Bespoke Software Engineering</span>
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-6">
-                Scalable cloud architecture and resilient digital systems engineered for long-term growth.
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Tailored software applications engineered around exact client operational workflows rather than rigid off-the-shelf templates.
               </p>
             </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-slate-900 group-hover:text-teal-700">
-              <span>Learn more</span>
-              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Custom Architecture</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Workflow Automation</span>
+              </div>
             </div>
-          </Link>
+          </div>
 
-          {/* Card 3 */}
-          <Link href="/services/api-integration" className="corporate-card p-7 group flex flex-col justify-between">
+          {/* Pillar 2 */}
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
             <div>
-              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-900 mb-5 group-hover:bg-teal-50 group-hover:text-teal-700 transition-colors">
-                <Layers className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
+                🌐
               </div>
-              <h3 className="text-lg font-bold text-slate-950 mb-2 group-hover:text-teal-700 transition-colors">
-                Digital Transformation
+              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
+                DIRECTION 02
+              </div>
+              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
+                <span>🌐</span>
+                <span>Web &amp; Mobile Platforms</span>
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-6">
-                End-to-end system integration and process automation for modern organizations.
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                High-performance web applications, customer portals, and native mobile apps designed for daily user productivity.
               </p>
             </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-slate-900 group-hover:text-teal-700">
-              <span>Learn more</span>
-              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Fluid Responsive UI</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Cross-Platform Sync</span>
+              </div>
             </div>
-          </Link>
+          </div>
 
-          {/* Card 4 */}
-          <Link href="/solutions/manufacturing" className="corporate-card p-7 group flex flex-col justify-between">
+          {/* Pillar 3 */}
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-amber-400 transition-all flex flex-col justify-between group">
             <div>
-              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-900 mb-5 group-hover:bg-teal-50 group-hover:text-teal-700 transition-colors">
-                <Zap className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
+                📈
               </div>
-              <h3 className="text-lg font-bold text-slate-950 mb-2 group-hover:text-teal-700 transition-colors">
-                Renewable Energy
+              <div className="text-[11px] font-mono font-bold text-amber-600 uppercase tracking-wider mb-1">
+                DIRECTION 03
+              </div>
+              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
+                <span>📈</span>
+                <span>Digital Growth Engine</span>
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-6">
-                Smarter energy and utility solutions designed for sustainable efficiency.
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Data-focused search engine optimization, Google &amp; Meta advertising campaigns, and strategic brand positioning.
               </p>
             </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-slate-900 group-hover:text-teal-700">
-              <span>Learn more</span>
-              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Targeted Acquisition</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Conversion Optimization</span>
+              </div>
             </div>
+          </div>
+
+          {/* Pillar 4 */}
+          <div className="p-7 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-2xl">
+                🛡️
+              </div>
+              <div className="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider mb-1">
+                DIRECTION 04
+              </div>
+              <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
+                <span>🛡️</span>
+                <span>Long-Term Scalability</span>
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Modular software infrastructure and technical support ensuring your digital products scale cleanly as your business expands.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Modular Microservices</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Continuous Support</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Bottom Directional Bar */}
+        <div className="bg-[#fafafa] border-2 border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-6 text-xs font-mono font-bold text-slate-700">
+            <span className="flex items-center gap-2 text-emerald-600">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Goal-Oriented Software
+            </span>
+            <span className="flex items-center gap-2 text-emerald-600">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Clean Code Architecture
+            </span>
+            <span className="flex items-center gap-2 text-amber-600">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              Direct Founder Leadership
+            </span>
+          </div>
+
+          <Link
+            href="/about"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-wider group shrink-0"
+          >
+            <span>Learn More About Us</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
+
       </section>
 
-      {/* ── SECTION 4: FEATURED SOLUTIONS (EDITORIAL BLOCK LAYOUT) ── */}
-      <section className="py-20 lg:py-28 bg-white border-y border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* ── 03. CORE OFFERINGS (CORE SERVICES) ── */}
+      <ServicesSection />
+
+      {/* ── 04. SOLUTIONS BY INDUSTRY ── */}
+      <SolutionsSection />
+
+      {/* ── 05. FEATURED TECHNOLOGY SOLUTIONS WE BUILD ── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="featured-solutions">
+        
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200/80">
+          <div>
+            <div className="inline-block text-xs font-mono font-bold text-emerald-600 uppercase tracking-widest mb-3">
+              TECHNOLOGY SOLUTIONS WE BUILD
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight">
+              Enterprise Solution Concepts
+            </h2>
+          </div>
+          <Link
+            href="/solutions"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-wider group"
+          >
+            <span>View All Solution Concepts</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        {/* Clean Solution Showcase Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-teal-700 block mb-2">
-                Featured Solutions
-              </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-950 tracking-tight">
-                Architected for Performance.
+              <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Healthcare</div>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Hospital Management &amp; EMR System</h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Centralized hospital administration, outpatient/inpatient management, lab reporting, and pharmacy billing.
+              </p>
+            </div>
+            <Link href="/solutions/healthcare" className="text-xs font-bold text-slate-800 group-hover:text-emerald-600 inline-flex items-center gap-1">
+              <span>View Healthcare Architecture</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="text-xs font-mono font-bold text-amber-600 uppercase tracking-wider mb-2">Education</div>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-amber-600 transition-colors">Education &amp; Campus Management System</h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Multi-campus university management, student admissions, online examination, and automated fee collection.
+              </p>
+            </div>
+            <Link href="/solutions/education" className="text-xs font-bold text-slate-800 group-hover:text-amber-600 inline-flex items-center gap-1">
+              <span>View Education Architecture</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Retail &amp; Commerce</div>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Retail POS &amp; Inventory Management System</h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                High-speed retail billing, multi-store stock tracking, supplier reordering, and automated GST invoicing.
+              </p>
+            </div>
+            <Link href="/solutions/retail-ecommerce" className="text-xs font-bold text-slate-800 group-hover:text-emerald-600 inline-flex items-center gap-1">
+              <span>View Retail Architecture</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Finance &amp; Banking</div>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">NBFC &amp; Loan Management System</h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Loan origination workflows, borrower verification, automated EMI recovery schedules, and audit reporting.
+              </p>
+            </div>
+            <Link href="/solutions/finance-nbfc" className="text-xs font-bold text-slate-800 group-hover:text-emerald-600 inline-flex items-center gap-1">
+              <span>View Finance Architecture</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="text-xs font-mono font-bold text-amber-600 uppercase tracking-wider mb-2">Fitness &amp; Wellness</div>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-amber-600 transition-colors">Fitness &amp; Club Management System</h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Membership scheduling, biometric turnstile integrations, trainer assignments, and automated billing.
+              </p>
+            </div>
+            <Link href="/solutions/salon-spa-fitness" className="text-xs font-bold text-slate-800 group-hover:text-amber-600 inline-flex items-center gap-1">
+              <span>View Fitness Architecture</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-[#fafafa] border-2 border-slate-200 hover:border-slate-400 transition-all flex flex-col justify-between group">
+            <div>
+              <div className="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Logistics</div>
+              <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">Warehouse &amp; Dispatch Logistics System</h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                Consignment dispatch tracking, fleet operations, warehouse barcode scanning, and delivery updates.
+              </p>
+            </div>
+            <Link href="/solutions/logistics-transport" className="text-xs font-bold text-slate-800 group-hover:text-emerald-600 inline-flex items-center gap-1">
+              <span>View Logistics Architecture</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* ── 06. SERVICE CAPABILITIES ROADMAP TIMELINE ── */}
+      <ServiceStoryTimeline />
+
+      {/* ── 07. HOW WE WORK (5-STEP PROCESS) ── */}
+      <ProcessSection />
+
+      {/* ── 08. WHY OHO TECH (DIFFERENTIATORS) ── */}
+      <WhyChooseSection />
+
+      {/* ── 09. PARTNER WITH US ── */}
+      <PartnerSection />
+
+      {/* ── 10. ABOUT US & FOUNDER LEADERSHIP ── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#0d0d0e] text-white border border-black/20 rounded-[32px] sm:rounded-[44px] p-8 sm:p-16 lg:p-20 shadow-2xl relative overflow-hidden grid-pattern-dark" id="founder">
+        
+        {/* Glow Accents */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 pb-8 border-b border-white/10">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+                <User className="w-3.5 h-3.5" />
+                Leadership &amp; Engineering Philosophy
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+                About Us &amp; Founder Leadership
               </h2>
+              <p className="text-slate-400 text-sm sm:text-base mt-2 max-w-2xl">
+                Technical excellence and clear communication to deliver reliable software solutions across industry verticals.
+              </p>
             </div>
             <Link
-              href="/solutions"
-              className="text-sm font-semibold text-slate-900 hover:text-teal-700 flex items-center gap-1"
+              href="/about"
+              className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-wider group"
             >
-              <span>View All Solutions</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Explore Full Story</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
-          <div className="space-y-12">
+          {/* Main Founder Card & Bio Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
-            {/* Block 1 */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center corporate-card p-6 sm:p-8">
-              <div className="lg:col-span-7 relative h-[280px] sm:h-[360px] rounded-xl overflow-hidden bg-slate-100">
-                <NextImage
-                  src="/hero_tech_ecosystem.jpg"
-                  alt="Technology Systems"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="lg:col-span-5 space-y-4">
-                <span className="text-xs font-semibold uppercase tracking-wider text-teal-700">
-                  Technology
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-bold text-slate-950">
-                  Digital systems designed for operational efficiency.
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  We build custom software, web platforms, and mobile applications that enable enterprises to automate critical tasks and scale without friction.
-                </p>
-                <div className="pt-2">
+            {/* Left: Founder Profile Card */}
+            <div className="lg:col-span-5">
+              <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 shadow-xl relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+                
+                {/* Top Founder Label */}
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest">
+                    Founder &amp; Director
+                  </span>
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono font-semibold">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>Direct Leadership</span>
+                  </div>
+                </div>
+
+                {/* Avatar / Portrait Block */}
+                <div className="relative mb-6 text-center flex flex-col items-center">
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-amber-400 p-1 shadow-2xl relative group-hover:scale-105 transition-transform duration-300">
+                    <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
+                      <NextImage
+                        src="/jagabandhu_kampa.jpeg"
+                        alt="Jagabandhu Kampa - Founder & Director OHO TECH"
+                        width={250}
+                        height={250}
+                        className="w-full h-full object-cover object-top"
+                        priority
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Founder Info */}
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                    Jagabandhu Kampa
+                  </h3>
+                  <p className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mt-1">
+                    Founder &amp; Director
+                  </p>
+                  <p className="text-xs text-slate-400 mt-2">
+                    Architecting Custom Software, Business Systems &amp; Digital Growth Strategies
+                  </p>
+                </div>
+
+                {/* Contact Action Buttons */}
+                <div className="flex items-center justify-center gap-3">
                   <Link
-                    href="/solutions/business-enterprise"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-950 hover:text-teal-700 transition-colors"
+                    href="/contact"
+                    className="flex-1 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider transition-all shadow-md"
                   >
-                    <span>Explore Technology Solutions</span>
-                    <ArrowRight className="w-4 h-4" />
+                    Contact Founder
+                  </Link>
+                  <Link
+                    href="/about"
+                    className="py-2.5 px-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-mono text-xs text-center font-bold border border-white/10 transition-all"
+                  >
+                    About Us
                   </Link>
                 </div>
+
               </div>
             </div>
 
-            {/* Block 2 */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center corporate-card p-6 sm:p-8">
-              <div className="lg:col-span-5 space-y-4 lg:order-1 order-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-teal-700">
-                  Infrastructure
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-bold text-slate-950">
-                  Reliable systems built for long-term growth.
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  From enterprise ERP to cloud architecture, our infrastructure solutions ensure stability, security, and continuous uptime.
-                </p>
-                <div className="pt-2">
-                  <Link
-                    href="/solutions/logistics-transport"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-950 hover:text-teal-700 transition-colors"
-                  >
-                    <span>Explore Infrastructure</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+            {/* Right: Founder Quote */}
+            <div className="lg:col-span-7 flex flex-col justify-between space-y-8">
+              
+              <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 sm:p-10 shadow-xl relative">
+                <Quote className="w-10 h-10 text-emerald-500/30 mb-4" />
+                <p className="text-lg sm:text-xl font-medium text-slate-200 leading-relaxed italic">&quot;At OHO TECH, our mission is to deliver straightforward, high-performance software engineering for businesses. Under Jagabandhu Kampa&apos;s leadership, we build digital systems that provide real operational clarity across healthcare, education, retail, and enterprise sectors.&quot;</p>
+                <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-bold text-white">Jagabandhu Kampa</div>
+                    <div className="text-xs font-mono text-slate-400">Founder &amp; Director, OHO TECH</div>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Direct Leadership
+                  </div>
                 </div>
               </div>
-              <div className="lg:col-span-7 relative h-[280px] sm:h-[360px] rounded-xl overflow-hidden bg-slate-100 lg:order-2 order-1">
-                <NextImage
-                  src="/hero_launch_artwork.png"
-                  alt="Infrastructure Systems"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
 
-            {/* Block 3 */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center corporate-card p-6 sm:p-8">
-              <div className="lg:col-span-7 relative h-[280px] sm:h-[360px] rounded-xl overflow-hidden bg-slate-100">
-                <NextImage
-                  src="/hero_workspace_editorial.jpg"
-                  alt="Renewable Energy & Sustainability"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="lg:col-span-5 space-y-4">
-                <span className="text-xs font-semibold uppercase tracking-wider text-teal-700">
-                  Renewable Energy
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-bold text-slate-950">
-                  Smarter energy solutions for a sustainable future.
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  Engineering clean energy integrations and utility monitoring systems to power sustainable industrial operations.
-                </p>
-                <div className="pt-2">
-                  <Link
-                    href="/solutions/manufacturing"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-950 hover:text-teal-700 transition-colors"
-                  >
-                    <span>Explore Renewable Energy</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
             </div>
 
           </div>
 
         </div>
+
       </section>
 
-      {/* ── SECTION 5: WHY OHO TECHN (CORPORATE CREDIBILITY) ── */}
-      <section className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="mb-16">
-          <span className="text-xs font-semibold uppercase tracking-wider text-teal-700 block mb-2">
-            Engineering Principles
-          </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-950 tracking-tight">
-            Built for Real-World Impact.
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="space-y-3 pt-4 border-t border-slate-300">
-            <div className="text-2xl font-bold text-slate-400 font-mono">01</div>
-            <h3 className="text-lg font-bold text-slate-950">Practical Innovation</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Technology designed around actual business requirements rather than trendy gimmicks.
-            </p>
-          </div>
-
-          <div className="space-y-3 pt-4 border-t border-slate-300">
-            <div className="text-2xl font-bold text-slate-400 font-mono">02</div>
-            <h3 className="text-lg font-bold text-slate-950">Reliable Execution</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Solutions engineered for long-term operational performance and security.
-            </p>
-          </div>
-
-          <div className="space-y-3 pt-4 border-t border-slate-300">
-            <div className="text-2xl font-bold text-slate-400 font-mono">03</div>
-            <h3 className="text-lg font-bold text-slate-950">End-to-End Capability</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              From strategy and system design to implementation and ongoing maintenance.
-            </p>
-          </div>
-
-          <div className="space-y-3 pt-4 border-t border-slate-300">
-            <div className="text-2xl font-bold text-slate-400 font-mono">04</div>
-            <h3 className="text-lg font-bold text-slate-950">Long-Term Partnership</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              We build lasting organizational relationships, not quick one-off projects.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 6: INDUSTRIES WE SERVE ── */}
-      <section className="py-20 lg:py-28 bg-white border-y border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-semibold uppercase tracking-wider text-teal-700 block mb-2">
-              Industry Focus
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-950 tracking-tight">
-              Industries We Serve
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
-            <div className="p-6 rounded-lg bg-slate-50 border border-slate-200/80">
-              <Building2 className="w-6 h-6 mx-auto mb-3 text-slate-700" />
-              <div className="text-sm font-semibold text-slate-900">Infrastructure</div>
-            </div>
-
-            <div className="p-6 rounded-lg bg-slate-50 border border-slate-200/80">
-              <Zap className="w-6 h-6 mx-auto mb-3 text-slate-700" />
-              <div className="text-sm font-semibold text-slate-900">Energy</div>
-            </div>
-
-            <div className="p-6 rounded-lg bg-slate-50 border border-slate-200/80">
-              <Globe className="w-6 h-6 mx-auto mb-3 text-slate-700" />
-              <div className="text-sm font-semibold text-slate-900">Real Estate</div>
-            </div>
-
-            <div className="p-6 rounded-lg bg-slate-50 border border-slate-200/80">
-              <Server className="w-6 h-6 mx-auto mb-3 text-slate-700" />
-              <div className="text-sm font-semibold text-slate-900">Enterprise</div>
-            </div>
-
-            <div className="p-6 rounded-lg bg-slate-50 border border-slate-200/80">
-              <Cpu className="w-6 h-6 mx-auto mb-3 text-slate-700" />
-              <div className="text-sm font-semibold text-slate-900">Technology</div>
-            </div>
-
-            <div className="p-6 rounded-lg bg-slate-50 border border-slate-200/80">
-              <ShieldCheck className="w-6 h-6 mx-auto mb-3 text-slate-700" />
-              <div className="text-sm font-semibold text-slate-900">Public &amp; Institutional</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 7: COMPANY / LEADERSHIP ── */}
-      <section className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          <div className="lg:col-span-5">
-            <div className="relative aspect-square max-w-md mx-auto rounded-2xl overflow-hidden border border-slate-200 shadow-md">
-              <NextImage
-                src="/jagabandhu_kampa.jpeg"
-                alt="Jagabandhu Kampa - Founder & Director"
-                fill
-                className="object-cover object-top"
-              />
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 space-y-6">
-            <span className="text-xs font-semibold uppercase tracking-wider text-teal-700">
-              Leadership
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-950 tracking-tight">
-              People Behind the Vision.
-            </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
-              OHO TECHN is driven by Founder &amp; Director Jagabandhu Kampa, focusing on straightforward engineering principles, operational clarity, and robust enterprise software deployment.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/about"
-                className="px-6 py-3 rounded-md bg-slate-950 hover:bg-slate-800 text-white font-medium text-xs tracking-wide inline-flex items-center gap-2 transition-all"
-              >
-                <span>Meet OHO TECHN</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ── SECTION 8: FINAL CORPORATE CTA ── */}
-      <section className="py-20 lg:py-28 bg-[#090a0f] text-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight">
-            Let’s Build What’s Next.
-          </h2>
-          <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Have a project, challenge or idea? Let’s explore how OHO TECHN can help your organization operate smarter.
-          </p>
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/contact"
-              className="px-8 py-3.5 rounded-md bg-white hover:bg-slate-100 text-slate-950 font-semibold text-sm transition-all shadow-xs"
-            >
-              Start a Conversation
-            </Link>
-
-            <Link
-              href="/solutions"
-              className="px-8 py-3.5 rounded-md bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-sm border border-slate-800 transition-all"
-            >
-              View Solutions
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* ── 10. FINAL CALL TO ACTION ── */}
+      <FinalCTASection />
 
     </div>
   );
