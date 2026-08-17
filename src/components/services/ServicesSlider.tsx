@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Service } from '@/config/services';
 import { cn } from '@/lib/utils';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface ServicesSliderProps {
   servicesList: Service[];
@@ -74,7 +74,7 @@ export function ServicesSlider({
     }
   };
 
-  // Auto-scroll loop (4.5 seconds, pauses on mouse hover)
+  // Continuous Auto-Scroll Loop (every 3 seconds)
   React.useEffect(() => {
     if (isHovered || servicesList.length <= 1) return;
     const autoInterval = setInterval(() => {
@@ -83,7 +83,7 @@ export function ServicesSlider({
         scrollToIndex(next);
         return next;
       });
-    }, 4500);
+    }, 3000);
     return () => clearInterval(autoInterval);
   }, [isHovered, servicesList.length, scrollToIndex]);
 
@@ -185,7 +185,7 @@ export function ServicesSlider({
 
                 {isActive && (
                   <span className="text-[10px] font-mono font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full animate-pulse">
-                    CENTER
+                    AUTO-SCROLLING ⚡
                   </span>
                 )}
               </div>

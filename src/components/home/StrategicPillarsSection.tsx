@@ -57,13 +57,13 @@ const pillars: Pillar[] = [
 ];
 
 export function StrategicPillarsSection() {
-  const [activeIndex, setActiveIndex] = React.useState(1); // Default center on DIRECTION 02 (index 1)
+  const [activeIndex, setActiveIndex] = React.useState(0);
   const [isHovered, setIsHovered] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const cardRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
   // Scroll active card into the exact center of the container
-  const scrollToIndex = (index: number) => {
+  const scrollToIndex = React.useCallback((index: number) => {
     setActiveIndex(index);
     const container = containerRef.current;
     const card = cardRefs.current[index];
@@ -79,15 +79,15 @@ export function StrategicPillarsSection() {
         behavior: 'smooth',
       });
     }
-  };
+  }, []);
 
   // Center initial card on mount
   React.useEffect(() => {
     const timer = setTimeout(() => {
-      scrollToIndex(1);
-    }, 100);
+      scrollToIndex(0);
+    }, 150);
     return () => clearTimeout(timer);
-  }, []);
+  }, [scrollToIndex]);
 
   // Update active index dynamically on horizontal scroll
   const handleScroll = () => {
@@ -113,7 +113,7 @@ export function StrategicPillarsSection() {
     }
   };
 
-  // Optional subtle auto-slide (pauses on mouse hover)
+  // Continuous Auto-Scroll Loop (every 3 seconds)
   React.useEffect(() => {
     if (isHovered) return;
     const autoInterval = setInterval(() => {
@@ -122,34 +122,23 @@ export function StrategicPillarsSection() {
         scrollToIndex(next);
         return next;
       });
-    }, 6000);
+    }, 3000);
     return () => clearInterval(autoInterval);
-  }, [isHovered]);
-
-  const handlePrev = () => {
-    const nextIndex = activeIndex > 0 ? activeIndex - 1 : pillars.length - 1;
-    scrollToIndex(nextIndex);
-  };
-
-  const handleNext = () => {
-    const nextIndex = activeIndex < pillars.length - 1 ? activeIndex + 1 : 0;
-    scrollToIndex(nextIndex);
-  };
+  }, [isHovered, scrollToIndex]);
 
   return (
-    <div className="w-full my-6 relative overflow-hidden select-none">
-
+    <div
+      className="w-full my-6 relative overflow-hidden select-none"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Main Slider Wrapper with Left & Right Cloud Fog Masking Overlays */}
-      <div
-        className="relative w-full py-8"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
+      <div className="relative w-full py-8">
         {/* Left Side Cloud Fog Mask */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-r from-[#f7f7f5] via-[#f7f7f5]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+        <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-r from-[#f8f9fb] via-[#f8f9fb]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
         {/* Right Side Cloud Fog Mask */}
-        <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-l from-[#f7f7f5] via-[#f7f7f5]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+        <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-l from-[#f8f9fb] via-[#f8f9fb]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
         {/* Horizontal Scroll Track */}
         <div
@@ -171,7 +160,7 @@ export function StrategicPillarsSection() {
                 className={`snap-center shrink-0 w-[290px] sm:w-[340px] md:w-[380px] p-8 rounded-[32px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden ${
                   isActive
                     ? 'bg-white border-2 border-emerald-500 shadow-2xl shadow-emerald-500/20 ring-4 ring-emerald-500/15 scale-105 opacity-100 z-30 blur-0'
-                    : 'bg-[#fafafa]/90 border-2 border-slate-200/90 opacity-45 hover:opacity-85 hover:border-slate-300 scale-90 z-10 blur-[1.5px]'
+                    : 'bg-[#ffffff]/80 border-2 border-slate-200/90 opacity-45 hover:opacity-85 hover:border-slate-300 scale-90 z-10 blur-[1.5px]'
                 }`}
               >
                 {/* 4K Solid Background Glow Effect when active */}
@@ -195,7 +184,7 @@ export function StrategicPillarsSection() {
                     {isActive && (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-extrabold uppercase tracking-wider shadow-sm animate-pulse">
                         <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                        CENTER VIEW
+                        AUTO-SCROLLING
                       </span>
                     )}
                   </div>
@@ -270,7 +259,6 @@ export function StrategicPillarsSection() {
           })}
         </div>
       </div>
-
     </div>
   );
 }
