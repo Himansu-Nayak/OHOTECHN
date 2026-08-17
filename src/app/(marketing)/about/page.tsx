@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { User, CheckCircle2, Quote, ShieldCheck, ArrowRight, Sparkles, Building2, Award, Code2 } from 'lucide-react';
+import { User, CheckCircle2, Quote, ShieldCheck, ArrowRight, Sparkles, Building2, Award, Code2, ExternalLink } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'About Us & Founder Leadership | OHO TECH',
@@ -215,13 +215,27 @@ export default async function AboutPage() {
                     Architecting modern web applications, high-performance API endpoints, and fluid user experiences.
                   </p>
 
-                  <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-center gap-3">
+                  <div className="mt-6 pt-6 border-t border-white/10 flex flex-col gap-2.5">
                     <Link
                       href="/contact"
-                      className="px-6 py-2.5 rounded-full bg-teal-500 hover:bg-teal-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md"
+                      className="w-full py-2.5 rounded-full bg-teal-500 hover:bg-teal-400 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider transition-all shadow-md"
                     >
                       Connect with Himansu
                     </Link>
+
+                    {/* Direct LinkedIn Profile Link */}
+                    <a
+                      href="https://www.linkedin.com/in/himansu-nayak-243b0482h7/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 px-4 rounded-full bg-[#0077b5]/20 hover:bg-[#0077b5]/35 text-[#38bdf8] hover:text-white font-mono text-xs text-center font-bold border border-[#0077b5]/40 transition-all flex items-center justify-center gap-2 group/linkedin"
+                    >
+                      <svg className="w-4 h-4 shrink-0 fill-[#0077b5] group-hover/linkedin:scale-110 transition-transform" viewBox="0 0 24 24">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.74a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Z" />
+                      </svg>
+                      <span>Connect on LinkedIn</span>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                    </a>
                   </div>
 
                 </div>
