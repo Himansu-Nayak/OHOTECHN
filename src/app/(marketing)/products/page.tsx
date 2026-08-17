@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Copy, ExternalLink, Key, Search, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Copy, ExternalLink, Key, Search, ShieldCheck, Sparkles, MonitorPlay } from 'lucide-react';
 import { softwareDemos, SoftwareDemo } from '@/config/demos';
 import { cn } from '@/lib/utils';
 
@@ -70,16 +70,16 @@ export default function ProductsCatalogPage() {
             </div>
             
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-[1.08]">
-              Ready-to-Deploy Software Products &amp; Live Demos
+              Turnkey Software Products &amp; Live Demo Portals
             </h1>
             
             <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal max-w-3xl mx-auto leading-relaxed">
-              Test drive our turnkey software applications instantly. Browse 28 live product environments complete with direct admin, user, and student credentials.
+              Test drive our turnkey software applications instantly. Explore 28 live product environments complete with direct admin, doctor, user, and student credentials.
             </p>
           </div>
         </section>
 
-        {/* Search & Filter Bar Section */}
+        {/* Search & Category Filter Section */}
         <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-8 shadow-sm mb-10" id="products-filter-section">
           
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-200">
@@ -95,7 +95,7 @@ export default function ProductsCatalogPage() {
               />
             </div>
 
-            {/* Verticals Filter Pills */}
+            {/* Category Filter Pills */}
             <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 no-scrollbar">
               {categories.map((cat) => (
                 <button
@@ -114,11 +114,11 @@ export default function ProductsCatalogPage() {
             </div>
           </div>
 
-          <div className="pt-4 flex items-center justify-between text-xs font-mono text-slate-500">
-            <span>Showing {filteredDemos.length} of 28 Live Software Applications</span>
+          <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-slate-500">
+            <span>Displaying {filteredDemos.length} of 28 Live Software Applications</span>
             <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Live Demo Logins Active
+              All 28 Live Demo Environments Verified &amp; Active
             </span>
           </div>
 
@@ -134,22 +134,38 @@ export default function ProductsCatalogPage() {
               return (
                 <div
                   key={demo.id}
-                  className="bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-[28px] p-7 transition-all duration-300 flex flex-col justify-between hover:shadow-xl relative overflow-hidden group"
+                  className="bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-[32px] p-7 transition-all duration-300 flex flex-col justify-between hover:shadow-2xl relative overflow-hidden group"
                 >
-                  <div>
-                    {/* Header Badge & Category */}
+                  {/* Decorative Subtle Background Glow on Hover */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+
+                  <div className="relative z-10">
+                    
+                    {/* Header Icon & Category Badge */}
                     <div className="flex items-center justify-between mb-5">
-                      <span className={cn('text-[11px] font-mono font-bold px-3 py-1 rounded-full border', getBadgeStyle(demo.badgeColor))}>
-                        DEMO 0{demo.id} • {demo.category.toUpperCase()}
-                      </span>
-                      <span className="text-[10px] font-mono font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                        LIVE DEMO ⚡
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                          {demo.emoji || '⚡'}
+                        </div>
+                        <div>
+                          <span className={cn('text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider', getBadgeStyle(demo.badgeColor))}>
+                            {demo.category}
+                          </span>
+                          <div className="text-[10px] font-mono text-slate-400 font-bold mt-0.5">
+                            PRODUCT #0{demo.id}
+                          </div>
+                        </div>
+                      </div>
+
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full animate-pulse shadow-2xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        LIVE
                       </span>
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">
-                      {demo.title}
+                    <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors flex items-center gap-2">
+                      <span>{demo.title}</span>
                     </h3>
 
                     {/* Description */}
@@ -157,10 +173,11 @@ export default function ProductsCatalogPage() {
                       {demo.description}
                     </p>
 
-                    {/* Key Features List */}
-                    <div className="mb-6 space-y-2 bg-white p-4 rounded-2xl border border-slate-200/80">
-                      <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-2">
-                        System Features
+                    {/* System Features */}
+                    <div className="mb-6 space-y-2 bg-white p-4 rounded-2xl border border-slate-200">
+                      <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>Core Capabilities</span>
+                        <MonitorPlay className="w-3.5 h-3.5 text-slate-400" />
                       </div>
                       {demo.features.map((feat, i) => (
                         <div key={i} className="flex items-center gap-2 text-xs text-slate-700 font-medium">
@@ -170,11 +187,14 @@ export default function ProductsCatalogPage() {
                       ))}
                     </div>
 
-                    {/* Demo Accounts & Credentials Accordion */}
+                    {/* Live Credentials Accordion Box */}
                     <div className="mb-6 space-y-2.5">
-                      <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                        <Key className="w-3.5 h-3.5 text-amber-500" />
-                        Live Demo Credentials ({demo.accounts.length})
+                      <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Key className="w-3.5 h-3.5 text-amber-500" />
+                          Demo Credentials ({demo.accounts.length})
+                        </span>
+                        <span className="text-[10px] text-slate-400">Click to Copy</span>
                       </div>
 
                       {demo.accounts.map((acc, accIdx) => {
@@ -185,10 +205,10 @@ export default function ProductsCatalogPage() {
                         return (
                           <div
                             key={accIdx}
-                            className="bg-white border border-slate-200 rounded-xl p-3.5 text-xs font-mono flex flex-col gap-1.5 shadow-2xs hover:border-slate-300 transition-colors"
+                            className="bg-white border border-slate-200 hover:border-slate-300 rounded-2xl p-3.5 text-xs font-mono flex flex-col gap-1.5 shadow-2xs transition-colors"
                           >
                             <div className="flex items-center justify-between">
-                              <span className="font-bold text-[#0d0d0e] text-[11px] uppercase tracking-wide flex items-center gap-1">
+                              <span className="font-bold text-[#0d0d0e] text-[11px] uppercase tracking-wide flex items-center gap-1.5">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                 {acc.role}
                               </span>
@@ -206,19 +226,21 @@ export default function ProductsCatalogPage() {
                               )}
                             </div>
 
-                            {/* Username / Email */}
+                            {/* Username / Email Field */}
                             {(acc.email || acc.username) && (
-                              <div className="flex items-center justify-between text-slate-600 text-[11px] bg-slate-50 px-2.5 py-1 rounded-lg">
+                              <div className="flex items-center justify-between text-slate-600 text-[11px] bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-lg">
                                 <span className="truncate">
-                                  ID: <strong className="text-slate-900">{acc.email || acc.username}</strong>
+                                  ID: <strong className="text-slate-900 font-bold">{acc.email || acc.username}</strong>
                                 </span>
                                 <button
                                   onClick={() => copyToClipboard(acc.email || acc.username || '', emailKey)}
-                                  className="text-slate-400 hover:text-slate-900 p-0.5 rounded transition-colors"
+                                  className="text-slate-400 hover:text-emerald-600 p-0.5 rounded transition-colors flex items-center gap-1"
                                   title="Copy Username"
                                 >
                                   {copiedKey === emailKey ? (
-                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                    <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
+                                      <Check className="w-3 h-3" /> Copied
+                                    </span>
                                   ) : (
                                     <Copy className="w-3.5 h-3.5" />
                                   )}
@@ -226,19 +248,21 @@ export default function ProductsCatalogPage() {
                               </div>
                             )}
 
-                            {/* Password */}
+                            {/* Password Field */}
                             {acc.password && (
-                              <div className="flex items-center justify-between text-slate-600 text-[11px] bg-slate-50 px-2.5 py-1 rounded-lg">
+                              <div className="flex items-center justify-between text-slate-600 text-[11px] bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-lg">
                                 <span className="truncate">
-                                  Pass: <strong className="text-slate-900">{acc.password}</strong>
+                                  Pass: <strong className="text-slate-900 font-bold">{acc.password}</strong>
                                 </span>
                                 <button
                                   onClick={() => copyToClipboard(acc.password || '', passKey)}
-                                  className="text-slate-400 hover:text-slate-900 p-0.5 rounded transition-colors"
+                                  className="text-slate-400 hover:text-emerald-600 p-0.5 rounded transition-colors flex items-center gap-1"
                                   title="Copy Password"
                                 >
                                   {copiedKey === passKey ? (
-                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                    <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
+                                      <Check className="w-3 h-3" /> Copied
+                                    </span>
                                   ) : (
                                     <Copy className="w-3.5 h-3.5" />
                                   )}
@@ -252,7 +276,7 @@ export default function ProductsCatalogPage() {
                   </div>
 
                   {/* Actions Footer */}
-                  <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
+                  <div className="relative z-10 pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
                     <a
                       href={demoUrl}
                       target="_blank"
