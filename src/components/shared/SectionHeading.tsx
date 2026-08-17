@@ -5,6 +5,7 @@ interface SectionHeadingProps {
   title: string;
   description?: string;
   align?: 'center' | 'left';
+  className?: string;
 }
 
 export default function SectionHeading({
@@ -12,19 +13,20 @@ export default function SectionHeading({
   title,
   description,
   align = 'center',
+  className,
 }: SectionHeadingProps) {
   return (
-    <div className={cn('flex flex-col', align === 'center' ? 'items-center text-center' : 'items-start text-left')}>
+    <div className={cn('flex flex-col mb-12 sm:mb-16', align === 'center' ? 'items-center text-center' : 'items-start text-left', className)}>
       {eyebrow && (
-        <span className="text-sm font-semibold uppercase tracking-widest text-primary mb-3">
+        <span className="text-xs font-semibold uppercase tracking-wider text-teal-700 mb-2.5">
           {eyebrow}
         </span>
       )}
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-4 tracking-tight">
+      <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-slate-950 tracking-tight leading-tight mb-3">
         {title}
       </h2>
       {description && (
-        <p className={cn('text-lg text-neutral-500 max-w-2xl', align === 'center' && 'mx-auto')}>
+        <p className={cn('text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl', align === 'center' && 'mx-auto')}>
           {description}
         </p>
       )}
