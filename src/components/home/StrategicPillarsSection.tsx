@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 
 interface Pillar {
   id: string;
@@ -58,10 +58,11 @@ const pillars: Pillar[] = [
 
 export function StrategicPillarsSection() {
   const [activeIndex, setActiveIndex] = React.useState(1); // Default center on DIRECTION 02 (index 1)
+  const [isHovered, setIsHovered] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const cardRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
-  // Scroll active card into the center of the container
+  // Scroll active card into the exact center of the container
   const scrollToIndex = (index: number) => {
     setActiveIndex(index);
     const container = containerRef.current;
@@ -82,10 +83,13 @@ export function StrategicPillarsSection() {
 
   // Center initial card on mount
   React.useEffect(() => {
-    scrollToIndex(1);
+    const timer = setTimeout(() => {
+      scrollToIndex(1);
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Update active index based on scroll position
+  // Update active index dynamically on horizontal scroll
   const handleScroll = () => {
     const container = containerRef.current;
     if (!container) return;
@@ -109,6 +113,19 @@ export function StrategicPillarsSection() {
     }
   };
 
+  // Optional subtle auto-slide (pauses on mouse hover)
+  React.useEffect(() => {
+    if (isHovered) return;
+    const autoInterval = setInterval(() => {
+      setActiveIndex((prev) => {
+        const next = (prev + 1) % pillars.length;
+        scrollToIndex(next);
+        return next;
+      });
+    }, 6000);
+    return () => clearInterval(autoInterval);
+  }, [isHovered]);
+
   const handlePrev = () => {
     const nextIndex = activeIndex > 0 ? activeIndex - 1 : pillars.length - 1;
     scrollToIndex(nextIndex);
@@ -120,120 +137,184 @@ export function StrategicPillarsSection() {
   };
 
   return (
-    <div className="w-full my-12 relative">
+    <div className="w-full my-14 relative overflow-hidden select-none">
       
-      {/* Controls Top Header */}
-      <div className="flex items-center justify-between mb-6 px-2">
-        <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest">
-          Scrollable Strategic Directions ({activeIndex + 1} / {pillars.length})
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label="Previous direction"
-            className="w-10 h-10 rounded-full bg-white border-2 border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-600 flex items-center justify-center transition-all shadow-xs active:scale-95"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label="Next direction"
-            className="w-10 h-10 rounded-full bg-white border-2 border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-600 flex items-center justify-center transition-all shadow-xs active:scale-95"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Horizontal Scrolling Carousel Container */}
-      <div
-        ref={containerRef}
-        onScroll={handleScroll}
-        className="flex gap-6 overflow-x-auto scroll-smooth py-6 px-[10vw] sm:px-[25vw] no-scrollbar snap-x snap-mandatory focus:outline-none"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
-        {pillars.map((pillar, index) => {
-          const isActive = index === activeIndex;
-
-          return (
-            <div
-              key={pillar.id}
-              ref={(el) => {
-                cardRefs.current[index] = el;
-              }}
-              onClick={() => scrollToIndex(index)}
-              className={`snap-center shrink-0 w-[280px] sm:w-[320px] md:w-[360px] p-7 rounded-[28px] cursor-pointer transition-all duration-300 flex flex-col justify-between select-none ${
-                isActive
-                  ? 'bg-white border-2 border-emerald-500 shadow-xl shadow-emerald-500/10 ring-4 ring-emerald-500/10 scale-100 z-10'
-                  : 'bg-[#fafafa] border-2 border-slate-200/90 opacity-75 hover:opacity-100 hover:border-slate-300 scale-95 z-0'
-              }`}
-            >
-              <div>
-                <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 text-2xl transition-transform ${
-                    pillar.color === 'amber'
-                      ? 'bg-amber-50 text-amber-600'
-                      : 'bg-emerald-50 text-emerald-600'
-                  } ${isActive ? 'scale-110' : ''}`}
-                >
-                  {pillar.icon}
-                </div>
-
-                <div
-                  className={`text-[11px] font-mono font-bold uppercase tracking-wider mb-1 ${
-                    pillar.color === 'amber' ? 'text-amber-600' : 'text-emerald-600'
-                  }`}
-                >
-                  {pillar.direction}
-                </div>
-
-                <h3 className="text-lg font-bold text-[#0d0d0e] mb-3 flex items-center gap-2">
-                  <span>{pillar.icon}</span>
-                  <span>{pillar.title}</span>
-                </h3>
-
-                <p className="text-xs text-slate-600 leading-relaxed mb-6">
-                  {pillar.description}
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-200/80 space-y-2">
-                {pillar.features.map((feature) => (
-                  <div
-                    key={feature}
-                    className="flex items-center gap-2 text-[11px] font-mono text-slate-700"
-                  >
-                    <CheckCircle2
-                      className={`w-3.5 h-3.5 shrink-0 ${
-                        pillar.color === 'amber' ? 'text-amber-600' : 'text-emerald-600'
-                      }`}
-                    />
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
+      {/* 4K Solid Outer Ambient Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        
+        {/* Section Header Controls Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-2xs">
+              <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
             </div>
-          );
-        })}
+            <div>
+              <div className="text-xs font-mono font-bold text-slate-800 uppercase tracking-widest">
+                4K Interactive Strategic Direction Carousel
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Scroll horizontally or use controls to center and inspect focus modules
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+              {pillars[activeIndex].direction} FOCUS ACTIVE 🎯
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Previous direction"
+                className="w-10 h-10 rounded-xl bg-white border-2 border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-600 flex items-center justify-center transition-all shadow-sm active:scale-95"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next direction"
+                className="w-10 h-10 rounded-xl bg-white border-2 border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-600 flex items-center justify-center transition-all shadow-sm active:scale-95"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      {/* Pagination Dots Indicator */}
-      <div className="flex items-center justify-center gap-2 mt-4">
-        {pillars.map((pillar, index) => (
-          <button
-            key={pillar.id}
-            onClick={() => scrollToIndex(index)}
-            aria-label={`Go to ${pillar.direction}`}
-            className={`h-2.5 rounded-full transition-all duration-300 ${
-              index === activeIndex
-                ? 'w-8 bg-emerald-600'
-                : 'w-2.5 bg-slate-300 hover:bg-slate-400'
-            }`}
-          />
-        ))}
+      {/* Main Slider Wrapper with Left & Right Cloud Fog Masking Overlays */}
+      <div
+        className="relative w-full py-8"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Left Side Cloud Fog Mask */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-r from-[#f7f7f5] via-[#f7f7f5]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+
+        {/* Right Side Cloud Fog Mask */}
+        <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-l from-[#f7f7f5] via-[#f7f7f5]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+
+        {/* Horizontal Scroll Track */}
+        <div
+          ref={containerRef}
+          onScroll={handleScroll}
+          className="flex gap-6 sm:gap-8 overflow-x-auto scroll-smooth py-6 px-[15vw] sm:px-[30vw] md:px-[35vw] no-scrollbar snap-x snap-mandatory focus:outline-none"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {pillars.map((pillar, index) => {
+            const isActive = index === activeIndex;
+
+            return (
+              <div
+                key={pillar.id}
+                ref={(el) => {
+                  cardRefs.current[index] = el;
+                }}
+                onClick={() => scrollToIndex(index)}
+                className={`snap-center shrink-0 w-[290px] sm:w-[340px] md:w-[380px] p-8 rounded-[32px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden ${
+                  isActive
+                    ? 'bg-white border-2 border-emerald-500 shadow-2xl shadow-emerald-500/20 ring-4 ring-emerald-500/15 scale-105 opacity-100 z-30 blur-0'
+                    : 'bg-[#fafafa]/90 border-2 border-slate-200/90 opacity-45 hover:opacity-85 hover:border-slate-300 scale-90 z-10 blur-[1.5px]'
+                }`}
+              >
+                {/* 4K Solid Background Glow Effect when active */}
+                {isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/5 via-teal-500/3 to-transparent pointer-events-none" />
+                )}
+
+                <div className="relative z-10">
+                  {/* Icon & Active Indicator Badge */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div
+                      className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl transition-all duration-300 shadow-sm ${
+                        pillar.color === 'amber'
+                          ? 'bg-amber-50 border border-amber-200/80 text-amber-600'
+                          : 'bg-emerald-50 border border-emerald-200/80 text-emerald-600'
+                      } ${isActive ? 'scale-110 rotate-3 shadow-md' : 'scale-100'}`}
+                    >
+                      {pillar.icon}
+                    </div>
+
+                    {isActive && (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-extrabold uppercase tracking-wider shadow-sm animate-pulse">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                        CENTER VIEW
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Direction Label */}
+                  <div
+                    className={`text-[11px] font-mono font-bold uppercase tracking-wider mb-2 transition-colors ${
+                      isActive
+                        ? pillar.color === 'amber'
+                          ? 'text-amber-600'
+                          : 'text-emerald-600'
+                        : 'text-slate-400'
+                    }`}
+                  >
+                    {pillar.direction}
+                  </div>
+
+                  {/* Card Title */}
+                  <h3
+                    className={`text-xl font-bold tracking-tight mb-3 transition-colors ${
+                      isActive ? 'text-[#0d0d0e]' : 'text-slate-700'
+                    }`}
+                  >
+                    {pillar.title}
+                  </h3>
+
+                  {/* Card Description */}
+                  <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                    {pillar.description}
+                  </p>
+                </div>
+
+                {/* Features Footer List */}
+                <div className="relative z-10 pt-5 border-t border-slate-200/90 space-y-2.5">
+                  {pillar.features.map((feature) => (
+                    <div
+                      key={feature}
+                      className="flex items-center gap-2 text-[11px] font-mono text-slate-700"
+                    >
+                      <CheckCircle2
+                        className={`w-4 h-4 shrink-0 transition-transform ${
+                          pillar.color === 'amber' ? 'text-amber-600' : 'text-emerald-600'
+                        } ${isActive ? 'scale-110' : 'scale-90'}`}
+                      />
+                      <span className={isActive ? 'font-semibold text-slate-900' : 'text-slate-600'}>
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Dynamic Pagination Indicator Dots */}
+        <div className="flex items-center justify-center gap-2.5 mt-6">
+          {pillars.map((pillar, index) => {
+            const isActive = index === activeIndex;
+            return (
+              <button
+                key={pillar.id}
+                onClick={() => scrollToIndex(index)}
+                aria-label={`Center ${pillar.direction}`}
+                className={`h-3 rounded-full transition-all duration-300 ${
+                  isActive
+                    ? 'w-10 bg-emerald-600 shadow-xs ring-2 ring-emerald-600/30'
+                    : 'w-3 bg-slate-300 hover:bg-slate-400'
+                }`}
+              />
+            );
+          })}
+        </div>
       </div>
 
     </div>
