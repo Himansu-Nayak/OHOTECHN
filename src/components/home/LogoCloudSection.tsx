@@ -38,14 +38,14 @@ export function LogoCloudSection() {
               OFFICIAL OHO BRAND LOGO
             </span>
 
-            <div className="p-4 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md mb-4 group-hover:scale-105 transition-transform duration-300 w-full flex justify-center items-center">
+            <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-md mb-4 group-hover:scale-105 transition-transform duration-300 w-full flex justify-center items-center">
               <NextImage
-                src="/OHO_TECH_LOGO_TRIMMED.png"
+                src="/OHO_TECH_LOGO.png"
                 alt="OHO TECH Brand Logo"
-                width={200}
-                height={60}
+                width={220}
+                height={70}
                 priority
-                className="h-12 sm:h-14 w-auto object-contain brightness-0 invert"
+                className="h-12 sm:h-14 w-auto object-contain"
               />
             </div>
 

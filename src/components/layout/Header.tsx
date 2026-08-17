@@ -38,7 +38,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" id="logo-link" className="flex items-center shrink-0 group py-0.5">
             <NextImage
-              src="/OHO_TECH_LOGO.svg"
+              src="/OHO_TECH_LOGO.png"
               alt="OHO TECH Logo"
               width={140}
               height={40}
@@ -377,7 +377,7 @@ export function Header() {
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-slate-100">
                 <NextImage
-                  src="/OHO_TECH_LOGO.svg"
+                  src="/OHO_TECH_LOGO.png"
                   alt="OHO TECH Logo"
                   width={130}
                   height={36}

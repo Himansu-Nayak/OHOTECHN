@@ -17,7 +17,7 @@ export default function Footer() {
           <div className="lg:col-span-1 space-y-4">
             <Link href="/" className="inline-block">
               <NextImage
-                src="/OHO_TECH_LOGO.svg"
+                src="/OHO_TECH_LOGO.png"
                 alt="OHO TECH Logo"
                 width={140}
                 height={40}
