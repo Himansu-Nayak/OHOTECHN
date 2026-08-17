@@ -16,20 +16,20 @@ export type Industry = {
 export const industries: Industry[] = [
   {
     slug: 'education',
-    name: 'Education',
+    name: 'Education & Vocational Skill Continuum',
     description:
-      'Comprehensive digital solutions for schools, colleges, universities, and coaching institutes.',
+      'Transformational digital solutions for the entire continuum of Vocational Education, Skill Development, e-Learning, Digital Assessment, and e-Governance.',
     iconName: 'GraduationCap',
     color: 'primary',
     products: [
+      { name: 'Vocational Skill Development ERP', slug: 'vocational-skill-development-erp', shortDescription: 'Transformational platform for vocational training institutes, skill development continuum, and employability tracking.' },
+      { name: 'Digital Assessment & Proctoring Engine', slug: 'digital-assessment-proctoring-engine', shortDescription: 'Secure digital assessments, auto-grading, skill evaluation, and certification portals.' },
+      { name: 'e-Governance Educational Portal', slug: 'egovernance-educational-portal', shortDescription: 'e-Governance infrastructure for state skill missions, literacy tracking, accessibility & inclusion.' },
       { name: 'School Management Software', slug: 'school-management-software', shortDescription: 'Complete school administration, attendance, fees, and parent communication.' },
       { name: 'College ERP', slug: 'college-erp', shortDescription: 'End-to-end college management with admissions, exams, and placement modules.' },
       { name: 'University Management System', slug: 'university-management-system', shortDescription: 'Multi-campus university operations, research, and accreditation tracking.' },
       { name: 'Coaching Institute Management', slug: 'coaching-institute-management', shortDescription: 'Batch management, fee tracking, and performance analytics for coaching centres.' },
-      { name: 'Learning Management System', slug: 'learning-management-system', shortDescription: 'Online courses, assessments, certifications, and learner progress tracking.' },
-      { name: 'Library Management System', slug: 'library-management-system', shortDescription: 'Book cataloguing, issue/return, digital library, and fine management.' },
-      { name: 'Hostel Management System', slug: 'hostel-management-system', shortDescription: 'Room allocation, mess management, and hostel fee tracking.' },
-      { name: 'Online Examination System', slug: 'online-examination-system', shortDescription: 'Secure online exams with proctoring, auto-grading, and result analysis.' },
+      { name: 'Learning Management System (LMS)', slug: 'learning-management-system', shortDescription: 'Online courses, interactive e-Learning content, assessments, and certifications.' },
     ],
   },
   {

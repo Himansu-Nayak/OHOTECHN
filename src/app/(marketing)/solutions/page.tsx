@@ -51,6 +51,56 @@ export default function SolutionsHubPage() {
         {/* Industry Solutions Showcase Grid */}
         <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="solutions-grid-section">
           
+          {/* Flagship Feature Highlights (Marg ERP & Vocational Skill Continuum Inspired) */}
+          <div className="mb-16 p-8 sm:p-10 rounded-3xl bg-[#0d0d0e] text-white border border-black shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10">
+              <div className="inline-block text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest mb-3">
+                ⚡ FLAGSHIP ENTERPRISE MODULES
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight mb-4">
+                Advanced GST Billing, Mobile Ecosystem &amp; Vocational Skill e-Governance
+              </h2>
+              <p className="text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed mb-8">
+                Empowering businesses and educational institutions across the region with transformational digital solutions—from WhatsApp e-Invoicing and connected banking to the entire Vocational Education &amp; Skill Development continuum.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="text-2xl mb-2">💬</div>
+                  <h4 className="text-base font-bold text-white mb-1">WhatsApp Billing &amp; GST</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Automated e-Invoicing, e-Way bills, and instant WhatsApp PDF receipts with payment links.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="text-2xl mb-2">📱</div>
+                  <h4 className="text-base font-bold text-white mb-1">Mobile Apps Ecosystem</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Dedicated mobile apps: Owner Analytics App, Salesperson Order App, and Delivery Tracking.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="text-2xl mb-2">🏦</div>
+                  <h4 className="text-base font-bold text-white mb-1">Connected Banking API</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Direct API bank sync (ICICI, HDFC, SBI) for instant automated bank reconciliation and payouts.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="text-2xl mb-2">🎓</div>
+                  <h4 className="text-base font-bold text-white mb-1">Vocational Skill ERP</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    e-Learning, Digital Assessment, Skill Development continuum, and e-Governance portals.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
             <div>
               <div className="inline-block text-xs font-mono font-bold text-emerald-600 uppercase tracking-widest mb-2">
