@@ -40,11 +40,12 @@ export function Header() {
             <NextImage
               src="/OHO_TECH_LOGO.png"
               alt="OHO TECH Logo"
-              width={140}
-              height={40}
+              width={260}
+              height={80}
               priority
-              style={{ width: 'auto', height: 'auto' }}
-              className="h-8 sm:h-10 max-h-10 w-auto object-contain transition-transform group-hover:scale-105"
+              quality={100}
+              unoptimized
+              className="h-11 sm:h-14 lg:h-16 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
 
@@ -379,10 +380,11 @@ export function Header() {
                 <NextImage
                   src="/OHO_TECH_LOGO.png"
                   alt="OHO TECH Logo"
-                  width={130}
-                  height={36}
-                  style={{ width: 'auto', height: 'auto' }}
-                  className="h-9 max-h-9 w-auto object-contain"
+                  width={220}
+                  height={70}
+                  quality={100}
+                  unoptimized
+                  className="h-10 sm:h-12 w-auto object-contain"
                 />
                 <button onClick={() => setIsMobileOpen(false)} className="p-1 text-slate-400 hover:text-[#0d0d0e]">
                   <X className="w-6 h-6" />
