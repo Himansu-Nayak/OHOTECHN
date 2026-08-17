@@ -374,6 +374,59 @@ export default function WideStudioPage() {
 
           </div>
 
+          {/* ── CORE ENGINEERING TEAM MEMBER: HIMANSU NAYAK ── */}
+          <div className="mt-12 pt-12 border-t border-white/10">
+            <div className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest mb-6">
+              CORE ENGINEERING LEADERSHIP &amp; DEVELOPMENT TEAM
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Himansu Nayak Card */}
+              <div className="bg-[#141416] border border-white/10 hover:border-emerald-500/40 rounded-3xl p-7 transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest">
+                      Full-Stack Developer
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-400 font-semibold">
+                      MCA Graduate
+                    </span>
+                  </div>
+
+                  {/* Profile Picture */}
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-amber-400 p-1 mx-auto mb-5 shadow-xl group-hover:scale-105 transition-transform duration-300">
+                    <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
+                      <NextImage
+                        src="/himansu_nayak.png"
+                        alt="Himansu Nayak - Full-Stack Developer OHO TECH"
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="text-center mb-4">
+                    <h3 className="text-xl font-extrabold text-white tracking-tight">
+                      Himansu Nayak
+                    </h3>
+                    <p className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                      Full-Stack Developer
+                    </p>
+                    <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
+                      Completed MCA (Master of Computer Applications). Specializing in full-stack web application development, responsive UI engineering, and high-performance API integration.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
+                  <span>OHO TECH Engineering</span>
+                  <span className="text-emerald-400 font-semibold">Full-Stack Core</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </section>
