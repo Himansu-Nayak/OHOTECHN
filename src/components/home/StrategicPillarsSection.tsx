@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { CheckCircle2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 interface Pillar {
   id: string;
@@ -137,53 +137,7 @@ export function StrategicPillarsSection() {
   };
 
   return (
-    <div className="w-full my-14 relative overflow-hidden select-none">
-      
-      {/* 4K Solid Outer Ambient Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        
-        {/* Section Header Controls Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-2xs">
-              <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
-            </div>
-            <div>
-              <div className="text-xs font-mono font-bold text-slate-800 uppercase tracking-widest">
-                4K Interactive Strategic Direction Carousel
-              </div>
-              <p className="text-[11px] text-slate-500">
-                Scroll horizontally or use controls to center and inspect focus modules
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-              {pillars[activeIndex].direction} FOCUS ACTIVE 🎯
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handlePrev}
-                aria-label="Previous direction"
-                className="w-10 h-10 rounded-xl bg-white border-2 border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-600 flex items-center justify-center transition-all shadow-sm active:scale-95"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNext}
-                aria-label="Next direction"
-                className="w-10 h-10 rounded-xl bg-white border-2 border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-600 flex items-center justify-center transition-all shadow-sm active:scale-95"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </div>
+    <div className="w-full my-6 relative overflow-hidden select-none">
 
       {/* Main Slider Wrapper with Left & Right Cloud Fog Masking Overlays */}
       <div
