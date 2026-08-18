@@ -17,10 +17,10 @@ export const services: Service[] = [
     name: 'Software Development',
     category: 'technology',
     description:
-      'Full-cycle software development from ideation to deployment, using modern tech stacks and agile methodologies.',
+      'Full-cycle software development from ideation to deployment, using modern tech stacks (HTML5, CSS3, JavaScript, React, Next.js) and agile methodologies.',
     iconName: 'Code2',
     emoji: '💻',
-    features: ['Requirement Analysis', 'Architecture Design', 'Agile Development', 'Testing & QA', 'Deployment & Support'],
+    features: ['HTML5, CSS3 & JavaScript Core', 'React & Next.js Development', 'Architecture & Schema Design', 'Agile Execution', 'Testing, QA & Deployment'],
   },
   {
     slug: 'whatsapp-billing',
@@ -77,10 +77,10 @@ export const services: Service[] = [
     name: 'Website Development',
     category: 'technology',
     description:
-      'Responsive, SEO-optimized websites and web applications built with cutting-edge frameworks.',
+      'Responsive, SEO-optimized websites and web applications built with HTML5, CSS3, JavaScript, React, and modern web frameworks.',
     iconName: 'Globe',
     emoji: '🌐',
-    features: ['Responsive Design', 'SEO Optimization', 'CMS Integration', 'Performance Tuning', 'Security Audit'],
+    features: ['HTML5 & CSS3 Responsive Layouts', 'JavaScript & React Architecture', 'SEO Optimization', 'Performance Tuning', 'Security & Accessibility'],
   },
   {
     slug: 'android-app-development',
