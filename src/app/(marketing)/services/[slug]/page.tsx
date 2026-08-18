@@ -9,6 +9,7 @@ import * as Icons from 'lucide-react';
 
 import { Enterprise3DCard } from '@/components/services/Enterprise3DCard';
 import { FeaturesSlider } from '@/components/services/FeaturesSlider';
+import { DeliveryRoadmap } from '@/components/services/DeliveryRoadmap';
 
 function DynamicIcon({ name, ...props }: { name: string } & Icons.LucideProps) {
   const Icon = Icons[name as keyof typeof Icons] as Icons.LucideIcon;
@@ -95,41 +96,8 @@ export default async function ServiceDetailPage(props: { params: Promise<{ slug:
           </section>
         )}
 
-        {/* Process Section */}
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm mb-10" id="service-process">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
-            <div>
-              <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">
-                DELIVERY METHODOLOGY
-              </div>
-              <h2 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
-                How We Execute &amp; Deliver
-              </h2>
-            </div>
-            <p className="text-xs font-mono text-slate-500">
-              4-Phase Structured Development
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { step: '01', title: 'Discovery & Planning', desc: 'Analyzing technical requirements and mapping architecture.' },
-              { step: '02', title: 'Design & Strategy', desc: 'Crafting UI/UX prototypes, schemas, and system workflows.' },
-              { step: '03', title: 'Agile Execution', desc: 'Building codebases with continuous integration and security.' },
-              { step: '04', title: 'QA & Launch', desc: 'Comprehensive testing, server deployment, and handoff.' },
-            ].map((process, i) => (
-              <div key={i} className="p-7 bg-[#fafafa] border-2 border-slate-200 rounded-3xl flex flex-col justify-between" id={`process-step-${i}`}>
-                <div>
-                  <span className="text-xs font-mono font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200 inline-block mb-4">
-                    PHASE {process.step}
-                  </span>
-                  <h3 className="text-lg font-extrabold text-[#0d0d0e] mb-2">{process.title}</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">{process.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* Process Section - Delivery Roadmap */}
+        <DeliveryRoadmap />
 
         {/* CTA Section */}
         <section className="bg-[#0d0d0e] text-white border-2 border-slate-700 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-16 text-center shadow-2xl relative overflow-hidden" id="service-final-cta">
