@@ -5,7 +5,7 @@ import { User, CheckCircle2, Quote, ShieldCheck, ArrowRight, Sparkles, Building2
 
 export const metadata: Metadata = {
   title: 'About Us & Founder Leadership | OHO TECH',
-  description: 'Meet Founder & Director Jagabandhu Kampa and learn about OHO TECH, our mission, values, and enterprise digital solutions.',
+  description: 'Meet Founder & Director Japabandhu Kampa and learn about OHO TECH, our mission, values, and enterprise digital solutions.',
 };
 
 const stats = [
@@ -53,7 +53,7 @@ export default async function AboutPage() {
               Engineering Digital Infrastructure for Modern Businesses
             </h1>
             <p className="mt-6 text-lg sm:text-xl leading-8 text-slate-300 max-w-2xl mx-auto">
-              Under the visionary leadership of Founder &amp; Director Jagabandhu Kampa, OHO TECH delivers turnkey software products, custom tech solutions, and growth acceleration across 13 industries.
+              Under the visionary leadership of Founder &amp; Director Japabandhu Kampa, OHO TECH delivers turnkey software products, custom tech solutions, and growth acceleration across 13 industries.
             </p>
           </div>
         </div>
@@ -96,8 +96,8 @@ export default async function AboutPage() {
                 <div className="w-28 h-28 sm:w-36 sm:h-36 mx-auto mb-6 rounded-full bg-gradient-to-tr from-teal-400 via-emerald-500 to-amber-400 p-1 shadow-2xl relative">
                   <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
                     <NextImage
-                      src="/jagabandhu_kampa.jpeg"
-                      alt="Jagabandhu Kampa - Founder & Director OHO TECH"
+                      src="/japabandhu_kampa.jpeg"
+                      alt="Japabandhu Kampa - Founder & Director OHO TECH"
                       width={250}
                       height={250}
                       className="w-full h-full object-cover object-top"
@@ -110,7 +110,7 @@ export default async function AboutPage() {
                 </div>
 
                 <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                  Jagabandhu Kampa
+                  Japabandhu Kampa
                 </h3>
                 <p className="text-xs font-mono text-teal-400 font-bold uppercase tracking-wider mt-1">
                   Founder &amp; Director
@@ -145,7 +145,7 @@ export default async function AboutPage() {
 
               <div className="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed">
                 <p>
-                  OHO TECH was established by <strong className="text-white font-semibold">Jagabandhu Kampa</strong> with a single clear directive: to engineer high-performance digital tools and turnkey software applications that deliver tangible business metrics.
+                  OHO TECH was established by <strong className="text-white font-semibold">Japabandhu Kampa</strong> with a single clear directive: to engineer high-performance digital tools and turnkey software applications that deliver tangible business metrics.
                 </p>
                 <p>
                   Whether serving multi-specialty hospitals with EMR systems, automating college administration, scaling retail point-of-sale systems, or running viral marketing campaigns with millions of views, our team operates at the intersection of technical brilliance and commercial strategy.

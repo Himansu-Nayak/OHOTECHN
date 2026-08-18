@@ -337,8 +337,8 @@ export default function WideStudioPage() {
                   <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-amber-400 p-1 shadow-2xl relative group-hover:scale-105 transition-transform duration-300">
                     <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
                       <NextImage
-                        src="/jagabandhu_kampa.jpeg"
-                        alt="Jagabandhu Kampa - Founder & Director OHO TECH"
+                        src="/japabandhu_kampa.jpeg"
+                        alt="Japabandhu Kampa - Founder & Director OHO TECH"
                         width={250}
                         height={250}
                         className="w-full h-full object-cover object-top"
@@ -351,7 +351,7 @@ export default function WideStudioPage() {
                 {/* Founder Info */}
                 <div className="text-center mb-6">
                   <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                    Jagabandhu Kampa
+                    Japabandhu Kampa
                   </h3>
                   <p className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mt-1">
                     Founder &amp; Director
@@ -385,10 +385,10 @@ export default function WideStudioPage() {
               
               <div className="bg-[#141416] border border-white/10 rounded-3xl p-8 sm:p-10 shadow-xl relative">
                 <Quote className="w-10 h-10 text-emerald-500/30 mb-4" />
-                <p className="text-lg sm:text-xl font-medium text-slate-200 leading-relaxed italic">&quot;At OHO TECH, our mission is to deliver straightforward, high-performance software engineering for businesses. Under Jagabandhu Kampa&apos;s leadership, we build digital systems that provide real operational clarity across healthcare, education, retail, and enterprise sectors.&quot;</p>
+                <p className="text-lg sm:text-xl font-medium text-slate-200 leading-relaxed italic">&quot;At OHO TECH, our mission is to deliver straightforward, high-performance software engineering for businesses. Under Japabandhu Kampa&apos;s leadership, we build digital systems that provide real operational clarity across healthcare, education, retail, and enterprise sectors.&quot;</p>
                 <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
                   <div>
-                    <div className="text-sm font-bold text-white">Jagabandhu Kampa</div>
+                    <div className="text-sm font-bold text-white">Japabandhu Kampa</div>
                     <div className="text-xs font-mono text-slate-400">Founder &amp; Director, OHO TECH</div>
                   </div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono">
