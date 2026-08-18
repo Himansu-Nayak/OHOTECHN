@@ -26,8 +26,31 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitStatus('idle');
+
+    try {
+      const response = await fetch('/api/quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          serviceType: formData.serviceInterest || 'General Inquiry',
+          projectDescription: formData.message,
+          timeline: 'Immediate Contact',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send message.');
+      }
+
       setSubmitStatus('success');
       setFormData({
         name: '',
@@ -37,7 +60,12 @@ export default function ContactPage() {
         serviceInterest: '',
         message: '',
       });
-    }, 1000);
+    } catch (error) {
+      console.error(error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClass = 'w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors';
@@ -69,6 +97,12 @@ export default function ContactPage() {
               {submitStatus === 'success' && (
                 <div className="mb-8 p-4 rounded-2xl bg-emerald-50 text-emerald-800 border-2 border-emerald-200 text-xs font-mono font-bold">
                   Thank you for your message! Our engineering team will contact you shortly.
+                </div>
+              )}
+
+              {submitStatus === 'error' && (
+                <div className="mb-8 p-4 rounded-2xl bg-red-50 text-red-800 border-2 border-red-200 text-xs font-mono font-bold">
+                  Something went wrong. Please try again or contact us directly.
                 </div>
               )}
 
