@@ -145,6 +145,16 @@ export const services: Service[] = [
     features: ['Content Planning', 'Graphic & Video Production', 'Community Moderation', 'Audience Insights', 'Influencer Outreach'],
   },
   {
+    slug: 'content-planning',
+    name: 'Content Planning & Strategy',
+    category: 'marketing',
+    description:
+      'Strategic editorial calendar creation, content mapping, target audience research, and multi-channel publishing strategy.',
+    iconName: 'Calendar',
+    emoji: '📅',
+    features: ['Editorial Content Calendar', 'Audience Segmentation', 'Brand Voice Guidelines', 'Publishing Workflow', 'Performance Analytics'],
+  },
+  {
     slug: 'ui-ux-design',
     name: 'UI/UX Design',
     category: 'marketing',

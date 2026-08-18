@@ -1,10 +1,13 @@
 // src/app/(marketing)/services/[slug]/page.tsx
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { services } from '@/config/services';
 import { ArrowRight, CheckCircle2, Sparkles, Layers } from 'lucide-react';
 import { Metadata } from 'next';
 import * as Icons from 'lucide-react';
+
+import { Enterprise3DCard } from '@/components/services/Enterprise3DCard';
 
 function DynamicIcon({ name, ...props }: { name: string } & Icons.LucideProps) {
   const Icon = Icons[name as keyof typeof Icons] as Icons.LucideIcon;
@@ -65,17 +68,7 @@ export default async function ServiceDetailPage(props: { params: Promise<{ slug:
             </div>
 
             <div className="flex-1 w-full max-w-md">
-              <div className="p-10 rounded-3xl bg-[#fafafa] border-2 border-slate-200 text-center flex flex-col items-center justify-center shadow-inner">
-                <div className="w-20 h-20 rounded-3xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center mb-6">
-                  <DynamicIcon name={service.iconName || 'Layers'} className="w-10 h-10" />
-                </div>
-                <div className="text-xs font-mono font-bold text-sky-700 bg-sky-50 px-3 py-1 rounded-full border border-sky-200 mb-2">
-                  ENTERPRISE CAPABILITY
-                </div>
-                <p className="text-xs text-slate-500 font-mono">
-                  Tailored Execution &amp; Dedicated Engineering
-                </p>
-              </div>
+              <Enterprise3DCard service={service} />
             </div>
           </div>
         </section>
@@ -97,13 +90,63 @@ export default async function ServiceDetailPage(props: { params: Promise<{ slug:
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {service.features.map((feature: string, idx: number) => (
-                <div key={idx} className="p-7 bg-[#fafafa] border-2 border-slate-200 rounded-3xl flex items-start gap-4" id={`feature-${idx}`}>
-                  <CheckCircle2 className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
-                  <p className="text-sm font-bold text-[#0d0d0e] leading-snug">{feature}</p>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+              {service.features.map((feature: string, idx: number) => {
+                const lower = feature.toLowerCase();
+                let imagePath: string | null = null;
+                if (lower.includes('content planning')) {
+                  imagePath = '/images/service-capabilities/content-planning.jpg';
+                } else if (lower.includes('graphic') || lower.includes('video') || lower.includes('production')) {
+                  imagePath = '/images/service-capabilities/graphic-video-production.jpg';
+                } else if (lower.includes('community') || lower.includes('moderation')) {
+                  imagePath = '/images/service-capabilities/community-moderation.jpg';
+                } else if (lower.includes('audience') || lower.includes('insights')) {
+                  imagePath = '/images/service-capabilities/audience-insights.jpg';
+                } else if (lower.includes('influencer') || lower.includes('outreach')) {
+                  imagePath = '/images/service-capabilities/influencer-outreach.jpg';
+                }
+
+                if (imagePath) {
+                  return (
+                    <div key={idx} className="md:col-span-2 lg:col-span-1 p-6 bg-[#fafafa] border-2 border-slate-200 rounded-3xl flex flex-col justify-between" id={`feature-${idx}`}>
+                      <div className="flex items-center gap-3 mb-4">
+                        <CheckCircle2 className="w-5 h-5 text-sky-600 shrink-0" />
+                        <p className="text-base font-extrabold text-[#0d0d0e]">{feature}</p>
+                      </div>
+                      
+                      {/* Orange Wave Background Image Frame */}
+                      <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-orange-400/30 bg-gradient-to-b from-[#ff5e1a] via-[#e03a08] to-[#7a0303] p-3 shadow-lg flex items-center justify-center">
+                        {/* Wave Accents */}
+                        <div className="absolute inset-x-0 bottom-0 h-28 pointer-events-none overflow-hidden">
+                          <svg className="absolute bottom-4 w-full h-16 text-[#b81206] fill-current opacity-90" viewBox="0 0 1440 320" preserveAspectRatio="none">
+                            <path d="M0,160C320,220,640,220,960,160C1120,130,1280,130,1440,160L1440,320L0,320Z" />
+                          </svg>
+                          <svg className="absolute bottom-0 w-full h-20 text-[#580000] fill-current" viewBox="0 0 1440 320" preserveAspectRatio="none">
+                            <path d="M0,224C360,265,720,265,1080,224C1260,203,1350,203,1440,224L1440,320L0,320Z" />
+                          </svg>
+                        </div>
+                        {/* Uncropped Image */}
+                        <div className="relative z-10 w-full h-full rounded-xl overflow-hidden shadow-xl border border-white/25 flex items-center justify-center bg-black/20">
+                          <Image
+                            src={imagePath}
+                            alt={`${feature} Visual`}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 360px"
+                            className="object-contain object-center p-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={idx} className="p-7 bg-[#fafafa] border-2 border-slate-200 rounded-3xl flex items-start gap-4" id={`feature-${idx}`}>
+                    <CheckCircle2 className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+                    <p className="text-sm font-bold text-[#0d0d0e] leading-snug">{feature}</p>
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
