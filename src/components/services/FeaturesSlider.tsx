@@ -36,7 +36,7 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
     return null;
   };
 
-  // Center active card in container
+  // Scroll to a specific card index
   const scrollToIndex = React.useCallback(
     (index: number) => {
       setActiveIndex(index);
@@ -57,6 +57,21 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
     },
     []
   );
+
+  // Smooth continuous auto-scroll loop
+  React.useEffect(() => {
+    if (isHovered || features.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => {
+        const next = (prev + 1) % features.length;
+        scrollToIndex(next);
+        return next;
+      });
+    }, 2800);
+
+    return () => clearInterval(interval);
+  }, [isHovered, features.length, scrollToIndex]);
 
   // Update active index based on scroll position
   const handleScroll = () => {
@@ -82,19 +97,6 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
     }
   };
 
-  // Auto-scroll loop every 3.5 seconds
-  React.useEffect(() => {
-    if (isHovered || features.length <= 1) return;
-    const autoInterval = setInterval(() => {
-      setActiveIndex((prev) => {
-        const next = (prev + 1) % features.length;
-        scrollToIndex(next);
-        return next;
-      });
-    }, 3500);
-    return () => clearInterval(autoInterval);
-  }, [isHovered, features.length, scrollToIndex]);
-
   const handlePrev = () => {
     const prev = activeIndex === 0 ? features.length - 1 : activeIndex - 1;
     scrollToIndex(prev);
@@ -111,11 +113,11 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Navigation Buttons (Left & Right) */}
+      {/* Navigation Arrow Buttons */}
       <button
         onClick={handlePrev}
         aria-label="Scroll left"
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-slate-800 shadow-xl flex items-center justify-center hover:bg-sky-600 hover:text-white transition-all duration-200 hover:scale-110"
+        className="absolute left-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 text-slate-800 shadow-xl flex items-center justify-center hover:bg-sky-600 hover:text-white transition-all duration-200 hover:scale-110"
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
@@ -123,22 +125,22 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
       <button
         onClick={handleNext}
         aria-label="Scroll right"
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-slate-800 shadow-xl flex items-center justify-center hover:bg-sky-600 hover:text-white transition-all duration-200 hover:scale-110"
+        className="absolute right-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 text-slate-800 shadow-xl flex items-center justify-center hover:bg-sky-600 hover:text-white transition-all duration-200 hover:scale-110"
       >
         <ChevronRight className="w-6 h-6" />
       </button>
 
       {/* Left Fog Fade Overlay */}
-      <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none" />
 
       {/* Right Fog Fade Overlay */}
-      <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none" />
 
       {/* Horizontal Scroll Track */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="flex gap-6 overflow-x-auto scroll-smooth py-6 px-[8vw] sm:px-[18vw] md:px-[22vw] no-scrollbar snap-x snap-mandatory focus:outline-none"
+        className="flex gap-6 overflow-x-auto scroll-smooth py-6 px-[6vw] sm:px-[16vw] md:px-[20vw] no-scrollbar focus:outline-none"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {features.map((feature, index) => {
@@ -153,10 +155,10 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
               }}
               onClick={() => scrollToIndex(index)}
               className={cn(
-                'snap-center shrink-0 w-[290px] sm:w-[340px] md:w-[380px] p-6 rounded-[32px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden',
+                'shrink-0 w-[290px] sm:w-[340px] md:w-[380px] p-6 rounded-[32px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden',
                 isActive
                   ? 'bg-white border-2 border-sky-500 shadow-2xl shadow-sky-500/20 ring-4 ring-sky-500/15 scale-105 opacity-100 z-30'
-                  : 'bg-[#fafafa] border-2 border-slate-200 opacity-60 hover:opacity-90 hover:border-slate-300 scale-95 z-10'
+                  : 'bg-[#fafafa] border-2 border-slate-200 opacity-65 hover:opacity-95 hover:border-slate-300 scale-95 z-10'
               )}
             >
               {/* Feature Header Title */}
@@ -165,10 +167,10 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
                 <p className="text-base font-extrabold text-[#0d0d0e] leading-snug">{feature}</p>
               </div>
 
-              {/* Image Frame with Orange Wave Background if image exists */}
+              {/* Image Frame with Orange Wave Background */}
               {imagePath ? (
                 <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-orange-400/30 bg-gradient-to-b from-[#ff5e1a] via-[#e03a08] to-[#7a0303] p-3 shadow-lg flex items-center justify-center mt-2">
-                  {/* Layer 1 Wave Accent */}
+                  {/* Wave Accents */}
                   <div className="absolute inset-x-0 bottom-0 h-24 pointer-events-none overflow-hidden">
                     <svg className="absolute bottom-3 w-full h-14 text-[#b81206] fill-current opacity-90" viewBox="0 0 1440 320" preserveAspectRatio="none">
                       <path d="M0,160C320,220,640,220,960,160C1120,130,1280,130,1440,160L1440,320L0,320Z" />
@@ -181,7 +183,7 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
                   <div className="relative z-10 w-full h-full rounded-xl overflow-hidden shadow-xl border border-white/25 flex items-center justify-center bg-black/20">
                     <Image
                       src={imagePath}
-                      alt={`${feature} Capability Visual`}
+                      alt={`${feature} Visual`}
                       fill
                       sizes="(max-width: 768px) 100vw, 360px"
                       className="object-contain object-center p-1"
@@ -196,17 +198,14 @@ export function FeaturesSlider({ features }: FeaturesSliderProps) {
                 </div>
               )}
 
-              {/* Card Footer Badge */}
+              {/* Card Footer */}
               <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[11px] font-mono text-slate-500">
+                <span className="text-[11px] font-mono text-slate-500 font-semibold">
                   Deliverable #{index + 1}
                 </span>
-
-                {isActive && (
-                  <span className="text-[10px] font-mono font-bold text-sky-600 bg-sky-50 border border-sky-200 px-2.5 py-0.5 rounded-full animate-pulse">
-                    AUTO-SCROLLING ⚡
-                  </span>
-                )}
+                <span className="text-[11px] font-mono text-sky-600 font-bold">
+                  OHO TECH
+                </span>
               </div>
             </div>
           );

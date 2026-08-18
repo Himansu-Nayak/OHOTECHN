@@ -184,8 +184,8 @@ export function ServicesSlider({
                 </Link>
 
                 {isActive && (
-                  <span className="text-[10px] font-mono font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full animate-pulse">
-                    AUTO-SCROLLING ⚡
+                  <span className="text-[10px] font-mono font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                    OHO TECH
                   </span>
                 )}
               </div>
