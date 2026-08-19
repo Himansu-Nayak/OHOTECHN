@@ -1,9 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Terminal, Shield, Key, Database, Cpu, UserCheck, Bot, CheckCircle2, AlertTriangle, RefreshCw, Save, Search, Lock, Zap, Server } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface DevUser {
   id: number;
@@ -13,7 +15,22 @@ interface DevUser {
 }
 
 export default function DeveloperStudioPage() {
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
   const { showToast } = useToast();
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      if (!user) {
+        showToast('Please log in with Developer credentials.', 'info');
+        router.push('/login');
+      } else if (user.role !== 'ROLE_DEVELOPER' && user.role !== 'DEVELOPER') {
+        showToast('Access restricted: Developer privilege required.', 'error');
+        router.push('/products');
+      }
+    }
+  }, [user, isLoading, router, showToast]);
+
   const [activeTab, setActiveTab] = React.useState<'vault' | 'rbac' | 'seed' | 'ai'>('vault');
   const [controlMode, setControlMode] = React.useState<'manual' | 'ai'>('manual');
 

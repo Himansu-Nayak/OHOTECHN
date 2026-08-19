@@ -1,9 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Sparkles, ShoppingBag, ShieldCheck, DollarSign, Users, FileText, Settings, Bot, RefreshCw, CheckCircle2, ArrowRight, Edit3, Save, Search, Lock, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface Stats {
   totalProducts: number;
@@ -44,7 +46,22 @@ interface QuoteItem {
 }
 
 export default function AdminConsolePage() {
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
   const { showToast } = useToast();
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      if (!user) {
+        showToast('Please log in with Admin credentials.', 'info');
+        router.push('/login');
+      } else if (user.role !== 'ROLE_ADMIN' && user.role !== 'ADMIN' && user.role !== 'ROLE_DEVELOPER' && user.role !== 'DEVELOPER') {
+        showToast('Access restricted: Customer account detected. Redirecting to product portal.', 'error');
+        router.push('/products');
+      }
+    }
+  }, [user, isLoading, router, showToast]);
+
   const [activeTab, setActiveTab] = React.useState<'overview' | 'products' | 'orders' | 'quotes' | 'ai'>('overview');
   const [controlMode, setControlMode] = React.useState<'manual' | 'ai'>('manual');
 
