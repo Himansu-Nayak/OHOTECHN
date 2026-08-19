@@ -103,6 +103,38 @@ export default function ProductsCatalogPage() {
           </div>
         </section>
 
+        {/* 3-Step Buyer Journey Banner */}
+        <section className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 mb-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                HOW PURCHASING WORKS AT OHO TECH
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                Evaluate First. Pay Only When Fully Satisfied.
+              </h3>
+              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                We provide full admin test-drive access before any payment so you can verify every feature first.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono shrink-0 max-w-2xl">
+              <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
+                <span className="text-emerald-400 font-extrabold block mb-1">1. Test-Drive</span>
+                <p className="text-[11px] text-slate-300">Click "Quick View" to copy 1-click admin credentials and test live demo.</p>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
+                <span className="text-emerald-400 font-extrabold block mb-1">2. Review</span>
+                <p className="text-[11px] text-slate-300">Explore admin panels &amp; workflows to confirm exact suitability.</p>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
+                <span className="text-emerald-400 font-extrabold block mb-1">3. Purchase</span>
+                <p className="text-[11px] text-slate-300">Pay to receive full source code &amp; production deployment SLA.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Search & Filter Section */}
         <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-8 shadow-sm mb-10" id="products-filter-section">
           
