@@ -128,7 +128,7 @@ export function StrategicPillarsSection() {
 
   return (
     <div
-      className="w-full my-8 bg-[#0d0d0e] text-white rounded-[28px] sm:rounded-[36px] p-4 sm:p-6 lg:p-8 border-2 border-slate-800 shadow-2xl relative overflow-hidden select-none grid-pattern-dark"
+      className="w-full mb-8 bg-[#0d0d0e] text-white rounded-[28px] sm:rounded-[36px] p-4 sm:p-6 lg:p-8 border-2 border-slate-800 shadow-2xl relative overflow-hidden select-none grid-pattern-dark"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

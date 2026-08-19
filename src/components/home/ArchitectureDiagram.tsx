@@ -5,7 +5,7 @@ import { Cpu, Layers, Database, ShieldCheck, ArrowDown, Sparkles, CheckCircle2, 
 
 export function ArchitectureDiagram() {
   return (
-    <div className="w-full bg-[#0d0d0e] text-white rounded-3xl p-6 sm:p-10 lg:p-12 border-2 border-slate-700 shadow-2xl relative overflow-hidden my-10 grid-pattern-dark">
+    <div className="w-full bg-[#0d0d0e] text-white rounded-3xl p-6 sm:p-10 lg:p-12 border-2 border-slate-700 shadow-2xl relative overflow-hidden mb-12 sm:mb-14 grid-pattern-dark">
       
       {/* Background Ambient Glows */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
