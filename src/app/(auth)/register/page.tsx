@@ -4,10 +4,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, UserCheck, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { setAuthToken } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register } = useAuth();
+  const { showToast } = useToast();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,8 +22,6 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,30 +34,15 @@ export default function RegisterPage() {
     setSuccessMsg('');
 
     try {
-      const res = await fetch(`${backendUrl}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Registration failed.');
-      }
-
-      setAuthToken(data.data.accessToken);
-      if (data.data.refreshToken) {
-        localStorage.setItem('refreshToken', data.data.refreshToken);
-      }
-      localStorage.setItem('user', JSON.stringify(data.data.user));
-
+      await register(formData);
       setSuccessMsg('Account created successfully! Redirecting...');
+      showToast('Account created successfully!', 'success');
       setTimeout(() => {
         router.push('/products');
-      }, 1200);
+      }, 1000);
     } catch (err: any) {
       setErrorMsg(err.message || 'An error occurred during registration.');
+      showToast(err.message || 'Registration failed', 'error');
     } finally {
       setIsLoading(false);
     }

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Sparkles, Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { submitContactApi } from '@/api/contact';
+import { useToast } from '@/context/ToastContext';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -23,34 +25,38 @@ export default function ContactPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const { showToast } = useToast();
+  const [errorMessage, setErrorMessage] = useState('');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setErrorMessage('Please fill in all required fields.');
+      showToast('Please fill in all required fields.', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus('idle');
+    setErrorMessage('');
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-      const response = await fetch(`${backendUrl}/api/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          subject: formData.serviceInterest || 'Contact Enquiry',
-          message: formData.message + (formData.company ? ` (Company: ${formData.company})` : ''),
-        }),
+      const res = await submitContactApi({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.serviceInterest || 'Contact Enquiry',
+        message: formData.message + (formData.company ? ` (Company: ${formData.company})` : ''),
       });
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Failed to send message.');
+      if (!res.success) {
+        throw new Error(res.message || 'Failed to submit enquiry.');
       }
 
       setSubmitStatus('success');
+      showToast('Enquiry submitted successfully! We will contact you soon.', 'success');
       setFormData({
         name: '',
         email: '',
@@ -59,9 +65,11 @@ export default function ContactPage() {
         serviceInterest: '',
         message: '',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setSubmitStatus('error');
+      setErrorMessage(error.message || 'Failed to submit enquiry.');
+      showToast(error.message || 'Failed to submit enquiry', 'error');
     } finally {
       setIsSubmitting(false);
     }

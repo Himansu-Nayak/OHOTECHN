@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { submitContactApi } from '@/api/contact';
+import { useToast } from '@/context/ToastContext';
 
 const industriesList = [
   'Healthcare & EMR', 'Education & Campus', 'Retail & POS', 'Financial & NBFC',
@@ -11,6 +13,7 @@ const industriesList = [
 ];
 
 export default function BookDemoPage() {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,33 +35,31 @@ export default function BookDemoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    if (!formData.name.trim() || !formData.email.trim()) {
+      showToast('Please fill in all required fields.', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('/api/quote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          company: formData.company,
-          serviceType: `Demo Request: ${formData.productInterest || formData.industry || 'Live Environment'}`,
-          projectDescription: `Preferred Date: ${formData.preferredDate || 'Flexible'}, Preferred Time: ${formData.preferredTime || 'Flexible'}`,
-          timeline: 'Demo Booking',
-        }),
+      const res = await submitContactApi({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: `Demo Request: ${formData.productInterest || formData.industry || 'Live Environment'}`,
+        message: `Company: ${formData.company || 'N/A'}\nIndustry: ${formData.industry || 'N/A'}\nPreferred Date: ${formData.preferredDate || 'Flexible'}\nPreferred Time: ${formData.preferredTime || 'Flexible'}`,
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to book demo.');
+      if (!res.success) {
+        throw new Error(res.message || 'Failed to book demo.');
       }
 
       setSubmitStatus('success');
+      showToast('Live Demo requested successfully!', 'success');
       setFormData({
         name: '',
         email: '',
@@ -69,9 +70,10 @@ export default function BookDemoPage() {
         preferredDate: '',
         preferredTime: '',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setSubmitStatus('error');
+      showToast(error.message || 'Failed to book demo', 'error');
     } finally {
       setIsSubmitting(false);
     }

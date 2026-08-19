@@ -4,10 +4,15 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, KeyRound, Mail, Phone, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { setAuthToken } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
+import { sendOtpApi, verifyOtpApi } from '@/api/auth';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
+  const { showToast } = useToast();
+  
   const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,8 +24,6 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -28,30 +31,15 @@ export default function LoginPage() {
     setSuccessMsg('');
 
     try {
-      const res = await fetch(`${backendUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Login failed. Please check your credentials.');
-      }
-
-      setAuthToken(data.data.accessToken);
-      if (data.data.refreshToken) {
-        localStorage.setItem('refreshToken', data.data.refreshToken);
-      }
-      localStorage.setItem('user', JSON.stringify(data.data.user));
-
+      await login({ username, password });
       setSuccessMsg('Login successful! Redirecting...');
+      showToast('Welcome back to OHO TECH!', 'success');
       setTimeout(() => {
         router.push('/products');
-      }, 1000);
+      }, 800);
     } catch (err: any) {
       setErrorMsg(err.message || 'An error occurred during login');
+      showToast(err.message || 'Login failed', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -67,21 +55,17 @@ export default function LoginPage() {
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${backendUrl}/api/auth/otp/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Failed to send OTP.');
+      const res = await sendOtpApi(phone, 'PHONE');
+      if (!res.success) {
+        throw new Error(res.message || 'Failed to send OTP.');
       }
 
       setOtpSent(true);
       setSuccessMsg('OTP sent successfully to your phone!');
+      showToast('OTP sent to your phone!', 'info');
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to send OTP');
+      showToast(err.message || 'Failed to send OTP', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -93,20 +77,16 @@ export default function LoginPage() {
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${backendUrl}/api/auth/otp/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otp }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Invalid or expired OTP.');
+      const res = await verifyOtpApi(phone, otp);
+      if (!res.success || !res.data) {
+        throw new Error(res.message || 'Invalid or expired OTP.');
       }
 
-      setSuccessMsg('OTP verified successfully! Check your phone for details.');
+      setSuccessMsg('OTP verified successfully!');
+      showToast('OTP Verified!', 'success');
     } catch (err: any) {
       setErrorMsg(err.message || 'OTP verification failed');
+      showToast(err.message || 'OTP Verification failed', 'error');
     } finally {
       setIsLoading(false);
     }

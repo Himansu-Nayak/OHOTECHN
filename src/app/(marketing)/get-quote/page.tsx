@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { submitContactApi } from '@/api/contact';
+import { useToast } from '@/context/ToastContext';
 
 export default function GetQuotePage() {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,32 +29,31 @@ export default function GetQuotePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.projectDescription.trim()) {
+      showToast('Please fill in all required fields.', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-      const response = await fetch(`${backendUrl}/api/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          subject: `Quote Request: ${formData.serviceType || 'General'} (Budget: ${formData.budgetRange || 'Unspecified'})`,
-          message: `${formData.projectDescription}${formData.company ? `\nCompany: ${formData.company}` : ''}`,
-        }),
+      const res = await submitContactApi({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: `Quote Request: ${formData.serviceType || 'General'} (Budget: ${formData.budgetRange || 'Unspecified'})`,
+        message: `${formData.projectDescription}${formData.company ? `\nCompany: ${formData.company}` : ''}${formData.timeline ? `\nTimeline: ${formData.timeline}` : ''}`,
       });
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Failed to submit quote request.');
+      if (!res.success) {
+        throw new Error(res.message || 'Failed to submit quote request.');
       }
 
       setSubmitStatus('success');
+      showToast('Quote request submitted successfully!', 'success');
       setFormData({
         name: '',
         email: '',
