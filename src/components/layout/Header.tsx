@@ -386,23 +386,27 @@ export function Header() {
                       <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
                     </div>
                     
-                    <Link
-                      href="/admin"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors my-1"
-                    >
-                      <Sparkles className="w-4 h-4 text-emerald-600" />
-                      Admin Console
-                    </Link>
+                    {(user.role === 'ROLE_ADMIN' || user.role === 'ADMIN' || user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER') && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors my-1"
+                      >
+                        <Sparkles className="w-4 h-4 text-emerald-600" />
+                        Admin Console
+                      </Link>
+                    )}
 
-                    <Link
-                      href="/developer"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors mb-1"
-                    >
-                      <Code2 className="w-4 h-4 text-purple-600" />
-                      Developer Studio
-                    </Link>
+                    {(user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER') && (
+                      <Link
+                        href="/developer"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors mb-1"
+                      >
+                        <Code2 className="w-4 h-4 text-purple-600" />
+                        Developer Studio
+                      </Link>
+                    )}
 
                     <Link
                       href="/orders"
