@@ -30,6 +30,15 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-4px); }
   }
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    50% { transform: translateY(100%); }
+    100% { transform: translateY(-100%); }
+  }
+  @keyframes progress {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
 }
 
 @layer base {

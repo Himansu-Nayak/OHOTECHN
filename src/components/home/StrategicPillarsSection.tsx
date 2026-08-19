@@ -135,10 +135,10 @@ export function StrategicPillarsSection() {
       {/* Main Slider Wrapper with Left & Right Cloud Fog Masking Overlays */}
       <div className="relative w-full py-8">
         {/* Left Side Cloud Fog Mask */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-r from-[#f8f9fb] via-[#f8f9fb]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+        <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-r from-white via-white/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
         {/* Right Side Cloud Fog Mask */}
-        <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-l from-[#f8f9fb] via-[#f8f9fb]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+        <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-l from-white via-white/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
         {/* Horizontal Scroll Track */}
         <div
