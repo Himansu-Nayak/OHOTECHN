@@ -348,24 +348,6 @@ export function Header() {
               </div>
             </div>
 
-            {/* 6. Admin Console Link */}
-            <Link
-              href="/admin"
-              prefetch={true}
-              className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-mono text-[11px] font-bold border border-emerald-200 transition-all"
-            >
-              Admin Console
-            </Link>
-
-            {/* 7. Developer Studio Link */}
-            <Link
-              href="/developer"
-              prefetch={true}
-              className="px-3.5 py-1.5 rounded-full bg-purple-50 text-purple-800 hover:bg-purple-100 font-mono text-[11px] font-bold border border-purple-200 transition-all"
-            >
-              Dev Studio
-            </Link>
-
           </nav>
 
           {/* Right Dual Action Buttons & Auth State */}
@@ -388,7 +370,7 @@ export function Header() {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen((prev) => !prev)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 hover:border-sky-500 bg-slate-50 transition-all text-xs font-bold text-[#0d0d0e]"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 hover:border-sky-500 bg-slate-50 transition-all text-xs font-bold text-[#0d0d0e] cursor-pointer"
                 >
                   <div className="w-6 h-6 rounded-full bg-sky-600 text-white flex items-center justify-center text-[10px] font-extrabold uppercase">
                     {user.name ? user.name.charAt(0) : 'U'}
@@ -398,11 +380,30 @@ export function Header() {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                  <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150 font-mono">
                     <div className="px-3 py-2 border-b border-slate-100 mb-1">
                       <div className="text-xs font-extrabold text-[#0d0d0e] truncate">{user.name}</div>
                       <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
                     </div>
+                    
+                    <Link
+                      href="/admin"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors my-1"
+                    >
+                      <Sparkles className="w-4 h-4 text-emerald-600" />
+                      Admin Console
+                    </Link>
+
+                    <Link
+                      href="/developer"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors mb-1"
+                    >
+                      <Code2 className="w-4 h-4 text-purple-600" />
+                      Developer Studio
+                    </Link>
+
                     <Link
                       href="/orders"
                       onClick={() => setUserMenuOpen(false)}
@@ -424,7 +425,7 @@ export function Header() {
                         logout();
                         setUserMenuOpen(false);
                       }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer mt-1 border-t border-slate-100 pt-2"
                     >
                       <LogOut className="w-4 h-4" />
                       Logout
