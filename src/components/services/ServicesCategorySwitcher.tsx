@@ -20,14 +20,14 @@ export function ServicesCategorySwitcher({
   growthCount,
 }: ServicesCategorySwitcherProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3 mb-14 relative z-10">
+    <div className="flex flex-wrap items-center gap-3 mb-14">
       <button
         onClick={() => onSelectCategory('all')}
         className={cn(
           "px-6 py-3 rounded-full text-xs font-bold transition-all duration-200 flex items-center gap-2.5 border",
           activeCategory === 'all'
-            ? "bg-emerald-500 text-[#0d0d0e] border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-[1.02] font-black"
-            : "bg-[#141416] text-slate-300 border-white/10 hover:border-white/25 hover:text-white hover:bg-white/5"
+            ? "bg-[#0d0d0e] text-white border-black shadow-md scale-[1.02]"
+            : "bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-black hover:bg-slate-50"
         )}
       >
         <Layers className="w-4 h-4" />
@@ -39,8 +39,8 @@ export function ServicesCategorySwitcher({
         className={cn(
           "px-6 py-3 rounded-full text-xs font-bold transition-all duration-200 flex items-center gap-2.5 border",
           activeCategory === 'technology'
-            ? "bg-emerald-500 text-[#0d0d0e] border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-[1.02] font-black"
-            : "bg-[#141416] text-slate-300 border-white/10 hover:border-white/25 hover:text-white hover:bg-white/5"
+            ? "bg-[#0d0d0e] text-white border-black shadow-md scale-[1.02]"
+            : "bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-black hover:bg-slate-50"
         )}
       >
         <Code2 className="w-4 h-4 text-sky-400" />
@@ -52,8 +52,8 @@ export function ServicesCategorySwitcher({
         className={cn(
           "px-6 py-3 rounded-full text-xs font-bold transition-all duration-200 flex items-center gap-2.5 border",
           activeCategory === 'marketing'
-            ? "bg-amber-400 text-[#0d0d0e] border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-[1.02] font-black"
-            : "bg-[#141416] text-slate-300 border-white/10 hover:border-white/25 hover:text-white hover:bg-white/5"
+            ? "bg-[#0d0d0e] text-white border-black shadow-md scale-[1.02]"
+            : "bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-black hover:bg-slate-50"
         )}
       >
         <TrendingUp className="w-4 h-4 text-amber-400" />
