@@ -47,8 +47,10 @@ export default function ContactPage() {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
+        company: formData.company,
         subject: formData.serviceInterest || 'Contact Enquiry',
-        message: formData.message + (formData.company ? ` (Company: ${formData.company})` : ''),
+        message: formData.message,
+        formType: 'Contact Us Enquiry',
       });
 
       if (!res.success) {

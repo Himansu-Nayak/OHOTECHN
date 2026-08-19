@@ -44,8 +44,12 @@ export default function GetQuotePage() {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
+        company: formData.company,
+        serviceType: formData.serviceType,
+        timeline: formData.timeline,
         subject: `Quote Request: ${formData.serviceType || 'General'} (Budget: ${formData.budgetRange || 'Unspecified'})`,
-        message: `${formData.projectDescription}${formData.company ? `\nCompany: ${formData.company}` : ''}${formData.timeline ? `\nTimeline: ${formData.timeline}` : ''}`,
+        message: formData.projectDescription,
+        formType: 'Software Quote Request',
       });
 
       if (!res.success) {
