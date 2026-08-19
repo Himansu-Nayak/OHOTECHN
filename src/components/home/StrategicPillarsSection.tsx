@@ -128,27 +128,32 @@ export function StrategicPillarsSection() {
 
   return (
     <div
-      className="w-full my-6 relative overflow-hidden select-none"
+      className="w-full my-8 bg-[#0d0d0e] text-white rounded-[28px] sm:rounded-[36px] p-4 sm:p-6 lg:p-8 border-2 border-slate-800 shadow-2xl relative overflow-hidden select-none grid-pattern-dark"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Main Slider Wrapper with Left & Right Cloud Fog Masking Overlays */}
-      <div className="relative w-full py-8">
-        {/* Left Side Cloud Fog Mask */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-r from-white via-white/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+      {/* Background Ambient Glows */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Right Side Cloud Fog Mask */}
-        <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-36 lg:w-48 bg-gradient-to-l from-white via-white/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+      {/* Main Slider Wrapper with Left & Right Dark Fog Masking Overlays */}
+      <div className="relative w-full py-4">
+        {/* Left Side Dark Fog Mask */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 lg:w-36 bg-gradient-to-r from-[#0d0d0e] via-[#0d0d0e]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+
+        {/* Right Side Dark Fog Mask */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 lg:w-36 bg-gradient-to-l from-[#0d0d0e] via-[#0d0d0e]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
         {/* Horizontal Scroll Track */}
         <div
           ref={containerRef}
           onScroll={handleScroll}
-          className="flex gap-6 sm:gap-8 overflow-x-auto scroll-smooth py-6 px-[15vw] sm:px-[30vw] md:px-[35vw] no-scrollbar snap-x snap-mandatory focus:outline-none"
+          className="flex gap-6 sm:gap-8 overflow-x-auto scroll-smooth py-6 px-[12vw] sm:px-[25vw] md:px-[30vw] no-scrollbar snap-x snap-mandatory focus:outline-none relative z-10"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {pillars.map((pillar, index) => {
             const isActive = index === activeIndex;
+            const isAmber = pillar.color === 'amber';
 
             return (
               <div
@@ -157,32 +162,38 @@ export function StrategicPillarsSection() {
                   cardRefs.current[index] = el;
                 }}
                 onClick={() => scrollToIndex(index)}
-                className={`snap-center shrink-0 w-[290px] sm:w-[340px] md:w-[380px] p-8 rounded-[32px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden ${
+                className={`snap-center shrink-0 w-[290px] sm:w-[340px] md:w-[380px] p-8 rounded-[32px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden backdrop-blur-2xl ${
                   isActive
-                    ? 'bg-white border-2 border-emerald-500 shadow-2xl shadow-emerald-500/20 ring-4 ring-emerald-500/15 scale-105 opacity-100 z-30 blur-0'
-                    : 'bg-[#ffffff]/80 border-2 border-slate-200/90 opacity-45 hover:opacity-85 hover:border-slate-300 scale-90 z-10 blur-[1.5px]'
+                    ? isAmber
+                      ? 'bg-[#141416] border-2 border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.3)] ring-4 ring-amber-400/20 scale-105 opacity-100 z-30 blur-0'
+                      : 'bg-[#141416] border-2 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)] ring-4 ring-emerald-400/20 scale-105 opacity-100 z-30 blur-0'
+                    : 'bg-[#141416]/60 border border-white/10 opacity-45 hover:opacity-85 hover:border-white/20 scale-90 z-10 blur-[1.5px]'
                 }`}
               >
-                {/* 4K Solid Background Glow Effect when active */}
+                {/* Glowing subtle gradient overlay when active */}
                 {isActive && (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/5 via-teal-500/3 to-transparent pointer-events-none" />
+                  <div className={`absolute inset-0 bg-gradient-to-tr ${
+                    isAmber ? 'from-amber-500/10 via-orange-500/5' : 'from-emerald-500/10 via-teal-500/5'
+                  } to-transparent pointer-events-none`} />
                 )}
 
                 <div className="relative z-10">
                   {/* Icon & Active Indicator Badge */}
                   <div className="flex items-center justify-between mb-6">
                     <div
-                      className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl transition-all duration-300 shadow-sm ${
-                        pillar.color === 'amber'
-                          ? 'bg-amber-50 border border-amber-200/80 text-amber-600'
-                          : 'bg-emerald-50 border border-emerald-200/80 text-emerald-600'
-                      } ${isActive ? 'scale-110 rotate-3 shadow-md' : 'scale-100'}`}
+                      className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl transition-all duration-300 border shadow-inner ${
+                        isAmber
+                          ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                          : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                      } ${isActive ? 'scale-110 rotate-3 shadow-lg' : 'scale-100'}`}
                     >
                       {pillar.icon}
                     </div>
 
                     {isActive && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-extrabold uppercase tracking-wider shadow-sm animate-pulse">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white font-mono text-[10px] font-extrabold uppercase tracking-wider shadow-sm animate-pulse ${
+                        isAmber ? 'bg-amber-500' : 'bg-emerald-500'
+                      }`}>
                         <span className="w-1.5 h-1.5 rounded-full bg-white" />
                         AUTO-SCROLLING
                       </span>
@@ -191,11 +202,11 @@ export function StrategicPillarsSection() {
 
                   {/* Direction Label */}
                   <div
-                    className={`text-[11px] font-mono font-bold uppercase tracking-wider mb-2 transition-colors ${
+                    className={`text-[11px] font-mono font-bold uppercase tracking-widest mb-2 transition-colors ${
                       isActive
-                        ? pillar.color === 'amber'
-                          ? 'text-amber-600'
-                          : 'text-emerald-600'
+                        ? isAmber
+                          ? 'text-amber-400'
+                          : 'text-emerald-400'
                         : 'text-slate-400'
                     }`}
                   >
@@ -204,32 +215,32 @@ export function StrategicPillarsSection() {
 
                   {/* Card Title */}
                   <h3
-                    className={`text-xl font-bold tracking-tight mb-3 transition-colors ${
-                      isActive ? 'text-[#0d0d0e]' : 'text-slate-700'
+                    className={`text-xl font-extrabold tracking-tight mb-3 transition-colors ${
+                      isActive ? 'text-white' : 'text-slate-300'
                     }`}
                   >
                     {pillar.title}
                   </h3>
 
                   {/* Card Description */}
-                  <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                  <p className="text-xs text-slate-300 leading-relaxed mb-6">
                     {pillar.description}
                   </p>
                 </div>
 
                 {/* Features Footer List */}
-                <div className="relative z-10 pt-5 border-t border-slate-200/90 space-y-2.5">
+                <div className="relative z-10 pt-5 border-t border-white/10 space-y-2.5">
                   {pillar.features.map((feature) => (
                     <div
                       key={feature}
-                      className="flex items-center gap-2 text-[11px] font-mono text-slate-700"
+                      className="flex items-center gap-2 text-[11px] font-mono text-slate-300"
                     >
                       <CheckCircle2
                         className={`w-4 h-4 shrink-0 transition-transform ${
-                          pillar.color === 'amber' ? 'text-amber-600' : 'text-emerald-600'
+                          isAmber ? 'text-amber-400' : 'text-emerald-400'
                         } ${isActive ? 'scale-110' : 'scale-90'}`}
                       />
-                      <span className={isActive ? 'font-semibold text-slate-900' : 'text-slate-600'}>
+                      <span className={isActive ? 'font-semibold text-white' : 'text-slate-300'}>
                         {feature}
                       </span>
                     </div>
@@ -241,9 +252,10 @@ export function StrategicPillarsSection() {
         </div>
 
         {/* Dynamic Pagination Indicator Dots */}
-        <div className="flex items-center justify-center gap-2.5 mt-6">
+        <div className="flex items-center justify-center gap-2.5 mt-6 relative z-10">
           {pillars.map((pillar, index) => {
             const isActive = index === activeIndex;
+            const isAmber = pillar.color === 'amber';
             return (
               <button
                 key={pillar.id}
@@ -251,8 +263,10 @@ export function StrategicPillarsSection() {
                 aria-label={`Center ${pillar.direction}`}
                 className={`h-3 rounded-full transition-all duration-300 ${
                   isActive
-                    ? 'w-10 bg-emerald-600 shadow-xs ring-2 ring-emerald-600/30'
-                    : 'w-3 bg-slate-300 hover:bg-slate-400'
+                    ? isAmber
+                      ? 'w-10 bg-amber-400 shadow-[0_0_10px_#f59e0b] ring-2 ring-amber-400/30'
+                      : 'w-10 bg-emerald-400 shadow-[0_0_10px_#10b981] ring-2 ring-emerald-400/30'
+                    : 'w-3 bg-white/20 hover:bg-white/40'
                 }`}
               />
             );
