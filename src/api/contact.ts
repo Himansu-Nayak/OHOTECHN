@@ -1,5 +1,6 @@
 import { apiClient } from './client';
 import { ApiResponse, ContactEnquiry } from './types';
+import { validateContactForm } from '@/lib/validators';
 
 export interface ContactParams {
   name: string;
@@ -14,6 +15,22 @@ export interface ContactParams {
 }
 
 export async function submitContactApi(params: ContactParams): Promise<ApiResponse<ContactEnquiry>> {
+  // Runtime validation before network call
+  const validation = validateContactForm({
+    name: params.name,
+    email: params.email,
+    phone: params.phone,
+    message: params.message,
+  });
+
+  if (!validation.isValid) {
+    const firstError = Object.values(validation.errors)[0];
+    return {
+      success: false,
+      message: firstError || 'Please fill in all required form fields correctly.',
+    };
+  }
+
   let emailSent = false;
   let emailError = '';
 

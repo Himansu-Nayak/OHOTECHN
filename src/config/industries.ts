@@ -2,6 +2,12 @@ export type Product = {
   name: string;
   slug: string;
   shortDescription: string;
+  demoUrl?: string;
+  features?: string[];
+  adminCredentials?: {
+    email?: string;
+    password?: string;
+  };
 };
 
 export type Industry = {
