@@ -41,7 +41,7 @@ export function Header() {
           className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-5 sm:px-7 py-2.5 flex items-center justify-between gap-6 max-w-6xl w-full transition-all duration-300"
         >
           {/* Logo */}
-          <Link href="/" id="logo-link" className="flex items-center shrink-0 group py-0.5">
+          <Link href="/" prefetch={true} id="logo-link" className="flex items-center shrink-0 group py-0.5">
             <NextImage
               src="/OHO_TECH_LOGO.png"
               alt="OHO TECH Logo"
@@ -71,6 +71,7 @@ export function Header() {
               >
                 <Link
                   href="/solutions"
+                  prefetch={true}
                   onClick={() => setOpenDropdown(null)}
                   className="hover:text-sky-600 transition-colors"
                 >
@@ -222,7 +223,7 @@ export function Header() {
             </div>
 
             {/* 3. Products Link */}
-            <Link href="/products" className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 hover:text-black transition-all">
+            <Link href="/products" prefetch={true} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 hover:text-black transition-all">
               Products
             </Link>
 
@@ -240,6 +241,7 @@ export function Header() {
               >
                 <Link
                   href="/pricing"
+                  prefetch={true}
                   onClick={() => setOpenDropdown(null)}
                   className="hover:text-sky-600 transition-colors"
                 >
@@ -270,6 +272,7 @@ export function Header() {
                     <Link
                       key={item.href}
                       href={item.href}
+                      prefetch={true}
                       onClick={() => setOpenDropdown(null)}
                       className="p-2.5 rounded-xl hover:bg-sky-50 transition-colors group/item block"
                     >
@@ -299,6 +302,7 @@ export function Header() {
               >
                 <Link
                   href="/about"
+                  prefetch={true}
                   onClick={() => setOpenDropdown(null)}
                   className="hover:text-sky-600 transition-colors"
                 >
