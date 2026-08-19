@@ -11,7 +11,7 @@ export interface UserDto {
   name: string;
   email: string;
   phone?: string;
-  role: 'CUSTOMER' | 'ADMIN';
+  role: 'CUSTOMER' | 'ADMIN' | 'DEVELOPER' | 'ROLE_CUSTOMER' | 'ROLE_ADMIN' | 'ROLE_DEVELOPER' | string;
   enabled: boolean;
   emailVerified: boolean;
   phoneVerified: boolean;
