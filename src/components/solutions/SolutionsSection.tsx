@@ -6,7 +6,7 @@ import { industries, Industry } from '@/config/industries';
 import { IndustrySelector } from './IndustrySelector';
 import { FeaturedIndustry } from './FeaturedIndustry';
 import { SolutionCard } from './SolutionCard';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 export function SolutionsSection() {
   const [selectedIndustry, setSelectedIndustry] = React.useState<Industry>(industries[0]);
@@ -16,10 +16,10 @@ export function SolutionsSection() {
 
   return (
     <section
-      className="max-w-[1536px] w-full mx-auto mb-12 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden"
+      className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden"
       id="solutions"
     >
-      {/* 1. Section Header */}
+      {/* 1. Section Outer Header */}
       <div className="max-w-3xl mb-14 text-left">
         <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-4">
           COMPLETE SOFTWARE ECOSYSTEM
@@ -45,10 +45,10 @@ export function SolutionsSection() {
       {/* 3. Featured Industry Area */}
       <FeaturedIndustry industry={selectedIndustry} />
 
-      {/* 4. Featured Product Cards (Max 3) */}
-      <div className="mb-10">
-        <div className="flex items-center justify-between mb-6">
-          <h4 className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider">
+      {/* 4. Featured Product Cards Inner Console Container */}
+      <div className="mb-10 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+        <div className="flex items-center justify-between mb-6 relative z-10">
+          <h4 className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
             FEATURED {selectedIndustry.name.toUpperCase()} PRODUCTS ({featuredProducts.length} OF {selectedIndustry.products.length})
           </h4>
           <span className="text-xs font-mono text-slate-400">
@@ -56,7 +56,7 @@ export function SolutionsSection() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
           {featuredProducts.map((product) => (
             <SolutionCard
               key={product.slug}
@@ -75,7 +75,7 @@ export function SolutionsSection() {
 
         <Link
           href={`/solutions/${selectedIndustry.slug}`}
-          className="inline-flex items-center gap-2 text-sm font-bold text-[#0d0d0e] hover:text-teal-600 transition-colors group"
+          className="inline-flex items-center gap-2 text-sm font-bold text-[#0d0d0e] hover:text-sky-600 transition-colors group"
         >
           <span>Explore all {selectedIndustry.name} Solutions</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
