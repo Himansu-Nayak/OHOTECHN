@@ -409,6 +409,14 @@ export function Header() {
                     )}
 
                     <Link
+                      href="/profile"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                    >
+                      <User className="w-4 h-4 text-sky-600" />
+                      My Profile
+                    </Link>
+                    <Link
                       href="/orders"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
