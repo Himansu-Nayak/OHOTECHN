@@ -348,6 +348,24 @@ export function Header() {
               </div>
             </div>
 
+            {/* 6. Admin Console Link */}
+            <Link
+              href="/admin"
+              prefetch={true}
+              className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-mono text-[11px] font-bold border border-emerald-200 transition-all"
+            >
+              Admin Console
+            </Link>
+
+            {/* 7. Developer Studio Link */}
+            <Link
+              href="/developer"
+              prefetch={true}
+              className="px-3.5 py-1.5 rounded-full bg-purple-50 text-purple-800 hover:bg-purple-100 font-mono text-[11px] font-bold border border-purple-200 transition-all"
+            >
+              Dev Studio
+            </Link>
+
           </nav>
 
           {/* Right Dual Action Buttons & Auth State */}
