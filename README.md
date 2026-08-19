@@ -115,5 +115,5 @@ oho_tech/
 ---
 
 ## 📜 License
-
+Design and Develope by Himansu Nayak
 Private Repository — All Rights Reserved © OHO TECH.
