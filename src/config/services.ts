@@ -17,10 +17,17 @@ export const services: Service[] = [
     name: 'Software Development',
     category: 'technology',
     description:
-      'Full-cycle software development from ideation to deployment, using modern tech stacks (HTML5, CSS3, JavaScript, React, Next.js) and agile methodologies.',
+      'Full-cycle enterprise software development from system architecture to cloud deployment, using Java Spring Boot, Node.js, React, Next.js, PostgreSQL, and scalable microservices.',
     iconName: 'Code2',
     emoji: '💻',
-    features: ['HTML5, CSS3 & JavaScript Core', 'React & Next.js Development', 'Architecture & Schema Design', 'Agile Execution', 'Testing, QA & Deployment'],
+    features: [
+      'Java Spring Boot & Node.js Microservices',
+      'React, Next.js & TypeScript Architecture',
+      'PostgreSQL, MongoDB & Redis Data Engineering',
+      'RESTful & GraphQL API Integration',
+      'Docker, Cloud Infrastructure & CI/CD Pipelines',
+      'Automated QA Testing & Enterprise Security SLA',
+    ],
   },
   {
     slug: 'whatsapp-billing',
@@ -77,10 +84,16 @@ export const services: Service[] = [
     name: 'Website Development',
     category: 'technology',
     description:
-      'Responsive, SEO-optimized websites and web applications built with HTML5, CSS3, JavaScript, React, and modern web frameworks.',
+      'High-performance, responsive web applications and corporate portals built with React, Next.js, TypeScript, and modern UI engineering.',
     iconName: 'Globe',
     emoji: '🌐',
-    features: ['HTML5 & CSS3 Responsive Layouts', 'JavaScript & React Architecture', 'SEO Optimization', 'Performance Tuning', 'Security & Accessibility'],
+    features: [
+      'React & Next.js Web App Architecture',
+      'TypeScript & Tailwind CSS Design Systems',
+      'SEO & Core Web Vitals Optimization',
+      'Server-Side Rendering (SSR) & API Integration',
+      'Cloud Hosting, Security & Performance Tuning',
+    ],
   },
   {
     slug: 'android-app-development',

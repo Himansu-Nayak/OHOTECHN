@@ -25,17 +25,17 @@ const steps: PhaseStep[] = [
   {
     step: '02',
     title: 'Design & Strategy',
-    desc: 'Crafting UI/UX prototypes, HTML5 & CSS3 design systems, and interactive UI component workflows.',
+    desc: 'Crafting UI/UX wireframes, design systems, and responsive interface workflows.',
     timeframe: 'Phase 02 • Weeks 2 - 3',
-    deliverables: 'HTML5 & CSS3 UI Layouts',
+    deliverables: 'Design Systems & UI Spec',
     icon: Palette,
   },
   {
     step: '03',
     title: 'Agile Execution',
-    desc: 'Building high-performance codebases powered by JavaScript, React, and Next.js with continuous integration.',
+    desc: 'Building high-performance full-stack applications with React, Next.js, Spring Boot & microservices.',
     timeframe: 'Phase 03 • Weeks 4 - 6',
-    deliverables: 'JavaScript & React Builds',
+    deliverables: 'Full-Stack Production Builds',
     icon: Code2,
   },
   {
