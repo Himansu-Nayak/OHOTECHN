@@ -30,18 +30,25 @@ export default function GetQuotePage() {
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('/api/quote', {
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+      const response = await fetch(`${backendUrl}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: `Quote Request: ${formData.serviceType || 'General'} (Budget: ${formData.budgetRange || 'Unspecified'})`,
+          message: `${formData.projectDescription}${formData.company ? `\nCompany: ${formData.company}` : ''}`,
+        }),
       });
 
       const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to submit quote request.');
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to submit quote request.');
       }
 
       setSubmitStatus('success');

@@ -1,0 +1,13 @@
+package com.ohotech.backend.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class OrderRequest {
+    @NotBlank(message = "Shipping address is required")
+    private String shippingAddress;
+
+    @NotBlank(message = "Contact phone is required")
+    private String contactPhone;
+}

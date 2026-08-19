@@ -344,8 +344,15 @@ export function Header() {
           {/* Right Dual Action Buttons */}
           <div className="flex items-center gap-2">
             <Link
+              href="/login"
+              className="hidden sm:inline-flex px-4 py-2 rounded-full border border-slate-300 text-slate-800 hover:text-black hover:border-slate-400 font-extrabold text-xs tracking-tight transition-all"
+            >
+              Login
+            </Link>
+
+            <Link
               href="/get-quote"
-              className="hidden sm:inline-flex px-4 py-2 rounded-full border border-slate-300 hover:border-black text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all"
+              className="hidden xl:inline-flex px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100"
             >
               Get a Quote
             </Link>

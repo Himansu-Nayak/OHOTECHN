@@ -29,7 +29,8 @@ export default function ContactPage() {
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('/api/quote', {
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+      const response = await fetch(`${backendUrl}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,17 +39,15 @@ export default function ContactPage() {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          company: formData.company,
-          serviceType: formData.serviceInterest || 'General Inquiry',
-          projectDescription: formData.message,
-          timeline: 'Immediate Contact',
+          subject: formData.serviceInterest || 'Contact Enquiry',
+          message: formData.message + (formData.company ? ` (Company: ${formData.company})` : ''),
         }),
       });
 
       const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to send message.');
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to send message.');
       }
 
       setSubmitStatus('success');
