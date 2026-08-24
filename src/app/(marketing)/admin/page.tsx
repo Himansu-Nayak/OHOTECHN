@@ -7,14 +7,13 @@ import { Sparkles, ShoppingBag, ShieldCheck, DollarSign, Users, FileText, Settin
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
-import { UserDto, License, Subscription, SoftwareReleaseDto, ProductPlanDto } from '@/api/types';
+import { UserDto, License, Subscription, SoftwareReleaseDto, ProductPlanDto, ContactEnquiry, AnalyticsDashboardDto } from '@/api/types';
 import { getAdminUsersApi, updateAdminUserStatusApi, updateAdminUserRoleApi } from '@/api/users';
 import { getAdminLicensesApi, updateAdminLicenseStatusApi, revokeAdminLicenseApi } from '@/api/licenses';
 import { getAdminSubscriptionsApi, updateAdminSubscriptionStatusApi } from '@/api/subscriptions';
 import { getAdminReleasesApi, createAdminReleaseApi, toggleAdminReleaseStatusApi, deleteAdminReleaseApi } from '@/api/releases';
 import { getAdminProductPlansApi, createAdminProductPlanApi, toggleAdminProductPlanStatusApi, deleteAdminProductPlanApi } from '@/api/plans';
-import { getAnalyticsDashboardApi } from '@/api/admin';
-import { AnalyticsDashboardDto } from '@/api/types';
+import { getAnalyticsDashboardApi, getAdminEnquiriesApi, updateAdminEnquiryStatusApi } from '@/api/admin';
 
 interface Stats {
   totalProducts: number;
@@ -124,10 +123,48 @@ export default function AdminConsolePage() {
     { id: 103, totalAmount: 55000, status: 'PENDING', shippingAddress: 'Bangalore, Karnataka', contactPhone: '+91 98765 22222' },
   ]);
 
-  const [quotes, setQuotes] = React.useState<QuoteItem[]>([
-    { id: 1, name: 'Rahul Sharma', email: 'rahul@techcorp.in', phone: '+91 98765 00001', subject: 'Hospital HMS Commercial Quote', message: 'Evaluated demo. Ready to purchase with custom branding.' },
-    { id: 2, name: 'Priya Verma', email: 'priya@edulearn.org', phone: '+91 98765 00002', subject: 'School ERP Custom Setup', message: 'Requesting SLA support and multi-branch database setup.' },
-  ]);
+  // Admin Quote & Demo Request Management State
+  const [enquiries, setEnquiries] = React.useState<ContactEnquiry[]>([]);
+  const [isLoadingEnquiries, setIsLoadingEnquiries] = React.useState(false);
+  const [enquirySearchQuery, setEnquirySearchQuery] = React.useState('');
+  const [enquiryStatusFilter, setEnquiryStatusFilter] = React.useState<string>('ALL');
+  const [selectedEnquiryModal, setSelectedEnquiryModal] = React.useState<ContactEnquiry | null>(null);
+
+  const fetchEnquiries = React.useCallback(async () => {
+    setIsLoadingEnquiries(true);
+    try {
+      const res = await getAdminEnquiriesApi();
+      if (res.success && res.data) {
+        setEnquiries(res.data);
+        setStats((prev) => ({ ...prev, totalQuotes: res.data.length }));
+      }
+    } catch (err: any) {
+      console.warn('Backend enquiries list fetch warning:', err?.message);
+    } finally {
+      setIsLoadingEnquiries(false);
+    }
+  }, []);
+
+  const handleUpdateEnquiryStatus = async (id: number, newStatus: string) => {
+    try {
+      const res = await updateAdminEnquiryStatusApi(id, newStatus);
+      if (res.success && res.data) {
+        showToast(`Quote lead status updated to ${newStatus}`, 'success');
+        setEnquiries((prev) => prev.map((e) => (e.id === id ? res.data : e)));
+        if (selectedEnquiryModal?.id === id) {
+          setSelectedEnquiryModal(res.data);
+        }
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update quote status', 'error');
+    }
+  };
+
+  React.useEffect(() => {
+    if (activeTab === 'quotes') {
+      fetchEnquiries();
+    }
+  }, [activeTab, fetchEnquiries]);
 
   // Admin User Management State
   const [usersList, setUsersList] = React.useState<UserDto[]>([]);
@@ -424,7 +461,7 @@ export default function AdminConsolePage() {
                 activeTab === 'quotes' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
               )}
             >
-              ✉️ Commercial Quotes ({quotes.length})
+              ✉️ Commercial Quotes ({enquiries.length})
             </button>
 
             <button
@@ -918,32 +955,232 @@ export default function AdminConsolePage() {
           </section>
         )}
 
-        {/* TAB 5: COMMERCIAL QUOTES PIPELINE */}
+        {/* TAB 5: COMMERCIAL QUOTES & DEMO REQUESTS PIPELINE */}
         {activeTab === 'quotes' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-8 shadow-sm">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-200 gap-4">
               <div>
-                <h3 className="text-xl font-black text-[#0d0d0e]">Commercial Quote Inquiries</h3>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">Submissions delivered to kampainfraa@gmail.com</p>
+                <h3 className="text-xl font-extrabold text-[#0d0d0e] flex items-center gap-2">
+                  <span>✉️</span> Customer Quotes &amp; Enterprise Demo Leads
+                </h3>
+                <p className="text-xs text-slate-500 font-mono mt-0.5">
+                  Manage incoming product quotes, SLA enquiries, and demo requests from enterprise leads.
+                </p>
+              </div>
+              <button
+                onClick={fetchEnquiries}
+                disabled={isLoadingEnquiries}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-mono rounded-xl transition cursor-pointer self-start md:self-auto"
+              >
+                <RefreshCw className={cn("w-3.5 h-3.5", isLoadingEnquiries && "animate-spin")} />
+                Refresh Leads
+              </button>
+            </div>
+
+            {/* Metric Summary Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <span className="text-slate-500 font-bold block">Total Enquiries</span>
+                <span className="text-2xl font-black text-[#0d0d0e]">{enquiries.length}</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                <span className="text-amber-700 font-bold block">Pending Leads</span>
+                <span className="text-2xl font-black text-amber-900">
+                  {enquiries.filter(e => !e.status || e.status === 'PENDING').length}
+                </span>
+              </div>
+              <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200">
+                <span className="text-sky-700 font-bold block">In Contact</span>
+                <span className="text-2xl font-black text-sky-900">
+                  {enquiries.filter(e => e.status === 'CONTACTED' || e.status === 'RESPONDED').length}
+                </span>
+              </div>
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                <span className="text-emerald-700 font-bold block">Resolved / Closed</span>
+                <span className="text-2xl font-black text-emerald-900">
+                  {enquiries.filter(e => e.status === 'RESOLVED' || e.status === 'CLOSED').length}
+                </span>
               </div>
             </div>
 
-            <div className="space-y-4">
-              {quotes.map((q) => (
-                <div key={q.id} className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200 font-mono text-xs space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#0d0d0e]">{q.name} ({q.email})</span>
-                    <span className="text-[10px] bg-sky-50 text-sky-700 px-2.5 py-0.5 rounded-full border border-sky-200 font-bold">
-                      {q.phone}
-                    </span>
-                  </div>
-                  <div className="font-bold text-sky-600">{q.subject}</div>
-                  <p className="text-[#0d0d0e] text-xs bg-white p-3 rounded-xl border border-slate-200 leading-relaxed">
-                    "{q.message}"
-                  </p>
-                </div>
-              ))}
+            {/* Filter & Search Bar */}
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
+              {/* Search Bar */}
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search by client name, email, phone, subject, or message..."
+                  value={enquirySearchQuery}
+                  onChange={(e) => setEnquirySearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#0d0d0e]"
+                />
+              </div>
+
+              {/* Status Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 font-mono text-xs">
+                {['ALL', 'PENDING', 'CONTACTED', 'RESOLVED', 'CLOSED'].map((st) => (
+                  <button
+                    key={st}
+                    onClick={() => setEnquiryStatusFilter(st)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-xl font-bold transition cursor-pointer text-xs whitespace-nowrap",
+                      enquiryStatusFilter === st
+                        ? "bg-[#0d0d0e] text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    )}
+                  >
+                    {st}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Lead Enquiries List */}
+            {isLoadingEnquiries ? (
+              <div className="text-center py-12 text-slate-400 font-mono text-xs">Loading quote enquiries...</div>
+            ) : (() => {
+              const filtered = enquiries.filter((e) => {
+                const matchesSearch =
+                  !enquirySearchQuery ||
+                  e.name.toLowerCase().includes(enquirySearchQuery.toLowerCase()) ||
+                  e.email.toLowerCase().includes(enquirySearchQuery.toLowerCase()) ||
+                  (e.phone && e.phone.toLowerCase().includes(enquirySearchQuery.toLowerCase())) ||
+                  (e.subject && e.subject.toLowerCase().includes(enquirySearchQuery.toLowerCase())) ||
+                  (e.message && e.message.toLowerCase().includes(enquirySearchQuery.toLowerCase()));
+
+                const currentSt = (e.status || 'PENDING').toUpperCase();
+                const matchesStatus =
+                  enquiryStatusFilter === 'ALL' ||
+                  (enquiryStatusFilter === 'PENDING' && (currentSt === 'PENDING' || currentSt === '')) ||
+                  (enquiryStatusFilter === 'CONTACTED' && (currentSt === 'CONTACTED' || currentSt === 'RESPONDED')) ||
+                  currentSt === enquiryStatusFilter;
+
+                return matchesSearch && matchesStatus;
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-slate-400 font-mono text-xs">
+                    No quote or demo request leads match your current search criteria.
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-4">
+                  {filtered.map((enq) => {
+                    const statusUpper = (enq.status || 'PENDING').toUpperCase();
+                    let badgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
+                    if (statusUpper === 'CONTACTED' || statusUpper === 'RESPONDED') badgeClass = 'bg-sky-50 text-sky-700 border-sky-200';
+                    if (statusUpper === 'RESOLVED') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                    if (statusUpper === 'CLOSED') badgeClass = 'bg-slate-100 text-slate-600 border-slate-200';
+
+                    return (
+                      <div key={enq.id} className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200 font-mono text-xs space-y-3 hover:border-slate-300 transition">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200">
+                          <div className="flex items-center gap-2">
+                            <span className="font-extrabold text-[#0d0d0e] text-sm">{enq.name}</span>
+                            <span className="text-slate-400">({enq.email})</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-bold border", badgeClass)}>
+                              {statusUpper}
+                            </span>
+                            <span className="text-[10px] text-slate-400">
+                              {enq.createdAt ? new Date(enq.createdAt).toLocaleDateString() : 'Recent'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="font-bold text-sky-700">Subject: {enq.subject || 'Commercial Software Quote Enquiry'}</div>
+                          {enq.phone && <div className="text-slate-600 font-medium">Phone: {enq.phone}</div>}
+                        </div>
+
+                        <p className="text-[#0d0d0e] text-xs bg-white p-3.5 rounded-xl border border-slate-200 leading-relaxed font-sans">
+                          "{enq.message}"
+                        </p>
+
+                        <div className="flex items-center justify-between pt-2">
+                          <button
+                            onClick={() => setSelectedEnquiryModal(enq)}
+                            className="inline-flex items-center gap-1.5 text-xs text-sky-600 hover:text-sky-800 font-bold cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> View Lead Details
+                          </button>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-slate-500 font-medium">Update Status:</span>
+                            <select
+                              value={statusUpper}
+                              onChange={(e) => handleUpdateEnquiryStatus(enq.id, e.target.value)}
+                              className="px-2.5 py-1 bg-white border border-slate-300 rounded-lg text-xs font-bold text-[#0d0d0e] focus:outline-none cursor-pointer"
+                            >
+                              <option value="PENDING">PENDING</option>
+                              <option value="CONTACTED">CONTACTED</option>
+                              <option value="RESOLVED">RESOLVED</option>
+                              <option value="CLOSED">CLOSED</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+
+            {/* Lead Details Modal */}
+            {selectedEnquiryModal && (
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+                <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-xl w-full border-2 border-slate-300 shadow-2xl space-y-5 font-mono text-xs animate-in fade-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                    <h4 className="text-base font-extrabold text-[#0d0d0e]">Commercial Quote Lead Details</h4>
+                    <button
+                      onClick={() => setSelectedEnquiryModal(null)}
+                      className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <div><span className="text-slate-500 font-bold">Client Name:</span> <span className="text-[#0d0d0e] font-extrabold">{selectedEnquiryModal.name}</span></div>
+                    <div><span className="text-slate-500 font-bold">Email Address:</span> <a href={`mailto:${selectedEnquiryModal.email}`} className="text-sky-600 underline font-bold">{selectedEnquiryModal.email}</a></div>
+                    {selectedEnquiryModal.phone && <div><span className="text-slate-500 font-bold">Phone Number:</span> <a href={`tel:${selectedEnquiryModal.phone}`} className="text-sky-600 underline font-bold">{selectedEnquiryModal.phone}</a></div>}
+                    <div><span className="text-slate-500 font-bold">Subject:</span> <span className="text-[#0d0d0e] font-bold">{selectedEnquiryModal.subject || 'N/A'}</span></div>
+                    <div><span className="text-slate-500 font-bold">Submitted Date:</span> {selectedEnquiryModal.createdAt ? new Date(selectedEnquiryModal.createdAt).toLocaleString() : 'N/A'}</div>
+                    <div>
+                      <span className="text-slate-500 font-bold">Current Status:</span>{' '}
+                      <span className="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-bold">{selectedEnquiryModal.status || 'PENDING'}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-slate-500 font-bold block mb-1.5">Full Message Inquiry:</label>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 text-slate-900 font-sans text-xs leading-relaxed max-h-48 overflow-y-auto">
+                      {selectedEnquiryModal.message}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+                    <a
+                      href={`mailto:${selectedEnquiryModal.email}?subject=Re: ${encodeURIComponent(selectedEnquiryModal.subject || 'OHO TECHN Commercial Quote')}`}
+                      className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold transition text-xs inline-flex items-center gap-1.5"
+                    >
+                      ✉️ Reply via Email
+                    </a>
+                    <button
+                      onClick={() => setSelectedEnquiryModal(null)}
+                      className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold transition text-xs"
+                    >
+                      Close Modal
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         )}
 

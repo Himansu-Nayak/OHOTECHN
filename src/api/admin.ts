@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { ApiResponse, AnalyticsDashboardDto, AuditLogDto, PageResponse } from './types';
+import { ApiResponse, AnalyticsDashboardDto, AuditLogDto, ContactEnquiry, PageResponse } from './types';
 
 export async function getAnalyticsDashboardApi(startDate?: string, endDate?: string): Promise<ApiResponse<AnalyticsDashboardDto>> {
   let url = '/api/admin/analytics/dashboard';
@@ -27,5 +27,18 @@ export async function getAdminAuditLogsApi(
 
   return apiClient<PageResponse<AuditLogDto>>(url, {
     method: 'GET',
+  });
+}
+
+export async function getAdminEnquiriesApi(): Promise<ApiResponse<ContactEnquiry[]>> {
+  return apiClient<ContactEnquiry[]>('/api/admin/enquiries', {
+    method: 'GET',
+  });
+}
+
+export async function updateAdminEnquiryStatusApi(id: number, status: string): Promise<ApiResponse<ContactEnquiry>> {
+  return apiClient<ContactEnquiry>(`/api/admin/enquiries/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
   });
 }

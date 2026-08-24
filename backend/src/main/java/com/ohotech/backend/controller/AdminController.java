@@ -29,6 +29,7 @@ public class AdminController {
     private final UserRepository userRepository;
     private final UserService userService;
     private final ProductService productService;
+    private final com.ohotech.backend.service.ContactService contactService;
 
     // 1. Dashboard Overview Metrics
     @GetMapping("/stats")
@@ -200,5 +201,25 @@ public class AdminController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(ApiResponse.error("Invalid role value: " + roleStr));
         }
+    }
+
+    // 9. Get All Customer Quotes & Demo Enquiries
+    @GetMapping("/enquiries")
+    public ResponseEntity<ApiResponse<List<ContactEnquiry>>> getAllEnquiries() {
+        List<ContactEnquiry> enquiries = contactService.getAllEnquiriesForAdmin();
+        return ResponseEntity.ok(ApiResponse.success("Fetched all customer quote and demo enquiries successfully", enquiries));
+    }
+
+    // 10. Update Enquiry Status (PENDING, CONTACTED, RESOLVED, CLOSED)
+    @PutMapping("/enquiries/{id}/status")
+    public ResponseEntity<ApiResponse<ContactEnquiry>> updateEnquiryStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+        String status = payload.get("status");
+        if (status == null || status.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Field 'status' is required in request body"));
+        }
+        ContactEnquiry updated = contactService.updateEnquiryStatus(id, status.trim().toUpperCase());
+        return ResponseEntity.ok(ApiResponse.success("Enquiry status updated successfully", updated));
     }
 }
