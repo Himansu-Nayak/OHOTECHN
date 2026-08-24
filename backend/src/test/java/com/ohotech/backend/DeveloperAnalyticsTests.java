@@ -35,6 +35,9 @@ class DeveloperAnalyticsTests {
     private LicenseRepository licenseRepository;
 
     @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
     private DeviceActivationRepository deviceActivationRepository;
 
     @Autowired
@@ -100,10 +103,21 @@ class DeveloperAnalyticsTests {
         User savedDeveloper = userRepository.save(developer);
         String developerToken = jwtTokenProvider.generateTokenFromUserId(savedDeveloper.getId());
 
+        // Seed a Product
+        Product product = Product.builder()
+                .name("Test Enterprise Software " + UUID.randomUUID().toString().substring(0, 4))
+                .description("Telemetry test product")
+                .price(new java.math.BigDecimal("49900.00"))
+                .serviceType("Enterprise")
+                .active(true)
+                .build();
+        Product savedProduct = productRepository.save(product);
+
         // Seed a License & DeviceActivation
         License license = License.builder()
                 .licenseKey("OHO-DEV-TEST-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase())
                 .user(savedDeveloper)
+                .product(savedProduct)
                 .status(LicenseStatus.ACTIVE)
                 .activationLimit(5)
                 .activationCount(1)
