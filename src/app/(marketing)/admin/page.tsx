@@ -135,8 +135,9 @@ export default function AdminConsolePage() {
     try {
       const res = await getAdminEnquiriesApi();
       if (res.success && res.data) {
-        setEnquiries(res.data);
-        setStats((prev) => ({ ...prev, totalQuotes: res.data.length }));
+        const enquiriesData = res.data;
+        setEnquiries(enquiriesData);
+        setStats((prev) => ({ ...prev, totalQuotes: enquiriesData.length }));
       }
     } catch (err: any) {
       console.warn('Backend enquiries list fetch warning:', err?.message);
@@ -149,10 +150,11 @@ export default function AdminConsolePage() {
     try {
       const res = await updateAdminEnquiryStatusApi(id, newStatus);
       if (res.success && res.data) {
+        const updatedEnquiry = res.data;
         showToast(`Quote lead status updated to ${newStatus}`, 'success');
-        setEnquiries((prev) => prev.map((e) => (e.id === id ? res.data : e)));
+        setEnquiries((prev) => prev.map((e) => (e.id === id ? updatedEnquiry : e)));
         if (selectedEnquiryModal?.id === id) {
-          setSelectedEnquiryModal(res.data);
+          setSelectedEnquiryModal(updatedEnquiry);
         }
       }
     } catch (err: any) {
