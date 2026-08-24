@@ -275,3 +275,44 @@ export interface AnalyticsDashboardDto {
   };
 }
 
+export interface DeveloperAnalyticsDto {
+  deviceMetrics: {
+    totalActivations: number;
+    activeDevices: number;
+    deactivatedDevices: number;
+    activationsToday: number;
+    activationsThisMonth: number;
+  };
+  downloadMetrics: {
+    totalDownloads: number;
+    downloadsToday: number;
+    downloadsThisMonth: number;
+  };
+  platformStats: Array<{
+    platform: string;
+    activationCount: number;
+    downloadCount: number;
+  }>;
+  productStats: Array<{
+    productId: number;
+    productName: string;
+    downloadCount: number;
+  }>;
+  releaseStats: Array<{
+    releaseId: number;
+    productName: string;
+    version: string;
+    platform: string;
+    downloadCount: number;
+  }>;
+  recentActivity: Array<{
+    id: number;
+    timestamp: string;
+    action: string;
+    actorEmail: string;
+    entityType: string;
+    entityId: string;
+    description: string;
+  }>;
+}
+

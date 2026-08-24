@@ -19,12 +19,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import com.ohotech.backend.service.AuditService;
+import com.ohotech.backend.service.SoftwareReleaseService;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class SoftwareReleaseController {
 
     private final SoftwareReleaseService softwareReleaseService;
+    private final AuditService auditService;
 
     // Customer Entitlement Endpoints
     @GetMapping("/products/my")
@@ -57,6 +61,10 @@ public class SoftwareReleaseController {
             @PathVariable Long releaseId) {
 
         SoftwareRelease release = softwareReleaseService.getSoftwareReleaseForDownload(currentUser.getId(), productId, releaseId);
+
+        // Audit download activity
+        auditService.logEvent("SOFTWARE_DOWNLOADED", "SoftwareRelease", String.valueOf(release.getId()),
+                "Downloaded release v" + release.getVersion() + " (" + release.getPlatform() + ") for product " + release.getProduct().getName());
 
         // Generate digital package binary payload for release download
         String content = "OHO TECHN SOFTWARE RELEASE\n" +

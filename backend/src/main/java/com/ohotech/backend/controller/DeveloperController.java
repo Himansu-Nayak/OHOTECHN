@@ -15,6 +15,11 @@ import com.ohotech.backend.dto.UserDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.*;
 
+import com.ohotech.backend.dto.DeveloperAnalyticsDto;
+import com.ohotech.backend.service.DeveloperAnalyticsService;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/developer")
 @RequiredArgsConstructor
@@ -24,6 +29,7 @@ public class DeveloperController {
 
     private final UserRepository userRepository;
     private final DataInitializer dataInitializer;
+    private final DeveloperAnalyticsService developerAnalyticsService;
 
     @Value("${spring.datasource.url:jdbc:postgresql://localhost:5432/OHOTECH}")
     private String dbUrl;
@@ -100,5 +106,14 @@ public class DeveloperController {
         responseMap.put("executionLog", "Processed command: '" + prompt + "'. Applied automated parameter adjustments to system configuration.");
 
         return ResponseEntity.ok(ApiResponse.success("AI Command executed", responseMap));
+    }
+
+    // 5. Developer Device & Download Analytics
+    @GetMapping("/analytics")
+    public ResponseEntity<ApiResponse<DeveloperAnalyticsDto>> getDeveloperAnalytics(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        DeveloperAnalyticsDto analytics = developerAnalyticsService.getDeveloperAnalytics(startDate, endDate);
+        return ResponseEntity.ok(ApiResponse.success("Developer device and download analytics fetched successfully", analytics));
     }
 }
