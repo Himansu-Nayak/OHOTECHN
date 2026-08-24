@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { NotificationBell } from '../NotificationBell';
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -35,10 +36,10 @@ export function Header() {
   return (
     <>
       {/* Floating Top Navigation Header Bar */}
-      <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
+      <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-3 sm:px-4 pointer-events-none">
         <header
           id="site-header"
-          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-5 sm:px-7 py-2.5 flex items-center justify-between gap-6 max-w-6xl w-full transition-all duration-300"
+          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-3.5 sm:px-7 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-6 max-w-6xl w-full transition-all duration-300"
         >
           {/* Logo */}
           <Link href="/" prefetch={true} id="logo-link" className="flex items-center shrink-0 group py-0.5">
@@ -50,7 +51,7 @@ export function Header() {
               priority
               quality={100}
               unoptimized
-              className="h-11 sm:h-14 lg:h-16 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-8 sm:h-14 lg:h-16 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
 
@@ -351,11 +352,14 @@ export function Header() {
           </nav>
 
           {/* Right Dual Action Buttons & Auth State */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Notification Bell */}
+            <NotificationBell />
+
             {/* Cart Icon Link */}
             <Link
               href="/cart"
-              className="relative p-2 rounded-full text-slate-700 hover:text-sky-600 hover:bg-slate-100 transition-all"
+              className="relative p-1.5 sm:p-2 rounded-full text-slate-700 hover:text-sky-600 hover:bg-slate-100 transition-all shrink-0"
               title="Shopping Cart"
             >
               <ShoppingBag className="w-5 h-5" />
@@ -370,13 +374,13 @@ export function Header() {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen((prev) => !prev)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 hover:border-sky-500 bg-slate-50 transition-all text-xs font-bold text-[#0d0d0e] cursor-pointer"
+                  className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border border-slate-200 hover:border-sky-500 bg-slate-50 transition-all text-xs font-bold text-[#0d0d0e] cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-full bg-sky-600 text-white flex items-center justify-center text-[10px] font-extrabold uppercase">
+                  <div className="w-6 h-6 rounded-full bg-sky-600 text-white flex items-center justify-center text-[10px] font-extrabold uppercase shrink-0">
                     {user.name ? user.name.charAt(0) : 'U'}
                   </div>
-                  <span className="hidden sm:inline max-w-[100px] truncate">{user.name}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="hidden md:inline max-w-[100px] truncate">{user.name}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </button>
 
                 {userMenuOpen && (
@@ -449,7 +453,7 @@ export function Header() {
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-flex px-4 py-2 rounded-full border border-slate-300 text-slate-800 hover:text-black hover:border-slate-400 font-extrabold text-xs tracking-tight transition-all"
+                  className="hidden sm:inline-flex px-3.5 py-1.5 rounded-full border border-slate-300 text-slate-800 hover:text-black hover:border-slate-400 font-extrabold text-xs tracking-tight transition-all"
                 >
                   Login
                 </Link>
@@ -472,18 +476,18 @@ export function Header() {
 
             <Link
               href="/book-demo"
-              className="px-5 py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all shadow-sm whitespace-nowrap"
+              className="hidden sm:inline-flex px-4 sm:px-5 py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all shadow-sm whitespace-nowrap shrink-0"
             >
               Book a Demo
             </Link>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setIsMobileOpen(true)}
-              className="lg:hidden p-1.5 text-slate-800 hover:text-[#0d0d0e] ml-1"
+              className="lg:hidden p-2 text-slate-800 hover:text-[#0d0d0e] hover:bg-slate-100 rounded-full transition-colors shrink-0 flex items-center justify-center"
               aria-label="Open navigation menu"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-6 h-6 text-slate-900" />
             </button>
           </div>
 
@@ -535,6 +539,13 @@ export function Header() {
             </div>
 
             <div className="space-y-3 pt-6 border-t border-slate-100">
+              <Link
+                href="/book-demo"
+                onClick={() => setIsMobileOpen(false)}
+                className="block w-full py-3 rounded-full bg-sky-600 text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-sky-700 transition-colors"
+              >
+                Book a Demo
+              </Link>
               {user ? (
                 <button
                   onClick={() => {

@@ -9,6 +9,7 @@ import com.ohotech.backend.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +21,43 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    public Page<ProductDto> getActiveProducts(int page, int size, String searchQuery) {
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    public Page<ProductDto> getActiveProducts(int page, int size, String searchQuery, Long categoryId) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Product> products;
 
-        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-            products = productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchQuery, searchQuery, pageable);
+        boolean hasSearch = searchQuery != null && !searchQuery.trim().isEmpty();
+        String q = hasSearch ? searchQuery.trim() : "";
+
+        if (categoryId != null && hasSearch) {
+            products = productRepository.findByCategoryIdAndActiveTrueAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(categoryId, q, q, pageable);
+        } else if (categoryId != null) {
+            products = productRepository.findByCategoryIdAndActiveTrue(categoryId, pageable);
+        } else if (hasSearch) {
+            products = productRepository.findByActiveTrueAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(q, q, pageable);
         } else {
             products = productRepository.findByActiveTrue(pageable);
+        }
+
+        return products.map(this::mapToDto);
+    }
+
+    public Page<ProductDto> getAdminProducts(int page, int size, String searchQuery, Long categoryId, Boolean active) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Product> products;
+
+        boolean hasSearch = searchQuery != null && !searchQuery.trim().isEmpty();
+        String q = hasSearch ? searchQuery.trim() : "";
+
+        if (categoryId != null && hasSearch) {
+            products = productRepository.findByCategoryIdAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(categoryId, q, q, pageable);
+        } else if (categoryId != null) {
+            products = productRepository.findByCategoryId(categoryId, pageable);
+        } else if (hasSearch) {
+            products = productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(q, q, pageable);
+        } else if (Boolean.TRUE.equals(active)) {
+            products = productRepository.findByActiveTrue(pageable);
+        } else {
+            products = productRepository.findAll(pageable);
         }
 
         return products.map(this::mapToDto);
@@ -72,14 +102,22 @@ public class ProductService {
             product.setCategory(category);
         }
 
-        product.setName(dto.getName());
-        product.setDescription(dto.getDescription());
-        product.setPrice(dto.getPrice());
+        if (dto.getName() != null) product.setName(dto.getName());
+        if (dto.getDescription() != null) product.setDescription(dto.getDescription());
+        if (dto.getPrice() != null) product.setPrice(dto.getPrice());
         if (dto.getStock() != null) product.setStock(dto.getStock());
         if (dto.getImageUrl() != null) product.setImageUrl(dto.getImageUrl());
         if (dto.getServiceType() != null) product.setServiceType(dto.getServiceType());
         product.setActive(dto.isActive());
 
+        return mapToDto(productRepository.save(product));
+    }
+
+    @Transactional
+    public ProductDto toggleProductStatus(Long id, boolean active) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        product.setActive(active);
         return mapToDto(productRepository.save(product));
     }
 

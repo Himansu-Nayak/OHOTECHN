@@ -16,21 +16,21 @@ export function ServicesSection() {
 
   return (
     <section
-      className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden"
+      className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden"
       id="services"
     >
       {/* 1. Outer Section Header */}
-      <div className="max-w-3xl mb-12 text-left">
-        <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-4">
+      <div className="max-w-3xl mb-10 text-left">
+        <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-3">
           WHAT WE BUILD &amp; GROW
         </div>
 
-        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-5">
+        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-4">
           Technology to Build.<br />
           <span className="text-sky-600 font-bold">Strategy to Grow.</span>
         </h2>
 
-        <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed">
+        <p className="text-sm sm:text-lg text-slate-600 font-normal leading-relaxed">
           From custom software and digital platforms to marketing and growth systems, OHO TECH delivers the technology businesses need to move forward.
         </p>
       </div>
@@ -45,10 +45,10 @@ export function ServicesSection() {
 
       {/* 3. Core Technology Services Inner Console Card */}
       {showTech && (
-        <div className="mb-12 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+        <div className="mb-12 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[24px] sm:rounded-[36px] p-4 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
           <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-white/10 relative z-10">
             <div>
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1">
                 <Code2 className="w-4 h-4" />
@@ -80,10 +80,10 @@ export function ServicesSection() {
 
       {/* 4. Digital Growth Services Inner Console Card */}
       {showGrowth && (
-        <div className="mb-12 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+        <div className="mb-12 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[24px] sm:rounded-[36px] p-4 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
           <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-white/10 relative z-10">
             <div>
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-400 uppercase tracking-wider mb-1">
                 <TrendingUp className="w-4 h-4" />
@@ -114,7 +114,7 @@ export function ServicesSection() {
       )}
 
       {/* 5. Bottom CTA Block */}
-      <div className="bg-[#fafafa] border-2 border-slate-200 rounded-3xl p-8 sm:p-12 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs">
+      <div className="bg-[#fafafa] border-2 border-slate-200 rounded-3xl p-5 sm:p-12 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs">
         <div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-[11px] font-bold uppercase tracking-wider mb-3">
             <Sparkles className="w-3.5 h-3.5 text-sky-600" />

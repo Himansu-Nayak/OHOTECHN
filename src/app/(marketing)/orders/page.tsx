@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Package, Clock, ShieldCheck, AlertCircle, ShoppingBag, ArrowRight, CreditCard, CheckCircle2 } from 'lucide-react';
+import { Package, Clock, ShieldCheck, AlertCircle, ShoppingBag, ArrowRight, CreditCard, CheckCircle2, FileText, Download } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { getMyOrdersApi } from '@/api/orders';
+import { getMyOrdersApi, downloadOrderInvoiceApi } from '@/api/orders';
 import { createPaymentOrderApi, verifyPaymentApi } from '@/api/payments';
 import { Order, OrderStatus } from '@/api/types';
 import { cn } from '@/lib/utils';
@@ -17,6 +17,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = React.useState<Order[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = React.useState<number | null>(null);
 
   const fetchOrders = React.useCallback(async () => {
     if (!user) return;
@@ -48,6 +49,26 @@ export default function OrdersPage() {
       }
     } catch (err: any) {
       showToast(err.message || 'Payment initiation failed', 'error');
+    }
+  };
+
+  const handleDownloadInvoice = async (orderId: number) => {
+    setDownloadingId(orderId);
+    try {
+      const blob = await downloadOrderInvoiceApi(orderId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-order-${orderId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      showToast(`Invoice PDF downloaded for Order #${orderId}`, 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to download invoice PDF', 'error');
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -172,9 +193,21 @@ export default function OrdersPage() {
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Total Amount</div>
-                      <div className="text-lg font-black text-[#0d0d0e]">{formattedTotal}</div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Total Amount</div>
+                        <div className="text-lg font-black text-[#0d0d0e]">{formattedTotal}</div>
+                      </div>
+
+                      <button
+                        onClick={() => handleDownloadInvoice(order.id)}
+                        disabled={downloadingId === order.id}
+                        className="py-2.5 px-4 rounded-2xl bg-slate-900 hover:bg-sky-600 text-white font-mono font-bold text-xs transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                        title="Download Tax Invoice PDF"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>{downloadingId === order.id ? 'Generating PDF...' : 'Invoice PDF'}</span>
+                      </button>
                     </div>
                   </div>
 
@@ -208,7 +241,7 @@ export default function OrdersPage() {
                     {order.status === 'PENDING' && (
                       <button
                         onClick={() => handlePayNow(order.id)}
-                        className="py-2.5 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-sm"
+                        className="py-2.5 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-sm cursor-pointer"
                       >
                         <CreditCard className="w-4 h-4" />
                         <span>Complete Payment</span>

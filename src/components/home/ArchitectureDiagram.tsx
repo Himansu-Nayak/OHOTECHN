@@ -5,7 +5,7 @@ import { Cpu, Layers, Database, ShieldCheck, ArrowDown, Sparkles, CheckCircle2, 
 
 export function ArchitectureDiagram() {
   return (
-    <div className="w-full bg-[#0d0d0e] text-white rounded-3xl p-6 sm:p-10 lg:p-12 border-2 border-slate-700 shadow-2xl relative overflow-hidden mb-12 sm:mb-14 grid-pattern-dark">
+    <div className="w-full bg-[#0d0d0e] text-white rounded-3xl p-4 sm:p-10 lg:p-12 border-2 border-slate-700 shadow-2xl relative overflow-hidden mb-12 sm:mb-14 grid-pattern-dark">
       
       {/* Background Ambient Glows */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -14,21 +14,21 @@ export function ArchitectureDiagram() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-8 relative z-10">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            ENTERPRISE ARCHITECTURE BLUEPRINT
+            <span>ENTERPRISE ARCHITECTURE BLUEPRINT</span>
           </div>
           <h3 className="text-xl sm:text-3xl font-black text-white tracking-tight">
             OHO TECH Scalable System Architecture
           </h3>
         </div>
 
-        <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
+        <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono text-slate-400">
           <span className="flex items-center gap-1.5 text-emerald-400">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             Active Production SLA
           </span>
-          <span>•</span>
+          <span className="hidden sm:inline">•</span>
           <span className="text-slate-300">Modular Microservices</span>
         </div>
       </div>
@@ -37,15 +37,15 @@ export function ArchitectureDiagram() {
       <div className="space-y-6 relative z-10">
         
         {/* Tier 1: Client Experience & Omnichannel Interfaces */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xl">🌐</span>
-              <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/50 transition-all">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg sm:text-xl">🌐</span>
+              <span className="text-[11px] sm:text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
                 TIER 01: OMNICHANNEL USER INTERFACES &amp; PORTALS
               </span>
             </div>
-            <span className="text-[10px] font-mono text-slate-400 bg-white/10 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] font-mono text-slate-400 bg-white/10 px-2.5 py-0.5 rounded-full w-fit">
               Frontend Layer
             </span>
           </div>
@@ -93,15 +93,15 @@ export function ArchitectureDiagram() {
         </div>
 
         {/* Tier 2: Core Engineering & Microservices Engine */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xl">⚙️</span>
-              <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/50 transition-all">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg sm:text-xl">⚙️</span>
+              <span className="text-[11px] sm:text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
                 TIER 02: CORE BUSINESS LOGIC &amp; MICROSERVICES ENGINE
               </span>
             </div>
-            <span className="text-[10px] font-mono text-slate-400 bg-white/10 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] font-mono text-slate-400 bg-white/10 px-2.5 py-0.5 rounded-full w-fit">
               Backend Execution
             </span>
           </div>
@@ -137,15 +137,15 @@ export function ArchitectureDiagram() {
         </div>
 
         {/* Tier 3: Database & Cloud Infrastructure */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xl">🗄️</span>
-              <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/50 transition-all">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg sm:text-xl">🗄️</span>
+              <span className="text-[11px] sm:text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
                 TIER 03: DATABASE DATA LAKE &amp; SECURE STORAGE
               </span>
             </div>
-            <span className="text-[10px] font-mono text-slate-400 bg-white/10 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] font-mono text-slate-400 bg-white/10 px-2.5 py-0.5 rounded-full w-fit">
               Persistence &amp; Cache
             </span>
           </div>

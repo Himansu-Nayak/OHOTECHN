@@ -11,7 +11,7 @@ interface FeaturedIndustryProps {
 
 export function FeaturedIndustry({ industry }: FeaturedIndustryProps) {
   return (
-    <div className="w-full bg-[#111113] text-white rounded-3xl p-8 sm:p-12 lg:p-14 mb-12 relative overflow-hidden shadow-xl border border-black/20 transition-all duration-300">
+    <div className="w-full bg-[#111113] text-white rounded-3xl p-5 sm:p-12 lg:p-14 mb-12 relative overflow-hidden shadow-xl border border-black/20 transition-all duration-300">
       
       {/* Background Subtle Ambient Glow */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />

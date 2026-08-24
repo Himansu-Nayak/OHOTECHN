@@ -107,3 +107,171 @@ export interface ContactEnquiry {
   status: string;
   createdAt: string;
 }
+
+export type BillingType = 'FREE_TRIAL' | 'MONTHLY' | 'YEARLY' | 'LIFETIME' | 'ONE_TIME' | 'ENTERPRISE';
+
+export interface ProductPlanDto {
+  id: number;
+  productId: number;
+  productName?: string;
+  name: string;
+  description?: string;
+  price: number;
+  currency: string;
+  billingType: BillingType;
+  durationDays?: number;
+  activationLimit?: number;
+  trialDays?: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type SubscriptionStatus = 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'SUSPENDED';
+
+export interface Subscription {
+  id: number;
+  user?: UserDto;
+  product: ProductDto;
+  productPlan?: ProductPlanDto;
+  order?: Order;
+  status: SubscriptionStatus;
+  startDate?: string;
+  expiryDate?: string;
+  autoRenew: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type LicenseStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'SUSPENDED';
+
+export interface License {
+  id: number;
+  user?: UserDto;
+  product: ProductDto;
+  productPlan?: ProductPlanDto;
+  subscription?: Subscription;
+  licenseKey: string;
+  status: LicenseStatus;
+  activationLimit: number;
+  activationCount: number;
+  issuedAt?: string;
+  expiresAt?: string;
+  revokedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DeviceActivation {
+  id: number;
+  licenseId?: number;
+  deviceIdentifier: string;
+  deviceName?: string;
+  operatingSystem?: string;
+  applicationVersion?: string;
+  activatedAt?: string;
+  lastSeenAt?: string;
+  active: boolean;
+}
+
+export type Platform = 'WINDOWS' | 'MACOS' | 'LINUX' | 'ANDROID' | 'IOS' | 'WEB';
+
+export interface SoftwareReleaseDto {
+  id: number;
+  productId: number;
+  productName?: string;
+  version: string;
+  releaseNotes?: string;
+  fileName?: string;
+  filePath?: string;
+  fileSize?: number;
+  platform: Platform;
+  active: boolean;
+  releaseDate?: string;
+  createdAt?: string;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export interface NotificationDto {
+  id: number;
+  title: string;
+  message: string;
+  type: 'SUCCESS' | 'INFO' | 'WARNING' | 'ERROR';
+  category: 'ORDER' | 'PAYMENT' | 'LICENSE' | 'SUBSCRIPTION' | 'TRIAL' | 'SYSTEM' | 'SECURITY' | 'PRODUCT';
+  actionUrl?: string;
+  read: boolean;
+  createdAt: string;
+  readAt?: string;
+}
+
+export interface AuditLogDto {
+  id: number;
+  actorUserId?: number;
+  actorName?: string;
+  actorEmail?: string;
+  actorRole?: string;
+  action: string;
+  entityType?: string;
+  entityId?: string;
+  description: string;
+  previousValue?: string;
+  newValue?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+}
+
+export interface AnalyticsDashboardDto {
+  userMetrics: {
+    totalUsers: number;
+    totalCustomers: number;
+    totalAdmins: number;
+    newUsersToday: number;
+    newUsersThisMonth: number;
+  };
+  revenueMetrics: {
+    totalRevenue: number;
+    revenueToday: number;
+    revenueThisMonth: number;
+    revenueThisYear: number;
+    filteredRevenue: number;
+  };
+  orderMetrics: {
+    totalOrders: number;
+    confirmedOrders: number;
+    pendingOrders: number;
+    cancelledOrders: number;
+  };
+  subscriptionMetrics: {
+    activeSubscriptions: number;
+    trialSubscriptions: number;
+    expiredSubscriptions: number;
+    suspendedSubscriptions: number;
+    expiringSoon: number;
+  };
+  licenseMetrics: {
+    activeLicenses: number;
+    expiredLicenses: number;
+    revokedLicenses: number;
+    suspendedLicenses: number;
+  };
+  productMetrics: {
+    mostPurchasedProducts: Array<{ id: number; name: string; salesCount: number; revenue: number }>;
+    trialStarts: number;
+  };
+  paymentMetrics: {
+    successfulPayments: number;
+    failedPayments: number;
+  };
+}
+

@@ -12,5 +12,16 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByActiveTrue(Pageable pageable);
     List<Product> findByCategoryId(Long categoryId);
+    Page<Product> findByCategoryIdAndActiveTrue(Long categoryId, Pageable pageable);
+    Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
+
     Page<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description, Pageable pageable);
+    
+    Page<Product> findByActiveTrueAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description, Pageable pageable);
+
+    Page<Product> findByCategoryIdAndActiveTrueAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            Long categoryId, String name, String description, Pageable pageable);
+
+    Page<Product> findByCategoryIdAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            Long categoryId, String name, String description, Pageable pageable);
 }

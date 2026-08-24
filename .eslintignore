@@ -1,0 +1,7 @@
+.next/
+out/
+build/
+backend/
+node_modules/
+.qodo/
+next-env.d.ts

@@ -7,8 +7,8 @@ import { solutionsNav, techServicesNav, growthServicesNav, companyNav, legalNav 
 
 export default function Footer() {
   return (
-    <footer className="bg-[#07080c] text-slate-400 border-t border-white/10 pt-16 pb-12 font-sans text-xs">
-      <div className="max-w-[1536px] w-full mx-auto px-6 sm:px-10 lg:px-16">
+    <footer className="bg-[#07080c] text-slate-400 border-t border-white/10 pt-12 sm:pt-16 pb-12 font-sans text-xs">
+      <div className="max-w-[1536px] w-full mx-auto px-4 sm:px-10 lg:px-16">
         
         {/* 5-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-14">

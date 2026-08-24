@@ -28,36 +28,36 @@ export function WhyChooseSection() {
   ];
 
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden" id="why-oho-tech">
+    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden" id="why-oho-tech">
       
       {/* Outer Section Header */}
-      <div className="max-w-3xl mb-12 text-left">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+      <div className="max-w-3xl mb-10 text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-3">
           <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-          WHY OHO TECH 🛡️
+          <span>WHY OHO TECH 🛡️</span>
         </div>
 
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-4">
+        <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-4">
           Built for long-term business value.
         </h2>
 
-        <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed">
+        <p className="text-sm sm:text-lg text-slate-600 font-normal leading-relaxed">
           We combine bespoke software engineering with growth strategy to help companies operate efficiently and scale sustainably.
         </p>
       </div>
 
       {/* Inner Dark Console Card */}
-      <div className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+      <div className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[24px] sm:rounded-[36px] p-4 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
         {/* Background Ambient Glow */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* 4 Differentiators Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 relative z-10">
           {differentiators.map((diff, idx) => {
             return (
               <div
                 key={idx}
-                className="p-8 rounded-3xl bg-[#141416] border border-white/10 hover:border-emerald-400/60 hover:shadow-[0_0_25px_rgba(16,185,129,0.2)] transition-all duration-300 flex flex-col justify-between group backdrop-blur-xl"
+                className="p-5 sm:p-8 rounded-3xl bg-[#141416] border border-white/10 hover:border-emerald-400/60 hover:shadow-[0_0_25px_rgba(16,185,129,0.2)] transition-all duration-300 flex flex-col justify-between group backdrop-blur-xl"
               >
                 <div>
                   <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition-transform">

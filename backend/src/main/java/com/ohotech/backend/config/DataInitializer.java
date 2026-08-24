@@ -10,6 +10,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -21,10 +23,22 @@ public class DataInitializer implements CommandLineRunner {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        try {
+            jdbcTemplate.execute("ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check");
+            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INT DEFAULT 0");
+            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMP");
+            jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN description TYPE VARCHAR(2000) USING description::text");
+            jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN previous_value TYPE VARCHAR(2000) USING previous_value::text");
+            jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN new_value TYPE VARCHAR(2000) USING new_value::text");
+        } catch (Exception e) {
+            log.warn("Schema initialization warning: {}", e.getMessage());
+        }
+
         if (productRepository.count() > 0) {
             log.info("Database already contains {} products. Skipping auto-seeding.", productRepository.count());
             return;

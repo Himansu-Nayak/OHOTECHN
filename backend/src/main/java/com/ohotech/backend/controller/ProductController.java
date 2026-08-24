@@ -19,8 +19,9 @@ public class ProductController {
     public ResponseEntity<ApiResponse<Page<ProductDto>>> getProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search) {
-        Page<ProductDto> products = productService.getActiveProducts(page, size, search);
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long category) {
+        Page<ProductDto> products = productService.getActiveProducts(page, size, search, category);
         return ResponseEntity.ok(ApiResponse.success("Products fetched successfully", products));
     }
 

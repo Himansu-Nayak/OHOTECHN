@@ -16,21 +16,21 @@ export function SolutionsSection() {
 
   return (
     <section
-      className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden"
+      className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden"
       id="solutions"
     >
       {/* 1. Section Outer Header */}
-      <div className="max-w-3xl mb-14 text-left">
-        <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-4">
+      <div className="max-w-3xl mb-10 text-left">
+        <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-3">
           COMPLETE SOFTWARE ECOSYSTEM
         </div>
 
-        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-5">
+        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-4">
           65+ Software Solutions.<br />
           <span className="text-sky-600 font-bold">One Technology Partner.</span>
         </h2>
 
-        <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed">
+        <p className="text-sm sm:text-lg text-slate-600 font-normal leading-relaxed">
           Explore ready-to-deploy and customizable software solutions built for businesses across 13 industries.
         </p>
       </div>
@@ -46,9 +46,9 @@ export function SolutionsSection() {
       <FeaturedIndustry industry={selectedIndustry} />
 
       {/* 4. Featured Product Cards Inner Console Container */}
-      <div className="mb-10 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
-        <div className="flex items-center justify-between mb-6 relative z-10">
-          <h4 className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+      <div className="mb-10 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[24px] sm:rounded-[36px] p-4 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 relative z-10">
+          <h4 className="text-[11px] sm:text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
             FEATURED {selectedIndustry.name.toUpperCase()} PRODUCTS ({featuredProducts.length} OF {selectedIndustry.products.length})
           </h4>
           <span className="text-xs font-mono text-slate-400">

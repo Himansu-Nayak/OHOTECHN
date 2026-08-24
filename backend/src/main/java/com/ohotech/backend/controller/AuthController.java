@@ -38,6 +38,10 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserDto>> getCurrentUser(@AuthenticationPrincipal UserPrincipal currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Unauthorized access"));
+        }
         UserDto userDto = authService.getCurrentUser(currentUser);
         return ResponseEntity.ok(ApiResponse.success("Current user fetched successfully", userDto));
     }

@@ -42,6 +42,15 @@ public class User {
     @Builder.Default
     private boolean phoneVerified = false;
 
+    @Builder.Default
+    private Integer failedLoginAttempts = 0;
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts != null ? failedLoginAttempts : 0;
+    }
+
+    private LocalDateTime lockoutUntil;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

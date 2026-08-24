@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.ohotech.backend.dto.UserDto;
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/developer")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@PreAuthorize("hasAuthority('ROLE_DEVELOPER')")
 @Slf4j
 public class DeveloperController {
 
@@ -42,7 +44,7 @@ public class DeveloperController {
 
     // 2. Grant / Revoke User Privileges (Admin & Developer Roles)
     @PutMapping("/users/{id}/role")
-    public ResponseEntity<ApiResponse<User>> updateUserRole(
+    public ResponseEntity<ApiResponse<UserDto>> updateUserRole(
             @PathVariable Long id,
             @RequestBody Map<String, String> rolePayload) {
         
@@ -54,9 +56,20 @@ public class DeveloperController {
                         user.setRole(newRole);
                         User saved = userRepository.save(user);
                         log.info("Developer assigned role {} to user #{}", newRole, id);
-                        return ResponseEntity.ok(ApiResponse.success("User role updated successfully", saved));
+                        UserDto userDto = UserDto.builder()
+                                .id(saved.getId())
+                                .name(saved.getName())
+                                .email(saved.getEmail())
+                                .phone(saved.getPhone())
+                                .role(saved.getRole())
+                                .enabled(saved.isEnabled())
+                                .emailVerified(saved.isEmailVerified())
+                                .phoneVerified(saved.isPhoneVerified())
+                                .createdAt(saved.getCreatedAt())
+                                .build();
+                        return ResponseEntity.ok(ApiResponse.success("User role updated successfully", userDto));
                     } catch (IllegalArgumentException e) {
-                        return ResponseEntity.badRequest().body(ApiResponse.<User>error("Invalid role: " + roleStr));
+                        return ResponseEntity.badRequest().body(ApiResponse.<UserDto>error("Invalid role: " + roleStr));
                     }
                 })
                 .orElse(ResponseEntity.notFound().build());

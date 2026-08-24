@@ -11,7 +11,7 @@ interface CartContextType {
   itemCount: number;
   totalAmount: number;
   loading: boolean;
-  addToCart: (productId: number, quantity?: number) => Promise<void>;
+  addToCart: (productId: number, quantity?: number, productPlanId?: number) => Promise<void>;
   updateQuantity: (itemId: number, quantity: number) => Promise<void>;
   removeItem: (itemId: number) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -49,7 +49,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     refreshCart();
   }, [refreshCart]);
 
-  const addToCart = async (productId: number, quantity = 1) => {
+  const addToCart = async (productId: number, quantity = 1, productPlanId?: number) => {
     if (!user) {
       showToast('Please login to add items to your cart.', 'info');
       return;
@@ -57,7 +57,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     setLoading(true);
     try {
-      const res = await addToCartApi(productId, quantity);
+      const res = await addToCartApi(productId, quantity, productPlanId);
       if (res.success && res.data) {
         setCart(res.data);
         showToast('Item added to cart successfully!', 'success');

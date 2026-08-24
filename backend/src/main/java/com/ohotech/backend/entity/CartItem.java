@@ -26,6 +26,10 @@ public class CartItem {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_plan_id")
+    private ProductPlan productPlan;
+
     @Column(nullable = false)
     private Integer quantity;
 }

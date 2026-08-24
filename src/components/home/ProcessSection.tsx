@@ -53,26 +53,26 @@ export function ProcessSection() {
   ];
 
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden" id="how-we-work">
+    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden" id="how-we-work">
       
       {/* Outer Section Header */}
-      <div className="max-w-4xl mb-12 text-left">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+      <div className="max-w-4xl mb-10 text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-3">
           <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-          DELIVERY METHODOLOGY ROADMAP ⚡
+          <span>DELIVERY METHODOLOGY ROADMAP ⚡</span>
         </div>
 
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-4">
+        <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-4">
           5-Phase Software Engineering Roadmap.
         </h2>
 
-        <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-3xl">
+        <p className="text-sm sm:text-lg text-slate-600 font-normal leading-relaxed max-w-3xl">
           We follow a transparent 5-phase software delivery roadmap from initial requirements discovery to live deployment and long-term scaling.
         </p>
       </div>
 
       {/* Inner Dark Console Card */}
-      <div className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+      <div className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[24px] sm:rounded-[36px] p-4 sm:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
         
         {/* Background Ambient Glow */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />

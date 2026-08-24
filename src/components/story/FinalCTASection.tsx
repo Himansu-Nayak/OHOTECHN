@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 
 export function FinalCTASection() {
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#0d0d0e] text-white border-2 border-slate-700 rounded-[32px] sm:rounded-[44px] p-10 sm:p-16 lg:p-20 text-center shadow-2xl relative overflow-hidden grid-pattern-dark" id="final-cta">
+    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#0d0d0e] text-white border-2 border-slate-700 rounded-[28px] sm:rounded-[44px] p-5 sm:p-16 lg:p-20 text-center shadow-2xl relative overflow-hidden grid-pattern-dark" id="final-cta">
       
       {/* Ambient Backdrop Accent */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
@@ -14,26 +14,26 @@ export function FinalCTASection() {
       <div className="relative z-10 max-w-3xl mx-auto">
         
         {/* Eyebrow */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-sky-300 font-mono text-xs font-bold uppercase tracking-wider mb-6">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-sky-300 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-5">
           <Sparkles className="w-3.5 h-3.5" />
-          LET&apos;S BUILD SOMETHING
+          <span>LET&apos;S BUILD SOMETHING</span>
         </div>
 
         {/* Headline */}
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-5">
+        <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-4">
           Have an idea? Let&apos;s make it real.
         </h2>
 
         {/* Description */}
-        <p className="text-slate-300 text-base sm:text-lg mb-10 max-w-xl mx-auto leading-relaxed">
+        <p className="text-slate-300 text-sm sm:text-lg mb-8 max-w-xl mx-auto leading-relaxed">
           Whether you need software, a website, a mobile application, or help growing your digital presence, tell us what you&apos;re looking to achieve.
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <Link
             href="/get-quote"
-            className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-white hover:bg-sky-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-xl group hover:scale-105"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 sm:py-4 rounded-full bg-white hover:bg-sky-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-xl group hover:scale-105"
           >
             <span>Get a Quote</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -41,7 +41,7 @@ export function FinalCTASection() {
 
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all border border-white/20 hover:scale-105"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all border border-white/20 hover:scale-105"
           >
             <span>Talk to an Expert →</span>
           </Link>

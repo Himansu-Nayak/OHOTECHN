@@ -4,10 +4,12 @@ import com.ohotech.backend.dto.CartItemRequest;
 import com.ohotech.backend.entity.Cart;
 import com.ohotech.backend.entity.CartItem;
 import com.ohotech.backend.entity.Product;
+import com.ohotech.backend.entity.ProductPlan;
 import com.ohotech.backend.entity.User;
 import com.ohotech.backend.exception.ResourceNotFoundException;
 import com.ohotech.backend.repository.CartItemRepository;
 import com.ohotech.backend.repository.CartRepository;
+import com.ohotech.backend.repository.ProductPlanRepository;
 import com.ohotech.backend.repository.ProductRepository;
 import com.ohotech.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,22 +38,33 @@ public class CartService {
                 });
     }
 
+    private final ProductPlanRepository productPlanRepository;
+
     @Transactional
     public Cart addItemToCart(Long userId, CartItemRequest request) {
         Cart cart = getOrCreateCart(userId);
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", request.getProductId()));
 
+        ProductPlan plan = null;
+        if (request.getProductPlanId() != null) {
+            plan = productPlanRepository.findById(request.getProductPlanId()).orElse(null);
+        }
+
         Optional<CartItem> existingItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + request.getQuantity());
+            if (plan != null) {
+                item.setProductPlan(plan);
+            }
             cartItemRepository.save(item);
         } else {
             CartItem newItem = CartItem.builder()
                     .cart(cart)
                     .product(product)
+                    .productPlan(plan)
                     .quantity(request.getQuantity())
                     .build();
             cart.getItems().add(newItem);

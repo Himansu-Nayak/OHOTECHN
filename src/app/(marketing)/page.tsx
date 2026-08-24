@@ -31,30 +31,30 @@ export default function WideStudioPage() {
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-6 pt-4 px-2 sm:px-4 lg:px-6 selection:bg-[#0d0d0e] selection:text-white">
       
       {/* ── 01. HERO SECTION ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 shadow-sm pt-24 sm:pt-32 text-center relative overflow-hidden grid-pattern-light" id="hero">
+      <section className="max-w-[1536px] w-full mx-auto mb-10 bg-[#fafafa] border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] px-3.5 py-6 sm:p-12 lg:p-16 shadow-sm pt-20 sm:pt-32 text-center relative overflow-hidden grid-pattern-light" id="hero">
         
         {/* Category Pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#f0f0eb] border border-black/10 text-[#0d0d0e] font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f0f0eb] border border-black/10 text-[#0d0d0e] font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Software, Digital Solutions &amp; Business Growth
+          <span>Software, Digital Solutions &amp; Business Growth</span>
         </div>
 
         {/* Clear Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight max-w-5xl mx-auto mb-6 text-[#0d0d0e] leading-[1.06]">
+        <h1 className="text-3xl sm:text-6xl lg:text-7xl font-black tracking-tight max-w-5xl mx-auto mb-5 text-[#0d0d0e] leading-[1.08]">
           We build software, digital platforms and growth solutions for businesses.
         </h1>
 
         {/* Clear Subheadline */}
-        <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal max-w-2xl mx-auto mb-8 leading-relaxed">
+        <p className="text-sm sm:text-lg lg:text-xl text-slate-600 font-normal max-w-2xl mx-auto mb-8 leading-relaxed">
           Custom software development, mobile applications, web platforms, and digital growth strategies tailored to your operational goals.
         </p>
 
         {/* Dual Primary CTAs */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-10">
           <Link
             id="hero-get-quote"
             href="/get-quote"
-            className="px-8 py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105"
+            className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105"
           >
             Get a Quote →
           </Link>
@@ -62,7 +62,7 @@ export default function WideStudioPage() {
           <Link
             id="hero-book-demo"
             href="/book-demo"
-            className="px-8 py-4 rounded-full bg-[#ebebe8] hover:bg-[#e2e2de] text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all hover:scale-105"
+            className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#ebebe8] hover:bg-[#e2e2de] text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all hover:scale-105"
           >
             Book a Demo
           </Link>
@@ -76,18 +76,18 @@ export default function WideStudioPage() {
       </section>
 
       {/* ── ABOUT OHO TECH & STRATEGIC DIRECTION ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="about-intro">
+      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-14 lg:p-20 shadow-sm" id="about-intro">
         
         {/* Section Header */}
-        <div className="max-w-4xl mb-10 text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+        <div className="max-w-4xl mb-8 sm:mb-10 text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-3">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            ABOUT OHO TECH &amp; STRATEGIC DIRECTION 🏗️
+            <span>ABOUT OHO TECH &amp; STRATEGIC DIRECTION 🏗️</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-5">
+          <h2 className="text-2xl sm:text-5xl font-black text-[#0d0d0e] tracking-tight leading-[1.1] mb-4">
             Engineering precision meets data-driven growth.
           </h2>
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+          <p className="text-sm sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
             OHO TECH is an enterprise technology studio delivering custom software applications, digital platforms, and customer acquisition strategies tailored to your operational business goals.
           </p>
         </div>
@@ -99,8 +99,8 @@ export default function WideStudioPage() {
         <StrategicPillarsSection />
 
         {/* Bottom Directional Bar */}
-        <div className="bg-[#fafafa] border-2 border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-6 text-xs font-mono font-bold text-slate-700">
+        <div className="bg-[#fafafa] border-2 border-slate-200 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono font-bold text-slate-700">
             <span className="flex items-center gap-2 text-emerald-600">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Goal-Oriented Software
@@ -134,14 +134,14 @@ export default function WideStudioPage() {
 
       {/* ── 05. 28 LIVE SOFTWARE PRODUCTS FAST ACCESS HUB ── */}
       <section className="max-w-[1536px] w-full mx-auto mb-16">
-        <div className="w-full p-8 sm:p-10 lg:p-12 rounded-[28px] sm:rounded-[36px] bg-[#0d0d0e] text-white border border-black shadow-xl relative flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8 overflow-hidden">
+        <div className="w-full p-5 sm:p-10 lg:p-12 rounded-[28px] sm:rounded-[36px] bg-[#0d0d0e] text-white border border-black shadow-xl relative flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8 overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 flex-1 min-w-0 max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider mb-3.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider mb-3.5">
               <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>28 TURNKEY PRODUCTS READY FOR INSTANT DEMO</span>
             </div>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-3 leading-snug">
+            <h3 className="text-xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-3 leading-snug">
               Test Drive 28 Live Software Environments Right Now.
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
@@ -172,7 +172,7 @@ export default function WideStudioPage() {
       <PartnerSection />
 
       {/* ── 10. ABOUT US & FOUNDER LEADERSHIP ── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#0d0d0e] text-white border border-black/20 rounded-[32px] sm:rounded-[44px] p-8 sm:p-16 lg:p-20 shadow-2xl relative overflow-hidden grid-pattern-dark" id="founder">
+      <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#0d0d0e] text-white border border-black/20 rounded-[28px] sm:rounded-[44px] p-4 sm:p-16 lg:p-20 shadow-2xl relative overflow-hidden grid-pattern-dark" id="founder">
         
         {/* Glow Accents */}
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />

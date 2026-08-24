@@ -48,14 +48,19 @@ public class OrderService {
                 .build();
 
         for (CartItem cartItem : cart.getItems()) {
-            BigDecimal itemTotal = cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+            BigDecimal itemPrice = cartItem.getProductPlan() != null && cartItem.getProductPlan().getPrice() != null
+                    ? cartItem.getProductPlan().getPrice()
+                    : cartItem.getProduct().getPrice();
+
+            BigDecimal itemTotal = itemPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity()));
             totalAmount = totalAmount.add(itemTotal);
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
                     .product(cartItem.getProduct())
+                    .productPlan(cartItem.getProductPlan())
                     .quantity(cartItem.getQuantity())
-                    .price(cartItem.getProduct().getPrice())
+                    .price(itemPrice)
                     .build();
 
             orderItems.add(orderItem);

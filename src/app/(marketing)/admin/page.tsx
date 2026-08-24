@@ -2,10 +2,19 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, ShoppingBag, ShieldCheck, DollarSign, Users, FileText, Settings, Bot, RefreshCw, CheckCircle2, ArrowRight, Edit3, Save, Search, Lock, Zap } from 'lucide-react';
+import Link from 'next/link';
+import { Sparkles, ShoppingBag, ShieldCheck, DollarSign, Users, FileText, Settings, Bot, RefreshCw, CheckCircle2, ArrowRight, Edit3, Save, Search, Lock, Zap, UserCheck, UserX, ChevronLeft, ChevronRight, Eye, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
+import { UserDto, License, Subscription, SoftwareReleaseDto, ProductPlanDto } from '@/api/types';
+import { getAdminUsersApi, updateAdminUserStatusApi, updateAdminUserRoleApi } from '@/api/users';
+import { getAdminLicensesApi, updateAdminLicenseStatusApi, revokeAdminLicenseApi } from '@/api/licenses';
+import { getAdminSubscriptionsApi, updateAdminSubscriptionStatusApi } from '@/api/subscriptions';
+import { getAdminReleasesApi, createAdminReleaseApi, toggleAdminReleaseStatusApi, deleteAdminReleaseApi } from '@/api/releases';
+import { getAdminProductPlansApi, createAdminProductPlanApi, toggleAdminProductPlanStatusApi, deleteAdminProductPlanApi } from '@/api/plans';
+import { getAnalyticsDashboardApi } from '@/api/admin';
+import { AnalyticsDashboardDto } from '@/api/types';
 
 interface Stats {
   totalProducts: number;
@@ -62,8 +71,34 @@ export default function AdminConsolePage() {
     }
   }, [user, isLoading, router, showToast]);
 
-  const [activeTab, setActiveTab] = React.useState<'overview' | 'products' | 'orders' | 'quotes' | 'ai'>('overview');
+  const [activeTab, setActiveTab] = React.useState<'analytics' | 'overview' | 'products' | 'plans' | 'licenses' | 'subscriptions' | 'releases' | 'users' | 'orders' | 'quotes' | 'ai'>('analytics');
   const [controlMode, setControlMode] = React.useState<'manual' | 'ai'>('manual');
+
+  const [analyticsData, setAnalyticsData] = React.useState<AnalyticsDashboardDto | null>(null);
+  const [datePreset, setDatePreset] = React.useState<string>('30d');
+  const [startDateStr, setStartDateStr] = React.useState<string>('');
+  const [endDateStr, setEndDateStr] = React.useState<string>('');
+  const [isLoadingAnalytics, setIsLoadingAnalytics] = React.useState<boolean>(false);
+
+  const fetchAnalytics = React.useCallback(async (start?: string, end?: string) => {
+    setIsLoadingAnalytics(true);
+    try {
+      const res = await getAnalyticsDashboardApi(start, end);
+      if (res.success && res.data) {
+        setAnalyticsData(res.data);
+      }
+    } catch (e) {
+      console.warn('Analytics fetch failed', e);
+    } finally {
+      setIsLoadingAnalytics(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (activeTab === 'analytics') {
+      fetchAnalytics(startDateStr || undefined, endDateStr || undefined);
+    }
+  }, [activeTab, startDateStr, endDateStr, fetchAnalytics]);
 
   const [stats, setStats] = React.useState<Stats>({
     totalProducts: 28,
@@ -94,6 +129,111 @@ export default function AdminConsolePage() {
     { id: 2, name: 'Priya Verma', email: 'priya@edulearn.org', phone: '+91 98765 00002', subject: 'School ERP Custom Setup', message: 'Requesting SLA support and multi-branch database setup.' },
   ]);
 
+  // Admin User Management State
+  const [usersList, setUsersList] = React.useState<UserDto[]>([]);
+  const [page, setPage] = React.useState(0);
+  const [totalPages, setTotalPages] = React.useState(0);
+  const [totalElements, setTotalElements] = React.useState(0);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [filterRole, setFilterRole] = React.useState('');
+  const [isLoadingUsers, setIsLoadingUsers] = React.useState(false);
+  const [selectedUser, setSelectedUser] = React.useState<UserDto | null>(null);
+
+  // Fetch Users with Search, Role, and Pagination
+  const fetchUsers = React.useCallback(async () => {
+    setIsLoadingUsers(true);
+    try {
+      const res = await getAdminUsersApi(page, 10, searchQuery, filterRole);
+      if (res.success && res.data) {
+        const data = res.data;
+        setUsersList(data.content || []);
+        setTotalPages(data.totalPages || 0);
+        setTotalElements(data.totalElements || 0);
+        setStats((prev) => ({ ...prev, totalUsers: data.totalElements || prev.totalUsers }));
+      }
+    } catch (err: any) {
+      console.warn('Backend users list fetch warning:', err?.message);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  }, [page, searchQuery, filterRole]);
+
+  // Priority 4 Admin State
+  const [adminLicenses, setAdminLicenses] = React.useState<License[]>([]);
+  const [adminSubs, setAdminSubs] = React.useState<Subscription[]>([]);
+  const [adminReleases, setAdminReleases] = React.useState<SoftwareReleaseDto[]>([]);
+  const [adminPlans, setAdminPlans] = React.useState<ProductPlanDto[]>([]);
+
+  const fetchAdminLicenses = React.useCallback(async () => {
+    try {
+      const res = await getAdminLicensesApi();
+      if (res.success && res.data) setAdminLicenses(res.data);
+    } catch (err: any) {
+      console.warn('Licenses fetch error:', err);
+    }
+  }, []);
+
+  const fetchAdminSubs = React.useCallback(async () => {
+    try {
+      const res = await getAdminSubscriptionsApi();
+      if (res.success && res.data) setAdminSubs(res.data);
+    } catch (err: any) {
+      console.warn('Subs fetch error:', err);
+    }
+  }, []);
+
+  const fetchAdminReleases = React.useCallback(async () => {
+    try {
+      const res = await getAdminReleasesApi(1);
+      if (res.success && res.data) setAdminReleases(res.data);
+    } catch (err: any) {
+      console.warn('Releases fetch error:', err);
+    }
+  }, []);
+
+  const fetchAdminPlans = React.useCallback(async () => {
+    try {
+      const res = await getAdminProductPlansApi(1);
+      if (res.success && res.data) setAdminPlans(res.data);
+    } catch (err: any) {
+      console.warn('Plans fetch error:', err);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (!user) return;
+    if (activeTab === 'users') fetchUsers();
+    if (activeTab === 'licenses') fetchAdminLicenses();
+    if (activeTab === 'subscriptions') fetchAdminSubs();
+    if (activeTab === 'releases') fetchAdminReleases();
+    if (activeTab === 'plans') fetchAdminPlans();
+  }, [user, activeTab, fetchUsers, fetchAdminLicenses, fetchAdminSubs, fetchAdminReleases, fetchAdminPlans]);
+
+  const handleToggleUserStatus = async (targetUser: UserDto) => {
+    try {
+      const newEnabled = !targetUser.enabled;
+      const res = await updateAdminUserStatusApi(targetUser.id, newEnabled);
+      if (res.success) {
+        showToast(`Updated user status for ${targetUser.name} to ${newEnabled ? 'Enabled' : 'Disabled'}`, 'success');
+        fetchUsers();
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update status', 'error');
+    }
+  };
+
+  const handleUserRoleChange = async (targetUser: UserDto, newRole: string) => {
+    try {
+      const res = await updateAdminUserRoleApi(targetUser.id, newRole);
+      if (res.success) {
+        showToast(`Assigned role ${newRole} to ${targetUser.name}`, 'success');
+        fetchUsers();
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update role', 'error');
+    }
+  };
+
   // AI Command sandbox state
   const [aiPrompt, setAiPrompt] = React.useState('');
   const [aiLogs, setAiLogs] = React.useState<string[]>([
@@ -121,78 +261,57 @@ export default function AdminConsolePage() {
     if (!aiPrompt.trim()) return;
 
     setIsExecutingAi(true);
-    const cmd = aiPrompt.trim();
+    const userPrompt = aiPrompt;
     setAiPrompt('');
 
     setTimeout(() => {
-      setIsExecutingAi(false);
       setAiLogs((prev) => [
-        `[${new Date().toLocaleTimeString()}] Executed AI Task: "${cmd}"`,
-        `> Automated parameters updated across catalog & database. System SLA intact.`,
         ...prev,
+        `> USER COMMAND: "${userPrompt}"`,
+        `[AI AGENT]: Analyzing prompt syntax & target database entities...`,
+        `[EXECUTION]: Applied dynamic rule updates. Execution status: 200 OK.`,
       ]);
-      showToast('AI Task executed successfully!', 'success');
-    }, 800);
+      setIsExecutingAi(false);
+      showToast('AI Task Executed Successfully!', 'success');
+    }, 1000);
   };
+
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen bg-[#f7f7f5] flex items-center justify-center font-mono text-xs text-slate-500">
+        Authenticating Admin Console Access...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
-      <main className="max-w-[1536px] w-full mx-auto" id="admin-console-main">
+      <main className="max-w-7xl w-full mx-auto" id="admin-main">
         
-        {/* Console Header Banner */}
-        <section className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[32px] sm:rounded-[44px] p-8 sm:p-12 mb-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+        {/* Header Console Banner */}
+        <section className="mb-8 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-10 shadow-sm relative overflow-hidden">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
             <div>
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>ADMIN MANAGEMENT CONSOLE</span>
-                </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-slate-300 font-mono text-xs uppercase">
-                  <span>ROLE_ADMIN SCOPED</span>
-                </span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white font-mono text-[11px] font-bold uppercase tracking-wider mb-3">
+                <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
+                ENTERPRISE CONTROL PLANE
               </div>
-
-              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-                Enterprise Operations &amp; Catalog Management
+              <h1 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
+                System Admin &amp; Governance Console
               </h1>
-
-              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
-                Manage website content, turnkey software product pricing, customer orders, and commercial quote pipelines in real time.
+              <p className="text-xs sm:text-sm text-slate-500 font-mono mt-1 max-w-2xl">
+                Real-time operational dashboard for commercial quotes, user RBAC privileges, product catalog stock, and order pipelines.
               </p>
             </div>
 
-            {/* Mode Selector Toggle (Manual UI vs AI Automated) */}
-            <div className="p-2 rounded-2xl bg-[#141416] border border-white/15 shrink-0">
-              <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-2 px-2 text-center">
-                CONTROL MODE SELECTOR
+            {/* Admin Badge */}
+            <div className="flex items-center gap-3 bg-[#fafafa] border border-slate-200 p-3 rounded-2xl">
+              <div className="w-10 h-10 rounded-xl bg-[#0d0d0e] text-white flex items-center justify-center font-mono font-bold text-sm">
+                {user.name.charAt(0)}
               </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setControlMode('manual')}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-                    controlMode === 'manual'
-                      ? "bg-emerald-500 text-[#0d0d0e] shadow-md font-extrabold"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
-                  )}
-                >
-                  <Edit3 className="w-3.5 h-3.5" />
-                  <span>Manual UI Mode</span>
-                </button>
-
-                <button
-                  onClick={() => setControlMode('ai')}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-                    controlMode === 'ai'
-                      ? "bg-sky-500 text-white shadow-md font-extrabold"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
-                  )}
-                >
-                  <Bot className="w-3.5 h-3.5 text-sky-300" />
-                  <span>AI Automation Mode</span>
-                </button>
+              <div className="font-mono text-xs">
+                <div className="font-bold text-[#0d0d0e]">{user.name}</div>
+                <div className="text-[11px] text-sky-600 font-bold">{user.role}</div>
               </div>
             </div>
           </div>
@@ -201,6 +320,23 @@ export default function AdminConsolePage() {
         {/* Tab Navigation */}
         <section className="bg-white border-2 border-slate-300 rounded-[28px] p-3 mb-8 shadow-sm">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar font-mono text-xs">
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={cn(
+                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
+                activeTab === 'analytics' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+              )}
+            >
+              📈 Real Analytics Dashboard
+            </button>
+
+            <Link
+              href="/admin/audit-logs"
+              className="px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap text-slate-600 hover:bg-slate-100 flex items-center gap-1.5"
+            >
+              🛡️ Security Audit Logs →
+            </Link>
+
             <button
               onClick={() => setActiveTab('overview')}
               className={cn(
@@ -222,6 +358,16 @@ export default function AdminConsolePage() {
             </button>
 
             <button
+              onClick={() => setActiveTab('users')}
+              className={cn(
+                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
+                activeTab === 'users' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+              )}
+            >
+              👥 User Accounts ({stats.totalUsers})
+            </button>
+
+            <button
               onClick={() => setActiveTab('orders')}
               className={cn(
                 "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
@@ -229,6 +375,46 @@ export default function AdminConsolePage() {
               )}
             >
               📦 Customer Orders ({orders.length})
+            </button>
+
+            <button
+              onClick={() => setActiveTab('plans')}
+              className={cn(
+                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
+                activeTab === 'plans' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+              )}
+            >
+              🏷️ Product Plans
+            </button>
+
+            <button
+              onClick={() => setActiveTab('licenses')}
+              className={cn(
+                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
+                activeTab === 'licenses' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+              )}
+            >
+              🔑 Software Licenses
+            </button>
+
+            <button
+              onClick={() => setActiveTab('subscriptions')}
+              className={cn(
+                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
+                activeTab === 'subscriptions' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+              )}
+            >
+              🔄 Subscriptions
+            </button>
+
+            <button
+              onClick={() => setActiveTab('releases')}
+              className={cn(
+                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
+                activeTab === 'releases' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+              )}
+            >
+              🚀 Software Releases
             </button>
 
             <button
@@ -252,6 +438,135 @@ export default function AdminConsolePage() {
             </button>
           </div>
         </section>
+
+        {/* TAB: REAL ANALYTICS DASHBOARD */}
+        {activeTab === 'analytics' && (
+          <section className="space-y-8">
+            
+            {/* Filter Bar */}
+            <div className="bg-white border-2 border-slate-300 rounded-[28px] p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[#0d0d0e]">Date Range Filter:</span>
+                <input
+                  type="date"
+                  value={startDateStr}
+                  onChange={(e) => setStartDateStr(e.target.value)}
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-300 font-medium focus:outline-none"
+                />
+                <span>to</span>
+                <input
+                  type="date"
+                  value={endDateStr}
+                  onChange={(e) => setEndDateStr(e.target.value)}
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-300 font-medium focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setStartDateStr(''); setEndDateStr(''); }}
+                  className="px-3.5 py-1.5 rounded-full border border-slate-300 hover:bg-slate-100 font-bold cursor-pointer"
+                >
+                  Clear Filter
+                </button>
+                <button
+                  onClick={() => fetchAnalytics(startDateStr || undefined, endDateStr || undefined)}
+                  className="px-4 py-1.5 rounded-full bg-[#0d0d0e] text-white hover:bg-sky-600 font-bold transition-colors cursor-pointer"
+                >
+                  Apply Filter
+                </button>
+              </div>
+            </div>
+
+            {isLoadingAnalytics || !analyticsData ? (
+              <div className="p-12 text-center font-mono text-xs text-slate-400 bg-white border-2 border-slate-300 rounded-[32px]">
+                Querying database metrics...
+              </div>
+            ) : (
+              <>
+                {/* 5 KPI Metric Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 font-mono">
+                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">TOTAL REVENUE</div>
+                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">₹{analyticsData.revenueMetrics.totalRevenue.toLocaleString('en-IN')}</div>
+                    <div className="text-[10px] text-emerald-600 font-bold mt-1">Month: ₹{analyticsData.revenueMetrics.revenueThisMonth.toLocaleString('en-IN')}</div>
+                  </div>
+
+                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">TOTAL USERS</div>
+                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">{analyticsData.userMetrics.totalUsers}</div>
+                    <div className="text-[10px] text-sky-600 font-bold mt-1">Customers: {analyticsData.userMetrics.totalCustomers}</div>
+                  </div>
+
+                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">ORDERS</div>
+                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">{analyticsData.orderMetrics.totalOrders}</div>
+                    <div className="text-[10px] text-emerald-600 font-bold mt-1">Confirmed: {analyticsData.orderMetrics.confirmedOrders}</div>
+                  </div>
+
+                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">ACTIVE SUBS</div>
+                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">{analyticsData.subscriptionMetrics.activeSubscriptions}</div>
+                    <div className="text-[10px] text-amber-600 font-bold mt-1">Trials: {analyticsData.subscriptionMetrics.trialSubscriptions}</div>
+                  </div>
+
+                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">ACTIVE LICENSES</div>
+                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">{analyticsData.licenseMetrics.activeLicenses}</div>
+                    <div className="text-[10px] text-rose-600 font-bold mt-1">Revoked: {analyticsData.licenseMetrics.revokedLicenses}</div>
+                  </div>
+                </div>
+
+                {/* Breakdown Sections */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Top Products Table */}
+                  <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm font-mono">
+                    <h4 className="text-sm font-black text-[#0d0d0e] mb-4">Top Purchased Products</h4>
+                    {analyticsData.productMetrics.mostPurchasedProducts.length === 0 ? (
+                      <div className="text-xs text-slate-400 py-6 text-center">No product purchase data recorded yet.</div>
+                    ) : (
+                      <div className="divide-y divide-slate-100 text-xs">
+                        {analyticsData.productMetrics.mostPurchasedProducts.map((prod) => (
+                          <div key={prod.id} className="py-3 flex items-center justify-between">
+                            <span className="font-bold text-[#0d0d0e]">{prod.name}</span>
+                            <div className="text-right">
+                              <div className="font-bold text-emerald-600">₹{prod.revenue.toLocaleString('en-IN')}</div>
+                              <div className="text-[10px] text-slate-400">{prod.salesCount} sales</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Operational Status Breakdown */}
+                  <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm font-mono space-y-4">
+                    <h4 className="text-sm font-black text-[#0d0d0e]">System Operational Status</h4>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <span>Verified Gateway Payments:</span>
+                        <span className="font-bold text-emerald-600">{analyticsData.paymentMetrics.successfulPayments} Successful</span>
+                      </div>
+                      <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <span>Failed Payments:</span>
+                        <span className="font-bold text-rose-600">{analyticsData.paymentMetrics.failedPayments} Failed</span>
+                      </div>
+                      <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <span>Subscriptions Expiring Soon (&lt;7 days):</span>
+                        <span className="font-bold text-amber-600">{analyticsData.subscriptionMetrics.expiringSoon} Expiring</span>
+                      </div>
+                      <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <span>Free Trial Starts:</span>
+                        <span className="font-bold text-sky-600">{analyticsData.productMetrics.trialStarts} Active Trials</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+          </section>
+        )}
 
         {/* TAB 1: OPERATIONS OVERVIEW */}
         {activeTab === 'overview' && (
@@ -285,14 +600,14 @@ export default function AdminConsolePage() {
 
               <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
                 <div className="flex items-center justify-between text-slate-500 font-mono text-xs mb-2">
-                  <span>CUSTOMER ORDERS</span>
-                  <ShoppingBag className="w-4 h-4 text-sky-600" />
+                  <span>REGISTERED USERS</span>
+                  <Users className="w-4 h-4 text-sky-600" />
                 </div>
                 <div className="text-3xl font-black text-[#0d0d0e]">
-                  {stats.totalOrders} Orders Placed
+                  {stats.totalUsers} Accounts
                 </div>
                 <span className="text-[11px] font-mono text-sky-600 font-bold mt-1 block">
-                  100% SLA Fulfillment Rate
+                  Active Security Policies
                 </span>
               </div>
 
@@ -315,18 +630,18 @@ export default function AdminConsolePage() {
               <h3 className="text-lg font-black text-[#0d0d0e] mb-4">Admin Quick Action Controls</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs font-bold">
                 <button
-                  onClick={() => setActiveTab('products')}
+                  onClick={() => setActiveTab('users')}
                   className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors flex items-center justify-between"
                 >
-                  <span>Edit Product Prices &amp; Stock</span>
+                  <span>Manage User Accounts &amp; Roles</span>
                   <ArrowRight className="w-4 h-4 text-slate-400" />
                 </button>
 
                 <button
-                  onClick={() => setActiveTab('orders')}
+                  onClick={() => setActiveTab('products')}
                   className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors flex items-center justify-between"
                 >
-                  <span>Manage Customer Orders</span>
+                  <span>Edit Product Prices &amp; Stock</span>
                   <ArrowRight className="w-4 h-4 text-slate-400" />
                 </button>
 
@@ -402,7 +717,167 @@ export default function AdminConsolePage() {
           </section>
         )}
 
-        {/* TAB 3: CUSTOMER ORDERS */}
+        {/* TAB 3: USER ACCOUNTS MANAGER */}
+        {activeTab === 'users' && (
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-8 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-xl font-black text-[#0d0d0e]">User Accounts &amp; RBAC Governance</h3>
+                <p className="text-xs text-slate-500 font-mono mt-0.5">Manage user privileges, toggle active status, and search accounts</p>
+              </div>
+              <span className="text-xs font-mono font-bold text-sky-700 bg-sky-50 px-3.5 py-1.5 rounded-full border border-sky-200">
+                Total Users: {totalElements}
+              </span>
+            </div>
+
+            {/* Filter & Search Bar */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 font-mono text-xs">
+              <div className="relative flex-1 w-full">
+                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or phone number..."
+                  value={searchQuery}
+                  onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
+                  className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 font-bold focus:outline-none focus:border-sky-500"
+                />
+              </div>
+
+              <select
+                value={filterRole}
+                onChange={(e) => { setFilterRole(e.target.value); setPage(0); }}
+                className="w-full sm:w-48 px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 font-bold focus:outline-none focus:border-sky-500"
+              >
+                <option value="">All Roles</option>
+                <option value="ROLE_CUSTOMER">ROLE_CUSTOMER</option>
+                <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+                <option value="ROLE_DEVELOPER">ROLE_DEVELOPER</option>
+              </select>
+
+              <button
+                onClick={() => fetchUsers()}
+                className="w-full sm:w-auto px-4 py-3 rounded-2xl bg-[#0d0d0e] hover:bg-sky-600 text-white font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            {/* Users Table */}
+            {isLoadingUsers ? (
+              <div className="py-12 text-center font-mono text-xs text-slate-500">
+                Loading User Accounts...
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs font-mono">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] tracking-wider">
+                      <th className="py-3 px-4">User ID</th>
+                      <th className="py-3 px-4">Name &amp; Email</th>
+                      <th className="py-3 px-4">Phone</th>
+                      <th className="py-3 px-4">Role</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-[#0d0d0e]">
+                    {usersList.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-8 text-center text-slate-500">
+                          No users found matching query criteria.
+                        </td>
+                      </tr>
+                    ) : (
+                      usersList.map((u) => (
+                        <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-4 px-4 font-bold text-slate-400">#{u.id}</td>
+                          <td className="py-4 px-4 font-bold">
+                            <div>{u.name}</div>
+                            <div className="text-[11px] text-slate-500 font-normal">{u.email || 'No Email'}</div>
+                          </td>
+                          <td className="py-4 px-4 text-slate-600">{u.phone || 'N/A'}</td>
+                          <td className="py-4 px-4">
+                            <select
+                              value={u.role}
+                              onChange={(e) => handleUserRoleChange(u, e.target.value)}
+                              className="px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-300 font-bold text-[11px] focus:outline-none focus:border-sky-500"
+                            >
+                              <option value="ROLE_CUSTOMER">ROLE_CUSTOMER</option>
+                              <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+                              <option value="ROLE_DEVELOPER">ROLE_DEVELOPER</option>
+                            </select>
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className={cn(
+                              "px-2.5 py-1 rounded-full font-bold text-[10px] border",
+                              u.enabled
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-rose-50 text-rose-700 border-rose-200"
+                            )}>
+                              {u.enabled ? 'Active' : 'Disabled'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 flex items-center gap-2">
+                            <button
+                              onClick={() => handleToggleUserStatus(u)}
+                              className={cn(
+                                "px-3 py-1.5 rounded-lg font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1",
+                                u.enabled
+                                  ? "bg-rose-100 text-rose-700 hover:bg-rose-200"
+                                  : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                              )}
+                            >
+                              {u.enabled ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
+                              <span>{u.enabled ? 'Disable' : 'Enable'}</span>
+                            </button>
+
+                            <button
+                              onClick={() => setSelectedUser(u)}
+                              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                              title="View Details"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Pagination controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4 border-t border-slate-200 font-mono text-xs">
+                <span className="text-slate-500">
+                  Page {page + 1} of {totalPages} ({totalElements} users total)
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={page === 0}
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    className="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-100 disabled:opacity-40 font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+                  <button
+                    disabled={page >= totalPages - 1}
+                    onClick={() => setPage((p) => p + 1)}
+                    className="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-100 disabled:opacity-40 font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* TAB 4: CUSTOMER ORDERS */}
         {activeTab === 'orders' && (
           <section className="bg-white border-2 border-slate-300 rounded-[32px] p-8 shadow-sm">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
@@ -443,7 +918,7 @@ export default function AdminConsolePage() {
           </section>
         )}
 
-        {/* TAB 4: COMMERCIAL QUOTES PIPELINE */}
+        {/* TAB 5: COMMERCIAL QUOTES PIPELINE */}
         {activeTab === 'quotes' && (
           <section className="bg-white border-2 border-slate-300 rounded-[32px] p-8 shadow-sm">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
@@ -472,7 +947,157 @@ export default function AdminConsolePage() {
           </section>
         )}
 
-        {/* TAB 5 / CONTROL MODE: AI AUTOMATION SANDBOX */}
+        {/* TAB: PRODUCT PLANS MANAGEMENT */}
+        {activeTab === 'plans' && (
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-xl font-extrabold text-[#0d0d0e]">Product Pricing &amp; Billing Plans</h3>
+                <p className="text-xs text-slate-500 font-mono">Manage Free Trial, Monthly, Yearly, Lifetime, and Enterprise plans.</p>
+              </div>
+            </div>
+
+            {adminPlans.length === 0 ? (
+              <div className="text-center py-8 text-slate-400 text-xs font-mono">No product plans loaded. Use API or select a product to manage plans.</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {adminPlans.map((plan) => (
+                  <div key={plan.id} className="p-4 rounded-2xl bg-[#fafafa] border border-slate-200 text-xs font-mono space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-[#0d0d0e]">{plan.name}</span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${plan.active ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                        {plan.billingType} ({plan.active ? 'ACTIVE' : 'DISABLED'})
+                      </span>
+                    </div>
+                    <div className="text-slate-600">Price: ₹{plan.price} {plan.currency} ({plan.durationDays || 30} days)</div>
+                    <div className="text-slate-500 text-[11px]">Device Limit: {plan.activationLimit || 1} | Trial Days: {plan.trialDays || 0}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* TAB: SOFTWARE LICENSES MANAGEMENT */}
+        {activeTab === 'licenses' && (
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-xl font-extrabold text-[#0d0d0e]">Customer Software Licenses</h3>
+                <p className="text-xs text-slate-500 font-mono">Audit cryptographic license keys, status, and device activation usage.</p>
+              </div>
+            </div>
+
+            {adminLicenses.length === 0 ? (
+              <div className="text-center py-8 text-slate-400 text-xs font-mono">No customer licenses found in database.</div>
+            ) : (
+              <div className="space-y-3">
+                {adminLicenses.map((lic) => (
+                  <div key={lic.id} className="p-4 rounded-2xl bg-[#fafafa] border border-slate-200 text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="font-extrabold text-[#0d0d0e] tracking-wider">{lic.licenseKey}</div>
+                      <div className="text-slate-500 mt-1">Product: {lic.product?.name || 'N/A'} | User: {lic.user?.name || 'Customer'}</div>
+                      <div className="text-slate-400 text-[10px]">Activations: {lic.activationCount}/{lic.activationLimit} | Expires: {lic.expiresAt ? new Date(lic.expiresAt).toLocaleDateString() : 'Never'}</div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${lic.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                        {lic.status}
+                      </span>
+                      {lic.status === 'ACTIVE' && (
+                        <button
+                          onClick={async () => {
+                            await revokeAdminLicenseApi(lic.id);
+                            fetchAdminLicenses();
+                            showToast(`Revoked license ${lic.licenseKey}`, 'success');
+                          }}
+                          className="py-1 px-3 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px]"
+                        >
+                          Revoke
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* TAB: SUBSCRIPTIONS MANAGEMENT */}
+        {activeTab === 'subscriptions' && (
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-xl font-extrabold text-[#0d0d0e]">Customer Subscriptions</h3>
+                <p className="text-xs text-slate-500 font-mono">Audit active, trial, and expired recurring customer subscriptions.</p>
+              </div>
+            </div>
+
+            {adminSubs.length === 0 ? (
+              <div className="text-center py-8 text-slate-400 text-xs font-mono">No active customer subscriptions found.</div>
+            ) : (
+              <div className="space-y-3">
+                {adminSubs.map((sub) => (
+                  <div key={sub.id} className="p-4 rounded-2xl bg-[#fafafa] border border-slate-200 text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="font-extrabold text-[#0d0d0e]">{sub.product?.name || 'Software Product'}</div>
+                      <div className="text-slate-500 mt-1">Customer: {sub.user?.name || 'User'} ({sub.user?.email})</div>
+                      <div className="text-slate-400 text-[10px]">Start: {sub.startDate ? new Date(sub.startDate).toLocaleDateString() : 'N/A'} | Expiry: {sub.expiryDate ? new Date(sub.expiryDate).toLocaleDateString() : 'Lifetime'}</div>
+                    </div>
+
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${
+                      sub.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700' :
+                      sub.status === 'TRIAL' ? 'bg-sky-50 text-sky-700' : 'bg-slate-100 text-slate-700'
+                    }`}>
+                      {sub.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* TAB: SOFTWARE RELEASES MANAGEMENT */}
+        {activeTab === 'releases' && (
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-xl font-extrabold text-[#0d0d0e]">Software Release Versions &amp; Packages</h3>
+                <p className="text-xs text-slate-500 font-mono">Manage Windows, macOS, Linux, and mobile binary releases.</p>
+              </div>
+            </div>
+
+            {adminReleases.length === 0 ? (
+              <div className="text-center py-8 text-slate-400 text-xs font-mono">No software releases configured for product #1 yet.</div>
+            ) : (
+              <div className="space-y-3">
+                {adminReleases.map((rel) => (
+                  <div key={rel.id} className="p-4 rounded-2xl bg-[#fafafa] border border-slate-200 text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="font-extrabold text-[#0d0d0e]">v{rel.version} — {rel.platform}</div>
+                      <div className="text-slate-500 mt-1">File: {rel.fileName} ({rel.fileSize ? `${Math.round(rel.fileSize / 1024)} KB` : '100 MB'})</div>
+                    </div>
+
+                    <button
+                      onClick={async () => {
+                        await toggleAdminReleaseStatusApi(rel.id, !rel.active);
+                        fetchAdminReleases();
+                        showToast(`Updated release v${rel.version} status`, 'success');
+                      }}
+                      className={`py-1 px-3 rounded-full text-[10px] font-bold ${rel.active ? 'bg-emerald-600 text-white' : 'bg-slate-300 text-slate-700'}`}
+                    >
+                      {rel.active ? 'ENABLED' : 'DISABLED'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* TAB 6 / CONTROL MODE: AI AUTOMATION SANDBOX */}
         {(activeTab === 'ai' || controlMode === 'ai') && (
           <section className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[32px] p-8 shadow-2xl relative overflow-hidden grid-pattern-dark space-y-6">
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
@@ -523,6 +1148,81 @@ export default function AdminConsolePage() {
         )}
 
       </main>
+
+      {/* User Details Modal */}
+      {selectedUser && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border-2 border-slate-300 rounded-[32px] max-w-lg w-full p-8 shadow-2xl space-y-6 font-mono text-xs">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-sky-600" />
+                <h3 className="text-lg font-black text-[#0d0d0e]">User Account Details</h3>
+              </div>
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-black cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">User ID</span>
+                <span className="font-bold text-[#0d0d0e]">#{selectedUser.id}</span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Full Name</span>
+                <span className="font-bold text-[#0d0d0e]">{selectedUser.name}</span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Email Address</span>
+                <span className="font-bold text-[#0d0d0e]">{selectedUser.email || 'N/A'}</span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Phone Number</span>
+                <span className="font-bold text-[#0d0d0e]">{selectedUser.phone || 'N/A'}</span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Assigned Role</span>
+                <span className="font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-md border border-sky-200 inline-block mt-0.5">
+                  {selectedUser.role}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Account Status</span>
+                <span className={cn(
+                  "font-bold px-2.5 py-0.5 rounded-md border inline-block mt-0.5",
+                  selectedUser.enabled ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"
+                )}>
+                  {selectedUser.enabled ? 'ACTIVE' : 'DISABLED'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Created At</span>
+                <span className="text-slate-600">
+                  {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleString() : 'N/A'}
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-200">
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="w-full py-3 rounded-2xl bg-[#0d0d0e] text-white font-bold text-xs uppercase tracking-wider hover:bg-sky-600 transition-colors cursor-pointer"
+              >
+                Close Window
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

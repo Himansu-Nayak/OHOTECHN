@@ -1,12 +1,6 @@
-import { PrismaClient } from "../generated/prisma";
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+/**
+ * DEPRECATED & DISCONTINUED:
+ * Database operations are managed strictly via Spring Boot (Spring Data JPA) on PostgreSQL.
+ * Next.js frontend calls the Spring Boot REST API layer.
+ */
+export {};

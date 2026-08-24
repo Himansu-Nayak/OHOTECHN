@@ -32,9 +32,18 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
     private final EmailService emailService;
+    private final NotificationService notificationService;
+    private final EmailTemplateService emailTemplateService;
+    private final AuditService auditService;
 
-    @Value("${app.jwt.refresh-expiration-ms:604800000}") // 7 days default
+    @Value("${app.jwt.refresh-expiration-ms:604800000}")
     private long refreshTokenExpirationMs;
+
+    @Value("${app.security.max-failed-logins:5}")
+    private int maxFailedLogins;
+
+    @Value("${app.security.lockout-duration-minutes:15}")
+    private long lockoutDurationMinutes;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -48,10 +57,9 @@ public class AuthService {
             throw new BadRequestException("Either Email or Phone number must be provided!");
         }
 
+        // CRITICAL SECURITY HARDENING: Public registration must ALWAYS create ROLE_CUSTOMER.
+        // Role elevation to ADMIN or DEVELOPER is strictly prohibited via public endpoints.
         Role role = Role.ROLE_CUSTOMER;
-        if ("ADMIN".equalsIgnoreCase(request.getRole())) {
-            role = Role.ROLE_ADMIN;
-        }
 
         User user = User.builder()
                 .name(request.getName())
@@ -60,14 +68,31 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .role(role)
                 .enabled(true)
+                .failedLoginAttempts(0)
                 .build();
 
         User savedUser = userRepository.save(user);
 
-        if (savedUser.getEmail() != null) {
-            emailService.sendEmail(savedUser.getEmail(), "Welcome to OHO TECHN",
-                    "Hello " + savedUser.getName() + ",\n\nWelcome to OHO TECHN! Your account has been created successfully.");
+        try {
+            notificationService.createNotification(
+                    savedUser.getId(),
+                    "Welcome to OHO TECHN!",
+                    "Your account has been created successfully. Explore our software catalog to activate free trials & licenses.",
+                    com.ohotech.backend.entity.NotificationType.SUCCESS,
+                    com.ohotech.backend.entity.NotificationCategory.SYSTEM,
+                    "/products"
+            );
+
+            if (savedUser.getEmail() != null) {
+                String htmlBody = emailTemplateService.buildWelcomeEmail(savedUser.getName());
+                emailService.sendHtmlEmail(savedUser.getEmail(), "Welcome to OHO TECHN", htmlBody);
+            }
+        } catch (Exception e) {
+            // Non-blocking notification failure
         }
+
+        auditService.logUserEvent(savedUser, "USER_REGISTERED", "User", String.valueOf(savedUser.getId()),
+                "User registered with email: " + savedUser.getEmail());
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -88,22 +113,62 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
+        String username = request.getUsername();
 
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+        User user = (username != null && username.contains("@"))
+                ? userRepository.findByEmail(username).orElse(null)
+                : userRepository.findByPhone(username).orElse(null);
 
-        String jwt = tokenProvider.generateToken(authentication);
-        RefreshToken refreshToken = createRefreshToken(user);
+        if (user != null) {
+            if (user.getLockoutUntil() != null && user.getLockoutUntil().isAfter(java.time.LocalDateTime.now())) {
+                auditService.logUserEvent(user, "USER_LOGIN_BLOCKED_LOCKOUT", "User", String.valueOf(user.getId()),
+                        "Login attempt blocked due to active account lockout");
+                throw new BadRequestException("Account is temporarily locked due to repeated failed login attempts. Please try again after 15 minutes.");
+            }
+        }
 
-        return AuthResponse.builder()
-                .accessToken(jwt)
-                .refreshToken(refreshToken.getToken())
-                .user(mapUserToDto(user))
-                .build();
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
+
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            User authenticatedUser = userRepository.findById(userPrincipal.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+
+            // Reset failed login counter on successful authentication
+            authenticatedUser.setFailedLoginAttempts(0);
+            authenticatedUser.setLockoutUntil(null);
+            userRepository.save(authenticatedUser);
+
+            auditService.logUserEvent(authenticatedUser, "USER_LOGIN_SUCCESS", "User", String.valueOf(authenticatedUser.getId()),
+                    "Successful authentication for user: " + authenticatedUser.getEmail());
+
+            String jwt = tokenProvider.generateToken(authentication);
+            RefreshToken refreshToken = createRefreshToken(authenticatedUser);
+
+            return AuthResponse.builder()
+                    .accessToken(jwt)
+                    .refreshToken(refreshToken.getToken())
+                    .user(mapUserToDto(authenticatedUser))
+                    .build();
+
+        } catch (Exception e) {
+            if (user != null) {
+                int newAttempts = user.getFailedLoginAttempts() + 1;
+                user.setFailedLoginAttempts(newAttempts);
+                if (newAttempts >= maxFailedLogins) {
+                    user.setLockoutUntil(java.time.LocalDateTime.now().plusMinutes(lockoutDurationMinutes));
+                    auditService.logUserEvent(user, "ACCOUNT_LOCKED", "User", String.valueOf(user.getId()),
+                            "Account locked for " + lockoutDurationMinutes + " minutes after " + newAttempts + " failed login attempts");
+                } else {
+                    auditService.logUserEvent(user, "USER_LOGIN_FAILED", "User", String.valueOf(user.getId()),
+                            "Failed login attempt (" + newAttempts + "/" + maxFailedLogins + ")");
+                }
+                userRepository.save(user);
+            }
+            throw e;
+        }
     }
 
     @Transactional

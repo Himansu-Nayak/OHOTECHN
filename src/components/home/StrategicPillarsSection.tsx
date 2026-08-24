@@ -128,7 +128,7 @@ export function StrategicPillarsSection() {
 
   return (
     <div
-      className="w-full mb-8 bg-[#0d0d0e] text-white rounded-[28px] sm:rounded-[36px] p-4 sm:p-6 lg:p-8 border-2 border-slate-800 shadow-2xl relative overflow-hidden select-none grid-pattern-dark"
+      className="w-full mb-8 bg-[#0d0d0e] text-white rounded-[28px] sm:rounded-[36px] p-3.5 sm:p-6 lg:p-8 border-2 border-slate-800 shadow-2xl relative overflow-hidden select-none grid-pattern-dark"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -139,16 +139,16 @@ export function StrategicPillarsSection() {
       {/* Main Slider Wrapper with Left & Right Dark Fog Masking Overlays */}
       <div className="relative w-full py-4">
         {/* Left Side Dark Fog Mask */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 lg:w-36 bg-gradient-to-r from-[#0d0d0e] via-[#0d0d0e]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+        <div className="absolute left-0 top-0 bottom-0 w-6 sm:w-28 lg:w-36 bg-gradient-to-r from-[#0d0d0e] via-[#0d0d0e]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
         {/* Right Side Dark Fog Mask */}
-        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 lg:w-36 bg-gradient-to-l from-[#0d0d0e] via-[#0d0d0e]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+        <div className="absolute right-0 top-0 bottom-0 w-6 sm:w-28 lg:w-36 bg-gradient-to-l from-[#0d0d0e] via-[#0d0d0e]/85 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
 
         {/* Horizontal Scroll Track */}
         <div
           ref={containerRef}
           onScroll={handleScroll}
-          className="flex gap-6 sm:gap-8 overflow-x-auto scroll-smooth py-6 px-[12vw] sm:px-[25vw] md:px-[30vw] no-scrollbar snap-x snap-mandatory focus:outline-none relative z-10"
+          className="flex gap-4 sm:gap-8 overflow-x-auto scroll-smooth py-6 px-4 sm:px-[25vw] md:px-[30vw] no-scrollbar snap-x snap-mandatory focus:outline-none relative z-10"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {pillars.map((pillar, index) => {
@@ -162,12 +162,12 @@ export function StrategicPillarsSection() {
                   cardRefs.current[index] = el;
                 }}
                 onClick={() => scrollToIndex(index)}
-                className={`snap-center shrink-0 w-[290px] sm:w-[340px] md:w-[380px] p-8 rounded-[32px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden backdrop-blur-2xl ${
+                className={`snap-center shrink-0 w-[82vw] max-w-[340px] md:w-[380px] p-6 sm:p-8 rounded-[28px] sm:rounded-[32px] cursor-pointer transition-all duration-500 ease-out flex flex-col justify-between relative overflow-hidden backdrop-blur-2xl ${
                   isActive
                     ? isAmber
                       ? 'bg-[#141416] border-2 border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.3)] ring-4 ring-amber-400/20 scale-105 opacity-100 z-30 blur-0'
                       : 'bg-[#141416] border-2 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)] ring-4 ring-emerald-400/20 scale-105 opacity-100 z-30 blur-0'
-                    : 'bg-[#141416]/60 border border-white/10 opacity-45 hover:opacity-85 hover:border-white/20 scale-90 z-10 blur-[1.5px]'
+                    : 'bg-[#141416]/60 border border-white/10 opacity-60 sm:opacity-45 hover:opacity-85 hover:border-white/20 scale-95 sm:scale-90 z-10 blur-0 sm:blur-[1.5px]'
                 }`}
               >
                 {/* Glowing subtle gradient overlay when active */}

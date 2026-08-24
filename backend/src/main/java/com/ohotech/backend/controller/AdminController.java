@@ -1,10 +1,16 @@
 package com.ohotech.backend.controller;
 
 import com.ohotech.backend.dto.ApiResponse;
+import com.ohotech.backend.dto.ProductDto;
+import com.ohotech.backend.dto.UserDto;
 import com.ohotech.backend.entity.*;
 import com.ohotech.backend.repository.*;
+import com.ohotech.backend.service.ProductService;
+import com.ohotech.backend.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +20,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Slf4j
 public class AdminController {
 
@@ -22,6 +27,8 @@ public class AdminController {
     private final OrderRepository orderRepository;
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final ProductService productService;
 
     // 1. Dashboard Overview Metrics
     @GetMapping("/stats")
@@ -33,9 +40,9 @@ public class AdminController {
 
         List<Order> orders = orderRepository.findAll();
         BigDecimal totalRevenue = orders.stream()
-                .map(Order::getTotalAmount)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(o -> o.getTotalAmount())
+                .filter(amt -> amt != null)
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalProducts", totalProducts);
@@ -48,34 +55,62 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Admin stats retrieved successfully", stats));
     }
 
-    // 2. Manage Product Prices & Stock
+    // 2. Admin Product Catalog Management APIs
+    @GetMapping("/products")
+    public ResponseEntity<ApiResponse<Page<ProductDto>>> getAdminProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long category,
+            @RequestParam(required = false) Boolean active) {
+
+        Page<ProductDto> products = productService.getAdminProducts(page, size, search, category, active);
+        return ResponseEntity.ok(ApiResponse.success("Admin products list retrieved", products));
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ApiResponse<ProductDto>> getAdminProductById(@PathVariable Long id) {
+        ProductDto product = productService.getProductById(id);
+        return ResponseEntity.ok(ApiResponse.success("Product fetched successfully", product));
+    }
+
+    @PostMapping("/products")
+    public ResponseEntity<ApiResponse<ProductDto>> createProduct(@Valid @RequestBody ProductDto dto) {
+        ProductDto created = productService.createProduct(dto);
+        log.info("Admin created new product: {}", created.getName());
+        return ResponseEntity.ok(ApiResponse.success("Product created successfully", created));
+    }
+
     @PutMapping("/products/{id}")
-    public ResponseEntity<ApiResponse<Product>> updateProduct(
+    public ResponseEntity<ApiResponse<ProductDto>> updateProduct(
             @PathVariable Long id,
-            @RequestBody Map<String, Object> payload) {
+            @RequestBody ProductDto dto) {
         
-        return productRepository.findById(id)
-                .map(product -> {
-                    if (payload.containsKey("name")) {
-                        product.setName((String) payload.get("name"));
-                    }
-                    if (payload.containsKey("price")) {
-                        product.setPrice(new BigDecimal(payload.get("price").toString()));
-                    }
-                    if (payload.containsKey("stock")) {
-                        product.setStock(Integer.parseInt(payload.get("stock").toString()));
-                    }
-                    if (payload.containsKey("description")) {
-                        product.setDescription((String) payload.get("description"));
-                    }
-                    if (payload.containsKey("active")) {
-                        product.setActive(Boolean.parseBoolean(payload.get("active").toString()));
-                    }
-                    Product saved = productRepository.save(product);
-                    log.info("Admin updated product #{}: {}", id, saved.getName());
-                    return ResponseEntity.ok(ApiResponse.success("Product updated successfully", saved));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        ProductDto updated = productService.updateProduct(id, dto);
+        log.info("Admin updated product #{}: {}", id, updated.getName());
+        return ResponseEntity.ok(ApiResponse.success("Product updated successfully", updated));
+    }
+
+    @PatchMapping("/products/{id}/status")
+    public ResponseEntity<ApiResponse<ProductDto>> updateProductStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, Boolean> payload) {
+        
+        Boolean active = payload.get("active");
+        if (active == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Field 'active' is required"));
+        }
+
+        ProductDto updated = productService.toggleProductStatus(id, active);
+        log.info("Admin updated product #{} active status to {}", id, active);
+        return ResponseEntity.ok(ApiResponse.success("Product status updated successfully", updated));
+    }
+
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        log.info("Admin soft-deleted product #{}", id);
+        return ResponseEntity.ok(ApiResponse.success("Product deleted successfully", null));
     }
 
     // 3. View & Update Orders
@@ -113,10 +148,57 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Quote enquiries retrieved", quotes));
     }
 
-    // 5. User Account List
+    // 5. User Account List (Paginated & Searchable)
     @GetMapping("/users")
-    public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(ApiResponse.success("Users list retrieved", users));
+    public ResponseEntity<ApiResponse<Page<UserDto>>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String role) {
+
+        Page<UserDto> usersPage = userService.getUsersAdmin(page, size, search, role);
+        return ResponseEntity.ok(ApiResponse.success("Users list retrieved successfully", usersPage));
+    }
+
+    // 6. Single User Details
+    @GetMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable Long id) {
+        UserDto userDto = userService.getUserByIdAdmin(id);
+        return ResponseEntity.ok(ApiResponse.success("User details fetched successfully", userDto));
+    }
+
+    // 7. Update User Enabled Status
+    @PatchMapping("/users/{id}/status")
+    public ResponseEntity<ApiResponse<UserDto>> updateUserStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, Boolean> payload) {
+        
+        Boolean enabled = payload.get("enabled");
+        if (enabled == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Field 'enabled' is required in body"));
+        }
+
+        UserDto updatedUser = userService.updateUserStatusAdmin(id, enabled);
+        return ResponseEntity.ok(ApiResponse.success("User status updated successfully", updatedUser));
+    }
+
+    // 8. Update User Role
+    @PatchMapping("/users/{id}/role")
+    public ResponseEntity<ApiResponse<UserDto>> updateUserRole(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+
+        String roleStr = payload.get("role");
+        if (roleStr == null || roleStr.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Field 'role' is required in body"));
+        }
+
+        try {
+            Role role = Role.valueOf(roleStr.trim().toUpperCase());
+            UserDto updatedUser = userService.updateUserRoleAdmin(id, role);
+            return ResponseEntity.ok(ApiResponse.success("User role updated successfully", updatedUser));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Invalid role value: " + roleStr));
+        }
     }
 }

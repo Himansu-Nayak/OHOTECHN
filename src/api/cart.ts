@@ -7,10 +7,10 @@ export async function getCartApi(): Promise<ApiResponse<Cart>> {
   });
 }
 
-export async function addToCartApi(productId: number, quantity = 1): Promise<ApiResponse<Cart>> {
+export async function addToCartApi(productId: number, quantity = 1, productPlanId?: number): Promise<ApiResponse<Cart>> {
   return apiClient<Cart>('/api/cart/items', {
     method: 'POST',
-    body: JSON.stringify({ productId, quantity }),
+    body: JSON.stringify({ productId, quantity, productPlanId }),
   });
 }
 

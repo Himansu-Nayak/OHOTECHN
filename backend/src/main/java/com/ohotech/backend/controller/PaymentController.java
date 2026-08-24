@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+import com.ohotech.backend.dto.PaymentResponseDto;
+
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
@@ -30,10 +32,10 @@ public class PaymentController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse<Payment>> verifyPayment(
+    public ResponseEntity<ApiResponse<PaymentResponseDto>> verifyPayment(
             @AuthenticationPrincipal UserPrincipal currentUser,
             @Valid @RequestBody PaymentVerificationRequest request) {
-        Payment payment = paymentService.verifyPayment(currentUser.getId(), request);
+        PaymentResponseDto payment = paymentService.verifyPayment(currentUser.getId(), request);
         return ResponseEntity.ok(ApiResponse.success("Payment verified successfully", payment));
     }
 }

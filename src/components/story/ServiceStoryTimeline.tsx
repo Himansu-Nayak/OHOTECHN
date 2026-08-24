@@ -339,7 +339,7 @@ export function ServiceStoryTimeline() {
   ];
 
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden" id="capabilities-timeline">
+    <section className="max-w-[1536px] w-full mx-auto mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden" id="capabilities-timeline">
       
       {/* Top Interactive Clickable Header */}
       <div
@@ -350,12 +350,12 @@ export function ServiceStoryTimeline() {
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-4">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              OHO TECH END-TO-END CAPABILITIES 🚀
+              <span>OHO TECH END-TO-END CAPABILITIES 🚀</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-3 group-hover:text-emerald-600 transition-colors flex items-center gap-3">
+            <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-3 group-hover:text-emerald-600 transition-colors flex items-center gap-3">
               <span>Engineering &amp; Growth Capabilities Roadmap.</span>
             </h2>
-            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+            <p className="text-sm sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
               {isOpen
                 ? 'Showing full capability roadmap from 01 to 06. Click header to collapse.'
                 : 'Click this section to reveal the full capability flow counting from 01 to 06.'}
@@ -363,7 +363,7 @@ export function ServiceStoryTimeline() {
           </div>
 
           {/* Interactive Toggle Button */}
-          <div className="shrink-0 flex items-center gap-3 bg-[#0d0d0e] text-white hover:bg-emerald-600 px-6 py-4 rounded-full shadow-lg transition-all group-hover:scale-105">
+          <div className="shrink-0 flex items-center gap-3 bg-[#0d0d0e] text-white hover:bg-emerald-600 px-6 py-3.5 sm:py-4 rounded-full shadow-lg transition-all group-hover:scale-105">
             <Eye className="w-5 h-5 text-emerald-400 group-hover:text-white" />
             <span className="font-extrabold text-xs uppercase tracking-wider">
               {isOpen ? 'Hide Roadmap' : 'Show Roadmap (01 - 06)'}
@@ -378,7 +378,7 @@ export function ServiceStoryTimeline() {
         <div className="mt-12 transition-all duration-500 animate-in fade-in slide-in-from-top-4">
           
           {/* Interactive Roadmap Selector Bar */}
-          <div className="bg-[#0d0d0e] text-white rounded-3xl p-6 sm:p-8 mb-16 border-2 border-slate-800 shadow-xl">
+          <div className="bg-[#0d0d0e] text-white rounded-3xl p-4 sm:p-8 mb-16 border-2 border-slate-800 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-6">
               <div className="flex items-center gap-2 font-mono text-xs text-emerald-400 font-bold uppercase tracking-wider">
                 <MapPin className="w-4 h-4 text-emerald-400 animate-pulse" />
@@ -432,18 +432,18 @@ export function ServiceStoryTimeline() {
                   {/* Master Card Styled Exactly Like Reference Photo */}
                   <div
                     id={item.id}
-                    className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-3xl p-8 sm:p-10 lg:p-12 shadow-2xl relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300"
+                    className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-3xl p-4 sm:p-10 lg:p-12 shadow-2xl relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300"
                   >
                     {/* Background Ambient Glow */}
                     <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
                     {/* Card Top Pill Header */}
-                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-white/10">
                       <div className="flex items-center gap-3">
                         <span className="w-10 h-10 rounded-2xl bg-emerald-500 text-white font-mono text-sm font-black flex items-center justify-center shadow-md">
                           {item.step}
                         </span>
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-emerald-400 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider">
                           <span>{item.emoji}</span>
                           <span>{item.badge}</span>
                         </div>

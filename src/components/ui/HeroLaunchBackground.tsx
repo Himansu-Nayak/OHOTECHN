@@ -97,7 +97,7 @@ export function HeroLaunchBackground() {
     <div className="w-full relative rounded-3xl sm:rounded-[36px] overflow-hidden border-2 border-slate-300 bg-[#0c0d0e] shadow-2xl group selection:bg-emerald-500 selection:text-white">
       
       {/* ── 1. LUXURY TABLET DEMO STREAM DISPLAY (LIVE MOTION VIDEO DISPLAY) ── */}
-      <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[600px] overflow-hidden">
+      <div className="relative w-full h-[320px] sm:h-[440px] md:h-[540px] lg:h-[600px] overflow-hidden">
         
         {/* Animated Motion Video Screen Image */}
         <NextImage
@@ -124,9 +124,9 @@ export function HeroLaunchBackground() {
         )}
 
         {/* Video HUD Overlay: Live Stream HUD Bar */}
-        <div className="absolute top-20 sm:top-24 left-6 sm:left-10 z-20 pointer-events-none flex items-center gap-3">
-          <div className="px-3 py-1 rounded-full bg-[#0c0d0e]/90 backdrop-blur-md border border-emerald-500/40 text-white font-mono text-[11px] font-bold flex items-center gap-2 shadow-xl">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+        <div className="absolute top-16 sm:top-24 left-4 sm:left-10 z-20 pointer-events-none flex items-center gap-3">
+          <div className="px-2.5 sm:px-3 py-1 rounded-full bg-[#0c0d0e]/90 backdrop-blur-md border border-emerald-500/40 text-white font-mono text-[10px] sm:text-[11px] font-bold flex items-center gap-2 shadow-xl">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500 animate-ping" />
             <span className="text-red-400 font-black">REC</span>
             <span className="text-slate-300">|</span>
             <span className="text-emerald-400">{formatTime(videoSeconds)} / 03:00</span>
@@ -134,11 +134,11 @@ export function HeroLaunchBackground() {
 
           {/* Equalizer Waveform Animation */}
           {isPlaying && (
-            <div className="hidden sm:flex items-center gap-1 bg-[#0c0d0e]/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15">
-              <span className="w-1 h-3 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_100ms]" />
-              <span className="w-1 h-4 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_200ms]" />
+            <div className="flex items-center gap-1 bg-[#0c0d0e]/80 backdrop-blur-md px-2 sm:px-2.5 py-1 rounded-full border border-white/15">
+              <span className="w-1 h-2.5 sm:h-3 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_100ms]" />
+              <span className="w-1 h-3.5 sm:h-4 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_200ms]" />
               <span className="w-1 h-2 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_300ms]" />
-              <span className="w-1 h-5 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_150ms]" />
+              <span className="w-1 h-4 sm:h-5 bg-emerald-400 rounded-full animate-[bounce_1s_infinite_150ms]" />
             </div>
           )}
         </div>
@@ -148,38 +148,38 @@ export function HeroLaunchBackground() {
       </div>
 
       {/* ── 2. TOP HEADER BADGE WITH LIVE VIDEO STREAM CONTROLS ── */}
-      <div className="absolute top-4 sm:top-6 inset-x-4 sm:inset-x-6 z-20 flex flex-wrap items-center justify-between gap-3">
+      <div className="absolute top-3 sm:top-6 inset-x-3 sm:inset-x-6 z-20 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
         
         {/* Brand Badge */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white font-mono text-xs font-bold shadow-lg">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shadow-sm shadow-emerald-400/50" />
-          <span>OHO TECH Platform Solutions</span>
-          <span className="text-slate-400 font-normal border-l border-white/20 pl-2.5 hidden sm:inline">Software • Web • Mobile • Growth</span>
+        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white font-mono text-[11px] sm:text-xs font-bold shadow-lg">
+          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400 animate-ping shadow-sm shadow-emerald-400/50" />
+          <span className="truncate max-w-[180px] sm:max-w-none">OHO TECH Platform Solutions</span>
+          <span className="text-slate-400 font-normal border-l border-white/20 pl-2.5 hidden md:inline">Software • Web • Mobile • Growth</span>
         </div>
 
         {/* Live Auto-Play Stream Badge & Play/Pause Controls */}
         <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-emerald-500/40 text-emerald-400 font-mono text-[11px] font-bold shadow-lg">
-            <Tv className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-emerald-500/40 text-emerald-400 font-mono text-[10px] sm:text-[11px] font-bold shadow-lg">
+            <Tv className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 animate-pulse" />
             <span className="hidden sm:inline">🔴 LIVE STREAM DISPLAY</span>
-            <span>• 60 FPS AUTOPLAY</span>
+            <span>60 FPS</span>
           </div>
 
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="px-3.5 py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white hover:text-emerald-400 flex items-center gap-2 text-xs font-mono font-bold transition-colors shadow-lg"
+            className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white hover:text-emerald-400 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-bold transition-colors shadow-lg"
             title={isPlaying ? 'Pause Demo Stream' : 'Play Demo Stream'}
           >
             {isPlaying ? (
               <>
-                <Pause className="w-3.5 h-3.5 text-emerald-400" />
+                <Pause className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
                 <span>PAUSE</span>
               </>
             ) : (
               <>
-                <Play className="w-3.5 h-3.5 text-emerald-400" />
-                <span>PLAY STREAM</span>
+                <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                <span>PLAY</span>
               </>
             )}
           </button>
@@ -188,10 +188,32 @@ export function HeroLaunchBackground() {
       </div>
 
       {/* ── 3. BOTTOM OVERLAY SHOWCASE: LIVE AUTO-PLAYING SOLUTIONS CARDS ── */}
-      <div className="absolute bottom-4 sm:bottom-6 inset-x-4 sm:inset-x-6 z-20">
+      <div className="relative md:absolute bottom-0 md:bottom-4 lg:bottom-6 inset-x-0 md:inset-x-4 lg:inset-x-6 z-20 p-4 sm:p-6 md:p-0 bg-[#0c0d0e] md:bg-transparent">
         
-        {/* Solutions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
+        {/* Solution Active Selector Tabs for Mobile */}
+        <div className="flex md:hidden items-center justify-between gap-1.5 mb-3 bg-[#0c0d0e]/90 p-1.5 rounded-xl border border-white/10 overflow-x-auto scrollbar-none">
+          {solutions.map((sol, index) => (
+            <button
+              key={sol.id}
+              onClick={() => {
+                setActiveSolution(index);
+                setIsPlaying(false);
+              }}
+              className={cn(
+                "flex-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold whitespace-nowrap transition-all text-center flex items-center justify-center gap-1",
+                activeSolution === index
+                  ? "bg-emerald-500 text-white shadow-md font-extrabold"
+                  : "text-slate-400 hover:text-white bg-white/5"
+              )}
+            >
+              <span>{sol.emoji}</span>
+              <span className="hidden sm:inline truncate">{sol.tag.split(' ')[0]}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Solutions Cards Grid & Swipeable Carousel on Mobile */}
+        <div className="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-none md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 pb-2 md:pb-0">
           {solutions.map((sol, index) => {
             const Icon = sol.icon;
             const isActive = activeSolution === index;
@@ -204,9 +226,9 @@ export function HeroLaunchBackground() {
                   setIsPlaying(false);
                 }}
                 className={cn(
-                  "p-4 sm:p-5 rounded-2xl transition-all duration-500 cursor-pointer backdrop-blur-2xl border flex flex-col justify-between group/card relative overflow-hidden",
+                  "p-4 sm:p-5 rounded-2xl transition-all duration-500 cursor-pointer backdrop-blur-2xl border flex flex-col justify-between group/card relative overflow-hidden shrink-0 w-[88vw] sm:w-[320px] md:w-auto snap-center",
                   isActive
-                    ? "bg-[#0c0d0e]/95 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)] ring-2 ring-emerald-400/40 scale-[1.02]"
+                    ? "bg-[#0c0d0e]/95 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)] ring-2 ring-emerald-400/40 scale-[1.01] md:scale-[1.02]"
                     : "bg-[#0c0d0e]/80 hover:bg-[#0c0d0e]/95 border-white/15 hover:border-white/30"
                 )}
               >
@@ -258,24 +280,24 @@ export function HeroLaunchBackground() {
 
         {/* Bottom Directive Bar */}
         <div className="bg-[#0c0d0e]/90 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
-          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono font-semibold text-slate-300">
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Bespoke Software &amp; Mobile Apps
+          <div className="flex flex-wrap items-center gap-2 sm:gap-6 text-[11px] sm:text-xs font-mono font-semibold text-slate-300">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span>Bespoke Software &amp; Mobile Apps</span>
             </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Hospital, Campus &amp; Retail Systems
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span>Hospital, Campus &amp; Retail Systems</span>
             </span>
-            <span className="flex items-center gap-2 hidden lg:flex">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              Data-Driven Growth Strategies
+            <span className="flex items-center gap-1.5 hidden lg:flex">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+              <span>Data-Driven Growth Strategies</span>
             </span>
           </div>
 
           <Link
             href="/solutions"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-emerald-400 text-[#0c0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md group shrink-0"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:py-2 rounded-full bg-white hover:bg-emerald-400 text-[#0c0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md group shrink-0 w-full sm:w-auto"
           >
             <span>View All OHO TECH Solutions</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
