@@ -281,6 +281,13 @@ public class LeadService {
                 .updatedAt(lead.getUpdatedAt())
                 .lastContactedAt(lead.getLastContactedAt())
                 .nextFollowUpAt(lead.getNextFollowUpAt())
+                .convertedAt(lead.getConvertedAt())
+                .convertedById(lead.getConvertedBy() != null ? lead.getConvertedBy().getId() : null)
+                .convertedByName(lead.getConvertedBy() != null ? lead.getConvertedBy().getName() : null)
+                .convertedUserId(lead.getConvertedUser() != null ? lead.getConvertedUser().getId() : null)
+                .convertedUserName(lead.getConvertedUser() != null ? lead.getConvertedUser().getName() : null)
+                .convertedUserEmail(lead.getConvertedUser() != null ? lead.getConvertedUser().getEmail() : null)
+                .isConverted(lead.getConvertedUser() != null)
                 .build();
     }
 }

@@ -121,3 +121,41 @@ export async function getFollowUpDashboardApi(): Promise<ApiResponse<import('./t
   });
 }
 
+// Phase 4 Customer 360 & Lead Conversion API helpers
+export async function getAdminCustomersApi(search?: string, page = 0, size = 15): Promise<ApiResponse<import('./types').PageResponse<import('./types').UserDto>>> {
+  const query = new URLSearchParams();
+  if (search) query.append('search', search);
+  query.append('page', page.toString());
+  query.append('size', size.toString());
+  return apiClient<import('./types').PageResponse<import('./types').UserDto>>(`/api/admin/crm/customers?${query.toString()}`, {
+    method: 'GET',
+  });
+}
+
+export async function getCustomer360Api(userId: number): Promise<ApiResponse<import('./types').Customer360Dto>> {
+  return apiClient<import('./types').Customer360Dto>(`/api/admin/crm/customers/${userId}`, {
+    method: 'GET',
+  });
+}
+
+export async function getCustomerMatchApi(leadId: number): Promise<ApiResponse<import('./types').CustomerMatchResultDto>> {
+  return apiClient<import('./types').CustomerMatchResultDto>(`/api/admin/crm/leads/${leadId}/customer-match`, {
+    method: 'GET',
+  });
+}
+
+export async function linkCustomerApi(leadId: number, userId: number): Promise<ApiResponse<import('./types').LeadDto>> {
+  return apiClient<import('./types').LeadDto>(`/api/admin/crm/leads/${leadId}/link-customer`, {
+    method: 'POST',
+    body: JSON.stringify({ userId }),
+  });
+}
+
+export async function convertLeadApi(leadId: number, data?: import('./types').ConvertLeadRequest): Promise<ApiResponse<import('./types').LeadDto>> {
+  return apiClient<import('./types').LeadDto>(`/api/admin/crm/leads/${leadId}/convert`, {
+    method: 'POST',
+    body: JSON.stringify(data || {}),
+  });
+}
+
+

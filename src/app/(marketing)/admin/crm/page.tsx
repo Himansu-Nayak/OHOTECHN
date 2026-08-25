@@ -6,21 +6,23 @@ import {
   Users, Search, Filter, Calendar, ChevronLeft, ChevronRight, Lock,
   Plus, Edit3, Trash2, UserCheck, Eye, RefreshCw, X, Tag, DollarSign,
   Building, Phone, Mail, Clock, CheckCircle2, AlertCircle, ArrowRight,
-  Kanban, List, CheckSquare, MessageSquare, PhoneCall, Send, Video, AlertTriangle
+  Kanban, List, CheckSquare, MessageSquare, PhoneCall, Send, Video, AlertTriangle,
+  User, CreditCard, ShoppingBag, ShieldCheck, Download, Activity, Link2, ExternalLink
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import {
   LeadDto, LeadStatus, LeadSource, LeadPriority, UserDto,
   LeadActivityDto, LeadFollowUpDto, PipelineStageDto, FollowUpDashboardDto,
-  ActivityType, FollowUpStatus
+  ActivityType, FollowUpStatus, Customer360Dto, CustomerMatchResultDto
 } from '@/api/types';
 import {
   getAdminLeadsApi, createAdminLeadApi, updateAdminLeadApi,
   updateAdminLeadStatusApi, assignAdminLeadApi, deleteAdminLeadApi,
   getPipelineBoardApi, getLeadActivitiesApi, createLeadActivityApi,
   getLeadFollowUpsApi, createLeadFollowUpApi, updateFollowUpApi,
-  getFollowUpDashboardApi
+  getFollowUpDashboardApi, getAdminCustomersApi, getCustomer360Api,
+  getCustomerMatchApi, linkCustomerApi, convertLeadApi
 } from '@/api/crm';
 import { getAdminUsersApi } from '@/api/users';
 import { getAdminAuditLogsApi } from '@/api/admin';
@@ -49,13 +51,16 @@ export default function AdminCrmLeadsPage() {
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  const [viewMode, setViewMode] = React.useState<'table' | 'pipeline' | 'followups'>('table');
+  const [viewMode, setViewMode] = React.useState<'table' | 'pipeline' | 'followups' | 'customers'>('table');
 
   const [leads, setLeads] = React.useState<LeadDto[]>([]);
   const [pipelineStages, setPipelineStages] = React.useState<PipelineStageDto[]>([]);
   const [followUpDashboard, setFollowUpDashboard] = React.useState<FollowUpDashboardDto | null>(null);
+  const [customers, setCustomers] = React.useState<UserDto[]>([]);
   const [usersList, setUsersList] = React.useState<UserDto[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
+
+  // Pagination for Leads / Customers
   const [page, setPage] = React.useState<number>(0);
   const [totalPages, setTotalPages] = React.useState<number>(1);
   const [totalElements, setTotalElements] = React.useState<number>(0);
@@ -69,12 +74,20 @@ export default function AdminCrmLeadsPage() {
   const [startDateStr, setStartDateStr] = React.useState<string>('');
   const [endDateStr, setEndDateStr] = React.useState<string>('');
 
-  // Modals & Details State
+  // Customer 360 State
+  const [selectedCustomer360, setSelectedCustomer360] = React.useState<Customer360Dto | null>(null);
+  const [activeCustomerTab, setActiveCustomerTab] = React.useState<'overview' | 'crm' | 'orders' | 'payments' | 'subscriptions' | 'licenses' | 'timeline'>('overview');
+
+  // Lead Details Modal & Conversion State
   const [selectedLeadModal, setSelectedLeadModal] = React.useState<LeadDto | null>(null);
   const [activeLeadTab, setActiveLeadTab] = React.useState<'overview' | 'activities' | 'followups' | 'notes' | 'history'>('overview');
   const [leadActivities, setLeadActivities] = React.useState<LeadActivityDto[]>([]);
   const [leadFollowUps, setLeadFollowUps] = React.useState<LeadFollowUpDto[]>([]);
   const [leadHistory, setLeadHistory] = React.useState<any[]>([]);
+
+  // Customer Match / Conversion Dialog State
+  const [customerMatchResult, setCustomerMatchResult] = React.useState<CustomerMatchResultDto | null>(null);
+  const [isMatchModalOpen, setIsMatchModalOpen] = React.useState<boolean>(false);
 
   // Activity & Follow-Up Form State
   const [activityType, setActivityType] = React.useState<ActivityType>('CALL');
@@ -154,6 +167,22 @@ export default function AdminCrmLeadsPage() {
     }
   }, [search, statusFilter, sourceFilter, priorityFilter, assignedFilter, startDateStr, endDateStr, page]);
 
+  const fetchCustomers = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await getAdminCustomersApi(search, page, 15);
+      if (res.success && res.data) {
+        setCustomers(res.data.content || []);
+        setTotalPages(res.data.totalPages || 1);
+        setTotalElements(res.data.totalElements || 0);
+      }
+    } catch (e) {
+      console.warn('Failed to load customer list', e);
+    } finally {
+      setLoading(false);
+    }
+  }, [search, page]);
+
   const fetchPipeline = React.useCallback(async () => {
     try {
       const res = await getPipelineBoardApi();
@@ -191,7 +220,8 @@ export default function AdminCrmLeadsPage() {
     if (viewMode === 'table') fetchLeads();
     if (viewMode === 'pipeline') fetchPipeline();
     if (viewMode === 'followups') fetchFollowUpDashboard();
-  }, [viewMode, fetchLeads, fetchPipeline, fetchFollowUpDashboard]);
+    if (viewMode === 'customers') fetchCustomers();
+  }, [viewMode, fetchLeads, fetchPipeline, fetchFollowUpDashboard, fetchCustomers]);
 
   React.useEffect(() => {
     fetchUsers();
@@ -219,6 +249,61 @@ export default function AdminCrmLeadsPage() {
       loadLeadDetailsData(selectedLeadModal.id);
     }
   }, [selectedLeadModal, loadLeadDetailsData]);
+
+  // Customer 360 Fetcher
+  const openCustomer360 = async (userId: number) => {
+    try {
+      const res = await getCustomer360Api(userId);
+      if (res.success && res.data) {
+        setSelectedCustomer360(res.data);
+        setActiveCustomerTab('overview');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to load Customer 360 profile', 'error');
+    }
+  };
+
+  // Lead Conversion & Customer Match Actions
+  const handleCheckCustomerMatch = async (lead: LeadDto) => {
+    try {
+      const res = await getCustomerMatchApi(lead.id);
+      if (res.success && res.data) {
+        setCustomerMatchResult(res.data);
+        setIsMatchModalOpen(true);
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to evaluate customer match', 'error');
+    }
+  };
+
+  const handleLinkCustomer = async (leadId: number, userId: number) => {
+    try {
+      const res = await linkCustomerApi(leadId, userId);
+      if (res.success && res.data) {
+        showToast('Lead successfully linked to existing Customer account!', 'success');
+        setIsMatchModalOpen(false);
+        if (selectedLeadModal?.id === leadId) setSelectedLeadModal(res.data);
+        fetchLeads();
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to link customer', 'error');
+    }
+  };
+
+  const handleConvertLead = async (leadId: number) => {
+    try {
+      const res = await convertLeadApi(leadId);
+      if (res.success && res.data) {
+        showToast('Lead successfully converted to Customer account!', 'success');
+        setIsMatchModalOpen(false);
+        if (selectedLeadModal?.id === leadId) setSelectedLeadModal(res.data);
+        fetchLeads();
+        if (viewMode === 'pipeline') fetchPipeline();
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to convert lead', 'error');
+    }
+  };
 
   const handleStatusChange = async (leadId: number, newStatus: LeadStatus) => {
     try {
@@ -458,19 +543,19 @@ export default function AdminCrmLeadsPage() {
             </div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-[#0d0d0e] flex items-center gap-3">
               <Users className="w-8 h-8 text-sky-600" />
-              CRM Sales Governance
+              CRM Sales Governance &amp; Customer 360°
             </h1>
             <p className="text-xs font-mono font-medium text-slate-600 mt-1">
-              Lead qualification, Kanban pipeline board, activities log, and follow-up management.
+              Pipeline management, activities logger, follow-ups, and unified Customer 360° commerce view.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 font-mono">
             
-            {/* View Switcher */}
+            {/* 4 View Switcher Tabs */}
             <div className="bg-white border-2 border-slate-300 p-1.5 rounded-2xl flex items-center gap-1 text-xs">
               <button
-                onClick={() => setViewMode('table')}
+                onClick={() => { setViewMode('table'); setPage(0); }}
                 className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   viewMode === 'table' ? 'bg-[#0d0d0e] text-white' : 'text-slate-600 hover:bg-slate-100'
                 }`}
@@ -491,7 +576,15 @@ export default function AdminCrmLeadsPage() {
                   viewMode === 'followups' ? 'bg-[#0d0d0e] text-white' : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                <CheckSquare className="w-3.5 h-3.5 text-amber-500" /> Follow-Up Dashboard
+                <CheckSquare className="w-3.5 h-3.5 text-amber-500" /> Follow-Ups
+              </button>
+              <button
+                onClick={() => { setViewMode('customers'); setPage(0); }}
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  viewMode === 'customers' ? 'bg-[#0d0d0e] text-white' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <UserCheck className="w-3.5 h-3.5 text-emerald-500" /> Customers 360°
               </button>
             </div>
 
@@ -504,7 +597,7 @@ export default function AdminCrmLeadsPage() {
           </div>
         </div>
 
-        {/* VIEW 1: TABLE VIEW */}
+        {/* VIEW 1: LEADS TABLE VIEW */}
         {viewMode === 'table' && (
           <>
             {/* Filters Bar */}
@@ -579,17 +672,16 @@ export default function AdminCrmLeadsPage() {
                       <th className="py-3.5 px-4">Source</th>
                       <th className="py-3.5 px-4">Product Interest</th>
                       <th className="py-3.5 px-4">Status</th>
-                      <th className="py-3.5 px-4">Priority</th>
+                      <th className="py-3.5 px-4">Customer Status</th>
                       <th className="py-3.5 px-4">Assigned To</th>
-                      <th className="py-3.5 px-4">Next Follow-Up</th>
                       <th className="py-3.5 px-4">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {loading ? (
-                      <tr><td colSpan={9} className="py-12 text-center text-slate-400">Loading CRM leads...</td></tr>
+                      <tr><td colSpan={8} className="py-12 text-center text-slate-400">Loading CRM leads...</td></tr>
                     ) : leads.length === 0 ? (
-                      <tr><td colSpan={9} className="py-12 text-center text-slate-500">No CRM lead records found.</td></tr>
+                      <tr><td colSpan={8} className="py-12 text-center text-slate-500">No CRM lead records found.</td></tr>
                     ) : (
                       leads.map((lead) => (
                         <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
@@ -618,14 +710,23 @@ export default function AdminCrmLeadsPage() {
                             </select>
                           </td>
                           <td className="py-3.5 px-4">
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full border ${PRIORITY_BADGES[lead.priority]?.color}`}>
-                              {lead.priority}
-                            </span>
+                            {lead.isConverted ? (
+                              <button
+                                onClick={() => lead.convertedUserId && openCustomer360(lead.convertedUserId)}
+                                className="px-2 py-0.5 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-full font-bold text-[10px] flex items-center gap-1 hover:bg-emerald-100"
+                              >
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Linked Customer
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleCheckCustomerMatch(lead)}
+                                className="px-2 py-0.5 bg-sky-50 border border-sky-300 text-sky-800 rounded-full font-bold text-[10px] flex items-center gap-1 hover:bg-sky-100"
+                              >
+                                <Link2 className="w-3 h-3" /> Match / Convert
+                              </button>
+                            )}
                           </td>
                           <td className="py-3.5 px-4">{lead.assignedToName || <span className="text-slate-400 italic">Unassigned</span>}</td>
-                          <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap">
-                            {lead.nextFollowUpAt ? new Date(lead.nextFollowUpAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) : '—'}
-                          </td>
                           <td className="py-3.5 px-4 whitespace-nowrap">
                             <button
                               onClick={() => setSelectedLeadModal(lead)}
@@ -703,7 +804,6 @@ export default function AdminCrmLeadsPage() {
                           <div className="mt-3 text-[10px] space-y-1 text-slate-600 pt-2 border-t border-slate-200/60">
                             <div>Prod: <strong className="text-purple-700">{lead.interestedProductName || lead.interestedProduct || 'General'}</strong></div>
                             <div>Value: <strong className="text-emerald-700">₹{lead.estimatedValue ? lead.estimatedValue.toLocaleString('en-IN') : '0'}</strong></div>
-                            <div>Assigned: <strong>{lead.assignedToName || 'Unassigned'}</strong></div>
                           </div>
 
                           {/* Quick Stage Select */}
@@ -741,8 +841,6 @@ export default function AdminCrmLeadsPage() {
         {/* VIEW 3: FOLLOW-UP DASHBOARD */}
         {viewMode === 'followups' && followUpDashboard && (
           <div className="space-y-6 font-mono text-xs">
-            
-            {/* KPI Summary Header */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
                 <span className="text-slate-400 font-bold block mb-1 uppercase text-[10px]">Today&apos;s Follow-Ups</span>
@@ -758,7 +856,6 @@ export default function AdminCrmLeadsPage() {
               </div>
             </div>
 
-            {/* Overdue Section */}
             {followUpDashboard.overdueFollowUps.length > 0 && (
               <div className="bg-rose-50 border-2 border-rose-200 rounded-[32px] p-6 shadow-sm">
                 <h3 className="text-sm font-black text-rose-900 mb-4 uppercase flex items-center gap-2">
@@ -787,413 +884,320 @@ export default function AdminCrmLeadsPage() {
                 </div>
               </div>
             )}
-
-            {/* Today's Section */}
-            <div className="bg-white border-2 border-slate-300 rounded-[32px] p-6 shadow-sm">
-              <h3 className="text-sm font-black text-[#0d0d0e] mb-4 uppercase flex items-center gap-2">
-                <Clock className="w-4 h-4 text-sky-600" /> Today&apos;s Scheduled Follow-Ups
-              </h3>
-              {followUpDashboard.todayFollowUps.length === 0 ? (
-                <div className="text-center py-6 text-slate-400 font-bold">No follow-ups scheduled for today.</div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {followUpDashboard.todayFollowUps.map((fol) => (
-                    <div key={fol.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
-                      <div className="flex items-center justify-between text-[10px]">
-                        <span className="font-bold text-sky-700">{fol.status}</span>
-                        <span className="text-slate-500">{new Date(fol.scheduledAt).toLocaleTimeString('en-IN', { timeStyle: 'short' })}</span>
-                      </div>
-                      <h4 className="font-bold text-xs text-[#0d0d0e]">{fol.title}</h4>
-                      <p className="text-[11px] text-slate-600">{fol.leadName} ({fol.companyName || fol.leadEmail})</p>
-                      <div className="pt-2 flex items-center justify-between border-t border-slate-200">
-                        <span className="text-[10px] text-slate-400">Assigned: {fol.assignedUserName}</span>
-                        {fol.status === 'PENDING' && (
-                          <button
-                            onClick={() => handleUpdateFollowUpStatus(fol.id, 'COMPLETED')}
-                            className="px-2.5 py-1 bg-emerald-600 text-white rounded-lg font-bold text-[10px] hover:bg-emerald-700"
-                          >
-                            Mark Done ✓
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
           </div>
         )}
 
-        {/* ENHANCED TABBED LEAD DETAILS MODAL */}
-        {selectedLeadModal && !isEditModalOpen && (
+        {/* VIEW 4: CUSTOMERS 360° LIST */}
+        {viewMode === 'customers' && (
+          <div className="space-y-6 font-mono text-xs">
+            {/* Search Bar */}
+            <div className="bg-white border-2 border-slate-300 rounded-[28px] p-5 shadow-sm">
+              <div className="relative max-w-md">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <input
+                  type="text"
+                  placeholder="Search customer name, email, phone, company..."
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-2xl text-xs font-medium focus:outline-none focus:border-sky-600"
+                />
+              </div>
+            </div>
+
+            {/* Customers Table */}
+            <div className="bg-white border-2 border-slate-300 rounded-[28px] overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 uppercase font-bold text-[11px]">
+                      <th className="py-3.5 px-4">Customer Name</th>
+                      <th className="py-3.5 px-4">Contact Info</th>
+                      <th className="py-3.5 px-4">Role</th>
+                      <th className="py-3.5 px-4">Account Status</th>
+                      <th className="py-3.5 px-4">Registered Date</th>
+                      <th className="py-3.5 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {loading ? (
+                      <tr><td colSpan={6} className="py-12 text-center text-slate-400">Loading Customer profiles...</td></tr>
+                    ) : customers.length === 0 ? (
+                      <tr><td colSpan={6} className="py-12 text-center text-slate-500">No customer profiles found.</td></tr>
+                    ) : (
+                      customers.map((cust) => (
+                        <tr key={cust.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3.5 px-4 font-bold text-[#0d0d0e]">{cust.name}</td>
+                          <td className="py-3.5 px-4">
+                            <div className="font-bold text-slate-800">{cust.email}</div>
+                            <div className="text-[10px] text-slate-500">{cust.phone || '—'}</div>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800">
+                              {cust.role}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            {cust.enabled ? (
+                              <span className="text-[10px] font-bold text-emerald-600">Active</span>
+                            ) : (
+                              <span className="text-[10px] font-bold text-rose-600">Disabled</span>
+                            )}
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-500">{cust.createdAt ? new Date(cust.createdAt).toLocaleDateString('en-IN') : '—'}</td>
+                          <td className="py-3.5 px-4">
+                            <button
+                              onClick={() => openCustomer360(cust.id)}
+                              className="px-3 py-1.5 bg-[#0d0d0e] hover:bg-sky-600 text-white rounded-xl text-[10px] font-bold transition-all flex items-center gap-1.5"
+                            >
+                              <UserCheck className="w-3.5 h-3.5" /> Open 360° Profile
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CUSTOMER 360° VIEW MODAL */}
+        {selectedCustomer360 && (
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 font-mono">
-            <div className="bg-white border-2 border-slate-300 rounded-[32px] max-w-3xl w-full p-8 max-h-[90vh] overflow-y-auto shadow-2xl relative">
-              
+            <div className="bg-white border-2 border-slate-300 rounded-[32px] max-w-4xl w-full p-8 max-h-[90vh] overflow-y-auto shadow-2xl relative">
               <button
-                onClick={() => setSelectedLeadModal(null)}
+                onClick={() => setSelectedCustomer360(null)}
                 className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Lead Title Header */}
-              <div className="flex items-center gap-2 text-xs text-sky-600 font-bold mb-2">
-                <span>LEAD #{selectedLeadModal.id}</span>
+              <div className="flex items-center gap-2 text-xs text-emerald-600 font-bold mb-2">
+                <span>CUSTOMER 360° PROFILE #{selectedCustomer360.profile.id}</span>
                 <span>•</span>
-                <span className={`px-2 py-0.5 rounded-full border ${STATUS_BADGES[selectedLeadModal.status]?.color}`}>
-                  {selectedLeadModal.status}
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 uppercase">
+                  {selectedCustomer360.profile.role}
                 </span>
               </div>
 
-              <h2 className="text-2xl font-black text-[#0d0d0e] mb-1">
-                {selectedLeadModal.firstName || selectedLeadModal.lastName
-                  ? `${selectedLeadModal.firstName || ''} ${selectedLeadModal.lastName || ''}`.trim()
-                  : selectedLeadModal.email}
-              </h2>
-              <p className="text-xs text-slate-500 mb-6">{selectedLeadModal.companyName || 'No Company'} {selectedLeadModal.designation ? `(${selectedLeadModal.designation})` : ''}</p>
+              <h2 className="text-2xl font-black text-[#0d0d0e] mb-1">{selectedCustomer360.profile.name}</h2>
+              <p className="text-xs text-slate-500 mb-6">{selectedCustomer360.companyName || 'Individual Account'} ({selectedCustomer360.profile.email})</p>
 
-              {/* Lead Sub-Tabs */}
+              {/* Customer 360 Sub-Tabs */}
               <div className="flex items-center gap-2 border-b border-slate-200 mb-6 text-xs font-bold overflow-x-auto no-scrollbar">
-                <button
-                  onClick={() => setActiveLeadTab('overview')}
-                  className={`pb-3 px-3 transition-colors border-b-2 ${activeLeadTab === 'overview' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-                >
-                  Overview
-                </button>
-                <button
-                  onClick={() => setActiveLeadTab('activities')}
-                  className={`pb-3 px-3 transition-colors border-b-2 ${activeLeadTab === 'activities' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-                >
-                  Activities ({leadActivities.length})
-                </button>
-                <button
-                  onClick={() => setActiveLeadTab('followups')}
-                  className={`pb-3 px-3 transition-colors border-b-2 ${activeLeadTab === 'followups' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-                >
-                  Follow-ups ({leadFollowUps.length})
-                </button>
-                <button
-                  onClick={() => setActiveLeadTab('notes')}
-                  className={`pb-3 px-3 transition-colors border-b-2 ${activeLeadTab === 'notes' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-                >
-                  Notes
-                </button>
-                <button
-                  onClick={() => setActiveLeadTab('history')}
-                  className={`pb-3 px-3 transition-colors border-b-2 ${activeLeadTab === 'history' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-                >
-                  Pipeline History
-                </button>
+                <button onClick={() => setActiveCustomerTab('overview')} className={`pb-3 px-3 transition-colors border-b-2 ${activeCustomerTab === 'overview' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Overview</button>
+                <button onClick={() => setActiveCustomerTab('crm')} className={`pb-3 px-3 transition-colors border-b-2 ${activeCustomerTab === 'crm' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>CRM Leads ({selectedCustomer360.totalLeadsCount})</button>
+                <button onClick={() => setActiveCustomerTab('orders')} className={`pb-3 px-3 transition-colors border-b-2 ${activeCustomerTab === 'orders' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Orders ({selectedCustomer360.totalOrdersCount})</button>
+                <button onClick={() => setActiveCustomerTab('payments')} className={`pb-3 px-3 transition-colors border-b-2 ${activeCustomerTab === 'payments' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Payments ({selectedCustomer360.payments.length})</button>
+                <button onClick={() => setActiveCustomerTab('subscriptions')} className={`pb-3 px-3 transition-colors border-b-2 ${activeCustomerTab === 'subscriptions' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Subscriptions ({selectedCustomer360.subscriptions.length})</button>
+                <button onClick={() => setActiveCustomerTab('licenses')} className={`pb-3 px-3 transition-colors border-b-2 ${activeCustomerTab === 'licenses' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Licenses ({selectedCustomer360.licenses.length})</button>
+                <button onClick={() => setActiveCustomerTab('timeline')} className={`pb-3 px-3 transition-colors border-b-2 ${activeCustomerTab === 'timeline' ? 'border-[#0d0d0e] text-[#0d0d0e]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Business Timeline</button>
               </div>
 
               {/* TAB 1: OVERVIEW */}
-              {activeLeadTab === 'overview' && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 border border-slate-200 rounded-2xl p-5">
-                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Email Address</span><span className="font-bold text-[#0d0d0e]">{selectedLeadModal.email}</span></div>
-                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Phone Number</span><span className="font-bold text-[#0d0d0e]">{selectedLeadModal.phone || '—'}</span></div>
-                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Lead Source</span><span className="font-bold text-sky-700">{selectedLeadModal.source}</span></div>
-                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Priority</span><span className={`font-bold ${PRIORITY_BADGES[selectedLeadModal.priority]?.color}`}>{selectedLeadModal.priority}</span></div>
-                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Product Interest</span><span className="font-bold text-purple-700">{selectedLeadModal.interestedProductName || selectedLeadModal.interestedProduct || '—'}</span></div>
-                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Estimated Value</span><span className="font-bold text-emerald-700">{selectedLeadModal.estimatedValue ? `₹${selectedLeadModal.estimatedValue.toLocaleString('en-IN')}` : '—'}</span></div>
-                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Assigned Employee</span><span className="font-bold text-[#0d0d0e]">{selectedLeadModal.assignedToName ? `${selectedLeadModal.assignedToName} (${selectedLeadModal.assignedToEmail})` : 'Unassigned'}</span></div>
-                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Created Date</span><span className="font-bold text-slate-600">{new Date(selectedLeadModal.createdAt).toLocaleString('en-IN')}</span></div>
-                  </div>
-
-                  {/* Campaign Attribution */}
-                  <div className="bg-sky-50/70 border border-sky-200 rounded-2xl p-5 text-xs">
-                    <h4 className="font-bold text-sky-900 mb-3 uppercase flex items-center gap-1.5"><Tag className="w-3.5 h-3.5 text-sky-600" /> Campaign &amp; Attribution</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Campaign</span><span className="font-bold text-[#0d0d0e]">{selectedLeadModal.campaign || 'Direct'}</span></div>
-                      <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Medium</span><span className="font-bold text-[#0d0d0e]">{selectedLeadModal.medium || 'organic'}</span></div>
-                      <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Landing Page</span><span className="font-bold text-[#0d0d0e] truncate block">{selectedLeadModal.landingPage || '/'}</span></div>
+              {activeCustomerTab === 'overview' && (
+                <div className="space-y-6 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl">
+                      <span className="text-slate-400 block font-bold text-[10px] uppercase">Total Spent</span>
+                      <div className="text-2xl font-black text-emerald-700">₹{selectedCustomer360.totalSpent.toLocaleString('en-IN')}</div>
+                    </div>
+                    <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl">
+                      <span className="text-slate-400 block font-bold text-[10px] uppercase">Completed Orders</span>
+                      <div className="text-2xl font-black text-sky-700">{selectedCustomer360.totalOrdersCount}</div>
+                    </div>
+                    <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl">
+                      <span className="text-slate-400 block font-bold text-[10px] uppercase">Active Licenses</span>
+                      <div className="text-2xl font-black text-purple-700">{selectedCustomer360.licenses.length}</div>
                     </div>
                   </div>
-                </div>
-              )}
 
-              {/* TAB 2: ACTIVITIES (LOGGER & TIMELINE) */}
-              {activeLeadTab === 'activities' && (
-                <div className="space-y-6">
-                  {/* Log Activity Form */}
-                  <form onSubmit={handleAddActivity} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                    <h4 className="font-bold text-xs text-[#0d0d0e] uppercase">Log New Activity</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-500">Activity Type</label>
-                        <select
-                          value={activityType}
-                          onChange={(e) => setActivityType(e.target.value as ActivityType)}
-                          className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs font-bold"
-                        >
-                          <option value="CALL">PHONE CALL</option>
-                          <option value="EMAIL">EMAIL</option>
-                          <option value="WHATSAPP">WHATSAPP</option>
-                          <option value="MEETING">MEETING</option>
-                          <option value="DEMO">PRODUCT DEMO</option>
-                          <option value="NOTE">NOTE</option>
-                        </select>
-                      </div>
-                      <div className="sm:col-span-2">
-                        <label className="block text-[10px] font-bold text-slate-500">Description</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="Summary of call/meeting details..."
-                          value={activityDescription}
-                          onChange={(e) => setActivityDescription(e.target.value)}
-                          className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs font-medium"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex justify-end">
-                      <button type="submit" className="px-4 py-2 bg-[#0d0d0e] hover:bg-sky-600 text-white font-bold rounded-xl text-xs">
-                        Log Activity
-                      </button>
-                    </div>
-                  </form>
-
-                  {/* Activity Timeline */}
-                  <div className="space-y-3">
-                    <h4 className="font-bold text-xs text-slate-600 uppercase">Activity History</h4>
-                    {leadActivities.length === 0 ? (
-                      <div className="text-center py-6 text-slate-400 font-bold">No activities logged yet.</div>
-                    ) : (
-                      leadActivities.map((act) => (
-                        <div key={act.id} className="p-3.5 rounded-2xl bg-white border border-slate-200 text-xs flex items-start justify-between">
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-extrabold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 text-[10px]">{act.type}</span>
-                              <span className="text-[10px] text-slate-400">{new Date(act.createdAt).toLocaleString('en-IN')}</span>
-                            </div>
-                            <p className="text-slate-700 font-medium">{act.description}</p>
-                          </div>
-                          <span className="text-[10px] text-slate-400 shrink-0 font-bold">{act.performedByName}</span>
-                        </div>
-                      ))
-                    )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Customer Email</span><span className="font-bold text-[#0d0d0e]">{selectedCustomer360.profile.email}</span></div>
+                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Phone Number</span><span className="font-bold text-[#0d0d0e]">{selectedCustomer360.profile.phone || '—'}</span></div>
+                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Account Role</span><span className="font-bold text-emerald-700">{selectedCustomer360.profile.role}</span></div>
+                    <div><span className="text-slate-400 block text-[10px] uppercase font-bold">Registered Date</span><span className="font-bold text-slate-600">{selectedCustomer360.profile.createdAt ? new Date(selectedCustomer360.profile.createdAt).toLocaleString('en-IN') : '—'}</span></div>
                   </div>
                 </div>
               )}
 
-              {/* TAB 3: FOLLOW-UPS */}
-              {activeLeadTab === 'followups' && (
-                <div className="space-y-6">
-                  {/* Schedule Follow-up Form */}
-                  <form onSubmit={handleAddFollowUp} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                    <h4 className="font-bold text-xs text-[#0d0d0e] uppercase">Schedule Follow-Up</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-500">Title / Subject *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. Call for EMR Quote review"
-                          value={followUpTitle}
-                          onChange={(e) => setFollowUpTitle(e.target.value)}
-                          className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs font-bold"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-500">Scheduled Date &amp; Time *</label>
-                        <input
-                          type="datetime-local"
-                          required
-                          value={followUpDate}
-                          onChange={(e) => setFollowUpDate(e.target.value)}
-                          className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs font-bold"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-500">Notes</label>
-                      <input
-                        type="text"
-                        placeholder="Additional follow-up details..."
-                        value={followUpNotes}
-                        onChange={(e) => setFollowUpNotes(e.target.value)}
-                        className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs font-medium"
-                      />
-                    </div>
-                    <div className="flex justify-end">
-                      <button type="submit" className="px-4 py-2 bg-[#0d0d0e] hover:bg-sky-600 text-white font-bold rounded-xl text-xs">
-                        Schedule Follow-Up
-                      </button>
-                    </div>
-                  </form>
-
-                  {/* Scheduled Follow-ups List */}
-                  <div className="space-y-3">
-                    <h4 className="font-bold text-xs text-slate-600 uppercase">Scheduled Follow-Ups</h4>
-                    {leadFollowUps.length === 0 ? (
-                      <div className="text-center py-6 text-slate-400 font-bold">No follow-ups scheduled yet.</div>
-                    ) : (
-                      leadFollowUps.map((fol) => (
-                        <div key={fol.id} className="p-3.5 rounded-2xl bg-white border border-slate-200 text-xs flex items-center justify-between">
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 text-[10px]">{fol.status}</span>
-                              <span className="text-[10px] text-slate-500 font-bold">{new Date(fol.scheduledAt).toLocaleString('en-IN')}</span>
-                            </div>
-                            <div className="font-bold text-[#0d0d0e]">{fol.title}</div>
-                            {fol.notes && <p className="text-slate-500 text-[11px] mt-0.5">{fol.notes}</p>}
-                          </div>
-                          {fol.status === 'PENDING' && (
-                            <button
-                              onClick={() => handleUpdateFollowUpStatus(fol.id, 'COMPLETED')}
-                              className="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-[10px] font-bold hover:bg-emerald-700"
-                            >
-                              Mark Done ✓
-                            </button>
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: NOTES */}
-              {activeLeadTab === 'notes' && (
-                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 whitespace-pre-wrap">
-                  {selectedLeadModal.notes || 'No lead notes recorded.'}
-                </div>
-              )}
-
-              {/* TAB 5: PIPELINE HISTORY */}
-              {activeLeadTab === 'history' && (
-                <div className="space-y-3 text-xs">
-                  {leadHistory.length === 0 ? (
-                    <div className="text-center py-6 text-slate-400 font-bold">No audit trail events recorded.</div>
+              {/* TAB 2: CRM LEADS */}
+              {activeCustomerTab === 'crm' && (
+                <div className="space-y-4 text-xs">
+                  {selectedCustomer360.leads.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400 font-bold">No CRM leads linked to this customer account.</div>
                   ) : (
-                    leadHistory.map((hist) => (
-                      <div key={hist.id} className="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-center justify-between">
-                        <div>
-                          <span className="font-extrabold text-sky-700 block text-[10px]">{hist.action}</span>
-                          <span className="text-slate-700">{hist.description}</span>
+                    selectedCustomer360.leads.map((ld) => (
+                      <div key={ld.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-sky-700">Lead #{ld.id} • {ld.source}</span>
+                          <span className={`px-2 py-0.5 rounded-full border text-[10px] ${STATUS_BADGES[ld.status]?.color}`}>{ld.status}</span>
                         </div>
-                        <span className="text-[10px] text-slate-400 font-bold shrink-0">{new Date(hist.createdAt).toLocaleString('en-IN')}</span>
+                        <p className="font-medium text-slate-700">Product Interest: {ld.interestedProductName || ld.interestedProduct || 'General'}</p>
+                        {ld.notes && <p className="text-[11px] text-slate-500 italic">{ld.notes}</p>}
                       </div>
                     ))
                   )}
                 </div>
               )}
 
-              {/* Footer */}
-              <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-200 mt-6 font-mono text-xs">
-                <button
-                  onClick={() => openEditModal(selectedLeadModal)}
-                  className="px-5 py-2.5 rounded-2xl bg-[#0d0d0e] hover:bg-sky-600 text-white font-bold transition-colors cursor-pointer"
-                >
-                  Edit Lead Details
-                </button>
-              </div>
+              {/* TAB 3: ORDERS */}
+              {activeCustomerTab === 'orders' && (
+                <div className="space-y-3 text-xs">
+                  {selectedCustomer360.orders.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400 font-bold">No order history available.</div>
+                  ) : (
+                    selectedCustomer360.orders.map((ord) => (
+                      <div key={ord.id} className="p-4 rounded-2xl bg-white border border-slate-200 flex items-center justify-between">
+                        <div>
+                          <div className="font-bold text-[#0d0d0e]">Order #{ord.id} • ₹{ord.totalAmount.toLocaleString('en-IN')}</div>
+                          <div className="text-[10px] text-slate-500">{new Date(ord.createdAt).toLocaleString('en-IN')} • {ord.items?.length || 0} items</div>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold text-[10px]">
+                          {ord.status}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* TAB 4: PAYMENTS */}
+              {activeCustomerTab === 'payments' && (
+                <div className="space-y-3 text-xs">
+                  {selectedCustomer360.payments.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400 font-bold">No payment transactions recorded.</div>
+                  ) : (
+                    selectedCustomer360.payments.map((pay) => (
+                      <div key={pay.id} className="p-4 rounded-2xl bg-white border border-slate-200 flex items-center justify-between">
+                        <div>
+                          <div className="font-bold text-[#0d0d0e]">Payment #{pay.id} • ₹{pay.amount.toLocaleString('en-IN')}</div>
+                          <div className="text-[10px] text-slate-500">{pay.razorpayOrderId ? `Razorpay Order: ${pay.razorpayOrderId}` : 'Direct Transaction'}</div>
+                          {pay.razorpayPaymentId && <div className="text-[10px] text-sky-600 font-mono">Razorpay ID: {pay.razorpayPaymentId}</div>}
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold text-[10px]">{pay.status}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* TAB 5: SUBSCRIPTIONS */}
+              {activeCustomerTab === 'subscriptions' && (
+                <div className="space-y-3 text-xs">
+                  {selectedCustomer360.subscriptions.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400 font-bold">No product subscriptions found.</div>
+                  ) : (
+                    selectedCustomer360.subscriptions.map((sub) => (
+                      <div key={sub.id} className="p-4 rounded-2xl bg-white border border-slate-200 flex items-center justify-between">
+                        <div>
+                          <div className="font-bold text-[#0d0d0e]">{sub.product?.name} ({sub.productPlan?.name || 'Plan'})</div>
+                          <div className="text-[10px] text-slate-500">Expires: {sub.expiryDate ? new Date(sub.expiryDate).toLocaleDateString('en-IN') : 'Lifetime'}</div>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-full bg-sky-50 border border-sky-300 text-sky-800 font-bold text-[10px]">{sub.status}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* TAB 6: LICENSES */}
+              {activeCustomerTab === 'licenses' && (
+                <div className="space-y-3 text-xs">
+                  {selectedCustomer360.licenses.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400 font-bold">No active software license keys.</div>
+                  ) : (
+                    selectedCustomer360.licenses.map((lic) => (
+                      <div key={lic.id} className="p-4 rounded-2xl bg-white border border-slate-200 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-[#0d0d0e]">{lic.product?.name}</span>
+                          <span className="px-2 py-0.5 bg-purple-50 text-purple-800 border border-purple-200 rounded-full font-bold text-[10px]">{lic.status}</span>
+                        </div>
+                        <div className="font-mono font-bold text-sky-700 bg-slate-50 p-2 rounded-xl border border-slate-200 select-all">{lic.licenseKey}</div>
+                        <div className="text-[10px] text-slate-500">Activations: {lic.activationCount} / {lic.activationLimit} devices</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* TAB 7: UNIFIED TIMELINE */}
+              {activeCustomerTab === 'timeline' && (
+                <div className="space-y-3 text-xs">
+                  {selectedCustomer360.timeline.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400 font-bold">No timeline events recorded.</div>
+                  ) : (
+                    selectedCustomer360.timeline.map((tm, idx) => (
+                      <div key={idx} className="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start gap-3">
+                        <div className="w-2 h-2 rounded-full bg-sky-600 mt-1.5 shrink-0" />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-bold text-[#0d0d0e]">{tm.title}</h4>
+                            <span className="text-[10px] text-slate-400">{new Date(tm.timestamp).toLocaleString('en-IN')}</span>
+                          </div>
+                          <p className="text-slate-600 text-[11px] mt-0.5">{tm.description}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
 
             </div>
           </div>
         )}
 
-        {/* CREATE / EDIT MODAL */}
-        {(isCreateModalOpen || isEditModalOpen) && (
+        {/* CUSTOMER MATCH / CONVERSION DIALOG MODAL */}
+        {isMatchModalOpen && customerMatchResult && (
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 font-mono">
-            <div className="bg-white border-2 border-slate-300 rounded-[32px] max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <div className="bg-white border-2 border-slate-300 rounded-[32px] max-w-lg w-full p-8 shadow-2xl relative">
               <button
-                onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }}
-                className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600"
+                onClick={() => setIsMatchModalOpen(false)}
+                className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              <h2 className="text-xl font-black text-[#0d0d0e] mb-6">
-                {isCreateModalOpen ? 'Create New CRM Lead' : `Edit Lead #${selectedLeadModal?.id}`}
-              </h2>
+              <h3 className="text-xl font-black text-[#0d0d0e] mb-2">Customer Match &amp; Conversion</h3>
+              <p className="text-xs text-slate-500 mb-6">Evaluating lead #{customerMatchResult.leadId} ({customerMatchResult.lead.email})</p>
 
-              <form onSubmit={isCreateModalOpen ? handleSaveCreate : handleSaveEdit} className="space-y-4 text-xs">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">First Name</label>
-                    <input type="text" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none" />
+              {customerMatchResult.hasExactMatch && customerMatchResult.matchedUser ? (
+                <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-5 mb-6 space-y-2 text-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-emerald-900">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    Exact Customer Match Found! ({customerMatchResult.matchReason})
                   </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Last Name</label>
-                    <input type="text" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none" />
-                  </div>
+                  <p className="text-slate-700">Matched User: <strong>{customerMatchResult.matchedUser.name}</strong> ({customerMatchResult.matchedUser.email})</p>
+                  <p className="text-[11px] text-slate-500">Linking this lead to the existing customer account will preserve account history without creating duplicate users.</p>
+                  <button
+                    onClick={() => handleLinkCustomer(customerMatchResult.leadId, customerMatchResult.matchedUser!.id)}
+                    className="w-full mt-3 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Link Existing Customer Account ✓
+                  </button>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Work Email *</label>
-                    <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Phone Number</label>
-                    <input type="text" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none" />
-                  </div>
+              ) : (
+                <div className="bg-slate-50 border border-slate-300 rounded-2xl p-5 mb-6 space-y-2 text-xs">
+                  <div className="font-bold text-[#0d0d0e]">No Existing Customer Match Found</div>
+                  <p className="text-slate-600 text-[11px]">Converting this lead will safely initialize a new customer account with role <strong>ROLE_CUSTOMER</strong>.</p>
+                  <button
+                    onClick={() => handleConvertLead(customerMatchResult.leadId)}
+                    className="w-full mt-3 py-2.5 bg-[#0d0d0e] hover:bg-sky-600 text-white rounded-xl font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Convert &amp; Create Customer Account →
+                  </button>
                 </div>
+              )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Company Name</label>
-                    <input type="text" value={formData.companyName} onChange={(e) => setFormData({ ...formData, companyName: e.target.value })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Designation</label>
-                    <input type="text" value={formData.designation} onChange={(e) => setFormData({ ...formData, designation: e.target.value })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Lead Source</label>
-                    <select value={formData.source} onChange={(e) => setFormData({ ...formData, source: e.target.value as LeadSource })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none">
-                      <option value="MANUAL">MANUAL</option>
-                      <option value="WEBSITE">WEBSITE</option>
-                      <option value="CONTACT_FORM">CONTACT_FORM</option>
-                      <option value="QUOTE_REQUEST">QUOTE_REQUEST</option>
-                      <option value="DEMO_REQUEST">DEMO_REQUEST</option>
-                      <option value="WEBSITE_PRODUCT">WEBSITE_PRODUCT</option>
-                      <option value="FACEBOOK">FACEBOOK</option>
-                      <option value="GOOGLE_ADS">GOOGLE_ADS</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Status</label>
-                    <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as LeadStatus })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none">
-                      {Object.keys(STATUS_BADGES).map((st) => (
-                        <option key={st} value={st}>{st}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Priority</label>
-                    <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value as LeadPriority })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none">
-                      <option value="LOW">LOW</option>
-                      <option value="MEDIUM">MEDIUM</option>
-                      <option value="HIGH">HIGH</option>
-                      <option value="URGENT">URGENT</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Interested Product</label>
-                    <input type="text" value={formData.interestedProduct} onChange={(e) => setFormData({ ...formData, interestedProduct: e.target.value })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Estimated Value (₹)</label>
-                    <input type="number" value={formData.estimatedValue} onChange={(e) => setFormData({ ...formData, estimatedValue: e.target.value })} className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:outline-none" />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
-                  <button type="button" onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }} className="px-4 py-2.5 rounded-2xl border border-slate-300 font-bold text-slate-600">Cancel</button>
-                  <button type="submit" className="px-6 py-2.5 rounded-2xl bg-[#0d0d0e] hover:bg-sky-600 text-white font-bold transition-colors cursor-pointer">Save Lead</button>
-                </div>
-              </form>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsMatchModalOpen(false)}
+                  className="px-4 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-600"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         )}

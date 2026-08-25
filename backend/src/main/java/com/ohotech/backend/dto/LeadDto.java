@@ -52,4 +52,17 @@ public class LeadDto {
     private LocalDateTime updatedAt;
     private LocalDateTime lastContactedAt;
     private LocalDateTime nextFollowUpAt;
+    private LocalDateTime convertedAt;
+    private Long convertedById;
+    private String convertedByName;
+    private Long convertedUserId;
+    private String convertedUserName;
+    private String convertedUserEmail;
+    
+    @com.fasterxml.jackson.annotation.JsonProperty("isConverted")
+    private boolean isConverted;
+
+    public boolean isConverted() {
+        return isConverted;
+    }
 }

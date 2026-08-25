@@ -85,6 +85,16 @@ public class Lead {
     private LocalDateTime lastContactedAt;
     private LocalDateTime nextFollowUpAt;
 
+    private LocalDateTime convertedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "converted_by_user_id")
+    private User convertedBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "converted_user_id")
+    private User convertedUser;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

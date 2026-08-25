@@ -383,6 +383,13 @@ export interface LeadDto {
   updatedAt?: string;
   lastContactedAt?: string;
   nextFollowUpAt?: string;
+  isConverted?: boolean;
+  convertedAt?: string;
+  convertedById?: number;
+  convertedByName?: string;
+  convertedUserId?: number;
+  convertedUserName?: string;
+  convertedUserEmail?: string;
 }
 
 export interface CreateLeadRequest {
@@ -508,6 +515,67 @@ export interface FollowUpDashboardDto {
   overdueCount: number;
   upcomingCount: number;
 }
+
+export interface TimelineEventDto {
+  eventType: string;
+  title: string;
+  description: string;
+  category: string;
+  timestamp: string;
+  actorName?: string;
+  metadata?: string;
+}
+
+export interface PaymentDto {
+  id: number;
+  orderId: number;
+  amount: number;
+  paymentMethod: string;
+  status: string;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  createdAt: string;
+}
+
+export interface Customer360Dto {
+  profile: UserDto;
+  companyName?: string;
+  leads: LeadDto[];
+  activities: LeadActivityDto[];
+  followUps: LeadFollowUpDto[];
+  totalLeadsCount: number;
+  primaryCrmStatus: string;
+  orders: Order[];
+  totalOrdersCount: number;
+  totalSpent: number;
+  payments: Payment[];
+  subscriptions: Subscription[];
+  licenses: License[];
+  deviceActivations: DeviceActivation[];
+  availableDownloads: SoftwareReleaseDto[];
+  timeline: TimelineEventDto[];
+}
+
+export interface CustomerMatchResultDto {
+  leadId: number;
+  hasExactMatch: boolean;
+  matchReason: 'MATCH_BY_EMAIL' | 'MATCH_BY_PHONE' | 'NO_MATCH';
+  matchedUser?: UserDto;
+  lead: LeadDto;
+}
+
+export interface ConvertLeadRequest {
+  name?: string;
+  email?: string;
+  phone?: string;
+  companyName?: string;
+  initialPassword?: string;
+}
+
+export interface LinkCustomerRequest {
+  userId: number;
+}
+
 
 
 
