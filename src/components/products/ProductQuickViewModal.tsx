@@ -3,7 +3,15 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { Product } from '@/config/industries';
-import { X, ExternalLink, Copy, Check, ShieldCheck, Sparkles, Box, Key, Mail, Lock, ShieldAlert, ArrowRight } from 'lucide-react';
+import { X, ExternalLink, Copy, Check, ShieldCheck, Sparkles, Box, Key, Mail, Lock, ShieldAlert, ArrowRight, AlertTriangle, ShoppingBag, Info } from 'lucide-react';
+
+export function isValidLiveDemoUrl(url?: string): boolean {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (!trimmed || trimmed === '#' || trimmed === 'about:blank') return false;
+  if (trimmed.includes('demo.ohotech.com') || trimmed.includes('example.com')) return false;
+  return trimmed.startsWith('http://') || trimmed.startsWith('https://');
+}
 
 interface ProductQuickViewModalProps {
   product: Product | null;
@@ -13,6 +21,7 @@ interface ProductQuickViewModalProps {
 
 export function ProductQuickViewModal({ product, industrySlug, onClose }: ProductQuickViewModalProps) {
   const [copiedField, setCopiedField] = React.useState<string | null>(null);
+  const [demoNotice, setDemoNotice] = React.useState<string | null>(null);
 
   // Keyboard Escape listener
   React.useEffect(() => {
@@ -31,9 +40,17 @@ export function ProductQuickViewModal({ product, industrySlug, onClose }: Produc
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const demoUrl = product.demoUrl || `https://demo.ohotech.com/${product.slug}`;
+  const hasValidDemo = isValidLiveDemoUrl(product.demoUrl);
+  const demoUrl = hasValidDemo ? product.demoUrl : undefined;
   const adminEmail = product.adminCredentials?.email || `admin@${product.slug}.ohotech.com`;
   const adminPassword = product.adminCredentials?.password || 'Admin@12345';
+
+  const handleTestDriveClick = (e: React.MouseEvent) => {
+    if (!hasValidDemo) {
+      e.preventDefault();
+      setDemoNotice('Live demo is currently unavailable for this product. You can select a purchase plan or request a commercial quote below.');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
@@ -83,6 +100,21 @@ export function ProductQuickViewModal({ product, industrySlug, onClose }: Produc
           </p>
         </div>
 
+        {/* In-App Live Demo Status Notice */}
+        {!hasValidDemo && (
+          <div className="relative z-10 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-center gap-2.5 mb-6">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+            <span>Live interactive demo environment for this module is currently unavailable. You can select a purchase plan or request a quote below.</span>
+          </div>
+        )}
+
+        {demoNotice && (
+          <div className="relative z-10 p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-300 text-xs font-mono flex items-center gap-2.5 mb-6">
+            <Info className="w-4 h-4 shrink-0 text-sky-400" />
+            <span>{demoNotice}</span>
+          </div>
+        )}
+
         {/* 3-Step Buyer Journey Banner */}
         <div className="relative z-10 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 mb-6">
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase mb-2">
@@ -91,84 +123,86 @@ export function ProductQuickViewModal({ product, industrySlug, onClose }: Produc
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-mono text-slate-300">
             <div className="p-2 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-emerald-400 font-bold">1. Test-Drive</span>
-              <p className="text-[10px] text-slate-400 mt-0.5">Use credentials below to view live project</p>
+              <span className="text-emerald-400 font-bold">1. Test-Drive / Review</span>
+              <p className="text-[10px] text-slate-400 mt-0.5">Explore features &amp; admin capabilities</p>
             </div>
             <div className="p-2 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-emerald-400 font-bold">2. Evaluate</span>
-              <p className="text-[10px] text-slate-400 mt-0.5">Explore admin features &amp; modules</p>
+              <span className="text-emerald-400 font-bold">2. Select Plan</span>
+              <p className="text-[10px] text-slate-400 mt-0.5">Choose Free Trial, Monthly, or Lifetime</p>
             </div>
             <div className="p-2 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-emerald-400 font-bold">3. Purchase</span>
-              <p className="text-[10px] text-slate-400 mt-0.5">Pay &amp; unlock full source code &amp; SLA</p>
+              <span className="text-emerald-400 font-bold">3. Checkout &amp; Access</span>
+              <p className="text-[10px] text-slate-400 mt-0.5">Pay &amp; get instant license key &amp; download</p>
             </div>
           </div>
         </div>
 
         {/* Live Admin Demo Credentials Box */}
-        <div className="relative z-10 bg-[#141416] border border-white/15 rounded-2xl p-5 mb-6 space-y-3">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
-              <Key className="w-4 h-4 text-emerald-400" />
-              <span>TEST-DRIVE ADMIN ACCESS CREDENTIALS</span>
-            </div>
-            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-              1-Click Copy
-            </span>
-          </div>
-
-          {/* Admin Email */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
-            <div className="flex items-center gap-2.5 text-slate-300 truncate">
-              <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-              <span className="text-slate-400">Email:</span>
-              <span className="text-white font-bold truncate">{adminEmail}</span>
+        {hasValidDemo && (
+          <div className="relative z-10 bg-[#141416] border border-white/15 rounded-2xl p-5 mb-6 space-y-3">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+                <Key className="w-4 h-4 text-emerald-400" />
+                <span>TEST-DRIVE ADMIN ACCESS CREDENTIALS</span>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                1-Click Copy
+              </span>
             </div>
 
-            <button
-              onClick={() => copyToClipboard(adminEmail, 'email')}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-[#0d0d0e] text-slate-200 text-[11px] font-mono font-bold transition-all shrink-0 ml-2 cursor-pointer"
-            >
-              {copiedField === 'email' ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-300" />
-                  <span>Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
-          </div>
+            {/* Admin Email */}
+            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
+              <div className="flex items-center gap-2.5 text-slate-300 truncate">
+                <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+                <span className="text-slate-400">Email:</span>
+                <span className="text-white font-bold truncate">{adminEmail}</span>
+              </div>
 
-          {/* Admin Password */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
-            <div className="flex items-center gap-2.5 text-slate-300 truncate">
-              <Lock className="w-4 h-4 text-slate-400 shrink-0" />
-              <span className="text-slate-400">Password:</span>
-              <span className="text-white font-bold truncate">{adminPassword}</span>
+              <button
+                onClick={() => copyToClipboard(adminEmail, 'email')}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-[#0d0d0e] text-slate-200 text-[11px] font-mono font-bold transition-all shrink-0 ml-2 cursor-pointer"
+              >
+                {copiedField === 'email' ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-300" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
             </div>
 
-            <button
-              onClick={() => copyToClipboard(adminPassword, 'password')}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-[#0d0d0e] text-slate-200 text-[11px] font-mono font-bold transition-all shrink-0 ml-2 cursor-pointer"
-            >
-              {copiedField === 'password' ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-300" />
-                  <span>Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
+            {/* Admin Password */}
+            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
+              <div className="flex items-center gap-2.5 text-slate-300 truncate">
+                <Lock className="w-4 h-4 text-slate-400 shrink-0" />
+                <span className="text-slate-400">Password:</span>
+                <span className="text-white font-bold truncate">{adminPassword}</span>
+              </div>
+
+              <button
+                onClick={() => copyToClipboard(adminPassword, 'password')}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-[#0d0d0e] text-slate-200 text-[11px] font-mono font-bold transition-all shrink-0 ml-2 cursor-pointer"
+              >
+                {copiedField === 'password' ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-300" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Feature Modules Grid */}
         {product.features && product.features.length > 0 && (
@@ -189,14 +223,27 @@ export function ProductQuickViewModal({ product, industrySlug, onClose }: Produc
 
         {/* Modal Action Footer */}
         <div className="relative z-10 pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Link
-            href={`/get-quote?product=${encodeURIComponent(product.name)}`}
-            onClick={onClose}
-            className="text-xs font-mono text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-bold"
-          >
-            <span>Ready to Buy? Request Commercial Quote</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          <div className="flex flex-col gap-1.5">
+            <Link
+              href={`/get-quote?product=${encodeURIComponent(product.name)}`}
+              onClick={onClose}
+              className="text-xs font-mono text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-bold"
+            >
+              <span>Ready to Buy? Request Commercial Quote</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+
+            {product.id && (
+              <Link
+                href={`/products/${product.id}`}
+                onClick={onClose}
+                className="text-xs font-mono text-sky-400 hover:text-sky-300 flex items-center gap-1.5 font-bold"
+              >
+                <span>Select Purchase Plan &amp; Checkout</span>
+                <ShoppingBag className="w-3.5 h-3.5" />
+              </Link>
+            )}
+          </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
@@ -206,15 +253,26 @@ export function ProductQuickViewModal({ product, industrySlug, onClose }: Produc
               Close
             </button>
 
-            <a
-              href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-1/2 sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg hover:scale-105"
-            >
-              <span>Test-Drive Live Project</span>
-              <ExternalLink className="w-4 h-4" />
-            </a>
+            {hasValidDemo ? (
+              <a
+                href={demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-1/2 sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg hover:scale-105"
+              >
+                <span>Test-Drive Live Project</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={handleTestDriveClick}
+                className="w-1/2 sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer hover:bg-amber-500/30"
+              >
+                <span>Live Demo Unavailable</span>
+                <Info className="w-4 h-4 text-amber-400" />
+              </button>
+            )}
           </div>
         </div>
 

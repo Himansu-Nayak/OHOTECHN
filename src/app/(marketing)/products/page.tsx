@@ -10,7 +10,7 @@ import { getProductsApi } from '@/api/products';
 import { ProductDto } from '@/api/types';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
-import { ProductQuickViewModal } from '@/components/products/ProductQuickViewModal';
+import { ProductQuickViewModal, isValidLiveDemoUrl } from '@/components/products/ProductQuickViewModal';
 import { Product } from '@/config/industries';
 
 export default function ProductsCatalogPage() {
@@ -109,15 +109,19 @@ export default function ProductsCatalogPage() {
   const openQuickView = (productDto: ProductDto) => {
     const matchedDemo = softwareDemos.find((d) => d.title.toLowerCase().includes(productDto.name.toLowerCase()) || productDto.name.toLowerCase().includes(d.title.toLowerCase()));
     
+    const rawDemoUrl = matchedDemo?.mainDemoUrl || matchedDemo?.frontendUrl || matchedDemo?.accounts?.[0]?.url;
+    const validDemoUrl = isValidLiveDemoUrl(rawDemoUrl) ? rawDemoUrl : undefined;
+
     const prodObj: Product = {
+      id: productDto.id,
       name: productDto.name,
       slug: matchedDemo?.slug || productDto.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       shortDescription: productDto.description || 'Enterprise-ready turnkey software module.',
-      demoUrl: matchedDemo?.mainDemoUrl || matchedDemo?.frontendUrl || matchedDemo?.accounts[0]?.url,
-      features: matchedDemo?.features || ['Admin & User Role Portals', 'Automated Database Workflows', 'RESTful API Integration', 'SLA SLA Support'],
+      demoUrl: validDemoUrl,
+      features: matchedDemo?.features || ['Admin & User Role Portals', 'Automated Database Workflows', 'RESTful API Integration', '24/7 SLA Support'],
       adminCredentials: {
-        email: matchedDemo?.accounts[0]?.email || 'admin@demo.ohotech.com',
-        password: matchedDemo?.accounts[0]?.password || 'Admin@12345',
+        email: matchedDemo?.accounts?.[0]?.email || 'admin@demo.ohotech.com',
+        password: matchedDemo?.accounts?.[0]?.password || 'Admin@12345',
       },
     };
 
@@ -330,12 +334,22 @@ export default function ProductsCatalogPage() {
                         </button>
                       </div>
 
-                      <Link
-                        href={`/get-quote?product=${encodeURIComponent(product.name)}`}
-                        className="w-full py-2.5 px-4 rounded-full bg-white hover:bg-slate-100 text-slate-800 font-mono font-bold text-[11px] uppercase tracking-wider border border-slate-300 transition-all block text-center"
-                      >
-                        Request Commercial Quote →
-                      </Link>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Link
+                          href={`/products/${product.id}`}
+                          className="py-2.5 px-3 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-[10px] uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1"
+                        >
+                          <span>Select Plan</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </Link>
+
+                        <Link
+                          href={`/get-quote?product=${encodeURIComponent(product.name)}`}
+                          className="py-2.5 px-3 rounded-full bg-white hover:bg-slate-100 text-slate-800 font-mono font-bold text-[10px] uppercase tracking-wider border border-slate-300 transition-all text-center truncate"
+                        >
+                          Request Quote
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 );

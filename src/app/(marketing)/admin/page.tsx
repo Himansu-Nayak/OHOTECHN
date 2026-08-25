@@ -370,6 +370,13 @@ export default function AdminConsolePage() {
             </button>
 
             <Link
+              href="/admin/crm"
+              className="px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 flex items-center gap-1.5"
+            >
+              👥 CRM Leads →
+            </Link>
+
+            <Link
               href="/admin/audit-logs"
               className="px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap text-slate-600 hover:bg-slate-100 flex items-center gap-1.5"
             >

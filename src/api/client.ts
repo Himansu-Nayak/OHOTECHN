@@ -87,6 +87,9 @@ export async function apiClient<T>(
 
     return data;
   } catch (error: any) {
+    if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+      throw new Error('Backend server (http://localhost:8080) is offline or starting up. Please ensure Spring Boot is running.');
+    }
     throw new Error(error.message || 'Network error occurred. Please check your connection.');
   }
 }

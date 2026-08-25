@@ -50,8 +50,11 @@ export default function BookDemoPage() {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
+        company: formData.company,
         subject: `Demo Request: ${formData.productInterest || formData.industry || 'Live Environment'}`,
         message: `Company: ${formData.company || 'N/A'}\nIndustry: ${formData.industry || 'N/A'}\nPreferred Date: ${formData.preferredDate || 'Flexible'}\nPreferred Time: ${formData.preferredTime || 'Flexible'}`,
+        interestedProduct: formData.productInterest || formData.industry || 'Live Product Demo',
+        source: 'DEMO_REQUEST',
       });
 
       if (!res.success) {

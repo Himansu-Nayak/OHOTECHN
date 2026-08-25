@@ -64,6 +64,8 @@ function QuoteFormContent() {
         subject: `Quote Request: ${formData.serviceType || 'General'} (Budget: ${formData.budgetRange || 'Unspecified'})`,
         message: formData.projectDescription,
         formType: 'Software Quote Request',
+        interestedProduct: formData.serviceType || productParam || 'Custom Software',
+        source: 'QUOTE_REQUEST',
       });
 
       if (!res.success) {

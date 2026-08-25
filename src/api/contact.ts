@@ -1,6 +1,7 @@
 import { apiClient } from './client';
-import { ApiResponse, ContactEnquiry } from './types';
+import { ApiResponse, ContactEnquiry, LeadSource } from './types';
 import { validateContactForm } from '@/lib/validators';
+import { getCapturedUtmParams } from '@/lib/utmTracker';
 
 export interface ContactParams {
   name: string;
@@ -12,6 +13,14 @@ export interface ContactParams {
   serviceType?: string;
   timeline?: string;
   formType?: string;
+  interestedProduct?: string;
+  source?: LeadSource;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  utmContent?: string;
+  landingPage?: string;
 }
 
 export async function submitContactApi(params: ContactParams): Promise<ApiResponse<ContactEnquiry>> {
@@ -30,6 +39,16 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
       message: firstError || 'Please fill in all required form fields correctly.',
     };
   }
+
+  // Retrieve captured UTM campaign metadata from session
+  const utmSession = getCapturedUtmParams();
+
+  const utmSource = params.utmSource || utmSession.utmSource;
+  const utmMedium = params.utmMedium || utmSession.utmMedium;
+  const utmCampaign = params.utmCampaign || utmSession.utmCampaign;
+  const utmTerm = params.utmTerm || utmSession.utmTerm;
+  const utmContent = params.utmContent || utmSession.utmContent;
+  const landingPage = params.landingPage || utmSession.landingPage;
 
   let emailSent = false;
   let emailError = '';
@@ -64,7 +83,7 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
     emailError = err.message || 'Email service unreachable.';
   }
 
-  // 2. Try saving to Spring Boot backend database if available
+  // 2. Save to Spring Boot backend database & CRM lead pipeline
   try {
     const backendRes = await apiClient<ContactEnquiry>('/api/contact', {
       method: 'POST',
@@ -72,8 +91,17 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
         name: params.name,
         email: params.email,
         phone: params.phone,
+        company: params.company,
         subject: params.subject || params.serviceType,
         message: params.message,
+        interestedProduct: params.interestedProduct || params.serviceType,
+        source: params.source,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        utmTerm,
+        utmContent,
+        landingPage,
       }),
     });
     if (backendRes.success) {

@@ -9,6 +9,7 @@ import { NotificationDto } from '@/api/types';
 
 export function NotificationBell() {
   const { user } = useAuth();
+  const [mounted, setMounted] = React.useState<boolean>(false);
 
   const [unreadCount, setUnreadCount] = React.useState<number>(0);
   const [notifications, setNotifications] = React.useState<NotificationDto[]>([]);
@@ -16,6 +17,10 @@ export function NotificationBell() {
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchUnreadCount = React.useCallback(async () => {
     if (!user) return;
@@ -88,7 +93,7 @@ export function NotificationBell() {
     }
   };
 
-  if (!user) return null;
+  if (!mounted || !user) return null;
 
   const getTypeIcon = (type: string) => {
     switch (type) {
