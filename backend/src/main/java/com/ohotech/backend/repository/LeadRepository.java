@@ -18,7 +18,13 @@ public interface LeadRepository extends JpaRepository<Lead, Long>, JpaSpecificat
 
     Optional<Lead> findByEmail(String email);
 
+    Optional<Lead> findByExternalLeadId(String externalLeadId);
+
+    Optional<Lead> findByPhone(String phone);
+
     Optional<Lead> findByContactEnquiryId(Long contactEnquiryId);
 
     long countByStatus(LeadStatus status);
+
+    long countBySource(LeadSource source);
 }

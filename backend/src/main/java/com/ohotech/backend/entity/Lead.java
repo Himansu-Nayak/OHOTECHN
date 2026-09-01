@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
     @Index(name = "idx_lead_status", columnList = "status"),
     @Index(name = "idx_lead_source", columnList = "source"),
     @Index(name = "idx_lead_priority", columnList = "priority"),
-    @Index(name = "idx_lead_assigned", columnList = "assigned_to_user_id")
+    @Index(name = "idx_lead_assigned", columnList = "assigned_to_user_id"),
+    @Index(name = "idx_lead_ext_id", columnList = "externalLeadId")
 })
 @Getter
 @Setter
@@ -52,6 +53,13 @@ public class Lead {
     private String campaign;
     private String medium;
     private String landingPage;
+
+    private String externalLeadId;
+    private String externalCampaignId;
+    private String externalAdSetId;
+    private String externalAdSet;
+    private String externalAdId;
+    private String externalAd;
 
     private String utmSource;
     private String utmMedium;

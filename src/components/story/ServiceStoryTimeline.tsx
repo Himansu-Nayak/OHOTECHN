@@ -378,19 +378,35 @@ export function ServiceStoryTimeline() {
         <div className="mt-12 transition-all duration-500 animate-in fade-in slide-in-from-top-4">
           
           {/* Interactive Roadmap Selector Bar */}
-          <div className="bg-[#0d0d0e] text-white rounded-3xl p-4 sm:p-8 mb-16 border-2 border-slate-800 shadow-xl">
+          <div className="bg-[#0d0d0e] text-white rounded-3xl p-4 sm:p-8 mb-16 border-2 border-slate-800 shadow-xl relative overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-6">
               <div className="flex items-center gap-2 font-mono text-xs text-emerald-400 font-bold uppercase tracking-wider">
                 <MapPin className="w-4 h-4 text-emerald-400 animate-pulse" />
-                <span>INTERACTIVE ROADMAP SELECTOR (01 TO 06)</span>
+                <span>INTERACTIVE ROADMAP SELECTOR (01 TO 06) ⚡</span>
               </div>
               <span className="text-xs font-mono text-slate-400">
-                Click any pillar to view step
+                Click any pillar to navigate directly to capability step
               </span>
             </div>
 
+            {/* Desktop Laser Connecting Line Track */}
+            <div className="hidden lg:block relative mb-6 px-3 z-0">
+              <div className="w-full h-1.5 bg-slate-800 rounded-full relative overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full transition-all duration-500 shadow-[0_0_12px_#10b981]"
+                  style={{
+                    width: `${
+                      selectedPillar
+                        ? ((stories.findIndex((s) => s.id === selectedPillar) + 1) / stories.length) * 100
+                        : 100
+                    }%`,
+                  }}
+                />
+              </div>
+            </div>
+
             {/* 6 Roadmap Pillar Buttons */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 relative z-10">
               {stories.map((s) => {
                 const isSelected = selectedPillar === s.id;
                 return (
@@ -398,19 +414,19 @@ export function ServiceStoryTimeline() {
                     key={s.id}
                     onClick={() => handleScrollToPillar(s.id)}
                     type="button"
-                    className={`p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                    className={`p-3.5 rounded-2xl border text-left transition-all duration-300 cursor-pointer flex flex-col justify-between group ${
                       isSelected
-                        ? 'bg-emerald-500 text-white border-emerald-400 shadow-lg scale-105'
-                        : 'bg-[#141416] text-slate-300 border-white/10 hover:border-emerald-500/50 hover:bg-white/5'
+                        ? 'bg-emerald-500 text-white border-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.4)] scale-105 -translate-y-1'
+                        : 'bg-[#141416] text-slate-300 border-white/10 hover:border-emerald-500/60 hover:bg-white/5 hover:-translate-y-0.5'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className={`font-mono text-xs font-black px-2 py-0.5 rounded ${
-                        isSelected ? 'bg-white text-[#0d0d0e]' : 'bg-white/10 text-emerald-400'
+                      <span className={`font-mono text-xs font-black px-2 py-0.5 rounded transition-colors ${
+                        isSelected ? 'bg-white text-[#0d0d0e]' : 'bg-white/10 text-emerald-400 group-hover:bg-emerald-500/20'
                       }`}>
                         {s.step}
                       </span>
-                      <span className="text-lg">{s.emoji}</span>
+                      <span className="text-lg group-hover:scale-110 transition-transform">{s.emoji}</span>
                     </div>
                     <div className="text-xs font-bold truncate mt-1">
                       {s.title.split(' ')[0]} {s.title.split(' ')[1] || ''}

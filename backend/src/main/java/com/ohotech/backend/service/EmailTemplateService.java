@@ -1,5 +1,6 @@
 package com.ohotech.backend.service;
 
+import com.ohotech.backend.entity.OtpPurpose;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -48,6 +49,30 @@ public class EmailTemplateService {
                 </body>
                 </html>
                 """.formatted(BRAND_COLOR, ACCENT_COLOR, title, contentHtml, LocalDateTime.now().getYear());
+    }
+
+    public String buildOtpEmail(String userName, String otpCode, OtpPurpose purpose) {
+        String title = switch (purpose) {
+            case EMAIL_VERIFICATION -> "Email Verification Code";
+            case LOGIN -> "Login Verification Code";
+            case PASSWORD_RESET -> "Password Reset Verification Code";
+        };
+        String actionText = switch (purpose) {
+            case EMAIL_VERIFICATION -> "verify your email address";
+            case LOGIN -> "log in to your account";
+            case PASSWORD_RESET -> "reset your account password";
+        };
+        String content = """
+                <p>Hello <strong>%s</strong>,</p>
+                <p>Use the verification code below to %s. This code is single-use and will expire in 10 minutes.</p>
+                <div class="box" style="text-align: center;">
+                  <div style="font-size: 11px; font-family: monospace; color: #64748b; text-transform: uppercase;">VERIFICATION OTP</div>
+                  <div style="font-family: monospace; font-size: 32px; font-weight: 900; color: #0284c7; margin: 10px 0; letter-spacing: 6px;">%s</div>
+                  <div style="font-size: 12px; color: #64748b;">Expires in 10 minutes</div>
+                </div>
+                <p style="font-size: 12px; color: #64748b;">If you did not request this verification code, please ignore this email or secure your account.</p>
+                """.formatted(userName != null && !userName.isBlank() ? userName : "User", actionText, otpCode);
+        return wrapTemplate(title, content);
     }
 
     public String buildWelcomeEmail(String userName) {

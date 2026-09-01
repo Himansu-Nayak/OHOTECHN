@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { UserDto, AuthResponse } from '../api/types';
-import { loginApi, registerApi, getCurrentUserApi, LoginParams, RegisterParams } from '../api/auth';
+import { loginApi, loginOtpApi, registerApi, getCurrentUserApi, LoginParams, RegisterParams } from '../api/auth';
 import { getAccessToken, setTokens, clearTokens } from '../api/client';
 
 interface AuthContextType {
@@ -10,6 +10,7 @@ interface AuthContextType {
   accessToken: string | null;
   isLoading: boolean;
   login: (params: LoginParams) => Promise<AuthResponse>;
+  loginOtp: (target: string, otpCode: string) => Promise<AuthResponse>;
   register: (params: RegisterParams) => Promise<AuthResponse>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -86,8 +87,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (params: RegisterParams): Promise<AuthResponse> => {
-    const res = await registerApi(params);
+  const loginOtp = async (target: string, otpCode: string): Promise<AuthResponse> => {
+    const res = await loginOtpApi(target, otpCode);
     if (res.success && res.data) {
       const authData = res.data;
       setTokens(authData.accessToken, authData.refreshToken);
@@ -95,6 +96,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(authData.user);
       if (typeof window !== 'undefined') {
         localStorage.setItem('user', JSON.stringify(authData.user));
+      }
+      return authData;
+    } else {
+      throw new Error(res.message || 'OTP Login failed');
+    }
+  };
+
+  const register = async (params: RegisterParams): Promise<AuthResponse> => {
+    const res = await registerApi(params);
+    if (res.success && res.data) {
+      const authData = res.data;
+      if (authData.accessToken && authData.user?.emailVerified) {
+        setTokens(authData.accessToken, authData.refreshToken);
+        setAccessToken(authData.accessToken);
+        setUser(authData.user);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(authData.user));
+        }
       }
       return authData;
     } else {
@@ -115,6 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         accessToken,
         isLoading,
         login,
+        loginOtp,
         register,
         logout,
         refreshUser,

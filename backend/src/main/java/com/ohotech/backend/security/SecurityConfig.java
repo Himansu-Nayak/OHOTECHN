@@ -78,10 +78,16 @@ public class SecurityConfig {
                     "/api/health",
                     "/api/auth/register",
                     "/api/auth/login",
+                    "/api/auth/login-otp",
                     "/api/auth/refresh",
                     "/api/auth/send-otp",
                     "/api/auth/verify-otp",
-                    "/api/contact"
+                    "/api/auth/verify-email-otp",
+                    "/api/auth/forgot-password",
+                    "/api/auth/verify-reset-otp",
+                    "/api/auth/reset-password",
+                    "/api/contact",
+                    "/api/webhooks/**"
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()

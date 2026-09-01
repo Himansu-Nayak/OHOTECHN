@@ -39,7 +39,7 @@ export function Header() {
       <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-3 sm:px-4 pointer-events-none">
         <header
           id="site-header"
-          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-3.5 sm:px-7 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-6 max-w-6xl w-full transition-all duration-300"
+          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-4 sm:px-6 lg:px-7 py-2 sm:py-2.5 flex items-center justify-between gap-2 lg:gap-3 xl:gap-5 max-w-[1240px] w-full transition-all duration-300"
         >
           {/* Logo */}
           <Link href="/" prefetch={true} id="logo-link" className="flex items-center shrink-0 group py-0.5">
@@ -51,12 +51,12 @@ export function Header() {
               priority
               quality={100}
               unoptimized
-              className="h-8 sm:h-14 lg:h-16 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-8 sm:h-10 lg:h-12 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
 
           {/* Desktop Navigation Links with Dropdowns */}
-          <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-700">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 text-xs font-bold text-slate-700">
             
             {/* 1. Solutions Dropdown */}
             <div
@@ -66,7 +66,7 @@ export function Header() {
             >
               <div
                 className={cn(
-                  "flex items-center gap-1 px-3.5 py-1.5 rounded-full transition-all cursor-pointer",
+                  "flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-full transition-all cursor-pointer",
                   openDropdown === 'solutions' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
                 )}
               >
@@ -138,7 +138,7 @@ export function Header() {
             >
               <div
                 className={cn(
-                  "flex items-center gap-1 px-3.5 py-1.5 rounded-full transition-all cursor-pointer",
+                  "flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-full transition-all cursor-pointer",
                   openDropdown === 'services' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
                 )}
               >
@@ -224,7 +224,7 @@ export function Header() {
             </div>
 
             {/* 3. Products Link */}
-            <Link href="/products" prefetch={true} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 hover:text-black transition-all">
+            <Link href="/products" prefetch={true} className="px-2.5 xl:px-3 py-1.5 rounded-full hover:bg-slate-50 hover:text-black transition-all">
               Products
             </Link>
 
@@ -236,7 +236,7 @@ export function Header() {
             >
               <div
                 className={cn(
-                  "flex items-center gap-1 px-3.5 py-1.5 rounded-full transition-all cursor-pointer",
+                  "flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-full transition-all cursor-pointer",
                   openDropdown === 'resources' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
                 )}
               >
@@ -297,7 +297,7 @@ export function Header() {
             >
               <div
                 className={cn(
-                  "flex items-center gap-1 px-3.5 py-1.5 rounded-full transition-all cursor-pointer",
+                  "flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-full transition-all cursor-pointer",
                   openDropdown === 'company' ? "bg-slate-100 text-black font-extrabold" : "hover:bg-slate-50 hover:text-black"
                 )}
               >
@@ -469,14 +469,14 @@ export function Header() {
 
             <Link
               href="/get-quote"
-              className="hidden lg:inline-flex px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100"
+              className="hidden xl:inline-flex px-3.5 py-1.5 sm:py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100 whitespace-nowrap"
             >
               Get a Quote
             </Link>
 
             <Link
               href="/book-demo"
-              className="hidden sm:inline-flex px-4 sm:px-5 py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all shadow-sm whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all shadow-sm whitespace-nowrap shrink-0"
             >
               Book a Demo
             </Link>

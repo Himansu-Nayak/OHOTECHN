@@ -24,10 +24,23 @@ public class EmailService {
     private String mailHost;
 
     @Value("${spring.mail.username:${MAIL_USERNAME:}}")
-    private String fromEmail;
+    private String mailUsername;
+
+    @Value("${app.mail.from-email:${SPRING_MAIL_FROM_ADDRESS:}}")
+    private String configuredFromEmail;
 
     @Value("${app.mail.from-name:${MAIL_FROM_NAME:OHO TECHN Notification}}")
     private String fromName;
+
+    private String getFromEmail() {
+        if (configuredFromEmail != null && !configuredFromEmail.isBlank()) {
+            return configuredFromEmail.trim();
+        }
+        if (mailUsername != null && mailUsername.contains("@")) {
+            return mailUsername.trim();
+        }
+        return "onboarding@resend.dev";
+    }
 
     @Async
     public void sendEmail(String to, String subject, String body) {
@@ -41,17 +54,19 @@ public class EmailService {
             return;
         }
 
-        boolean isRealSmtpConfigured = mailSender != null && mailHost != null && !mailHost.trim().isEmpty() && !mailHost.equalsIgnoreCase("localhost") && fromEmail != null && !fromEmail.trim().isEmpty();
+        boolean isRealSmtpConfigured = mailSender != null && mailHost != null && !mailHost.trim().isEmpty() && !mailHost.equalsIgnoreCase("localhost");
 
         if (!isRealSmtpConfigured) {
             logger.info("[DEV EMAIL NOTIFICATION LOG] To: {} | Subject: {} | Content Length: {} chars", to, subject, htmlContent != null ? htmlContent.length() : 0);
             return;
         }
 
+        String senderAddress = getFromEmail();
+
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(fromEmail, fromName);
+            helper.setFrom(senderAddress, fromName);
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);

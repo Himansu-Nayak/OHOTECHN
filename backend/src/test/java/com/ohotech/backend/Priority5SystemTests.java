@@ -94,6 +94,7 @@ public class Priority5SystemTests {
                 .passwordHash(passwordEncoder.encode("Password123!"))
                 .role(Role.ROLE_CUSTOMER)
                 .enabled(true)
+                .emailVerified(true)
                 .failedLoginAttempts(0)
                 .build());
 
@@ -103,6 +104,7 @@ public class Priority5SystemTests {
                 .passwordHash(passwordEncoder.encode("Password123!"))
                 .role(Role.ROLE_ADMIN)
                 .enabled(true)
+                .emailVerified(true)
                 .failedLoginAttempts(0)
                 .build());
 
@@ -112,6 +114,7 @@ public class Priority5SystemTests {
                 .passwordHash(passwordEncoder.encode("Password123!"))
                 .role(Role.ROLE_DEVELOPER)
                 .enabled(true)
+                .emailVerified(true)
                 .failedLoginAttempts(0)
                 .build());
     }

@@ -44,9 +44,10 @@ export const growthServicesNav: NavLink[] = [
 ];
 
 export const resourcesNav: NavLink[] = [
-  { name: 'Blog', href: '/resources/blog', description: 'Articles on software engineering & growth.' },
-  { name: 'Case Studies', href: '/case-studies', description: 'Real-world software implementation summaries.' },
-  { name: 'FAQ', href: '/resources/faq', description: 'Frequently asked questions about our process.' },
+  { name: 'Pricing & Plans', href: '/pricing', description: 'Enterprise software pricing, licenses & billing.' },
+  { name: 'Software Downloads', href: '/downloads', description: 'Official desktop apps, installers & mobile APKs.' },
+  { name: 'Licenses & Keys', href: '/licenses', description: 'License key validation & device activation portal.' },
+  { name: 'Partner Program', href: '/partner', description: 'Channel partnerships for technology resellers & agencies.' },
 ];
 
 export const companyNav: NavLink[] = [

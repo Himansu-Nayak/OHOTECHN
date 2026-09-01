@@ -124,9 +124,9 @@ export function HeroLaunchBackground() {
         )}
 
         {/* Video HUD Overlay: Live Stream HUD Bar */}
-        <div className="absolute top-16 sm:top-24 left-4 sm:left-10 z-20 pointer-events-none flex items-center gap-3">
-          <div className="px-2.5 sm:px-3 py-1 rounded-full bg-[#0c0d0e]/90 backdrop-blur-md border border-emerald-500/40 text-white font-mono text-[10px] sm:text-[11px] font-bold flex items-center gap-2 shadow-xl">
-            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500 animate-ping" />
+        <div className="absolute top-16 sm:top-24 left-3 sm:left-10 z-20 pointer-events-none flex items-center gap-2 sm:gap-3">
+          <div className="px-2 sm:px-3 py-1 rounded-full bg-[#0c0d0e]/90 backdrop-blur-md border border-emerald-500/40 text-white font-mono text-[9px] sm:text-[11px] font-bold flex items-center gap-1.5 sm:gap-2 shadow-xl">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500 animate-ping shrink-0" />
             <span className="text-red-400 font-black">REC</span>
             <span className="text-slate-300">|</span>
             <span className="text-emerald-400">{formatTime(videoSeconds)} / 03:00</span>
@@ -148,19 +148,19 @@ export function HeroLaunchBackground() {
       </div>
 
       {/* ── 2. TOP HEADER BADGE WITH LIVE VIDEO STREAM CONTROLS ── */}
-      <div className="absolute top-3 sm:top-6 inset-x-3 sm:inset-x-6 z-20 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+      <div className="absolute top-3 sm:top-6 inset-x-2.5 sm:inset-x-6 z-20 flex flex-wrap items-center justify-between gap-1.5 sm:gap-3">
         
         {/* Brand Badge */}
-        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white font-mono text-[11px] sm:text-xs font-bold shadow-lg">
-          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400 animate-ping shadow-sm shadow-emerald-400/50" />
-          <span className="truncate max-w-[180px] sm:max-w-none">OHO TECH Platform Solutions</span>
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white font-mono text-[10px] sm:text-xs font-bold shadow-lg">
+          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400 animate-ping shadow-sm shadow-emerald-400/50 shrink-0" />
+          <span className="truncate max-w-[200px] sm:max-w-none">OHO TECH Platform Solutions</span>
           <span className="text-slate-400 font-normal border-l border-white/20 pl-2.5 hidden md:inline">Software • Web • Mobile • Growth</span>
         </div>
 
         {/* Live Auto-Play Stream Badge & Play/Pause Controls */}
-        <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-emerald-500/40 text-emerald-400 font-mono text-[10px] sm:text-[11px] font-bold shadow-lg">
-            <Tv className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 animate-pulse" />
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-emerald-500/40 text-emerald-400 font-mono text-[9px] sm:text-[11px] font-bold shadow-lg">
+            <Tv className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 animate-pulse shrink-0" />
             <span className="hidden sm:inline">🔴 LIVE STREAM DISPLAY</span>
             <span>60 FPS</span>
           </div>
@@ -168,17 +168,17 @@ export function HeroLaunchBackground() {
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white hover:text-emerald-400 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-bold transition-colors shadow-lg"
+            className="px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#0c0d0e]/85 backdrop-blur-xl border border-white/20 text-white hover:text-emerald-400 flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs font-mono font-bold transition-colors shadow-lg"
             title={isPlaying ? 'Pause Demo Stream' : 'Play Demo Stream'}
           >
             {isPlaying ? (
               <>
-                <Pause className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                <Pause className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 shrink-0" />
                 <span>PAUSE</span>
               </>
             ) : (
               <>
-                <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 shrink-0" />
                 <span>PLAY</span>
               </>
             )}
@@ -188,10 +188,10 @@ export function HeroLaunchBackground() {
       </div>
 
       {/* ── 3. BOTTOM OVERLAY SHOWCASE: LIVE AUTO-PLAYING SOLUTIONS CARDS ── */}
-      <div className="relative md:absolute bottom-0 md:bottom-4 lg:bottom-6 inset-x-0 md:inset-x-4 lg:inset-x-6 z-20 p-4 sm:p-6 md:p-0 bg-[#0c0d0e] md:bg-transparent">
+      <div className="relative md:absolute bottom-0 md:bottom-4 lg:bottom-6 inset-x-0 md:inset-x-4 lg:inset-x-6 z-20 p-3 sm:p-6 md:p-0 bg-[#0c0d0e] md:bg-transparent">
         
         {/* Solution Active Selector Tabs for Mobile */}
-        <div className="flex md:hidden items-center justify-between gap-1.5 mb-3 bg-[#0c0d0e]/90 p-1.5 rounded-xl border border-white/10 overflow-x-auto scrollbar-none">
+        <div className="flex md:hidden items-center justify-between gap-1 mb-2.5 bg-[#0c0d0e]/90 p-1 rounded-xl border border-white/10 overflow-x-auto scrollbar-none">
           {solutions.map((sol, index) => (
             <button
               key={sol.id}
@@ -200,7 +200,7 @@ export function HeroLaunchBackground() {
                 setIsPlaying(false);
               }}
               className={cn(
-                "flex-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold whitespace-nowrap transition-all text-center flex items-center justify-center gap-1",
+                "flex-1 px-2 py-1.5 rounded-lg text-[9.5px] font-mono font-bold whitespace-nowrap transition-all text-center flex items-center justify-center gap-1",
                 activeSolution === index
                   ? "bg-emerald-500 text-white shadow-md font-extrabold"
                   : "text-slate-400 hover:text-white bg-white/5"
@@ -213,7 +213,7 @@ export function HeroLaunchBackground() {
         </div>
 
         {/* Solutions Cards Grid & Swipeable Carousel on Mobile */}
-        <div className="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-none md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 pb-2 md:pb-0">
+        <div className="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-none md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-4 pb-2 md:pb-0">
           {solutions.map((sol, index) => {
             const Icon = sol.icon;
             const isActive = activeSolution === index;
@@ -226,7 +226,7 @@ export function HeroLaunchBackground() {
                   setIsPlaying(false);
                 }}
                 className={cn(
-                  "p-4 sm:p-5 rounded-2xl transition-all duration-500 cursor-pointer backdrop-blur-2xl border flex flex-col justify-between group/card relative overflow-hidden shrink-0 w-[88vw] sm:w-[320px] md:w-auto snap-center",
+                  "p-3.5 sm:p-5 rounded-2xl transition-all duration-500 cursor-pointer backdrop-blur-2xl border flex flex-col justify-between group/card relative overflow-hidden shrink-0 w-[88vw] sm:w-[320px] md:w-auto snap-center",
                   isActive
                     ? "bg-[#0c0d0e]/95 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)] ring-2 ring-emerald-400/40 scale-[1.01] md:scale-[1.02]"
                     : "bg-[#0c0d0e]/80 hover:bg-[#0c0d0e]/95 border-white/15 hover:border-white/30"
@@ -241,33 +241,33 @@ export function HeroLaunchBackground() {
                   {/* Card Header Badge */}
                   <div className="flex items-center justify-between mb-2">
                     <span className={cn(
-                      "text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider",
+                      "text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider",
                       sol.accent
                     )}>
                       {sol.tag}
                     </span>
                     <div className={cn(
-                      "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
+                      "w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center transition-colors shrink-0",
                       isActive ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/50" : "bg-white/10 text-white"
                     )}>
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="text-sm sm:text-base font-extrabold text-white mb-1.5 leading-snug group-hover/card:text-emerald-300 transition-colors flex items-center gap-1.5">
+                  <h3 className="text-xs sm:text-base font-extrabold text-white mb-1 leading-snug group-hover/card:text-emerald-300 transition-colors flex items-center gap-1.5">
                     <span>{sol.emoji}</span>
                     <span>{sol.title}</span>
                   </h3>
-                  <p className="text-xs text-slate-300 leading-relaxed mb-3 line-clamp-2">
+                  <p className="text-xs text-slate-300 leading-relaxed mb-2.5 line-clamp-2">
                     {sol.description}
                   </p>
                 </div>
 
                 {/* Features List */}
-                <div className="pt-2.5 border-t border-white/10 space-y-1">
+                <div className="pt-2 border-t border-white/10 space-y-1">
                   {sol.features.slice(0, 2).map((feat, fIdx) => (
-                    <div key={fIdx} className="flex items-center gap-1.5 text-[11px] font-mono text-slate-300">
+                    <div key={fIdx} className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono text-slate-300">
                       <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
                       <span className="truncate">{feat}</span>
                     </div>
@@ -279,8 +279,8 @@ export function HeroLaunchBackground() {
         </div>
 
         {/* Bottom Directive Bar */}
-        <div className="bg-[#0c0d0e]/90 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-6 text-[11px] sm:text-xs font-mono font-semibold text-slate-300">
+        <div className="bg-[#0c0d0e]/90 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-white">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-6 text-[10px] sm:text-xs font-mono font-semibold text-slate-300">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
               <span>Bespoke Software &amp; Mobile Apps</span>
@@ -297,10 +297,10 @@ export function HeroLaunchBackground() {
 
           <Link
             href="/solutions"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:py-2 rounded-full bg-white hover:bg-emerald-400 text-[#0c0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md group shrink-0 w-full sm:w-auto"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:py-2 rounded-full bg-white hover:bg-emerald-400 text-[#0c0c0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md group shrink-0 w-full sm:w-auto"
           >
             <span>View All OHO TECH Solutions</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform shrink-0" />
           </Link>
         </div>
 

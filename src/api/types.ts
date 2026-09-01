@@ -366,6 +366,12 @@ export interface LeadDto {
   campaign?: string;
   medium?: string;
   landingPage?: string;
+  externalLeadId?: string;
+  externalCampaignId?: string;
+  externalAdSetId?: string;
+  externalAdSet?: string;
+  externalAdId?: string;
+  externalAd?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
@@ -574,6 +580,15 @@ export interface ConvertLeadRequest {
 
 export interface LinkCustomerRequest {
   userId: number;
+}
+
+export interface CrmMarketingAnalyticsDto {
+  totalLeads: number;
+  leadsBySource: Record<string, number>;
+  leadsByStatus: Record<string, number>;
+  leadsByCampaign: Record<string, number>;
+  conversionRateBySource: Record<string, number>;
+  revenueBySource: Record<string, number>;
 }
 
 

@@ -1,6 +1,8 @@
 package com.ohotech.backend.controller;
 
 import com.ohotech.backend.dto.*;
+import com.ohotech.backend.entity.OtpPurpose;
+import com.ohotech.backend.entity.OtpVerification;
 import com.ohotech.backend.security.UserPrincipal;
 import com.ohotech.backend.service.AuthService;
 import com.ohotech.backend.service.OtpService;
@@ -30,6 +32,12 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
     }
 
+    @PostMapping("/login-otp")
+    public ResponseEntity<ApiResponse<AuthResponse>> loginWithOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        AuthResponse response = authService.loginWithOtp(request.getTarget(), request.getOtpCode());
+        return ResponseEntity.ok(ApiResponse.success("Login via OTP successful", response));
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         AuthResponse response = authService.refreshToken(request);
@@ -48,13 +56,45 @@ public class AuthController {
 
     @PostMapping("/send-otp")
     public ResponseEntity<ApiResponse<String>> sendOtp(@Valid @RequestBody SendOtpRequest request) {
-        String result = otpService.sendOtp(request.getTarget(), request.getChannel());
+        String result = otpService.sendOtp(request.getTarget(), request.getChannel(), request.getPurpose());
         return ResponseEntity.ok(ApiResponse.success(result, null));
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<ApiResponse<Boolean>> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
-        boolean verified = otpService.verifyOtp(request.getTarget(), request.getOtpCode());
-        return ResponseEntity.ok(ApiResponse.success("OTP verified successfully", verified));
+    public ResponseEntity<ApiResponse<VerifyOtpResponse>> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        OtpVerification verification = otpService.verifyOtpAndGetRecord(request.getTarget(), request.getOtpCode(), request.getPurpose());
+        VerifyOtpResponse response = VerifyOtpResponse.builder()
+                .verified(verification.isVerified())
+                .resetToken(verification.getResetToken())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("OTP verified successfully", response));
+    }
+
+    @PostMapping("/verify-email-otp")
+    public ResponseEntity<ApiResponse<Boolean>> verifyEmailOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        boolean verified = authService.verifyEmailOtp(request.getTarget(), request.getOtpCode());
+        return ResponseEntity.ok(ApiResponse.success("Email verified successfully", verified));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<String>> forgotPassword(@Valid @RequestBody SendOtpRequest request) {
+        String result = otpService.sendOtp(request.getTarget(), "EMAIL", OtpPurpose.PASSWORD_RESET);
+        return ResponseEntity.ok(ApiResponse.success(result, null));
+    }
+
+    @PostMapping("/verify-reset-otp")
+    public ResponseEntity<ApiResponse<VerifyOtpResponse>> verifyResetOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        String resetToken = otpService.verifyResetOtp(request.getTarget(), request.getOtpCode());
+        VerifyOtpResponse response = VerifyOtpResponse.builder()
+                .verified(true)
+                .resetToken(resetToken)
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("Password reset OTP verified successfully", response));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<String>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.success("Password updated successfully. Please login with your new password.", null));
     }
 }

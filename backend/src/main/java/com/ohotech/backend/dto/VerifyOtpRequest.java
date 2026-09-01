@@ -1,5 +1,6 @@
 package com.ohotech.backend.dto;
 
+import com.ohotech.backend.entity.OtpPurpose;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -10,4 +11,6 @@ public class VerifyOtpRequest {
 
     @NotBlank(message = "OTP code is required")
     private String otpCode;
+
+    private OtpPurpose purpose; // EMAIL_VERIFICATION, LOGIN, PASSWORD_RESET
 }

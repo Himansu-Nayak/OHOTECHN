@@ -1,11 +1,14 @@
 package com.ohotech.backend.service;
 
 import com.ohotech.backend.dto.*;
+import com.ohotech.backend.entity.OtpPurpose;
+import com.ohotech.backend.entity.OtpVerification;
 import com.ohotech.backend.entity.RefreshToken;
 import com.ohotech.backend.entity.Role;
 import com.ohotech.backend.entity.User;
 import com.ohotech.backend.exception.BadRequestException;
 import com.ohotech.backend.exception.ResourceNotFoundException;
+import com.ohotech.backend.repository.OtpRepository;
 import com.ohotech.backend.repository.RefreshTokenRepository;
 import com.ohotech.backend.repository.UserRepository;
 import com.ohotech.backend.security.JwtTokenProvider;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -35,6 +39,8 @@ public class AuthService {
     private final NotificationService notificationService;
     private final EmailTemplateService emailTemplateService;
     private final AuditService auditService;
+    private final OtpService otpService;
+    private final OtpRepository otpRepository;
 
     @Value("${app.jwt.refresh-expiration-ms:604800000}")
     private long refreshTokenExpirationMs;
@@ -94,6 +100,14 @@ public class AuthService {
         auditService.logUserEvent(savedUser, "USER_REGISTERED", "User", String.valueOf(savedUser.getId()),
                 "User registered with email: " + savedUser.getEmail());
 
+        if (savedUser.getEmail() != null) {
+            try {
+                otpService.sendOtp(savedUser.getEmail(), "EMAIL", OtpPurpose.EMAIL_VERIFICATION);
+            } catch (Exception e) {
+                // Non-blocking notification/OTP dispatch log
+            }
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail() != null ? request.getEmail() : request.getPhone(),
@@ -124,6 +138,9 @@ public class AuthService {
                 auditService.logUserEvent(user, "USER_LOGIN_BLOCKED_LOCKOUT", "User", String.valueOf(user.getId()),
                         "Login attempt blocked due to active account lockout");
                 throw new BadRequestException("Account is temporarily locked due to repeated failed login attempts. Please try again after 15 minutes.");
+            }
+            if (!user.isEmailVerified()) {
+                throw new BadRequestException("Your email address is not verified. Please check your inbox and verify your email first.");
             }
         }
 
@@ -212,6 +229,7 @@ public class AuthService {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .officialEmail(user.getOfficialEmail())
                 .phone(user.getPhone())
                 .role(user.getRole())
                 .enabled(user.isEnabled())
@@ -219,5 +237,99 @@ public class AuthService {
                 .phoneVerified(user.isPhoneVerified())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    @Transactional
+    public AuthResponse loginWithOtp(String target, String rawOtpCode) {
+        String normalizedTarget = target != null ? target.trim().toLowerCase() : "";
+        otpService.verifyOtp(normalizedTarget, rawOtpCode, OtpPurpose.LOGIN);
+
+        User user = (normalizedTarget.contains("@"))
+                ? userRepository.findByEmail(normalizedTarget).orElseThrow(() -> new BadRequestException("Account not found"))
+                : userRepository.findByPhone(normalizedTarget).orElseThrow(() -> new BadRequestException("Account not found"));
+
+        if (!user.isEnabled()) {
+            throw new BadRequestException("Account is disabled. Please contact support.");
+        }
+
+        if (!user.isEmailVerified()) {
+            throw new BadRequestException("Your email address is not verified. Please check your inbox and verify your email first.");
+        }
+
+        if (user.getLockoutUntil() != null && user.getLockoutUntil().isAfter(LocalDateTime.now())) {
+            throw new BadRequestException("Account is temporarily locked due to failed login attempts.");
+        }
+
+        user.setFailedLoginAttempts(0);
+        user.setLockoutUntil(null);
+        userRepository.save(user);
+
+        auditService.logUserEvent(user, "USER_LOGIN_OTP_SUCCESS", "User", String.valueOf(user.getId()),
+                "Successful OTP authentication for user: " + user.getEmail());
+
+        String jwt = tokenProvider.generateTokenFromUserId(user.getId());
+        RefreshToken refreshToken = createRefreshToken(user);
+
+        return AuthResponse.builder()
+                .accessToken(jwt)
+                .refreshToken(refreshToken.getToken())
+                .user(mapUserToDto(user))
+                .build();
+    }
+
+    @Transactional
+    public boolean verifyEmailOtp(String target, String rawOtpCode) {
+        String normalizedTarget = target != null ? target.trim().toLowerCase() : "";
+        otpService.verifyOtp(normalizedTarget, rawOtpCode, OtpPurpose.EMAIL_VERIFICATION);
+
+        User user = (normalizedTarget.contains("@"))
+                ? userRepository.findByEmail(normalizedTarget).orElse(null)
+                : userRepository.findByPhone(normalizedTarget).orElse(null);
+
+        if (user != null) {
+            user.setEmailVerified(true);
+            userRepository.save(user);
+            auditService.logUserEvent(user, "USER_EMAIL_VERIFIED", "User", String.valueOf(user.getId()),
+                    "Email verified successfully via OTP: " + user.getEmail());
+        }
+
+        return true;
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            throw new BadRequestException("Email is required.");
+        }
+        if (request.getResetToken() == null || request.getResetToken().isBlank()) {
+            throw new BadRequestException("Reset token is required.");
+        }
+        if (request.getNewPassword() == null || request.getNewPassword().length() < 6) {
+            throw new BadRequestException("New password must be at least 6 characters long.");
+        }
+
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        OtpVerification verification = otpRepository.findByTargetAndResetToken(normalizedEmail, request.getResetToken())
+                .orElseThrow(() -> new BadRequestException("Invalid or expired password reset token. Please request a new OTP."));
+
+        if (verification.getResetTokenExpiry() == null || verification.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Password reset token has expired. Please request a new OTP.");
+        }
+
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new BadRequestException("User account not found."));
+
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        user.setFailedLoginAttempts(0);
+        user.setLockoutUntil(null);
+        userRepository.save(user);
+
+        // Consume single-use reset token
+        verification.setResetToken(null);
+        verification.setResetTokenExpiry(null);
+        otpRepository.save(verification);
+
+        auditService.logUserEvent(user, "USER_PASSWORD_RESET_SUCCESS", "User", String.valueOf(user.getId()),
+                "Password reset successfully via OTP reset authorization");
     }
 }

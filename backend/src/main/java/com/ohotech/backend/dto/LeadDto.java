@@ -35,6 +35,12 @@ public class LeadDto {
     private String campaign;
     private String medium;
     private String landingPage;
+    private String externalLeadId;
+    private String externalCampaignId;
+    private String externalAdSetId;
+    private String externalAdSet;
+    private String externalAdId;
+    private String externalAd;
     private String utmSource;
     private String utmMedium;
     private String utmCampaign;

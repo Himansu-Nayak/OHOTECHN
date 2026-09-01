@@ -158,4 +158,11 @@ export async function convertLeadApi(leadId: number, data?: import('./types').Co
   });
 }
 
+// Phase 5 Marketing Analytics API
+export async function getMarketingAnalyticsApi(): Promise<ApiResponse<import('./types').CrmMarketingAnalyticsDto>> {
+  return apiClient<import('./types').CrmMarketingAnalyticsDto>('/api/admin/crm/analytics/marketing', {
+    method: 'GET',
+  });
+}
+
 

@@ -6,9 +6,10 @@ import { Bell, CheckCircle2, AlertTriangle, Info, XCircle, Check, ArrowRight } f
 import { useAuth } from '@/context/AuthContext';
 import { getNotificationsApi, getUnreadNotificationCountApi, markNotificationAsReadApi, markAllNotificationsAsReadApi } from '@/api/notifications';
 import { NotificationDto } from '@/api/types';
+import { getAccessToken } from '@/api/client';
 
 export function NotificationBell() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [mounted, setMounted] = React.useState<boolean>(false);
 
   const [unreadCount, setUnreadCount] = React.useState<number>(0);
@@ -18,12 +19,14 @@ export function NotificationBell() {
 
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
+  const userId = user?.id;
+
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
   const fetchUnreadCount = React.useCallback(async () => {
-    if (!user) return;
+    if (!userId || !getAccessToken()) return;
     try {
       const res = await getUnreadNotificationCountApi();
       if (res.success && res.data) {
@@ -32,10 +35,15 @@ export function NotificationBell() {
     } catch {
       // Silent catch for background unread poll
     }
-  }, [user]);
+  }, [userId]);
+
+  const fetchUnreadCountRef = React.useRef(fetchUnreadCount);
+  React.useEffect(() => {
+    fetchUnreadCountRef.current = fetchUnreadCount;
+  }, [fetchUnreadCount]);
 
   const fetchRecentNotifications = React.useCallback(async () => {
-    if (!user) return;
+    if (!userId || !getAccessToken()) return;
     setLoading(true);
     try {
       const res = await getNotificationsApi(false, 0, 5);
@@ -47,13 +55,25 @@ export function NotificationBell() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [userId]);
 
+  // Stable polling lifecycle: Depends ONLY on mounted, authLoading, and userId
   React.useEffect(() => {
-    fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000);
+    if (!mounted || authLoading || !userId || !getAccessToken()) {
+      setUnreadCount(0);
+      return;
+    }
+
+    // Initial fetch once auth is ready and user is known
+    fetchUnreadCountRef.current();
+
+    // Poll every 45 seconds (reasonable interval)
+    const interval = setInterval(() => {
+      fetchUnreadCountRef.current();
+    }, 45000);
+
     return () => clearInterval(interval);
-  }, [fetchUnreadCount]);
+  }, [mounted, authLoading, userId]);
 
   React.useEffect(() => {
     if (isOpen) {

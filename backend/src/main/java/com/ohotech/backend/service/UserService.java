@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -25,6 +27,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
+    private final NotificationService notificationService;
+    private final EmailService emailService;
 
     public UserDto getProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -124,11 +129,64 @@ public class UserService {
         return mapToDto(saved);
     }
 
+    @Transactional
+    public UserDto assignOfficialEmailAdmin(Long userId, String officialEmail) {
+        if (officialEmail == null || officialEmail.trim().isEmpty()) {
+            throw new BadRequestException("Official email is required.");
+        }
+        String normalizedOfficialEmail = officialEmail.trim().toLowerCase();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        if (userRepository.existsByEmail(normalizedOfficialEmail)) {
+            throw new BadRequestException("Official email is already registered as a personal email on another account.");
+        }
+
+        if (userRepository.existsByOfficialEmail(normalizedOfficialEmail)) {
+            Optional<User> existingOwner = userRepository.findByOfficialEmail(normalizedOfficialEmail);
+            if (existingOwner.isPresent() && !existingOwner.get().getId().equals(userId)) {
+                throw new BadRequestException("Official email is already assigned to another user.");
+            }
+        }
+
+        String previousOfficialEmail = user.getOfficialEmail();
+        user.setOfficialEmail(normalizedOfficialEmail);
+        User savedUser = userRepository.save(user);
+
+        auditService.logUserEvent(savedUser, "ADMIN_ASSIGNED_OFFICIAL_EMAIL", "User", String.valueOf(savedUser.getId()),
+                "Admin assigned official email " + normalizedOfficialEmail + " (Previous: " + previousOfficialEmail + ")");
+
+        try {
+            notificationService.createNotification(
+                    savedUser.getId(),
+                    "Official Company Email Assigned",
+                    "Your official company email " + normalizedOfficialEmail + " has been assigned to your profile.",
+                    com.ohotech.backend.entity.NotificationType.INFO,
+                    com.ohotech.backend.entity.NotificationCategory.SYSTEM,
+                    "/profile"
+            );
+
+            if (savedUser.getEmail() != null) {
+                String htmlBody = "<p>Hello <strong>" + savedUser.getName() + "</strong>,</p>" +
+                        "<p>Your official company email address has been assigned to your OHO TECHN profile:</p>" +
+                        "<div style='font-family: monospace; font-size: 18px; font-weight: bold; color: #0284c7; margin: 15px 0;'>" + normalizedOfficialEmail + "</div>" +
+                        "<p>Your personal email (<strong>" + savedUser.getEmail() + "</strong>) remains your primary registration and login recovery email.</p>";
+                emailService.sendHtmlEmail(savedUser.getEmail(), "OHO TECHN - Official Email Assigned", htmlBody);
+            }
+        } catch (Exception e) {
+            log.warn("Non-blocking notification error during official email assignment: {}", e.getMessage());
+        }
+
+        return mapToDto(savedUser);
+    }
+
     public UserDto mapToDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .officialEmail(user.getOfficialEmail())
                 .phone(user.getPhone())
                 .role(user.getRole() != null ? user.getRole() : Role.ROLE_CUSTOMER)
                 .enabled(user.isEnabled())

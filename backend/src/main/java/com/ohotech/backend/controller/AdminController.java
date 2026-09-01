@@ -1,6 +1,7 @@
 package com.ohotech.backend.controller;
 
 import com.ohotech.backend.dto.ApiResponse;
+import com.ohotech.backend.dto.AssignOfficialEmailRequest;
 import com.ohotech.backend.dto.ProductDto;
 import com.ohotech.backend.dto.UserDto;
 import com.ohotech.backend.entity.*;
@@ -201,6 +202,17 @@ public class AdminController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(ApiResponse.error("Invalid role value: " + roleStr));
         }
+    }
+
+    // 8.5 Assign Official Company Email to User (Admin Only)
+    @PutMapping("/users/{id}/official-email")
+    public ResponseEntity<ApiResponse<UserDto>> assignOfficialEmail(
+            @PathVariable Long id,
+            @Valid @RequestBody AssignOfficialEmailRequest request) {
+
+        UserDto updatedUser = userService.assignOfficialEmailAdmin(id, request.getOfficialEmail());
+        log.info("Admin assigned official email {} to user #{}", request.getOfficialEmail(), id);
+        return ResponseEntity.ok(ApiResponse.success("Official email assigned successfully", updatedUser));
     }
 
     // 9. Get All Customer Quotes & Demo Enquiries

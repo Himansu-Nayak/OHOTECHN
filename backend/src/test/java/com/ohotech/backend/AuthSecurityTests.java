@@ -121,6 +121,7 @@ class AuthSecurityTests {
                 .passwordHash(passwordEncoder.encode(rawPassword))
                 .role(Role.ROLE_CUSTOMER)
                 .enabled(true)
+                .emailVerified(true)
                 .build();
         userRepository.save(user);
 

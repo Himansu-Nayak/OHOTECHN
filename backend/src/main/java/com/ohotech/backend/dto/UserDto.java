@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 public class UserDto {
     private Long id;
     private String name;
-    private String email;
+    private String email; // Primary Verified Personal Email
+    private String officialEmail; // Official Company Email
     private String phone;
     private Role role;
     private boolean enabled;

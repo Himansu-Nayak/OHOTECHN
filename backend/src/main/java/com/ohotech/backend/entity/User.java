@@ -21,7 +21,10 @@ public class User {
     private String name;
 
     @Column(unique = true)
-    private String email;
+    private String email; // Primary Verified Personal Email
+
+    @Column(name = "official_email", unique = true)
+    private String officialEmail; // Optional Official Company Email (e.g. john@ohotech.com)
 
     @Column(unique = true)
     private String phone;

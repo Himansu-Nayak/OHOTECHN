@@ -191,7 +191,7 @@ public class LeadService {
 
         String newVal = "Status: " + updated.getStatus() + ", Priority: " + updated.getPriority();
         auditService.logEvent("LEAD_UPDATED", "CRM_LEAD", updated.getId().toString(),
-                "Updated CRM Lead #" + updated.getId() + " (" + updated.getEmail() + ")");
+                "Updated CRM Lead #" + updated.getId() + " (" + updated.getEmail() + ") - Previous: [" + prevVal + "], New: [" + newVal + "]");
 
         return mapToDto(updated);
     }
@@ -264,6 +264,12 @@ public class LeadService {
                 .campaign(lead.getCampaign())
                 .medium(lead.getMedium())
                 .landingPage(lead.getLandingPage())
+                .externalLeadId(lead.getExternalLeadId())
+                .externalCampaignId(lead.getExternalCampaignId())
+                .externalAdSetId(lead.getExternalAdSetId())
+                .externalAdSet(lead.getExternalAdSet())
+                .externalAdId(lead.getExternalAdId())
+                .externalAd(lead.getExternalAd())
                 .utmSource(lead.getUtmSource())
                 .utmMedium(lead.getUtmMedium())
                 .utmCampaign(lead.getUtmCampaign())

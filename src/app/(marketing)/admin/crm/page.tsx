@@ -7,14 +7,15 @@ import {
   Plus, Edit3, Trash2, UserCheck, Eye, RefreshCw, X, Tag, DollarSign,
   Building, Phone, Mail, Clock, CheckCircle2, AlertCircle, ArrowRight,
   Kanban, List, CheckSquare, MessageSquare, PhoneCall, Send, Video, AlertTriangle,
-  User, CreditCard, ShoppingBag, ShieldCheck, Download, Activity, Link2, ExternalLink
+  User, CreditCard, ShoppingBag, ShieldCheck, Download, Activity, Link2, ExternalLink,
+  BarChart3, PieChart, TrendingUp, Globe, Target
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import {
   LeadDto, LeadStatus, LeadSource, LeadPriority, UserDto,
   LeadActivityDto, LeadFollowUpDto, PipelineStageDto, FollowUpDashboardDto,
-  ActivityType, FollowUpStatus, Customer360Dto, CustomerMatchResultDto
+  ActivityType, FollowUpStatus, Customer360Dto, CustomerMatchResultDto, CrmMarketingAnalyticsDto
 } from '@/api/types';
 import {
   getAdminLeadsApi, createAdminLeadApi, updateAdminLeadApi,
@@ -22,7 +23,7 @@ import {
   getPipelineBoardApi, getLeadActivitiesApi, createLeadActivityApi,
   getLeadFollowUpsApi, createLeadFollowUpApi, updateFollowUpApi,
   getFollowUpDashboardApi, getAdminCustomersApi, getCustomer360Api,
-  getCustomerMatchApi, linkCustomerApi, convertLeadApi
+  getCustomerMatchApi, linkCustomerApi, convertLeadApi, getMarketingAnalyticsApi
 } from '@/api/crm';
 import { getAdminUsersApi } from '@/api/users';
 import { getAdminAuditLogsApi } from '@/api/admin';
@@ -47,16 +48,34 @@ const PRIORITY_BADGES: Record<LeadPriority, { label: string; color: string }> = 
   URGENT: { label: 'URGENT', color: 'bg-rose-100 text-rose-800 border-rose-300 font-bold' },
 };
 
+const SOURCE_BADGES: Record<string, { label: string; color: string }> = {
+  FACEBOOK: { label: 'Facebook Ads', color: 'bg-blue-100 text-blue-900 border-blue-300' },
+  INSTAGRAM: { label: 'Instagram Ads', color: 'bg-pink-100 text-pink-900 border-pink-300' },
+  LINKEDIN: { label: 'LinkedIn Lead', color: 'bg-sky-100 text-sky-900 border-sky-300' },
+  GOOGLE_ADS: { label: 'Google Ads', color: 'bg-emerald-100 text-emerald-900 border-emerald-300' },
+  WEBSITE: { label: 'Website', color: 'bg-indigo-100 text-indigo-900 border-indigo-300' },
+  CONTACT_FORM: { label: 'Contact Form', color: 'bg-slate-100 text-slate-800 border-slate-300' },
+  QUOTE_REQUEST: { label: 'Quote Request', color: 'bg-amber-100 text-amber-800 border-amber-300' },
+  DEMO_REQUEST: { label: 'Demo Request', color: 'bg-purple-100 text-purple-800 border-purple-300' },
+  WEBSITE_PRODUCT: { label: 'Product Enquiry', color: 'bg-teal-100 text-teal-800 border-teal-300' },
+  WHATSAPP: { label: 'WhatsApp', color: 'bg-green-100 text-green-900 border-green-300' },
+  REFERRAL: { label: 'Referral', color: 'bg-violet-100 text-violet-900 border-violet-300' },
+  PARTNER: { label: 'Partner', color: 'bg-orange-100 text-orange-900 border-orange-300' },
+  MANUAL: { label: 'Manual Entry', color: 'bg-gray-100 text-gray-800 border-gray-300' },
+  OTHER: { label: 'Other', color: 'bg-gray-100 text-gray-800 border-gray-300' },
+};
+
 export default function AdminCrmLeadsPage() {
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  const [viewMode, setViewMode] = React.useState<'table' | 'pipeline' | 'followups' | 'customers'>('table');
+  const [viewMode, setViewMode] = React.useState<'table' | 'pipeline' | 'followups' | 'customers' | 'analytics'>('table');
 
   const [leads, setLeads] = React.useState<LeadDto[]>([]);
   const [pipelineStages, setPipelineStages] = React.useState<PipelineStageDto[]>([]);
   const [followUpDashboard, setFollowUpDashboard] = React.useState<FollowUpDashboardDto | null>(null);
   const [customers, setCustomers] = React.useState<UserDto[]>([]);
+  const [marketingAnalytics, setMarketingAnalytics] = React.useState<CrmMarketingAnalyticsDto | null>(null);
   const [usersList, setUsersList] = React.useState<UserDto[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
 
@@ -205,6 +224,20 @@ export default function AdminCrmLeadsPage() {
     }
   }, []);
 
+  const fetchMarketingAnalytics = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await getMarketingAnalyticsApi();
+      if (res.success && res.data) {
+        setMarketingAnalytics(res.data);
+      }
+    } catch (e) {
+      console.warn('Failed to load marketing analytics', e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const fetchUsers = React.useCallback(async () => {
     try {
       const res = await getAdminUsersApi(0, 100);
@@ -221,11 +254,9 @@ export default function AdminCrmLeadsPage() {
     if (viewMode === 'pipeline') fetchPipeline();
     if (viewMode === 'followups') fetchFollowUpDashboard();
     if (viewMode === 'customers') fetchCustomers();
-  }, [viewMode, fetchLeads, fetchPipeline, fetchFollowUpDashboard, fetchCustomers]);
-
-  React.useEffect(() => {
+    if (viewMode === 'analytics') fetchMarketingAnalytics();
     fetchUsers();
-  }, [fetchUsers]);
+  }, [viewMode, fetchLeads, fetchPipeline, fetchFollowUpDashboard, fetchCustomers, fetchMarketingAnalytics, fetchUsers]);
 
   // Lead Details Modal Data Fetcher
   const loadLeadDetailsData = React.useCallback(async (leadId: number) => {
@@ -586,6 +617,14 @@ export default function AdminCrmLeadsPage() {
               >
                 <UserCheck className="w-3.5 h-3.5 text-emerald-500" /> Customers 360°
               </button>
+              <button
+                onClick={() => setViewMode('analytics')}
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  viewMode === 'analytics' ? 'bg-[#0d0d0e] text-white' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <BarChart3 className="w-3.5 h-3.5 text-purple-500" /> Marketing Analytics
+              </button>
             </div>
 
             <button
@@ -635,13 +674,19 @@ export default function AdminCrmLeadsPage() {
                   >
                     <option value="ALL">All Sources</option>
                     <option value="WEBSITE">WEBSITE</option>
+                    <option value="FACEBOOK">FACEBOOK</option>
+                    <option value="INSTAGRAM">INSTAGRAM</option>
+                    <option value="LINKEDIN">LINKEDIN</option>
+                    <option value="GOOGLE_ADS">GOOGLE_ADS</option>
+                    <option value="WHATSAPP">WHATSAPP</option>
+                    <option value="REFERRAL">REFERRAL</option>
+                    <option value="PARTNER">PARTNER</option>
                     <option value="CONTACT_FORM">CONTACT_FORM</option>
                     <option value="QUOTE_REQUEST">QUOTE_REQUEST</option>
                     <option value="DEMO_REQUEST">DEMO_REQUEST</option>
                     <option value="WEBSITE_PRODUCT">WEBSITE_PRODUCT</option>
-                    <option value="FACEBOOK">FACEBOOK</option>
-                    <option value="GOOGLE_ADS">GOOGLE_ADS</option>
                     <option value="MANUAL">MANUAL</option>
+                    <option value="OTHER">OTHER</option>
                   </select>
                 </div>
 
@@ -959,6 +1004,82 @@ export default function AdminCrmLeadsPage() {
                 </table>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* VIEW 5: MARKETING ANALYTICS */}
+        {viewMode === 'analytics' && (
+          <div className="space-y-6 font-mono text-xs">
+            {!marketingAnalytics ? (
+              <div className="bg-white border-2 border-slate-300 rounded-[28px] p-12 text-center text-slate-400">
+                Loading Real Marketing Analytics...
+              </div>
+            ) : (
+              <>
+                {/* Summary Metric Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
+                    <span className="text-slate-400 font-bold block mb-1 uppercase text-[10px]">Total CRM Leads</span>
+                    <div className="text-3xl font-black text-[#0d0d0e]">{marketingAnalytics.totalLeads}</div>
+                  </div>
+                  <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
+                    <span className="text-blue-600 font-bold block mb-1 uppercase text-[10px]">Facebook / Instagram</span>
+                    <div className="text-3xl font-black text-blue-700">
+                      {(marketingAnalytics.leadsBySource['FACEBOOK'] || 0) + (marketingAnalytics.leadsBySource['INSTAGRAM'] || 0)}
+                    </div>
+                  </div>
+                  <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
+                    <span className="text-emerald-600 font-bold block mb-1 uppercase text-[10px]">Google Ads / Search</span>
+                    <div className="text-3xl font-black text-emerald-700">
+                      {marketingAnalytics.leadsBySource['GOOGLE_ADS'] || 0}
+                    </div>
+                  </div>
+                  <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
+                    <span className="text-sky-600 font-bold block mb-1 uppercase text-[10px]">LinkedIn Lead Gen</span>
+                    <div className="text-3xl font-black text-sky-700">
+                      {marketingAnalytics.leadsBySource['LINKEDIN'] || 0}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Leads & Revenue Breakdown by Source Table */}
+                <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
+                  <h3 className="text-sm font-black text-[#0d0d0e] mb-4 uppercase flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-purple-600" /> Real Lead Source Performance &amp; Revenue Attribution
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 uppercase font-bold text-[10px]">
+                          <th className="py-3 px-4">Lead Source</th>
+                          <th className="py-3 px-4">Total Ingested Leads</th>
+                          <th className="py-3 px-4">Conversion Rate (%)</th>
+                          <th className="py-3 px-4">Attributed E-Commerce Revenue</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium">
+                        {Object.entries(marketingAnalytics.leadsBySource).map(([src, count]) => {
+                          const rate = marketingAnalytics.conversionRateBySource[src] || 0;
+                          const rev = marketingAnalytics.revenueBySource[src] || 0;
+                          return (
+                            <tr key={src} className="hover:bg-slate-50">
+                              <td className="py-3 px-4 font-bold">
+                                <span className={`px-2 py-0.5 rounded-full border text-[10px] ${SOURCE_BADGES[src]?.color || 'bg-slate-100 text-slate-700 border-slate-300'}`}>
+                                  {SOURCE_BADGES[src]?.label || src}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 font-bold text-[#0d0d0e]">{count}</td>
+                              <td className="py-3 px-4 font-bold text-sky-700">{rate}%</td>
+                              <td className="py-3 px-4 font-bold text-emerald-700">₹{rev.toLocaleString('en-IN')}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 
