@@ -194,6 +194,43 @@
   .btn-studio:active {
     transform: translateY(0) scale(0.99);
   }
+
+  /* United Carriers Style Text Reveal Scrub */
+  .split-line-p {
+    --bg-progress: 0;
+    color: transparent;
+    background: linear-gradient(
+      90deg,
+      #ffffff 0%,
+      #ffffff 35%,
+      #10b981 45%,
+      rgba(255, 255, 255, 0.2) 55%,
+      rgba(255, 255, 255, 0.1) 100%
+    );
+    background-size: 350% 100%;
+    background-position-x: calc((100 - var(--bg-progress)) * 1%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    will-change: background-position;
+  }
+
+  .split-line-p-dark {
+    --bg-progress: 0;
+    color: transparent;
+    background: linear-gradient(
+      90deg,
+      #0d0d0e 0%,
+      #0d0d0e 35%,
+      #059669 45%,
+      rgba(13, 13, 14, 0.2) 55%,
+      rgba(13, 13, 14, 0.1) 100%
+    );
+    background-size: 350% 100%;
+    background-position-x: calc((100 - var(--bg-progress)) * 1%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    will-change: background-position;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

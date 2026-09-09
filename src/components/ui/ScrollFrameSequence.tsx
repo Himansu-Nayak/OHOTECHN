@@ -232,7 +232,8 @@ export function ScrollFrameSequence({
       {/* Pinned Viewport Container */}
       <div
         ref={pinTargetRef}
-        className="w-full h-screen relative flex flex-col justify-between overflow-hidden px-4 sm:px-8 lg:px-14 py-6 sm:py-8"
+        data-cursor="SCRUB 3D"
+        className="w-full h-screen relative flex flex-col justify-between overflow-hidden px-4 sm:px-8 lg:px-14 py-6 sm:py-8 cursor-grab active:cursor-grabbing"
       >
         {/* Subtle Ambient Background Gradients */}
         <div className="absolute inset-0 pointer-events-none">

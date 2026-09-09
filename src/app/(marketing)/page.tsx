@@ -32,6 +32,8 @@ import { ParallaxElement } from '@/components/animation/ParallaxElement';
 import { ScrollFrameSequence } from '@/components/ui/ScrollFrameSequence';
 import { Tilt3D } from '@/components/ui/Tilt3D';
 import { DotGlobe } from '@/components/ui/DotGlobe';
+import { MetricsTelemetryRibbon } from '@/components/home/MetricsTelemetryRibbon';
+import { HorizontalServicesShowcase } from '@/components/home/HorizontalServicesShowcase';
 
 export default function WideStudioPage() {
 
@@ -162,6 +164,20 @@ export default function WideStudioPage() {
           fileExtension="webp"
           pinHeight="250%"
         />
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          01.6 LIVE METRICS & TELEMETRY RIBBON
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+        <MetricsTelemetryRibbon />
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          01.7 HORIZONTAL PINNED SOFTWARE SHOWCASE (UNITED CARRIERS RHYTHM)
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+        <HorizontalServicesShowcase />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────

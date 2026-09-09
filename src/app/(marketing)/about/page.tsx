@@ -60,7 +60,7 @@ export default async function AboutPage() {
             </p>
 
             {/* Subtle Interactive Dot Globe Accent */}
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex justify-center" data-cursor="DRAG 3D">
               <DotGlobe size={260} className="rounded-full border border-white/10 bg-black/30 backdrop-blur-sm p-2 shadow-2xl" />
             </div>
           </ScrollReveal>

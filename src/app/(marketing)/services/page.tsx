@@ -135,11 +135,12 @@ function ServiceCard({ service }: { service: Service }) {
       <Link
         href={`/services/${service.slug}`}
         id={`service-card-${service.slug}`}
-        className="h-full group p-8 bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-3xl transition-all duration-300 flex flex-col justify-between hover:shadow-lg relative overflow-hidden"
+        data-cursor="EXPLORE"
+        className="h-full group p-8 bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-3xl transition-all duration-300 flex flex-col justify-between hover:shadow-xl relative overflow-hidden"
       >
         <div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300 text-2xl">
-            ⚙️
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300">
+            <DynamicIcon name={service.iconName} className="w-6 h-6 text-emerald-600" />
           </div>
           <h3 className="text-xl font-bold text-[#0d0d0e] mb-3 group-hover:text-emerald-600 transition-colors">{service.name}</h3>
           <p className="text-xs text-slate-600 leading-relaxed mb-6 line-clamp-3">{service.description}</p>
@@ -156,8 +157,8 @@ function ServiceCard({ service }: { service: Service }) {
           )}
         </div>
 
-        <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs font-bold text-slate-800 group-hover:text-emerald-600">
-          <span>Learn More</span>
+        <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs font-mono font-bold text-slate-800 group-hover:text-emerald-600">
+          <span>EXPLORE SPECIFICATIONS</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </div>
       </Link>
