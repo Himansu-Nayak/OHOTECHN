@@ -7,6 +7,7 @@ import { CartProvider } from '@/context/CartContext';
 import { SmoothScrollProvider } from './SmoothScrollProvider';
 import { MagneticCursor } from '@/components/ui/MagneticCursor';
 import { AwwwardsBadge } from '@/components/ui/AwwwardsBadge';
+import { SiteIntroLoader } from '@/components/ui/SiteIntroLoader';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         <CartProvider>
           <SmoothScrollProvider>
+            <SiteIntroLoader />
             <MagneticCursor />
             <AwwwardsBadge />
             {children}

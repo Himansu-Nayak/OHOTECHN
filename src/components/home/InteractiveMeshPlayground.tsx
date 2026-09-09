@@ -1,0 +1,201 @@
+'use client';
+
+import React, { useEffect, useRef } from 'react';
+import { Network, Sparkles, Zap } from 'lucide-react';
+
+interface NodePoint {
+  x: number;
+  y: number;
+  originX: number;
+  originY: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  color: string;
+  label?: string;
+}
+
+export function InteractiveMeshPlayground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = (canvas.width = canvas.parentElement?.offsetWidth || 1000);
+    let height = (canvas.height = 480);
+    let animId: number;
+
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+    const nodes: NodePoint[] = [];
+    const nodeCount = 38;
+    const colors = ['#10b981', '#06b6d4', '#3b82f6', '#ffffff'];
+
+    const labels = [
+      'EDGE_NODE',
+      'REDIS_CLUSTER',
+      'POSTGRES_PROD',
+      'NEURAL_CORE',
+      'API_GATEWAY',
+      'AUTH_SERVICE',
+      'VECTOR_INDEX',
+      'K8S_POD',
+      'NEXT_APP_ROUTER',
+    ];
+
+    for (let i = 0; i < nodeCount; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      nodes.push({
+        x,
+        y,
+        originX: x,
+        originY: y,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        radius: Math.random() > 0.8 ? 5 : 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        label: i < labels.length ? labels[i] : undefined,
+      });
+    }
+
+    let mouseX = -1000;
+    let mouseY = -1000;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    };
+
+    const handleMouseLeave = () => {
+      mouseX = -1000;
+      mouseY = -1000;
+    };
+
+    const handleResize = () => {
+      if (canvas.parentElement) {
+        width = canvas.width = canvas.parentElement.offsetWidth;
+        height = canvas.height = 480;
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Connect nodes with proximity lines
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < 130) {
+            const alpha = 1 - dist / 130;
+            ctx.strokeStyle = `rgba(16, 185, 129, ${alpha * 0.35})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Update and draw nodes
+      nodes.forEach((node) => {
+        if (!prefersReducedMotion) {
+          node.x += node.vx;
+          node.y += node.vy;
+
+          if (node.x < 0 || node.x > width) node.vx *= -1;
+          if (node.y < 0 || node.y > height) node.vy *= -1;
+
+          // Mouse repulsion physics
+          const mdx = node.x - mouseX;
+          const mdy = node.y - mouseY;
+          const mdist = Math.hypot(mdx, mdy);
+          if (mdist < 140) {
+            const force = (140 - mdist) / 140;
+            node.x += (mdx / mdist) * force * 4;
+            node.y += (mdy / mdist) * force * 4;
+          }
+        }
+
+        ctx.fillStyle = node.color;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (node.radius > 4) {
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius * 2.5, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        if (node.label) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.font = '10px monospace';
+          ctx.fillText(node.label, node.x + 8, node.y + 3);
+        }
+      });
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      cancelAnimationFrame(animId);
+    };
+  }, []);
+
+  return (
+    <section className="relative w-full bg-[#0a0c10] text-white py-16 px-4 sm:px-6 lg:px-8 border-y border-white/10 overflow-hidden">
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Network className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="font-mono text-xs font-bold text-white uppercase tracking-wider block">
+                SPATIAL CLOUD MESH // LIVE TOPOLOGY
+              </span>
+              <span className="text-[11px] font-mono text-neutral-400">
+                Move cursor across canvas to interact with active cluster nodes
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 font-mono text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>38 ACTIVE DATA NODES</span>
+          </div>
+        </div>
+
+        {/* Interactive Canvas Container */}
+        <div
+          data-cursor="INTERACT"
+          className="relative w-full h-[480px] rounded-[32px] bg-[#0f121a] border border-white/10 overflow-hidden shadow-2xl cursor-crosshair"
+        >
+          <canvas ref={canvasRef} className="w-full h-full block" />
+        </div>
+      </div>
+    </section>
+  );
+}

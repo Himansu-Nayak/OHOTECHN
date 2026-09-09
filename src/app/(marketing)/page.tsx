@@ -37,6 +37,8 @@ import { TechMarqueeStream } from '@/components/home/TechMarqueeStream';
 import { CaseStudiesShowcase } from '@/components/home/CaseStudiesShowcase';
 import { ClientTestimonialsCarousel } from '@/components/home/ClientTestimonialsCarousel';
 import { EnterpriseFAQSection } from '@/components/home/EnterpriseFAQSection';
+import { LiveTerminalShowcase } from '@/components/home/LiveTerminalShowcase';
+import { InteractiveMeshPlayground } from '@/components/home/InteractiveMeshPlayground';
 
 export default function WideStudioPage() {
 
@@ -198,9 +200,23 @@ export default function WideStudioPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
+          01.9 SPATIAL CLOUD MESH INTERACTIVE TOPOLOGY
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+        <InteractiveMeshPlayground />
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
           02. SECTION 1 — 5-PHASE SOFTWARE ENGINEERING ROADMAP
           ───────────────────────────────────────────────────────────── */}
       <ProcessSection />
+
+      {/* ─────────────────────────────────────────────────────────────
+          02.5 LIVE DEVELOPER & ARCHITECT TERMINAL CONSOLE
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+        <LiveTerminalShowcase />
+      </section>
 
       {/* ─────────────────────────────────────────────────────────────
           03. SECTION 2 — PARTNER / GROW TOGETHER
