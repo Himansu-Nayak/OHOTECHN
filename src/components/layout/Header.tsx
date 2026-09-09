@@ -3,12 +3,13 @@
 import * as React from 'react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, ShoppingBag, User, LogOut, Package } from 'lucide-react';
+import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, ShoppingBag, User, LogOut, Package, LayoutDashboard, Key, Download, Repeat, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { NotificationBell } from '../NotificationBell';
+import { FlippingText } from '@/components/ui/FlippingText';
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -51,7 +52,7 @@ export function Header() {
               priority
               quality={100}
               unoptimized
-              className="h-8 sm:h-10 lg:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-8 sm:h-10 lg:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
             />
           </Link>
 
@@ -413,28 +414,60 @@ export function Header() {
                     )}
 
                     <Link
-                      href="/profile"
+                      href="/dashboard"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
                     >
-                      <User className="w-4 h-4 text-sky-600" />
-                      My Profile
+                      <LayoutDashboard className="w-4 h-4 text-sky-600" />
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/my-products"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                    >
+                      <Package className="w-4 h-4 text-sky-600" />
+                      My Products
                     </Link>
                     <Link
                       href="/orders"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
                     >
-                      <Package className="w-4 h-4 text-sky-600" />
-                      My Orders
+                      <ShoppingBag className="w-4 h-4 text-sky-600" />
+                      Orders &amp; Invoices
                     </Link>
                     <Link
-                      href="/cart"
+                      href="/licenses"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
                     >
-                      <ShoppingBag className="w-4 h-4 text-sky-600" />
-                      Cart ({itemCount})
+                      <Key className="w-4 h-4 text-emerald-600" />
+                      License Keys
+                    </Link>
+                    <Link
+                      href="/downloads"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                    >
+                      <Download className="w-4 h-4 text-sky-600" />
+                      Downloads
+                    </Link>
+                    <Link
+                      href="/subscriptions"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                    >
+                      <Repeat className="w-4 h-4 text-purple-600" />
+                      Subscriptions
+                    </Link>
+                    <Link
+                      href="/profile"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                    >
+                      <User className="w-4 h-4 text-slate-600" />
+                      My Profile
                     </Link>
                     <button
                       onClick={() => {
@@ -455,30 +488,30 @@ export function Header() {
                   href="/login"
                   className="hidden sm:inline-flex px-3.5 py-1.5 rounded-full border border-slate-300 text-slate-800 hover:text-black hover:border-slate-400 font-extrabold text-xs tracking-tight transition-all"
                 >
-                  Login
+                  <FlippingText text="Login" />
                 </Link>
 
                 <Link
                   href="/register"
-                  className="hidden xl:inline-flex px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100"
+                  className="hidden xl:inline-flex px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-100 active:translate-y-0"
                 >
-                  Register
+                  <FlippingText text="Register" />
                 </Link>
               </>
             )}
 
             <Link
               href="/get-quote"
-              className="hidden xl:inline-flex px-3.5 py-1.5 sm:py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100 whitespace-nowrap"
+              className="hidden xl:inline-flex px-3.5 py-1.5 sm:py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-100 active:translate-y-0 whitespace-nowrap"
             >
-              Get a Quote
+              <FlippingText text="Get a Quote" />
             </Link>
 
             <Link
               href="/book-demo"
-              className="hidden sm:inline-flex px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all shadow-sm whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.99] whitespace-nowrap shrink-0"
             >
-              Book a Demo
+              <FlippingText text="Book a Demo" />
             </Link>
 
             {/* Mobile Menu Toggle Button */}
@@ -510,7 +543,11 @@ export function Header() {
                   unoptimized
                   className="h-10 sm:h-12 w-auto object-contain"
                 />
-                <button onClick={() => setIsMobileOpen(false)} className="p-1 text-slate-400 hover:text-[#0d0d0e]">
+                <button
+                  onClick={() => setIsMobileOpen(false)}
+                  className="p-2 text-slate-400 hover:text-[#0d0d0e] rounded-full hover:bg-slate-100 transition-colors"
+                  aria-label="Close navigation menu"
+                >
                   <X className="w-6 h-6" />
                 </button>
               </div>

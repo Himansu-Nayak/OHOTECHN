@@ -39,6 +39,8 @@ import { ClientTestimonialsCarousel } from '@/components/home/ClientTestimonials
 import { EnterpriseFAQSection } from '@/components/home/EnterpriseFAQSection';
 import { LiveTerminalShowcase } from '@/components/home/LiveTerminalShowcase';
 import { InteractiveMeshPlayground } from '@/components/home/InteractiveMeshPlayground';
+import { FlippingText } from '@/components/ui/FlippingText';
+import { SplitLineText } from '@/components/ui/SplitLineText';
 
 export default function WideStudioPage() {
 
@@ -134,17 +136,22 @@ export default function WideStudioPage() {
             <Link
               id="hero-get-quote"
               href="/get-quote"
-              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-lg hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.99] text-center"
+              data-cursor="START"
+              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-lg hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.99] text-center group"
             >
-              Get a Quote →
+              <span className="inline-flex items-center gap-1">
+                <FlippingText text="Get a Quote" />
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
             </Link>
 
             <Link
               id="hero-book-demo"
               href="/book-demo"
+              data-cursor="DEMO"
               className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#ebebe8] hover:bg-[#e2e2de] text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.99] text-center"
             >
-              Book a Demo
+              <FlippingText text="Book a Demo" />
             </Link>
           </div>
         </ScrollReveal>

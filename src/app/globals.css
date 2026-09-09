@@ -231,6 +231,50 @@
     background-clip: text;
     will-change: background-position;
   }
+
+  /* United Carriers Signature Flipping Text Roll */
+  [data-flipping-text] {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    line-height: 1.15;
+    vertical-align: bottom;
+  }
+  [data-flipping-text] span {
+    display: inline-block;
+    position: relative;
+    text-shadow: currentColor 0px 1.3em;
+    transform: translateY(0em) rotate(0.001deg);
+    transition: transform 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+  }
+  button:hover [data-flipping-text] span,
+  a:hover [data-flipping-text] span,
+  [data-flipping-text]:hover span {
+    transform: translateY(-1.3em) rotate(0.001deg);
+  }
+
+  /* Animated Underline Expansion */
+  .hover-un {
+    position: relative;
+    width: fit-content;
+    cursor: pointer;
+  }
+  .hover-un::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1.5px;
+    bottom: -2px;
+    left: 0;
+    background-color: currentColor;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.66, 0, 0.15, 1);
+  }
+  .hover-un:hover::before {
+    transform-origin: left;
+    transform: scaleX(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
