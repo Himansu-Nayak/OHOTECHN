@@ -122,13 +122,14 @@ export function FooterCurtain() {
           </div>
         </div>
 
-        {/* Massive Curtain Wordmark */}
+        {/* Massive Curtain Wordmark (Stacked 2-Line Architecture from Image 2) */}
         <div className="overflow-hidden py-4 text-center">
           <h2
             ref={textRef}
-            className="text-[14vw] sm:text-[15vw] lg:text-[16vw] font-black leading-[0.82] tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-600/30 uppercase will-change-transform"
+            className="text-[17vw] sm:text-[18vw] md:text-[20vw] font-black leading-[0.8] tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-600/30 uppercase will-change-transform select-none"
           >
-            OHO TECH
+            <span className="block">OHO</span>
+            <span className="block">TECH</span>
           </h2>
         </div>
       </div>
