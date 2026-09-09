@@ -161,7 +161,7 @@ export default function WideStudioPage() {
       {/* ─────────────────────────────────────────────────────────────
           01.5 3D CANVAS TURNTABLE SEQUENCE (SIGNATURE AWARDS MOMENT)
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[28px] sm:rounded-[44px] overflow-hidden border-2 border-slate-900 shadow-2xl">
+      <section id="experience" className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[28px] sm:rounded-[44px] overflow-hidden border-2 border-slate-900 shadow-2xl">
         <ScrollFrameSequence
           totalFrames={72}
           folderPath="/sequence/hero"
@@ -174,54 +174,56 @@ export default function WideStudioPage() {
       {/* ─────────────────────────────────────────────────────────────
           01.55 INFINITE TECH STACK MARQUEE
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[24px] sm:rounded-[36px] overflow-hidden shadow-xl">
+      <section id="tech-stack" className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[24px] sm:rounded-[36px] overflow-hidden shadow-xl">
         <TechMarqueeStream />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
           01.6 LIVE METRICS & TELEMETRY RIBBON
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+      <section id="metrics" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
         <MetricsTelemetryRibbon />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
           01.7 HORIZONTAL PINNED SOFTWARE SHOWCASE (UNITED CARRIERS RHYTHM)
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+      <section id="services" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
         <HorizontalServicesShowcase />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
           01.8 SELECTED ENTERPRISE CASE STUDIES
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+      <section id="case-studies" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
         <CaseStudiesShowcase />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
           01.9 SPATIAL CLOUD MESH INTERACTIVE TOPOLOGY
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+      <section id="topology" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
         <InteractiveMeshPlayground />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
           02. SECTION 1 — 5-PHASE SOFTWARE ENGINEERING ROADMAP
           ───────────────────────────────────────────────────────────── */}
-      <ProcessSection />
+      <div id="process">
+        <ProcessSection />
+      </div>
 
       {/* ─────────────────────────────────────────────────────────────
           02.5 LIVE DEVELOPER & ARCHITECT TERMINAL CONSOLE
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+      <section id="terminal" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
         <LiveTerminalShowcase />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
           03. SECTION 2 — PARTNER / GROW TOGETHER
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-12 lg:p-16 shadow-sm relative overflow-hidden" id="partner-with-us">
+      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-12 lg:p-16 shadow-sm relative overflow-hidden" id="partner">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
           
@@ -284,7 +286,7 @@ export default function WideStudioPage() {
       {/* ─────────────────────────────────────────────────────────────
           04. SECTION 3 — WHY OHO TECHN (COMPACT CAPABILITIES GRID)
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-12 lg:p-16 shadow-sm relative overflow-hidden" id="why-oho-tech">
+      <section id="why-us" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-12 lg:p-16 shadow-sm relative overflow-hidden">
         
         {/* Section Header — scroll reveal */}
         <ScrollReveal yOffset={25} duration={0.7}>
@@ -356,60 +358,62 @@ export default function WideStudioPage() {
       {/* ─────────────────────────────────────────────────────────────
           05. SECTION 4 — SERVICES & SOLUTIONS PREVIEW
           ───────────────────────────────────────────────────────────── */}
-      <StaggerReveal selector=":scope > div" stagger={0.12} yOffset={25} duration={0.7} className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        
-        {/* Core Services Preview */}
-        <div className="bg-white border-2 border-slate-300 rounded-[28px] p-5 sm:p-8 flex flex-col justify-between shadow-sm">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
-              <Code2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>CORE OFFERINGS</span>
+      <section id="solutions">
+        <StaggerReveal selector=":scope > div" stagger={0.12} yOffset={25} duration={0.7} className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          
+          {/* Core Services Preview */}
+          <div className="bg-white border-2 border-slate-300 rounded-[28px] p-5 sm:p-8 flex flex-col justify-between shadow-sm">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
+                <Code2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>CORE OFFERINGS</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-[#0d0d0e] tracking-tight mb-2">
+                Technology &amp; Digital Growth Services
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5 sm:mb-6">
+                From web platforms and mobile apps to API engines and growth marketing strategies tailored for operational scaling.
+              </p>
             </div>
-            <h3 className="text-xl sm:text-2xl font-black text-[#0d0d0e] tracking-tight mb-2">
-              Technology &amp; Digital Growth Services
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5 sm:mb-6">
-              From web platforms and mobile apps to API engines and growth marketing strategies tailored for operational scaling.
-            </p>
+            <Link
+              href="/services"
+              className="inline-flex items-center justify-between px-4 sm:px-5 py-3 rounded-xl bg-[#fafafa] hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-xs font-mono font-bold text-[#0d0d0e] hover:text-emerald-700 transition-all group"
+            >
+              <span>Explore All 15 Core Services</span>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+            </Link>
           </div>
-          <Link
-            href="/services"
-            className="inline-flex items-center justify-between px-4 sm:px-5 py-3 rounded-xl bg-[#fafafa] hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-xs font-mono font-bold text-[#0d0d0e] hover:text-emerald-700 transition-all group"
-          >
-            <span>Explore All 15 Core Services</span>
-            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </Link>
-        </div>
 
-        {/* Industry Solutions Preview */}
-        <div className="bg-white border-2 border-slate-300 rounded-[28px] p-5 sm:p-8 flex flex-col justify-between shadow-sm">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
-              <Layers className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-              <span>INDUSTRY VERTICALS</span>
+          {/* Industry Solutions Preview */}
+          <div className="bg-white border-2 border-slate-300 rounded-[28px] p-5 sm:p-8 flex flex-col justify-between shadow-sm">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
+                <Layers className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span>INDUSTRY VERTICALS</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-[#0d0d0e] tracking-tight mb-2">
+                Solutions by Industry
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5 sm:mb-6">
+                Tailored software ecosystems for Healthcare HMS, Education ERPs, Retail POS, Microfinance, Real Estate, and Fleet operations.
+              </p>
             </div>
-            <h3 className="text-xl sm:text-2xl font-black text-[#0d0d0e] tracking-tight mb-2">
-              Solutions by Industry
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5 sm:mb-6">
-              Tailored software ecosystems for Healthcare HMS, Education ERPs, Retail POS, Microfinance, Real Estate, and Fleet operations.
-            </p>
+            <Link
+              href="/solutions"
+              className="inline-flex items-center justify-between px-4 sm:px-5 py-3 rounded-xl bg-[#fafafa] hover:bg-sky-50 border border-slate-200 hover:border-sky-300 text-xs font-mono font-bold text-[#0d0d0e] hover:text-sky-700 transition-all group"
+            >
+              <span>View All Industry Solutions</span>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-sky-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+            </Link>
           </div>
-          <Link
-            href="/solutions"
-            className="inline-flex items-center justify-between px-4 sm:px-5 py-3 rounded-xl bg-[#fafafa] hover:bg-sky-50 border border-slate-200 hover:border-sky-300 text-xs font-mono font-bold text-[#0d0d0e] hover:text-sky-700 transition-all group"
-          >
-            <span>View All Industry Solutions</span>
-            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-sky-600 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </Link>
-        </div>
 
-      </StaggerReveal>
+        </StaggerReveal>
+      </section>
 
       {/* ─────────────────────────────────────────────────────────────
           06. SECTION 5 — TURNKEY PRODUCTS FAST ACCESS HUB
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16">
+      <section id="products" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16">
         <ScrollReveal yOffset={30} duration={0.75}>
           <div className="w-full p-5 sm:p-10 lg:p-12 rounded-[28px] sm:rounded-[36px] bg-[#0d0d0e] text-white border border-black shadow-xl relative flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-8 overflow-hidden">
             {/* Parallax decorative glow — moves slightly on scroll */}
@@ -444,14 +448,14 @@ export default function WideStudioPage() {
       {/* ─────────────────────────────────────────────────────────────
           05.5 EXECUTIVE TESTIMONIALS & REVIEWS
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+      <section id="testimonials" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
         <ClientTestimonialsCarousel />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
           05.6 ENTERPRISE TECHNICAL FAQ
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+      <section id="faq" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
         <EnterpriseFAQSection />
       </section>
 
@@ -553,7 +557,7 @@ export default function WideStudioPage() {
       {/* ─────────────────────────────────────────────────────────────
           08. SECTION 7 — FINAL CALL TO ACTION
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] p-5 sm:p-14 lg:p-16 text-center shadow-2xl relative overflow-hidden grid-pattern-dark" id="final-cta">
+      <section id="contact" className="max-w-[1536px] w-full mx-auto bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] p-5 sm:p-14 lg:p-16 text-center shadow-2xl relative overflow-hidden grid-pattern-dark">
         <ScrollReveal yOffset={24} duration={0.7}>
           <div className="relative z-10 max-w-2xl mx-auto">
             
