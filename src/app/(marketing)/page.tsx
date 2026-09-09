@@ -26,6 +26,12 @@ import {
 } from 'lucide-react';
 import { HeroLaunchBackground } from '@/components/ui/HeroLaunchBackground';
 import { ProcessSection } from '@/components/home/ProcessSection';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { StaggerReveal } from '@/components/animation/StaggerReveal';
+import { ParallaxElement } from '@/components/animation/ParallaxElement';
+import { ScrollFrameSequence } from '@/components/ui/ScrollFrameSequence';
+import { Tilt3D } from '@/components/ui/Tilt3D';
+import { DotGlobe } from '@/components/ui/DotGlobe';
 
 export default function WideStudioPage() {
 
@@ -93,46 +99,69 @@ export default function WideStudioPage() {
           ───────────────────────────────────────────────────────────── */}
       <section className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-10 bg-[#fafafa] border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] px-3.5 sm:px-6 py-6 sm:p-12 lg:p-16 shadow-sm pt-20 sm:pt-32 text-center relative overflow-hidden grid-pattern-light" id="hero">
         
-        {/* Category Pill */}
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#f0f0eb] border border-black/10 text-[#0d0d0e] font-mono text-[9.5px] sm:text-xs font-bold uppercase tracking-wider mb-4 sm:mb-5 shadow-xs max-w-full leading-tight">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-          <span>Software, Digital Solutions &amp; Business Growth</span>
-        </div>
+        {/* Category Pill — staggered entrance element 1 */}
+        <ScrollReveal yOffset={18} duration={0.6} delay={0.05}>
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#f0f0eb] border border-black/10 text-[#0d0d0e] font-mono text-[9.5px] sm:text-xs font-bold uppercase tracking-wider mb-4 sm:mb-5 shadow-xs max-w-full leading-tight">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span>Software, Digital Solutions &amp; Business Growth</span>
+          </div>
+        </ScrollReveal>
 
-        {/* Clear Headline */}
-        <h1 className="text-2xl sm:text-6xl lg:text-7xl font-black tracking-tight max-w-5xl mx-auto mb-4 sm:mb-5 text-[#0d0d0e] leading-tight sm:leading-[1.08]">
-          We build software, digital platforms and growth solutions for businesses.
-        </h1>
+        {/* Clear Headline — staggered entrance element 2 */}
+        <ScrollReveal yOffset={22} duration={0.7} delay={0.15}>
+          <h1 className="text-2xl sm:text-6xl lg:text-7xl font-black tracking-tight max-w-5xl mx-auto mb-4 sm:mb-5 text-[#0d0d0e] leading-tight sm:leading-[1.08]">
+            We build software, digital platforms and growth solutions for businesses.
+          </h1>
+        </ScrollReveal>
 
-        {/* Clear Subheadline */}
-        <p className="text-xs sm:text-lg lg:text-xl text-slate-600 font-normal max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed">
-          Custom software development, mobile applications, web platforms, and digital growth strategies tailored to your operational goals.
-        </p>
+        {/* Clear Subheadline — staggered entrance element 3 */}
+        <ScrollReveal yOffset={18} duration={0.65} delay={0.25}>
+          <p className="text-xs sm:text-lg lg:text-xl text-slate-600 font-normal max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed">
+            Custom software development, mobile applications, web platforms, and digital growth strategies tailored to your operational goals.
+          </p>
+        </ScrollReveal>
 
-        {/* Dual Primary CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-10 w-full max-w-md sm:max-w-none mx-auto">
-          <Link
-            id="hero-get-quote"
-            href="/get-quote"
-            className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105 text-center"
-          >
-            Get a Quote →
-          </Link>
+        {/* Dual Primary CTAs — staggered entrance element 4 */}
+        <ScrollReveal yOffset={12} duration={0.55} delay={0.35}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-10 w-full max-w-md sm:max-w-none mx-auto">
+            <Link
+              id="hero-get-quote"
+              href="/get-quote"
+              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-lg hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.99] text-center"
+            >
+              Get a Quote →
+            </Link>
 
-          <Link
-            id="hero-book-demo"
-            href="/book-demo"
-            className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#ebebe8] hover:bg-[#e2e2de] text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all hover:scale-105 text-center"
-          >
-            Book a Demo
-          </Link>
-        </div>
+            <Link
+              id="hero-book-demo"
+              href="/book-demo"
+              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-[#ebebe8] hover:bg-[#e2e2de] text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.99] text-center"
+            >
+              Book a Demo
+            </Link>
+          </div>
+        </ScrollReveal>
 
-        {/* Full Width Hero Artwork Container */}
-        <div className="w-full">
-          <HeroLaunchBackground />
-        </div>
+        {/* Full Width Hero Artwork Container — staggered entrance element 5 */}
+        <ScrollReveal yOffset={15} duration={0.7} delay={0.4}>
+          <Tilt3D maxTilt={6} scale={1.01} className="w-full">
+            <HeroLaunchBackground />
+          </Tilt3D>
+        </ScrollReveal>
 
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          01.5 3D CANVAS TURNTABLE SEQUENCE (SIGNATURE AWARDS MOMENT)
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[28px] sm:rounded-[44px] overflow-hidden border-2 border-slate-900 shadow-2xl">
+        <ScrollFrameSequence
+          totalFrames={72}
+          folderPath="/sequence/hero"
+          filePrefix="frame_"
+          fileExtension="webp"
+          pinHeight="250%"
+        />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -147,8 +176,8 @@ export default function WideStudioPage() {
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
           
-          {/* Left Column */}
-          <div className="lg:col-span-5">
+          {/* Left Column — scroll reveal */}
+          <ScrollReveal yOffset={30} duration={0.7} className="lg:col-span-5">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3">
               <Handshake className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
               <span>PARTNER ECOSYSTEM</span>
@@ -169,14 +198,14 @@ export default function WideStudioPage() {
               <span>Become a Partner</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-          </div>
+          </ScrollReveal>
 
           {/* Right Column: Dark Technical Console Card */}
           <div className="lg:col-span-7 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[24px] sm:rounded-[36px] p-4 sm:p-8 shadow-2xl relative overflow-hidden grid-pattern-dark">
             <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-            {/* 2 x 2 Partner Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 relative z-10">
+            {/* 2 x 2 Partner Cards Grid — clean staggered cascade */}
+            <StaggerReveal selector=":scope > div" stagger={0.08} yOffset={20} duration={0.6} className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 relative z-10">
               {partnerTypes.map((partner) => {
                 const IconComponent = partner.icon;
                 return (
@@ -196,7 +225,7 @@ export default function WideStudioPage() {
                   </div>
                 );
               })}
-            </div>
+            </StaggerReveal>
           </div>
 
         </div>
@@ -208,28 +237,30 @@ export default function WideStudioPage() {
           ───────────────────────────────────────────────────────────── */}
       <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-12 lg:p-16 shadow-sm relative overflow-hidden" id="why-oho-tech">
         
-        {/* Section Header */}
-        <div className="max-w-3xl mb-6 sm:mb-10 text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>WHY OHO TECHN</span>
+        {/* Section Header — scroll reveal */}
+        <ScrollReveal yOffset={25} duration={0.7}>
+          <div className="max-w-3xl mb-6 sm:mb-10 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>WHY OHO TECHN</span>
+            </div>
+
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#0d0d0e] tracking-tight leading-tight sm:leading-[1.08] mb-2 sm:mb-3">
+              Engineered for enterprise scale and long-term value.
+            </h2>
+
+            <p className="text-xs sm:text-base text-slate-600 font-normal leading-relaxed">
+              We combine modular software engineering with data-driven strategy to help companies operate efficiently and scale sustainably.
+            </p>
           </div>
-
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#0d0d0e] tracking-tight leading-tight sm:leading-[1.08] mb-2 sm:mb-3">
-            Engineered for enterprise scale and long-term value.
-          </h2>
-
-          <p className="text-xs sm:text-base text-slate-600 font-normal leading-relaxed">
-            We combine modular software engineering with data-driven strategy to help companies operate efficiently and scale sustainably.
-          </p>
-        </div>
+        </ScrollReveal>
 
         {/* Inner Dark Console Card */}
         <div className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[24px] sm:rounded-[36px] p-4 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          {/* 6 Compact Capability Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6 relative z-10">
+          {/* 6 Compact Capability Cards Grid — clean staggered cascade */}
+          <StaggerReveal selector=":scope > div" stagger={0.07} yOffset={20} duration={0.55} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6 relative z-10">
             {whyCapabilities.map((diff) => {
               const IconComponent = diff.icon;
               return (
@@ -258,7 +289,7 @@ export default function WideStudioPage() {
                 </div>
               );
             })}
-          </div>
+          </StaggerReveal>
 
           <div className="mt-6 sm:mt-8 pt-4 border-t border-white/10 flex justify-end">
             <Link
@@ -276,7 +307,7 @@ export default function WideStudioPage() {
       {/* ─────────────────────────────────────────────────────────────
           05. SECTION 4 — SERVICES & SOLUTIONS PREVIEW
           ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      <StaggerReveal selector=":scope > div" stagger={0.12} yOffset={25} duration={0.7} className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         
         {/* Core Services Preview */}
         <div className="bg-white border-2 border-slate-300 rounded-[28px] p-5 sm:p-8 flex flex-col justify-between shadow-sm">
@@ -324,36 +355,41 @@ export default function WideStudioPage() {
           </Link>
         </div>
 
-      </section>
+      </StaggerReveal>
 
       {/* ─────────────────────────────────────────────────────────────
           06. SECTION 5 — TURNKEY PRODUCTS FAST ACCESS HUB
           ───────────────────────────────────────────────────────────── */}
       <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16">
-        <div className="w-full p-5 sm:p-10 lg:p-12 rounded-[28px] sm:rounded-[36px] bg-[#0d0d0e] text-white border border-black shadow-xl relative flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-8 overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 flex-1 min-w-0 max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider mb-3.5">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>READY-TO-DEPLOY TURNKEY SOFTWARE</span>
+        <ScrollReveal yOffset={30} duration={0.75}>
+          <div className="w-full p-5 sm:p-10 lg:p-12 rounded-[28px] sm:rounded-[36px] bg-[#0d0d0e] text-white border border-black shadow-xl relative flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-8 overflow-hidden">
+            {/* Parallax decorative glow — moves slightly on scroll */}
+            <ParallaxElement yShift={-20} className="absolute top-0 right-0 w-96 h-96 pointer-events-none">
+              <div className="w-full h-full bg-emerald-500/10 rounded-full blur-3xl" />
+            </ParallaxElement>
+            <div className="relative z-10 flex-1 min-w-0 max-w-4xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider mb-3.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>READY-TO-DEPLOY TURNKEY SOFTWARE</span>
+              </div>
+              <h3 className="text-xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-2.5 sm:mb-3 leading-snug">
+                Test Drive Live Software Environments Right Now.
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
+                School Management, Hospital HMS, University ERP, HR &amp; Payroll, Gym POS, Pathology Lab, Real Estate Booking, Dental Clinic, Microfinance CRM &amp; more—complete with live demo URLs and instant access credentials.
+              </p>
             </div>
-            <h3 className="text-xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-2.5 sm:mb-3 leading-snug">
-              Test Drive Live Software Environments Right Now.
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
-              School Management, Hospital HMS, University ERP, HR &amp; Payroll, Gym POS, Pathology Lab, Real Estate Booking, Dental Clinic, Microfinance CRM &amp; more—complete with live demo URLs and instant access credentials.
-            </p>
+            <div className="relative z-10 shrink-0 w-full md:w-auto pt-2 md:pt-0">
+              <Link
+                href="/products"
+                className="w-full md:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105 inline-flex items-center justify-center gap-2 text-center whitespace-nowrap"
+              >
+                <span>Explore Products</span>
+                <ArrowRight className="w-4 h-4 shrink-0" />
+              </Link>
+            </div>
           </div>
-          <div className="relative z-10 shrink-0 w-full md:w-auto pt-2 md:pt-0">
-            <Link
-              href="/products"
-              className="w-full md:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:scale-105 inline-flex items-center justify-center gap-2 text-center whitespace-nowrap"
-            >
-              <span>Explore Products</span>
-              <ArrowRight className="w-4 h-4 shrink-0" />
-            </Link>
-          </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -362,81 +398,90 @@ export default function WideStudioPage() {
       <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-[#0d0d0e] text-white border border-black/20 rounded-[28px] sm:rounded-[44px] p-5 sm:p-12 lg:p-16 shadow-2xl relative overflow-hidden grid-pattern-dark" id="founder">
         
         {/* Glow Accents */}
-        <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <ParallaxElement yShift={-15} className="absolute -top-24 -right-24 w-80 h-80 pointer-events-none">
+          <div className="w-full h-full bg-emerald-500/10 rounded-full blur-3xl" />
+        </ParallaxElement>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3 sm:mb-4">
-            <User className="w-3.5 h-3.5 shrink-0" />
-            <span>FOUNDER LEADERSHIP</span>
-          </div>
+          {/* Pill + Heading + Subtext — staggered reveal */}
+          <ScrollReveal yOffset={25} duration={0.7}>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3 sm:mb-4">
+              <User className="w-3.5 h-3.5 shrink-0" />
+              <span>FOUNDER LEADERSHIP</span>
+            </div>
 
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight sm:leading-[1.1] mb-2 sm:mb-3">
-            Built by Founder Leadership &amp; Technical Precision
-          </h2>
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight sm:leading-[1.1] mb-2 sm:mb-3">
+              Built by Founder Leadership &amp; Technical Precision
+            </h2>
 
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mb-6 sm:mb-8 leading-relaxed">
-            Direct founder oversight powering custom software architecture, digital systems, and commercial growth.
-          </p>
+            <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mb-6 sm:mb-8 leading-relaxed">
+              Direct founder oversight powering custom software architecture, digital systems, and commercial growth.
+            </p>
+          </ScrollReveal>
 
-          {/* Prominent, Larger Single Founder Profile Card */}
-          <div className="max-w-2xl mx-auto bg-[#141416] border border-white/15 rounded-3xl p-5 sm:p-8 shadow-2xl hover:border-emerald-500/50 transition-all text-center sm:text-left flex flex-col sm:flex-row items-center gap-5 sm:gap-6 mb-6 sm:mb-8 group">
-            
-            {/* Larger Avatar Block */}
-            <div className="relative shrink-0">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-amber-400 p-1 shadow-2xl group-hover:scale-105 transition-transform duration-300">
-                <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
-                  <NextImage
-                    src="/japabandhu_kampa.jpeg"
-                    alt="Japabandhu Kampa - Founder & Director OHO TECH"
-                    width={200}
-                    height={200}
-                    className="w-full h-full object-cover object-top"
-                    priority
-                  />
+          {/* Prominent, Larger Single Founder Profile Card — scroll reveal */}
+          <ScrollReveal yOffset={30} duration={0.75} delay={0.15}>
+            <div className="max-w-2xl mx-auto bg-[#141416] border border-white/15 rounded-3xl p-5 sm:p-8 shadow-2xl hover:border-emerald-500/50 transition-all text-center sm:text-left flex flex-col sm:flex-row items-center gap-5 sm:gap-6 mb-6 sm:mb-8 group">
+              
+              {/* Larger Avatar Block */}
+              <div className="relative shrink-0">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-amber-400 p-1 shadow-2xl group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-full h-full rounded-full bg-[#0d0d0e] relative overflow-hidden border-2 border-[#0d0d0e]">
+                    <NextImage
+                      src="/japabandhu_kampa.jpeg"
+                      alt="Japabandhu Kampa - Founder & Director OHO TECH"
+                      width={200}
+                      height={200}
+                      className="w-full h-full object-cover object-top"
+                      priority
+                    />
+                  </div>
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0d0d0e] border border-emerald-400 flex items-center justify-center text-emerald-400 shadow-md">
+                  <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <div className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0d0d0e] border border-emerald-400 flex items-center justify-center text-emerald-400 shadow-md">
-                <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+
+              {/* Detailed Founder Bio */}
+              <div className="min-w-0 flex-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold uppercase tracking-wider mb-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Founder &amp; Managing Director</span>
+                </div>
+
+                <h3 className="text-xl sm:text-3xl font-black text-white tracking-tight">
+                  Japabandhu Kampa
+                </h3>
+
+                <p className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                  Founder &amp; Director, OHO TECH
+                </p>
+
+                <p className="text-xs sm:text-sm text-slate-300 mt-2 sm:mt-2.5 leading-relaxed">
+                  Architecting Custom Software Applications, Enterprise Business Systems &amp; Digital Growth Strategies tailored for operational scale.
+                </p>
+
+                <div className="mt-3 sm:mt-4 pt-3 border-t border-white/10 flex items-center justify-center sm:justify-start gap-3 text-xs text-slate-400 font-mono">
+                  <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                    Direct Founder Oversight
+                  </span>
+                </div>
               </div>
+
             </div>
+          </ScrollReveal>
 
-            {/* Detailed Founder Bio */}
-            <div className="min-w-0 flex-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold uppercase tracking-wider mb-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>Founder &amp; Managing Director</span>
-              </div>
-
-              <h3 className="text-xl sm:text-3xl font-black text-white tracking-tight">
-                Japabandhu Kampa
-              </h3>
-
-              <p className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
-                Founder &amp; Director, OHO TECH
-              </p>
-
-              <p className="text-xs sm:text-sm text-slate-300 mt-2 sm:mt-2.5 leading-relaxed">
-                Architecting Custom Software Applications, Enterprise Business Systems &amp; Digital Growth Strategies tailored for operational scale.
-              </p>
-
-              <div className="mt-3 sm:mt-4 pt-3 border-t border-white/10 flex items-center justify-center sm:justify-start gap-3 text-xs text-slate-400 font-mono">
-                <span className="flex items-center gap-1 text-emerald-400 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                  Direct Founder Oversight
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          <Link
-            href="/about"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg hover:scale-105 group text-center"
-          >
-            <span>Meet the Team &amp; Read Our Full Story</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
-          </Link>
+          <ScrollReveal yOffset={15} duration={0.6} delay={0.3}>
+            <Link
+              href="/about"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-lg hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.99] group text-center"
+            >
+              <span>Meet the Team &amp; Read Our Full Story</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
+            </Link>
+          </ScrollReveal>
 
         </div>
 
@@ -446,49 +491,51 @@ export default function WideStudioPage() {
           08. SECTION 7 — FINAL CALL TO ACTION
           ───────────────────────────────────────────────────────────── */}
       <section className="max-w-[1536px] w-full mx-auto bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] p-5 sm:p-14 lg:p-16 text-center shadow-2xl relative overflow-hidden grid-pattern-dark" id="final-cta">
-        <div className="relative z-10 max-w-2xl mx-auto">
-          
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3.5 sm:mb-4">
-            <Sparkles className="w-3.5 h-3.5 shrink-0" />
-            <span>READY TO BUILD?</span>
+        <ScrollReveal yOffset={24} duration={0.7}>
+          <div className="relative z-10 max-w-2xl mx-auto">
+            
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3.5 sm:mb-4">
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+              <span>READY TO BUILD?</span>
+            </div>
+
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-2 sm:mb-3 leading-tight">
+              Have a software idea or need a ready solution?
+            </h2>
+
+            <p className="text-xs sm:text-base text-slate-300 mb-6 sm:mb-8 leading-relaxed">
+              Tell us what you need. We&apos;ll help you choose the right path.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full">
+              <Link
+                href="/get-quote"
+                className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-white hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.99] text-center"
+              >
+                Get a Quote →
+              </Link>
+
+              <Link
+                href="/products"
+                className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.99] text-center"
+              >
+                Explore Products
+              </Link>
+
+              <Link
+                href="/book-demo"
+                className="w-full sm:w-auto px-7 py-3.5 sm:py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 border border-white/20 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.99] text-center"
+              >
+                Book a Demo
+              </Link>
+            </div>
+
+            <p className="text-[10px] sm:text-[11px] font-mono text-slate-500 mt-8 sm:mt-10">
+              © {new Date().getFullYear()} OHO TECH. Software Engineering &amp; Turnkey Digital Solutions.
+            </p>
+
           </div>
-
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-2 sm:mb-3 leading-tight">
-            Have a software idea or need a ready solution?
-          </h2>
-
-          <p className="text-xs sm:text-base text-slate-300 mb-6 sm:mb-8 leading-relaxed">
-            Tell us what you need. We&apos;ll help you choose the right path.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full">
-            <Link
-              href="/get-quote"
-              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-white hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md hover:scale-105 text-center"
-            >
-              Get a Quote →
-            </Link>
-
-            <Link
-              href="/products"
-              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md hover:scale-105 text-center"
-            >
-              Explore Products
-            </Link>
-
-            <Link
-              href="/book-demo"
-              className="w-full sm:w-auto px-7 py-3.5 sm:py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all border border-white/20 hover:scale-105 text-center"
-            >
-              Book a Demo
-            </Link>
-          </div>
-
-          <p className="text-[10px] sm:text-[11px] font-mono text-slate-500 mt-8 sm:mt-10">
-            © {new Date().getFullYear()} OHO TECH. Software Engineering &amp; Turnkey Digital Solutions.
-          </p>
-
-        </div>
+        </ScrollReveal>
       </section>
 
     </div>

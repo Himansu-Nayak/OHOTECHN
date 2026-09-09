@@ -43,7 +43,6 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
     color-scheme: light;
   }
   body {
@@ -112,15 +111,17 @@
     background: #ffffff;
     border-radius: 24px;
     border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.04), 0 2px 6px -2px rgba(0, 0, 0, 0.02);
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
   }
   .launch-card:hover {
-    transform: translateY(-6px) scale(1.008);
-    border-color: rgba(0, 0, 0, 0.22);
-    box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.12), 0 8px 24px -6px rgba(0, 0, 0, 0.06);
+    transform: translateY(-3px);
+    border-color: rgba(0, 0, 0, 0.18);
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
   }
 
   /* Glassmorphic Pills & Badges */
@@ -144,5 +145,67 @@
     border: 1px solid rgba(0, 0, 0, 0.09);
     border-radius: 36px;
     box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Subtle Ambient Decorative Glow */
+  @keyframes ambientGlow {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.12;
+    }
+    50% {
+      transform: scale(1.08) translate3d(4px, -4px, 0);
+      opacity: 0.18;
+    }
+  }
+
+  .ambient-glow {
+    animation: ambientGlow 8s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  /* 3D Perspective & Transform Utilities */
+  .perspective-1000 {
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+  }
+  .perspective-2000 {
+    perspective: 2000px;
+    -webkit-perspective: 2000px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Studio Button Micro-interaction */
+  .btn-studio {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.2s ease;
+  }
+  .btn-studio:hover {
+    transform: translateY(-1.5px);
+  }
+  .btn-studio:active {
+    transform: translateY(0) scale(0.99);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ambient-glow {
+    animation: none !important;
   }
 }

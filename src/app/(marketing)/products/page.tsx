@@ -3,76 +3,50 @@
 import * as React from 'react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { ArrowRight, Check, Copy, ExternalLink, Key, Search, ShieldCheck, Sparkles, MonitorPlay, ShoppingBag, Loader2, AlertCircle, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { 
+  ArrowRight, 
+  Check, 
+  Copy, 
+  ExternalLink, 
+  Key, 
+  Search, 
+  ShieldCheck, 
+  Sparkles, 
+  MonitorPlay, 
+  ShoppingBag, 
+  Loader2, 
+  AlertCircle, 
+  ChevronLeft, 
+  ChevronRight, 
+  Eye,
+  RefreshCw,
+  Monitor,
+  Laptop,
+  Smartphone,
+  Globe
+} from 'lucide-react';
 import { softwareDemos } from '@/config/demos';
 import { cn } from '@/lib/utils';
-import { getProductsApi } from '@/api/products';
+import { getProductsApi, getCategoriesApi } from '@/api/products';
 import { ProductDto } from '@/api/types';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { ProductQuickViewModal, isValidLiveDemoUrl } from '@/components/products/ProductQuickViewModal';
 import { Product } from '@/config/industries';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { Tilt3D } from '@/components/ui/Tilt3D';
+
+interface CategoryOption {
+  id: string | number;
+  label: string;
+}
 
 export default function ProductsCatalogPage() {
   const { addToCart, loading: cartLoading } = useCart();
   const { showToast } = useToast();
 
   const [products, setProducts] = React.useState<ProductDto[]>([]);
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [error, setError] = React.useState<string | null>(null);
-  
-  // Pagination & Search
-  const [page, setPage] = React.useState<number>(0);
-  const [totalPages, setTotalPages] = React.useState<number>(0);
-  const [totalElements, setTotalElements] = React.useState<number>(0);
-  const [searchQuery, setSearchQuery] = React.useState<string>('');
-  const [debouncedSearch, setDebouncedSearch] = React.useState<string>('');
-  const [selectedCategory, setSelectedCategory] = React.useState<string>('all');
-  
-  // Quick View Modal state
-  const [activeQuickViewProduct, setActiveQuickViewProduct] = React.useState<Product | null>(null);
-  const [activeQuickViewCategory, setActiveQuickViewCategory] = React.useState<string>('software');
-
-  // Debounce search input
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-      setPage(0);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  // Fetch backend products
-  const fetchProducts = React.useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await getProductsApi(page, 9, debouncedSearch);
-      if (res.success && res.data && res.data.content && res.data.content.length > 0) {
-        setProducts(res.data.content);
-        setTotalPages(res.data.totalPages || 0);
-        setTotalElements(res.data.totalElements || 0);
-      } else {
-        // Fallback default products
-        setProducts(getFallbackProducts());
-        setTotalPages(1);
-        setTotalElements(28);
-      }
-    } catch (err: any) {
-      console.warn('Backend products fetch failed, rendering turnkey fallback product catalog:', err?.message);
-      setProducts(getFallbackProducts());
-      setTotalPages(1);
-      setTotalElements(28);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, debouncedSearch]);
-
-  React.useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
-  const categories = [
+  const [categories, setCategories] = React.useState<CategoryOption[]>([
     { id: 'all', label: 'All Categories' },
     { id: 'education', label: 'Education' },
     { id: 'healthcare', label: 'Healthcare' },
@@ -80,7 +54,113 @@ export default function ProductsCatalogPage() {
     { id: 'retail', label: 'Retail & POS' },
     { id: 'ecommerce', label: 'E-Commerce' },
     { id: 'services', label: 'Services & Booking' },
-  ];
+  ]);
+  const [selectedCategory, setSelectedCategory] = React.useState<string | number>('all');
+
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
+  
+  // Pagination & Search
+  const [page, setPage] = React.useState<number>(0);
+  const [pageSize] = React.useState<number>(9);
+  const [totalPages, setTotalPages] = React.useState<number>(0);
+  const [totalElements, setTotalElements] = React.useState<number>(0);
+  const [searchQuery, setSearchQuery] = React.useState<string>('');
+  const [debouncedSearch, setDebouncedSearch] = React.useState<string>('');
+  
+  // Quick View Modal state
+  const [activeQuickViewProduct, setActiveQuickViewProduct] = React.useState<Product | null>(null);
+  const [activeQuickViewCategory, setActiveQuickViewCategory] = React.useState<string>('software');
+
+  // Load backend categories on mount
+  React.useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await getCategoriesApi();
+        if (res.success && res.data && res.data.length > 0) {
+          const mapped: CategoryOption[] = [
+            { id: 'all', label: 'All Categories' },
+            ...res.data.map((c: any) => ({
+              id: c.id,
+              label: c.name || `Category ${c.id}`
+            }))
+          ];
+          setCategories(mapped);
+        }
+      } catch {
+        // Fallback to static category options
+      }
+    }
+    fetchCategories();
+  }, []);
+
+  // Debounce search input
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(0);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Fetch backend products with search & category filters
+  const fetchProducts = React.useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const categoryParam = selectedCategory !== 'all' && typeof selectedCategory === 'number' 
+        ? selectedCategory 
+        : undefined;
+
+      const res = await getProductsApi(page, pageSize, debouncedSearch, categoryParam);
+      
+      if (res.success && res.data && res.data.content) {
+        let list = res.data.content;
+        
+        // Filter by text-based category if selectedCategory is string (e.g. 'education')
+        if (selectedCategory !== 'all' && typeof selectedCategory === 'string') {
+          list = list.filter((p) => {
+            const cat = (p.categoryName || p.serviceType || '').toLowerCase();
+            return cat.includes(selectedCategory.toLowerCase());
+          });
+        }
+
+        setProducts(list);
+        setTotalPages(res.data.totalPages || 1);
+        setTotalElements(res.data.totalElements || list.length);
+      } else {
+        // Fallback default products
+        const fallback = getFallbackProducts();
+        let filtered = fallback;
+        if (debouncedSearch) {
+          filtered = filtered.filter(p => 
+            p.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
+            p.description.toLowerCase().includes(debouncedSearch.toLowerCase())
+          );
+        }
+        if (selectedCategory !== 'all') {
+          filtered = filtered.filter(p => 
+            (p.serviceType || '').toLowerCase().includes(String(selectedCategory).toLowerCase())
+          );
+        }
+        setProducts(filtered);
+        setTotalPages(1);
+        setTotalElements(filtered.length);
+      }
+    } catch (err: any) {
+      console.warn('Backend products fetch warning, using fallback catalog:', err?.message);
+      const fallback = getFallbackProducts();
+      setProducts(fallback);
+      setTotalPages(1);
+      setTotalElements(fallback.length);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, pageSize, debouncedSearch, selectedCategory]);
+
+  React.useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const handleAddToCart = async (productId: number) => {
     await addToCart(productId, 1);
@@ -107,7 +187,10 @@ export default function ProductsCatalogPage() {
   };
 
   const openQuickView = (productDto: ProductDto) => {
-    const matchedDemo = softwareDemos.find((d) => d.title.toLowerCase().includes(productDto.name.toLowerCase()) || productDto.name.toLowerCase().includes(d.title.toLowerCase()));
+    const matchedDemo = softwareDemos.find((d) => 
+      d.title.toLowerCase().includes(productDto.name.toLowerCase()) || 
+      productDto.name.toLowerCase().includes(d.title.toLowerCase())
+    );
     
     const rawDemoUrl = matchedDemo?.mainDemoUrl || matchedDemo?.frontendUrl || matchedDemo?.accounts?.[0]?.url;
     const validDemoUrl = isValidLiveDemoUrl(rawDemoUrl) ? rawDemoUrl : undefined;
@@ -118,7 +201,12 @@ export default function ProductsCatalogPage() {
       slug: matchedDemo?.slug || productDto.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       shortDescription: productDto.description || 'Enterprise-ready turnkey software module.',
       demoUrl: validDemoUrl,
-      features: matchedDemo?.features || ['Admin & User Role Portals', 'Automated Database Workflows', 'RESTful API Integration', '24/7 SLA Support'],
+      features: matchedDemo?.features || [
+        'Admin & User Role Portals',
+        'Automated Database Workflows',
+        'RESTful API Integration',
+        '24/7 SLA Support'
+      ],
       adminCredentials: {
         email: matchedDemo?.accounts?.[0]?.email || 'admin@demo.ohotech.com',
         password: matchedDemo?.accounts?.[0]?.password || 'Admin@12345',
@@ -134,54 +222,58 @@ export default function ProductsCatalogPage() {
       <main className="max-w-[1536px] w-full mx-auto" id="products-catalog-main">
         
         {/* Header Hero Section */}
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="products-hero">
-          <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              TURNKEY SOFTWARE PRODUCTS &amp; ENTERPRISE SOLUTIONS ⚡
-            </div>
-            
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-[1.08]">
-              Software Products &amp; Live Solution Catalog
-            </h1>
-            
-            <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal max-w-3xl mx-auto leading-relaxed">
-              Explore turnkey cloud applications, ERP systems, and enterprise software solutions backed by live API integrations and custom deployment support.
-            </p>
-          </div>
-        </section>
-
-        {/* 3-Step Buyer Journey Banner */}
-        <section className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 mb-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-            <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-2">
-                <Sparkles className="w-3.5 h-3.5" />
-                HOW PURCHASING WORKS AT OHO TECH
+        <ScrollReveal yOffset={25} duration={0.75}>
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-16 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="products-hero">
+            <div className="max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                TURNKEY SOFTWARE PRODUCTS &amp; ENTERPRISE SOLUTIONS ⚡
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Evaluate First. Pay Only When Fully Satisfied.
-              </h3>
-              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-                We provide full admin test-drive access before any payment so you can verify every feature first.
+              
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#0d0d0e] mb-6 leading-[1.08]">
+                Software Products &amp; Solution Catalog
+              </h1>
+              
+              <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal max-w-3xl mx-auto leading-relaxed">
+                Explore turnkey cloud applications, ERP systems, and enterprise software solutions with instant license provisioning and production deployment SLA.
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono shrink-0 max-w-2xl">
-              <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
-                <span className="text-emerald-400 font-extrabold block mb-1">1. Test-Drive</span>
-                <p className="text-[11px] text-slate-300">Click "Quick View" to copy 1-click admin credentials and test live demo.</p>
+          </section>
+        </ScrollReveal>
+
+        {/* 3-Step Buyer Journey Banner */}
+        <ScrollReveal yOffset={20} duration={0.65}>
+          <section className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 mb-10 shadow-2xl relative overflow-hidden grid-pattern-dark">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+              <div className="max-w-xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-2">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  TRANSPARENT SOFTWARE PROCUREMENT
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  Evaluate First. Pay Only When Fully Satisfied.
+                </h3>
+                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                  We provide full admin test-drive access before any purchase so you can verify features against your exact requirements.
+                </p>
               </div>
-              <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
-                <span className="text-emerald-400 font-extrabold block mb-1">2. Review</span>
-                <p className="text-[11px] text-slate-300">Explore admin panels &amp; workflows to confirm exact suitability.</p>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
-                <span className="text-emerald-400 font-extrabold block mb-1">3. Purchase</span>
-                <p className="text-[11px] text-slate-300">Pay to receive full source code &amp; production deployment SLA.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono shrink-0 max-w-2xl">
+                <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
+                  <span className="text-emerald-400 font-extrabold block mb-1">1. Test-Drive</span>
+                  <p className="text-[11px] text-slate-300">Click &quot;Quick View&quot; to copy 1-click admin credentials and test live demo.</p>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
+                  <span className="text-emerald-400 font-extrabold block mb-1">2. Select Plan</span>
+                  <p className="text-[11px] text-slate-300">Choose from Monthly, Annual, or Lifetime perpetual licenses.</p>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/10">
+                  <span className="text-emerald-400 font-extrabold block mb-1">3. Instant Access</span>
+                  <p className="text-[11px] text-slate-300">Receive cryptographic license keys and digital installer packages.</p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </ScrollReveal>
 
         {/* Search & Filter Section */}
         <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-8 shadow-sm mb-10" id="products-filter-section">
@@ -204,9 +296,12 @@ export default function ProductsCatalogPage() {
               {categories.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    setPage(0);
+                  }}
                   className={cn(
-                    "px-4 py-2 rounded-full text-xs font-mono font-bold whitespace-nowrap transition-all border-2",
+                    "px-4 py-2 rounded-full text-xs font-mono font-bold whitespace-nowrap transition-all border-2 cursor-pointer",
                     selectedCategory === cat.id
                       ? "bg-[#0d0d0e] text-white border-[#0d0d0e] shadow-sm"
                       : "bg-[#fafafa] text-slate-700 border-slate-200 hover:border-slate-400"
@@ -220,15 +315,41 @@ export default function ProductsCatalogPage() {
 
           <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-slate-500">
             <span>
-              {loading ? 'Loading catalog...' : `Displaying ${products.length} of ${totalElements} Cloud Products`}
+              {loading ? 'Loading catalog...' : `Displaying ${products.length} of ${totalElements} Available Products`}
             </span>
-            <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Production SLA &amp; 1-Click Demo Ready
-            </span>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => fetchProducts()}
+                className="flex items-center gap-1 text-slate-600 hover:text-black font-bold cursor-pointer"
+                title="Refresh products"
+              >
+                <RefreshCw className={cn('w-3.5 h-3.5', loading && 'animate-spin')} />
+                <span>Refresh</span>
+              </button>
+              <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                Authoritative Server Licensing
+              </span>
+            </div>
           </div>
 
         </section>
+
+        {/* Error State */}
+        {error && (
+          <div className="mb-8 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <span>{error}</span>
+            </div>
+            <button
+              onClick={() => fetchProducts()}
+              className="px-3 py-1 rounded-xl bg-rose-600 text-white font-mono font-bold text-[11px] hover:bg-rose-700 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {/* Loading Skeletons */}
         {loading ? (
@@ -238,19 +359,38 @@ export default function ProductsCatalogPage() {
                 key={idx}
                 className="bg-white border-2 border-slate-200 rounded-[32px] p-7 animate-pulse space-y-4"
               >
-                <div className="h-44 bg-slate-100 rounded-2xl w-full" />
+                <div className="h-48 bg-slate-100 rounded-2xl w-full" />
                 <div className="h-6 bg-slate-100 rounded-lg w-3/4" />
                 <div className="h-4 bg-slate-100 rounded-lg w-full" />
                 <div className="h-16 bg-slate-50 rounded-2xl border border-slate-100" />
               </div>
             ))}
           </div>
+        ) : products.length === 0 ? (
+          /* Empty State */
+          <div className="bg-white border-2 border-slate-300 rounded-[32px] p-12 text-center my-8 shadow-sm">
+            <ShoppingBag className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-2">No Products Match Your Filter</h3>
+            <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
+              Try searching with different keywords or switch back to "All Categories" to view the complete catalog.
+            </p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('all');
+                setPage(0);
+              }}
+              className="px-6 py-2.5 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider hover:bg-sky-600 transition-colors"
+            >
+              Clear Filters
+            </button>
+          </div>
         ) : (
           /* Products Grid */
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-10 lg:p-14 shadow-sm" id="products-grid-section">
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-10 lg:p-12 shadow-sm" id="products-grid-section">
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.map((product) => {
+              {products.map((product, pIdx) => {
                 const priceFormatted = new Intl.NumberFormat('en-IN', {
                   style: 'currency',
                   currency: 'INR',
@@ -259,99 +399,109 @@ export default function ProductsCatalogPage() {
                 const prodImg = getProductImage(product);
 
                 return (
-                  <div
-                    key={product.id}
-                    className="bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-[32px] p-6 transition-all duration-300 flex flex-col justify-between hover:shadow-2xl relative overflow-hidden group"
-                  >
-                    <div>
-                      {/* Product Header Image Visual Card */}
-                      <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-5 bg-[#0d0d0e]">
-                        <NextImage
-                          src={prodImg}
-                          alt={product.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0e]/90 via-[#0d0d0e]/30 to-transparent pointer-events-none" />
-
-                        {/* Top Badges Overlaid on Image */}
-                        <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                          <span className="text-[10px] font-mono font-extrabold px-3 py-1 rounded-full bg-[#0d0d0e]/80 text-emerald-400 border border-emerald-500/40 backdrop-blur-md uppercase tracking-wider shadow-sm">
-                            {product.serviceType || product.categoryName || 'Software Module'}
-                          </span>
-                          <span className="text-[10px] font-mono text-white/80 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
-                            #PROD-0{product.id}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Title */}
-                      <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-2 leading-tight group-hover:text-emerald-700 transition-colors">
-                        {product.name}
-                      </h3>
-
-                      {/* Description */}
-                      <p className="text-xs text-slate-600 leading-relaxed mb-5 line-clamp-3">
-                        {product.description}
-                      </p>
-
-                      {/* Price & Stock Badge */}
-                      <div className="mb-6 p-4 rounded-2xl bg-white border border-slate-200 flex items-center justify-between shadow-xs">
+                  <ScrollReveal key={product.id} delay={(pIdx % 3) * 0.08} yOffset={24} duration={0.6}>
+                    <Tilt3D maxTilt={4} scale={1.01} className="h-full">
+                      <div className="h-full bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-[32px] p-6 transition-all duration-300 flex flex-col justify-between hover:shadow-2xl relative overflow-hidden group">
                         <div>
-                          <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Starting Price</div>
-                          <div className="text-lg font-black text-[#0d0d0e]">{priceFormatted}</div>
+                          {/* Product Header Image Visual Card */}
+                          <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-5 bg-[#0d0d0e]">
+                            <NextImage
+                              src={prodImg}
+                              alt={product.name}
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0e]/90 via-[#0d0d0e]/30 to-transparent pointer-events-none" />
+
+                            {/* Top Badges Overlaid on Image */}
+                            <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
+                              <span className="text-[10px] font-mono font-extrabold px-3 py-1 rounded-full bg-[#0d0d0e]/80 text-emerald-400 border border-emerald-500/40 backdrop-blur-md uppercase tracking-wider shadow-sm">
+                                {product.serviceType || product.categoryName || 'Turnkey Solution'}
+                              </span>
+                              <span className="text-[10px] font-mono text-white/80 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
+                                #PROD-0{product.id}
+                              </span>
+                            </div>
+
+                            {/* Platform Support Indicators Overlaid */}
+                            <div className="absolute bottom-3 left-3 flex items-center gap-1.5 z-10 text-white/90">
+                              <span className="p-1 rounded-md bg-black/60 backdrop-blur-xs text-[10px] flex items-center gap-1 font-mono font-bold" title="Windows, macOS, Linux, Web">
+                                <Monitor className="w-3 h-3 text-sky-400" />
+                                <Laptop className="w-3 h-3 text-emerald-400" />
+                                <Globe className="w-3 h-3 text-amber-400" />
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Title */}
+                          <h3 className="text-xl font-extrabold text-[#0d0d0e] mb-2 leading-tight group-hover:text-emerald-700 transition-colors">
+                            {product.name}
+                          </h3>
+
+                          {/* Description */}
+                          <p className="text-xs text-slate-600 leading-relaxed mb-5 line-clamp-3">
+                            {product.description}
+                          </p>
+
+                          {/* Price & Stock Badge */}
+                          <div className="mb-6 p-4 rounded-2xl bg-white border border-slate-200 flex items-center justify-between shadow-xs">
+                            <div>
+                              <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Starting Price</div>
+                              <div className="text-lg font-black text-[#0d0d0e]">{priceFormatted}</div>
+                            </div>
+
+                            <div className="text-right">
+                              <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Availability</div>
+                              <div className="text-xs font-extrabold text-emerald-600 flex items-center gap-1 justify-end">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                                In Stock ({product.stock || 50})
+                              </div>
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="text-right">
-                          <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Availability</div>
-                          <div className="text-xs font-extrabold text-emerald-600 flex items-center gap-1 justify-end">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                            In Stock ({product.stock || 50})
+                        {/* Card Action Buttons */}
+                        <div className="relative z-10 pt-4 border-t border-slate-200/80 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => openQuickView(product)}
+                              className="flex-1 py-3 px-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Test-Drive Quick View</span>
+                            </button>
+
+                            <button
+                              onClick={() => handleAddToCart(product.id)}
+                              disabled={cartLoading}
+                              className="py-3 px-3.5 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono font-bold text-xs transition-all shadow-md shrink-0 cursor-pointer disabled:opacity-50"
+                              aria-label="Add to cart"
+                            >
+                              <ShoppingBag className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <Link
+                              href={`/products/${product.id}`}
+                              className="py-2.5 px-3 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-[10px] uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1"
+                            >
+                              <span>Select Plan</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </Link>
+
+                            <Link
+                              href={`/get-quote?product=${encodeURIComponent(product.name)}`}
+                              className="py-2.5 px-3 rounded-full bg-white hover:bg-slate-100 text-slate-800 font-mono font-bold text-[10px] uppercase tracking-wider border border-slate-300 transition-all text-center truncate"
+                            >
+                              Request Quote
+                            </Link>
                           </div>
                         </div>
                       </div>
-                    </div>
-
-                    {/* Card Action Buttons */}
-                    <div className="relative z-10 pt-4 border-t border-slate-200/80 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => openQuickView(product)}
-                          className="flex-1 py-3 px-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>Test-Drive Quick View</span>
-                        </button>
-
-                        <button
-                          onClick={() => handleAddToCart(product.id)}
-                          disabled={cartLoading}
-                          className="py-3 px-3.5 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono font-bold text-xs transition-all shadow-md shrink-0 cursor-pointer disabled:opacity-50"
-                          aria-label="Add to cart"
-                        >
-                          <ShoppingBag className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <Link
-                          href={`/products/${product.id}`}
-                          className="py-2.5 px-3 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-[10px] uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1"
-                        >
-                          <span>Select Plan</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </Link>
-
-                        <Link
-                          href={`/get-quote?product=${encodeURIComponent(product.name)}`}
-                          className="py-2.5 px-3 rounded-full bg-white hover:bg-slate-100 text-slate-800 font-mono font-bold text-[10px] uppercase tracking-wider border border-slate-300 transition-all text-center truncate"
-                        >
-                          Request Quote
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                    </Tilt3D>
+                  </ScrollReveal>
                 );
               })}
             </div>
@@ -362,7 +512,7 @@ export default function ProductsCatalogPage() {
                 <button
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0}
-                  className="px-4 py-2 rounded-full border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 flex items-center gap-1"
+                  className="px-4 py-2 rounded-full border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 flex items-center gap-1 cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </button>
@@ -374,7 +524,7 @@ export default function ProductsCatalogPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                   disabled={page >= totalPages - 1}
-                  className="px-4 py-2 rounded-full border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 flex items-center gap-1"
+                  className="px-4 py-2 rounded-full border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 flex items-center gap-1 cursor-pointer"
                 >
                   Next <ChevronRight className="w-4 h-4" />
                 </button>

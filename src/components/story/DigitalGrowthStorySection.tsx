@@ -3,6 +3,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ArrowRight, TrendingUp } from 'lucide-react';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { Tilt3D } from '@/components/ui/Tilt3D';
 
 export function DigitalGrowthStorySection() {
   const capabilities = [
@@ -19,15 +21,17 @@ export function DigitalGrowthStorySection() {
     <section className="max-w-[1536px] w-full mx-auto mb-16 bg-[#fafafa] border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm relative overflow-hidden transition-all duration-500" id="growth-story">
       
       {/* Eyebrow Label */}
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs font-mono font-bold uppercase tracking-wider mb-6">
-        <span>📈</span>
-        <span>06 / DIGITAL GROWTH &amp; MARKETING CAPABILITIES</span>
-      </div>
+      <ScrollReveal yOffset={15} duration={0.6}>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs font-mono font-bold uppercase tracking-wider mb-6">
+          <span>📈</span>
+          <span>06 / DIGITAL GROWTH &amp; MARKETING CAPABILITIES</span>
+        </div>
+      </ScrollReveal>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-14">
         
         {/* Left Column: Text on Left */}
-        <div className="lg:col-span-7">
+        <ScrollReveal yOffset={25} duration={0.7} className="lg:col-span-7">
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-6">
             Build your presence.<br />
             <span className="text-amber-800/60 font-normal">Grow your business. 📈</span>
@@ -44,72 +48,78 @@ export function DigitalGrowthStorySection() {
             <span>Explore Digital Growth</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
-        </div>
+        </ScrollReveal>
 
         {/* Right Column: Abstract Growth & Audience Visual */}
         <div className="lg:col-span-5 flex justify-center">
-          <div className="w-full max-w-md bg-white border border-amber-200 rounded-3xl p-8 shadow-xl relative overflow-hidden group hover:border-amber-400 transition-all duration-300">
-            
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-              <div className="flex items-center gap-2.5">
-                <TrendingUp className="w-5 h-5 text-amber-600" />
-                <span className="text-xs font-bold text-[#0d0d0e]">Growth &amp; Audience Strategy</span>
+          <Tilt3D maxTilt={5} scale={1.02} className="w-full max-w-md">
+            <div className="w-full bg-white border border-amber-200 rounded-3xl p-8 shadow-xl relative overflow-hidden group hover:border-amber-400 transition-all duration-300">
+              
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                <div className="flex items-center gap-2.5">
+                  <TrendingUp className="w-5 h-5 text-amber-600" />
+                  <span className="text-xs font-bold text-[#0d0d0e]">Growth &amp; Audience Strategy</span>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                  Strategic Reach
+                </span>
               </div>
-              <span className="text-[10px] font-mono font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-                Strategic Reach
-              </span>
+
+              <div className="space-y-3 text-xs">
+                <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-100 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-[#0d0d0e]">SEO &amp; Organic Search Outreach</div>
+                    <div className="text-[11px] text-slate-500 mt-0.5">High-intent customer keyword targeting</div>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                </div>
+
+                <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-100 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-[#0d0d0e]">Targeted Ads (Google &amp; Meta)</div>
+                    <div className="text-[11px] text-slate-500 mt-0.5">Structured campaign management</div>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-[#0d0d0e] shrink-0" />
+                </div>
+
+                <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-100 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-[#0d0d0e]">Brand Positioning &amp; Design</div>
+                    <div className="text-[11px] text-slate-500 mt-0.5">Cohesive visual marketing collateral</div>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                </div>
+              </div>
+
             </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-100 flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-[#0d0d0e]">SEO &amp; Organic Search Outreach</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">High-intent customer keyword targeting</div>
-                </div>
-                <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-              </div>
-
-              <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-100 flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-[#0d0d0e]">Targeted Ads (Google &amp; Meta)</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Structured campaign management</div>
-                </div>
-                <span className="w-2 h-2 rounded-full bg-[#0d0d0e] shrink-0" />
-              </div>
-
-              <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-100 flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-[#0d0d0e]">Brand Positioning &amp; Design</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Cohesive visual marketing collateral</div>
-                </div>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-              </div>
-            </div>
-
-          </div>
+          </Tilt3D>
         </div>
 
       </div>
 
       {/* Below: Capabilities Grid */}
       <div className="pt-8 border-t border-slate-200/80">
-        <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-6">
-          DIGITAL GROWTH CAPABILITIES
-        </h4>
+        <ScrollReveal yOffset={15} duration={0.6}>
+          <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-6">
+            DIGITAL GROWTH CAPABILITIES
+          </h4>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {capabilities.map((item, idx) => {
             return (
-              <div key={idx} className="p-5 rounded-2xl bg-white border-2 border-slate-200 hover:border-amber-400 transition-all group">
-                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 text-lg group-hover:scale-110 transition-transform">
-                  {item.emoji}
+              <ScrollReveal key={idx} delay={idx * 0.08} yOffset={20} duration={0.6}>
+                <div className="h-full p-5 rounded-2xl bg-white border-2 border-slate-200 hover:border-amber-400 transition-all group">
+                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 text-lg group-hover:scale-110 transition-transform">
+                    {item.emoji}
+                  </div>
+                  <h5 className="text-xs font-bold text-[#0d0d0e] mb-1.5 flex items-center gap-1.5">
+                    <span>{item.emoji}</span>
+                    <span>{item.title}</span>
+                  </h5>
+                  <p className="text-xs text-slate-500 leading-relaxed">{item.desc}</p>
                 </div>
-                <h5 className="text-xs font-bold text-[#0d0d0e] mb-1.5 flex items-center gap-1.5">
-                  <span>{item.emoji}</span>
-                  <span>{item.title}</span>
-                </h5>
-                <p className="text-xs text-slate-500 leading-relaxed">{item.desc}</p>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>

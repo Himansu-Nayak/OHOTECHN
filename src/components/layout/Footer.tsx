@@ -4,6 +4,7 @@ import Link from 'next/link';
 import NextImage from 'next/image';
 import { siteConfig } from '@/config/site';
 import { solutionsNav, techServicesNav, growthServicesNav, companyNav, legalNav } from '@/config/navigation';
+import { FooterCurtain } from '@/components/layout/FooterCurtain';
 
 export default function Footer() {
   return (
@@ -191,6 +192,9 @@ export default function Footer() {
           </div>
 
         </div>
+
+        {/* Grand Footer Curtain Wordmark */}
+        <FooterCurtain />
 
         {/* Bottom Copyright Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 font-mono">

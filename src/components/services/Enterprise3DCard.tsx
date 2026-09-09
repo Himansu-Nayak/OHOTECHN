@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import { Service } from '@/config/services';
+import { Tilt3D } from '@/components/ui/Tilt3D';
 
 interface Enterprise3DCardProps {
   service: Service;
@@ -34,7 +35,7 @@ export function Enterprise3DCard({ service }: Enterprise3DCardProps) {
   const imageSrc = get3DImagePath(service);
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <Tilt3D maxTilt={5} scale={1.02} className="w-full max-w-md mx-auto">
       {/* Whole Outer Card with Orange-to-Red Wave Background (Matching Reference) */}
       <div className="relative bg-gradient-to-b from-[#ff5e1a] via-[#e03a08] to-[#7a0303] border border-orange-400/30 rounded-[36px] p-6 sm:p-8 text-center flex flex-col items-center justify-between shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-orange-950/40">
         
@@ -82,6 +83,6 @@ export function Enterprise3DCard({ service }: Enterprise3DCardProps) {
         </div>
 
       </div>
-    </div>
+    </Tilt3D>
   );
 }

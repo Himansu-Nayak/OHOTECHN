@@ -24,6 +24,8 @@ import {
   FileCheck2,
 } from 'lucide-react';
 
+import { ScrollReveal } from '@/components/animation/ScrollReveal';
+
 const steps = [
   {
     num: '01',
@@ -161,20 +163,22 @@ export function ProcessSection() {
     <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-12 lg:p-16 shadow-sm relative overflow-hidden" id="how-we-work">
       
       {/* Outer Section Header */}
-      <div className="max-w-4xl mb-6 sm:mb-10 text-left">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-3">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0 animate-pulse" />
-          <span>ENGINEERING ROADMAP ⚡</span>
+      <ScrollReveal yOffset={25} duration={0.7}>
+        <div className="max-w-4xl mb-6 sm:mb-10 text-left">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0 animate-pulse" />
+            <span>ENGINEERING ROADMAP ⚡</span>
+          </div>
+
+          <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-3">
+            5-Phase Software Engineering Roadmap.
+          </h2>
+
+          <p className="text-sm sm:text-lg text-slate-600 font-normal leading-relaxed max-w-3xl">
+            A transparent, end-to-end software delivery methodology—from initial discovery to live production launch and continuous 24/7 scaling.
+          </p>
         </div>
-
-        <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-3">
-          5-Phase Software Engineering Roadmap.
-        </h2>
-
-        <p className="text-sm sm:text-lg text-slate-600 font-normal leading-relaxed max-w-3xl">
-          A transparent, end-to-end software delivery methodology—from initial discovery to live production launch and continuous 24/7 scaling.
-        </p>
-      </div>
+      </ScrollReveal>
 
       {/* Inner Dark Console Card Container */}
       <div 

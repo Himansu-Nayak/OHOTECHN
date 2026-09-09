@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 export function FinalCTASection() {
   return (
@@ -11,7 +12,7 @@ export function FinalCTASection() {
       {/* Ambient Backdrop Accent */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 max-w-3xl mx-auto">
+      <ScrollReveal yOffset={25} duration={0.7} className="relative z-10 max-w-3xl mx-auto">
         
         {/* Eyebrow */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-sky-300 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-5">
@@ -52,7 +53,7 @@ export function FinalCTASection() {
           © {new Date().getFullYear()} OHO TECH. Software Engineering &amp; Digital Growth Studio.
         </p>
 
-      </div>
+      </ScrollReveal>
 
     </section>
   );
