@@ -1,35 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import NextImage from 'next/image';
 import { siteConfig } from '@/config/site';
 import { solutionsNav, techServicesNav, growthServicesNav, companyNav, legalNav } from '@/config/navigation';
 import { FooterCurtain } from '@/components/layout/FooterCurtain';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#07080c] text-slate-400 border-t border-white/10 pt-12 sm:pt-16 pb-12 font-sans text-xs">
-      <div className="max-w-[1536px] w-full mx-auto px-4 sm:px-10 lg:px-16">
-        
-        {/* 5-Column Grid */}
+    <footer className="bg-[#07080c] text-slate-400 border-t border-white/10 font-sans text-xs">
+      {/* 1. Grand Footer Curtain Wordmark (Image 2) */}
+      <FooterCurtain />
+
+      {/* 2. Navigation Content & Link Columns (Below Footer Curtain - Image 1 without Logo) */}
+      <div className="max-w-[1536px] w-full mx-auto px-4 sm:px-10 lg:px-16 pt-12 pb-12 border-t border-white/5">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-14">
           
-          {/* Column 1: OHO TECH Brand & Social Links */}
+          {/* Column 1: OHO TECH Brand Description & Social Links (Logo Removed) */}
           <div className="lg:col-span-1 space-y-4">
-            <Link href="/" className="inline-block group mb-3">
-              <div className="bg-white px-5 py-3 rounded-2xl shadow-lg border border-white/20 inline-flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                <NextImage
-                  src="/OHO_TECH_LOGO.png"
-                  alt="OHO TECH Logo"
-                  width={280}
-                  height={90}
-                  priority
-                  quality={100}
-                  unoptimized
-                  className="h-12 sm:h-16 lg:h-18 w-auto object-contain"
-                />
-              </div>
-            </Link>
             <p className="text-xs text-slate-400 leading-relaxed max-w-xs">
               {siteConfig.description}
             </p>
@@ -192,9 +179,6 @@ export default function Footer() {
           </div>
 
         </div>
-
-        {/* Grand Footer Curtain Wordmark */}
-        <FooterCurtain />
 
         {/* Bottom Copyright Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 font-mono">
