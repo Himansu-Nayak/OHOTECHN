@@ -31,9 +31,12 @@ import { StaggerReveal } from '@/components/animation/StaggerReveal';
 import { ParallaxElement } from '@/components/animation/ParallaxElement';
 import { ScrollFrameSequence } from '@/components/ui/ScrollFrameSequence';
 import { Tilt3D } from '@/components/ui/Tilt3D';
-import { DotGlobe } from '@/components/ui/DotGlobe';
 import { MetricsTelemetryRibbon } from '@/components/home/MetricsTelemetryRibbon';
 import { HorizontalServicesShowcase } from '@/components/home/HorizontalServicesShowcase';
+import { TechMarqueeStream } from '@/components/home/TechMarqueeStream';
+import { CaseStudiesShowcase } from '@/components/home/CaseStudiesShowcase';
+import { ClientTestimonialsCarousel } from '@/components/home/ClientTestimonialsCarousel';
+import { EnterpriseFAQSection } from '@/components/home/EnterpriseFAQSection';
 
 export default function WideStudioPage() {
 
@@ -167,6 +170,13 @@ export default function WideStudioPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
+          01.55 INFINITE TECH STACK MARQUEE
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[24px] sm:rounded-[36px] overflow-hidden shadow-xl">
+        <TechMarqueeStream />
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
           01.6 LIVE METRICS & TELEMETRY RIBBON
           ───────────────────────────────────────────────────────────── */}
       <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
@@ -178,6 +188,13 @@ export default function WideStudioPage() {
           ───────────────────────────────────────────────────────────── */}
       <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
         <HorizontalServicesShowcase />
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          01.8 SELECTED ENTERPRISE CASE STUDIES
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+        <CaseStudiesShowcase />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -406,6 +423,20 @@ export default function WideStudioPage() {
             </div>
           </div>
         </ScrollReveal>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          05.5 EXECUTIVE TESTIMONIALS & REVIEWS
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+        <ClientTestimonialsCarousel />
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          05.6 ENTERPRISE TECHNICAL FAQ
+          ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
+        <EnterpriseFAQSection />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
