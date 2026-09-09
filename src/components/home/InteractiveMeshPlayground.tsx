@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Network, Sparkles, Zap } from 'lucide-react';
+import { DotGlobe } from '@/components/ui/DotGlobe';
 
 interface NodePoint {
   x: number;
@@ -188,12 +189,52 @@ export function InteractiveMeshPlayground() {
           </div>
         </div>
 
-        {/* Interactive Canvas Container */}
-        <div
-          data-cursor="INTERACT"
-          className="relative w-full h-[480px] rounded-[32px] bg-[#0f121a] border border-white/10 overflow-hidden shadow-2xl cursor-crosshair"
-        >
-          <canvas ref={canvasRef} className="w-full h-full block" />
+        {/* Interactive Canvas & 3D Globe Split View */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          {/* Main Interactive Mesh Canvas */}
+          <div
+            data-cursor="INTERACT"
+            className="lg:col-span-8 relative w-full h-[480px] rounded-[32px] bg-[#0f121a] border border-white/10 overflow-hidden shadow-2xl cursor-crosshair group"
+          >
+            <canvas ref={canvasRef} className="w-full h-full block" />
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[11px] font-mono text-neutral-400 bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 pointer-events-none">
+              <span className="flex items-center gap-1.5 text-emerald-400">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>DYNAMIC MESH PHYSICS</span>
+              </span>
+              <span>CURSOR REPULSION: ACTIVE</span>
+            </div>
+          </div>
+
+          {/* 3D Dot Globe & Live APAC Coordinates */}
+          <div className="lg:col-span-4 bg-[#0f121a] border border-white/10 rounded-[32px] p-6 flex flex-col items-center justify-between shadow-2xl relative overflow-hidden">
+            <div className="w-full flex items-center justify-between text-xs font-mono mb-2">
+              <span className="text-white font-bold uppercase tracking-wider flex items-center gap-2">
+                <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                GLOBAL NODES
+              </span>
+              <span className="text-emerald-400 font-bold">120 FPS WEBGL</span>
+            </div>
+
+            <div className="my-2" data-cursor="DRAG GLOBE">
+              <DotGlobe size={260} />
+            </div>
+
+            <div className="w-full space-y-2 pt-4 border-t border-white/10 text-[11px] font-mono text-slate-400">
+              <div className="flex justify-between">
+                <span>APAC HEADQUARTERS</span>
+                <span className="text-white font-bold">INDIA [20.59°N]</span>
+              </div>
+              <div className="flex justify-between">
+                <span>US EAST CLOUD</span>
+                <span className="text-white font-bold">N. VIRGINIA [38.03°N]</span>
+              </div>
+              <div className="flex justify-between">
+                <span>EU CENTRAL EDGE</span>
+                <span className="text-white font-bold">FRANKFURT [50.11°N]</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

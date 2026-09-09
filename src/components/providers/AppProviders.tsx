@@ -8,6 +8,7 @@ import { SmoothScrollProvider } from './SmoothScrollProvider';
 import { MagneticCursor } from '@/components/ui/MagneticCursor';
 import { AwwwardsBadge } from '@/components/ui/AwwwardsBadge';
 import { SiteIntroLoader } from '@/components/ui/SiteIntroLoader';
+import { NoiseOverlay } from '@/components/ui/NoiseOverlay';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +17,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         <CartProvider>
           <SmoothScrollProvider>
             <SiteIntroLoader />
+            <NoiseOverlay />
             <MagneticCursor />
             <AwwwardsBadge />
             {children}
