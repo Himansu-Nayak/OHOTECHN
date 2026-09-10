@@ -6,21 +6,21 @@ import gsap from 'gsap';
 /**
  * SiteIntroLoader
  *
- * Awwwards-tier initial preloader inspired by unitedcarriers.com:
- * - High-speed percentage counter with smooth easing (0 -> 100%)
- * - Global cloud network node coordinates
- * - Hexadecimal cryptographic telemetry hash stream
- * - Upward split-curtain curtain lift on complete
- * - Respects prefers-reduced-motion & session storage to only play on initial entry
+ * Cinematic initial preloader:
+ * - High-speed percentage counter with smooth cubic easing (0 -> 100%)
+ * - Abstract digital architecture node telemetry
+ * - Upward split-curtain wipe on complete
+ * - Respects prefers-reduced-motion & session storage
+ * - Perfect SSR hydration synchronization
  */
 export function SiteIntroLoader() {
+  const [mounted, setMounted] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [shouldRender, setShouldRender] = useState(true);
+  const [shouldRender, setShouldRender] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Only run on client initial session
+    setMounted(true);
     const hasSeenLoader = sessionStorage.getItem('oho_loader_seen');
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -29,13 +29,14 @@ export function SiteIntroLoader() {
       return;
     }
 
-    const duration = 1600;
+    setShouldRender(true);
+
+    const duration = 1400;
     const startTime = performance.now();
 
     const updateCounter = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const rawProgress = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
       const easeVal = 1 - Math.pow(1 - rawProgress, 3);
       const currentPercent = Math.floor(easeVal * 100);
 
@@ -44,14 +45,12 @@ export function SiteIntroLoader() {
       if (rawProgress < 1) {
         requestAnimationFrame(updateCounter);
       } else {
-        setIsLoaded(true);
         sessionStorage.setItem('oho_loader_seen', 'true');
 
-        // GSAP Upward Curtain Wipe
         if (containerRef.current) {
           gsap.to(containerRef.current, {
             yPercent: -100,
-            duration: 0.85,
+            duration: 0.75,
             ease: 'power4.inOut',
             onComplete: () => {
               setShouldRender(false);
@@ -64,7 +63,7 @@ export function SiteIntroLoader() {
     requestAnimationFrame(updateCounter);
   }, []);
 
-  if (!shouldRender) return null;
+  if (!mounted || !shouldRender) return null;
 
   return (
     <div
@@ -98,7 +97,7 @@ export function SiteIntroLoader() {
         </div>
       </div>
 
-      {/* Center Global Network Nodes & Title */}
+      {/* Center Digital Network Nodes & Title */}
       <div className="relative z-10 max-w-4xl mx-auto text-center w-full my-auto">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-widest mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -177,3 +176,5 @@ export function SiteIntroLoader() {
     </div>
   );
 }
+
+export default SiteIntroLoader;

@@ -17,8 +17,7 @@ export default function ServiceCard({
   iconName,
   category,
 }: ServiceCardProps) {
-  // @ts-ignore - dynamic icon access
-  const Icon = LucideIcons[iconName] || LucideIcons.Code;
+  const Icon = (LucideIcons as unknown as Record<string, React.ElementType>)[iconName] || LucideIcons.Code;
 
   return (
     <Link
