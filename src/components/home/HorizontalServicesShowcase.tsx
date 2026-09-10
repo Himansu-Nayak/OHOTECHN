@@ -139,36 +139,46 @@ export function HorizontalServicesShowcase() {
 
     if (prefersReducedMotion) return;
 
-    const getScrollAmount = () => {
-      const trackWidth = track.scrollWidth;
-      return -(trackWidth - window.innerWidth + 120);
-    };
+    const mm = gsap.matchMedia();
 
-    const tween = gsap.to(track, {
-      x: getScrollAmount,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        pin: true,
-        scrub: 0.8,
-        start: 'top top',
-        end: () => `+=${Math.max(track.scrollWidth - window.innerWidth, 1500)}`,
-        invalidateOnRefresh: true,
-      },
+    // Desktop: Pin and horizontal scrub
+    mm.add('(min-width: 1024px)', () => {
+      const getScrollAmount = () => {
+        const trackWidth = track.scrollWidth;
+        return -(trackWidth - window.innerWidth + 120);
+      };
+
+      const tween = gsap.to(track, {
+        x: getScrollAmount,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: section,
+          pin: true,
+          scrub: 0.6,
+          start: 'top top',
+          end: () => `+=${Math.max(track.scrollWidth - window.innerWidth, 1400)}`,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      return () => {
+        if (tween.scrollTrigger) {
+          tween.scrollTrigger.kill();
+        }
+        tween.kill();
+      };
     });
 
     return () => {
-      if (tween.scrollTrigger) {
-        tween.scrollTrigger.kill();
-      }
-      tween.kill();
+      mm.revert();
     };
   }, []);
 
   return (
     <section
+      id="services-showcase"
       ref={sectionRef}
-      className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] py-12 sm:py-20 overflow-hidden z-20 shadow-2xl relative"
+      className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] py-10 sm:py-16 lg:py-20 overflow-hidden z-20 shadow-2xl relative"
     >
       {/* Background Cyber Grid */}
       <div
@@ -183,36 +193,36 @@ export function HorizontalServicesShowcase() {
       />
 
       {/* Header Container */}
-      <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 mb-8 sm:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs tracking-widest uppercase mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs tracking-widest uppercase mb-4 backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            ENGINEERING HORIZON // 6 CORE VERTICALS
+            ENGINEERING EXECUTION // 6 CORE VERTICALS
           </div>
-          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white uppercase">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white uppercase">
             Architectural <span className="text-neutral-400">Capabilities</span>
           </h2>
         </div>
-        <p className="text-neutral-400 text-sm md:text-base max-w-md font-mono">
+        <p className="text-neutral-400 text-xs sm:text-sm md:text-base max-w-md font-mono">
           Explore our end-to-end software engineering ecosystem engineered for global scale, zero latency, and absolute fault tolerance.
         </p>
       </div>
 
-      {/* Horizontal Pinned Track */}
+      {/* Track Container: Desktop Horizontal Pin / Mobile Responsive Stack */}
       <div
         ref={trackRef}
-        className="flex gap-8 px-6 md:px-12 w-max will-change-transform relative z-10"
+        className="flex flex-col lg:flex-row gap-6 sm:gap-8 px-4 sm:px-8 lg:px-12 w-full lg:w-max will-change-transform relative z-10"
       >
         {SHOWCASE_ITEMS.map((item) => {
           const Icon = item.icon;
           return (
             <div
               key={item.id}
-              className="w-[85vw] max-w-[580px] shrink-0"
+              className="w-full lg:w-[85vw] lg:max-w-[580px] shrink-0"
               data-cursor="EXPLORE"
             >
               <Tilt3D maxTilt={4}>
-                <div className="relative group bg-[#14171f] border border-white/10 rounded-[36px] overflow-hidden p-8 flex flex-col justify-between h-[560px] shadow-[0_30px_70px_rgba(0,0,0,0.6)] hover:border-emerald-500/50 transition-colors duration-500">
+                <div className="relative group bg-[#14171f] border border-white/10 rounded-[28px] sm:rounded-[36px] overflow-hidden p-6 sm:p-8 flex flex-col justify-between min-h-[480px] sm:min-h-[560px] shadow-[0_30px_70px_rgba(0,0,0,0.6)] hover:border-emerald-500/50 transition-colors duration-500">
                   {/* Subtle Accent Glow */}
                   <div
                     className="absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-15 filter blur-3xl pointer-events-none transition-opacity duration-500 group-hover:opacity-30"
@@ -226,7 +236,7 @@ export function HorizontalServicesShowcase() {
                         <Icon className="w-5 h-5" />
                       </div>
                       <div>
-                        <span className="text-xs font-mono text-neutral-400 uppercase tracking-widest block">
+                        <span className="text-[10px] sm:text-xs font-mono text-neutral-400 uppercase tracking-widest block">
                           {item.category}
                         </span>
                         <span className="text-xs font-mono font-bold text-white tracking-widest">
@@ -244,22 +254,22 @@ export function HorizontalServicesShowcase() {
                   </div>
 
                   {/* 3D Visual Preview */}
-                  <div className="relative w-full h-56 my-4 rounded-2xl overflow-hidden bg-black/40 border border-white/5">
+                  <div className="relative w-full h-48 sm:h-56 my-4 rounded-2xl overflow-hidden bg-black/40 border border-white/5">
                     <Image
                       src={item.image}
                       alt={item.title}
                       fill
                       className="object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                      sizes="(max-width: 768px) 85vw, 580px"
+                      sizes="(max-width: 768px) 100vw, 580px"
                     />
                   </div>
 
                   {/* Body Content */}
                   <div>
-                    <h3 className="text-2xl font-bold tracking-tight text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2 group-hover:text-emerald-400 transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-neutral-400 text-xs md:text-sm line-clamp-2 mb-6">
+                    <p className="text-neutral-400 text-xs sm:text-sm line-clamp-2 mb-6">
                       {item.description}
                     </p>
 
@@ -270,7 +280,7 @@ export function HorizontalServicesShowcase() {
                           <span className="text-[9px] font-mono text-neutral-500 tracking-wider uppercase">
                             {spec.label}
                           </span>
-                          <span className="text-xs font-mono font-bold text-white mt-0.5">
+                          <span className="text-[11px] sm:text-xs font-mono font-bold text-white mt-0.5">
                             {spec.value}
                           </span>
                         </div>

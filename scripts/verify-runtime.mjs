@@ -90,6 +90,33 @@ async function verifyRuntime() {
     await new Promise(r => setTimeout(r, 200));
   }
 
+  // Check Technology Statement
+  const techInfo = await page.evaluate(() => {
+    const tech = document.getElementById('technology-statement');
+    if (!tech) return { found: false };
+    const text = tech.innerText;
+    return {
+      found: true,
+      hasPhilosophy: text.includes('Technology should not create complexity'),
+      hasPillars: text.includes('Four Pillars of Resilient Architecture') && text.includes('Decoupled Service Boundaries'),
+      hasOutcomes: text.includes('100% CODE OWNERSHIP')
+    };
+  });
+  console.log(`Technology Statement check:`, techInfo);
+
+  // Check Services Showcase
+  const servicesInfo = await page.evaluate(() => {
+    const srv = document.getElementById('services-showcase');
+    if (!srv) return { found: false };
+    const text = srv.innerText;
+    return {
+      found: true,
+      hasCapability: text.includes('Architectural Capabilities'),
+      hasCards: text.includes('Distributed Cloud Architecture') && text.includes('Native Mobile Engineering')
+    };
+  });
+  console.log(`Horizontal Services Showcase check:`, servicesInfo);
+
   // Check Director Section
   const directorInfo = await page.evaluate(() => {
     const dir = document.getElementById('director');
@@ -129,6 +156,22 @@ async function verifyRuntime() {
   const devPageTitle = await devPage.title();
   console.log(`/developer Title: ${devPageTitle}`);
   await devPage.close();
+
+  // 2.1 Test Laptop Viewport (1280x800)
+  console.log('\n[3.1] Testing Laptop Viewport (1280x800)...');
+  const laptopPage = await browser.newPage();
+  await laptopPage.setViewport({ width: 1280, height: 800 });
+  const lapRes = await laptopPage.goto('http://localhost:3000', { waitUntil: 'networkidle2', timeout: 30000 });
+  console.log(`Laptop HTTP status: ${lapRes.status()}`);
+  await laptopPage.close();
+
+  // 2.2 Test Tablet Viewport (768x1024)
+  console.log('\n[3.2] Testing Tablet Viewport (768x1024)...');
+  const tabPage = await browser.newPage();
+  await tabPage.setViewport({ width: 768, height: 1024 });
+  const tabRes = await tabPage.goto('http://localhost:3000', { waitUntil: 'networkidle2', timeout: 30000 });
+  console.log(`Tablet HTTP status: ${tabRes.status()}`);
+  await tabPage.close();
 
   // 3. Test Mobile Viewport (390x844)
   console.log('\n[4] Testing Mobile Viewport (390x844)...');
