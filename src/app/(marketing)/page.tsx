@@ -2,7 +2,9 @@
 
 import * as React from 'react';
 import { CinematicHero } from '@/components/home/CinematicHero';
+import { ScrollFrameSequence } from '@/components/ui/ScrollFrameSequence';
 import { TechnologyStatement } from '@/components/home/TechnologyStatement';
+import { HorizontalServicesShowcase } from '@/components/home/HorizontalServicesShowcase';
 import { CapabilityExplorer } from '@/components/home/CapabilityExplorer';
 import { SystemArchitectureFlow } from '@/components/home/SystemArchitectureFlow';
 import { ProductsShowcase } from '@/components/home/ProductsShowcase';
@@ -25,6 +27,13 @@ export default function WideStudioPage() {
       <CinematicHero />
 
       {/* ─────────────────────────────────────────────────────────────
+          01.2 3D HARDWARE TURNTABLE SEQUENCE (SCROLL SCRUBBER)
+          ───────────────────────────────────────────────────────────── */}
+      <section id="hardware-sequence" className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[28px] sm:rounded-[44px] overflow-hidden border-2 border-slate-800 shadow-2xl">
+        <ScrollFrameSequence />
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
           01.5 TECH MARQUEE STREAM
           ───────────────────────────────────────────────────────────── */}
       <section id="tech-stack" className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[24px] sm:rounded-[36px] overflow-hidden shadow-lg">
@@ -35,6 +44,11 @@ export default function WideStudioPage() {
           02. EDITORIAL TECHNOLOGY STATEMENT
           ───────────────────────────────────────────────────────────── */}
       <TechnologyStatement />
+
+      {/* ─────────────────────────────────────────────────────────────
+          02.5 HORIZONTAL PINNED SERVICES SHOWCASE
+          ───────────────────────────────────────────────────────────── */}
+      <HorizontalServicesShowcase />
 
       {/* ─────────────────────────────────────────────────────────────
           03. CAPABILITY EXPLORER (WHAT OHO TECH BUILDS)

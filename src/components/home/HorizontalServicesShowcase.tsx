@@ -168,7 +168,7 @@ export function HorizontalServicesShowcase() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-[#0d0d0e] text-white py-20 md:py-28 overflow-hidden z-20 border-y border-white/10"
+      className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] py-12 sm:py-20 overflow-hidden z-20 shadow-2xl relative"
     >
       {/* Background Cyber Grid */}
       <div

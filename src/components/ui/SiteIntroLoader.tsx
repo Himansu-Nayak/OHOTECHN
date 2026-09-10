@@ -109,27 +109,27 @@ export function SiteIntroLoader() {
           Engineering The Future
         </h1>
 
-        {/* Global Node Hubs */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 font-mono text-xs text-neutral-400">
+        {/* Abstract Digital Network Nodes */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 font-mono text-[11px] sm:text-xs text-neutral-400">
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            INDIA HQ [20.59°N]
+            CORE ENGINE [NODE 01]
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            API GATEWAY [NODE 02]
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            SAN FRANCISCO [37.77°N]
+            DB CLUSTER [NODE 03]
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            ASYNC WORKERS [NODE 04]
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            LONDON [51.50°N]
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            SINGAPORE [1.35°N]
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            TOKYO [35.67°N]
+            EDGE CDN [NODE 05]
           </span>
         </div>
       </div>
@@ -137,9 +137,30 @@ export function SiteIntroLoader() {
       {/* Bottom Progress Bar & Counter */}
       <div className="relative z-10 max-w-4xl mx-auto w-full">
         <div className="flex items-end justify-between mb-3 font-mono">
-          <span className="text-xs text-neutral-400 tracking-wider">
-            LOADING ASSETS &amp; 3D SPATIAL CANVAS
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-neutral-400 tracking-wider">
+              INITIALIZING DIGITAL SYSTEM
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                sessionStorage.setItem('oho_loader_seen', 'true');
+                if (containerRef.current) {
+                  gsap.to(containerRef.current, {
+                    yPercent: -100,
+                    duration: 0.4,
+                    ease: 'power4.inOut',
+                    onComplete: () => setShouldRender(false),
+                  });
+                } else {
+                  setShouldRender(false);
+                }
+              }}
+              className="text-[10px] text-emerald-400 hover:text-white uppercase tracking-widest px-2 py-0.5 rounded border border-emerald-500/30 hover:bg-emerald-500/20 transition-all cursor-pointer"
+            >
+              [ESC / SKIP]
+            </button>
+          </div>
           <span className="text-3xl sm:text-5xl font-black text-emerald-400">
             {progress}%
           </span>
