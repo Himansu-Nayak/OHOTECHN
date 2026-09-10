@@ -34,7 +34,6 @@ import { Tilt3D } from '@/components/ui/Tilt3D';
 import { MetricsTelemetryRibbon } from '@/components/home/MetricsTelemetryRibbon';
 import { HorizontalServicesShowcase } from '@/components/home/HorizontalServicesShowcase';
 import { TechMarqueeStream } from '@/components/home/TechMarqueeStream';
-import { CaseStudiesShowcase } from '@/components/home/CaseStudiesShowcase';
 import { ClientTestimonialsCarousel } from '@/components/home/ClientTestimonialsCarousel';
 import { EnterpriseFAQSection } from '@/components/home/EnterpriseFAQSection';
 import { LiveTerminalShowcase } from '@/components/home/LiveTerminalShowcase';
@@ -205,12 +204,6 @@ export default function WideStudioPage() {
         <HorizontalServicesShowcase />
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          01.8 SELECTED ENTERPRISE CASE STUDIES
-          ───────────────────────────────────────────────────────────── */}
-      <section id="case-studies" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 rounded-[28px] sm:rounded-[44px] overflow-hidden border border-white/10 shadow-2xl">
-        <CaseStudiesShowcase />
-      </section>
 
       {/* ─────────────────────────────────────────────────────────────
           01.9 SPATIAL CLOUD MESH INTERACTIVE TOPOLOGY
