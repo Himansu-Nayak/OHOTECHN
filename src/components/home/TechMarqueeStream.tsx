@@ -4,16 +4,16 @@ import React from 'react';
 import { Cpu, Server, Code2, Database, ShieldCheck, Zap, Globe, Smartphone, Lock, Terminal } from 'lucide-react';
 
 const TECH_ITEMS = [
-  { name: 'NEXT.JS 16 // TURBOPACK', icon: Zap },
+  { name: 'NEXT.JS 15 // TURBOPACK', icon: Zap },
   { name: 'JAVA 21 & SPRING BOOT 3', icon: Server },
   { name: 'REACT 19 SERVER COMPONENTS', icon: Code2 },
-  { name: 'POSTGRESQL & DISTRIBUTED PRISMA', icon: Database },
-  { name: 'DOCKER & KUBERNETES MESH', icon: Terminal },
+  { name: 'POSTGRESQL & ENTERPRISE JPA', icon: Database },
+  { name: 'DOCKER CONTAINERIZED MESH', icon: Terminal },
   { name: 'REDIS DISTRIBUTED CLUSTERS', icon: Cpu },
-  { name: 'NATIVE 120 FPS (SWIFT & KOTLIN)', icon: Smartphone },
-  { name: 'SOC-2 TYPE II & ZERO-TRUST', icon: Lock },
-  { name: 'EDGE POP ROUTING (180+ CITIES)', icon: Globe },
-  { name: '99.999% UPTIME SLA GUARANTEED', icon: ShieldCheck },
+  { name: 'NATIVE SWIFT & KOTLIN APPS', icon: Smartphone },
+  { name: 'ROLE-BASED ACCESS & ZERO-TRUST', icon: Lock },
+  { name: 'GLOBAL EDGE ROUTING & CDN', icon: Globe },
+  { name: 'HIGH-AVAILABILITY CLUSTER UPTIME', icon: ShieldCheck },
 ];
 
 export function TechMarqueeStream() {

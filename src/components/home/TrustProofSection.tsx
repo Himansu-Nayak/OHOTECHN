@@ -7,8 +7,6 @@ import {
   Activity, 
   Database, 
   Workflow, 
-  Server,
-  Sparkles,
   CheckCircle2
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';

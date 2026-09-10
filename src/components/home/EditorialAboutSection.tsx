@@ -4,12 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { 
   Building2, 
-  ArrowRight, 
-  Sparkles, 
-  Code2, 
-  Users, 
-  CheckCircle2,
-  ShieldCheck
+  ArrowRight
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 

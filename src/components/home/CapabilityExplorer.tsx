@@ -3,22 +3,18 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { 
-  Code2, 
   Cpu, 
   Globe, 
   Smartphone, 
   Building2, 
   Cloud, 
   Layers, 
-  TrendingUp, 
   ArrowRight, 
   CheckCircle2,
   Terminal,
-  Activity,
-  ShieldCheck
+  Activity
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { StaggerReveal } from '@/components/animation/StaggerReveal';
 
 interface Capability {
   id: string;
@@ -64,8 +60,8 @@ const capabilities: Capability[] = [
     link: '/services/custom-software-development',
     visualTitle: 'Automated Intelligence Graph',
     visualMetrics: [
-      { label: 'Task Throughput', val: '10x Faster' },
-      { label: 'Error Rate Reduction', val: '99.4%' },
+      { label: 'Task Execution', val: 'Sub-Second' },
+      { label: 'Extraction Precision', val: 'Deterministic' },
       { label: 'Human-in-the-Loop', val: 'Configurable' }
     ],
     visualHighlights: [
@@ -124,8 +120,8 @@ const capabilities: Capability[] = [
     link: '/services/software-development',
     visualTitle: 'Containerized Cluster Mesh',
     visualMetrics: [
-      { label: 'Uptime Commitment', val: '99.95%' },
-      { label: 'Auto-Scaling Lag', val: '< 30 Seconds' },
+      { label: 'Cluster Resilience', val: 'High-Availability' },
+      { label: 'Pod Auto-Scaling', val: 'Dynamic' },
       { label: 'Backup Cadence', val: 'Hourly Snapshots' }
     ],
     visualHighlights: [

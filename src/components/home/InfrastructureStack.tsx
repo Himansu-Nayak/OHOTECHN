@@ -7,13 +7,8 @@ import {
   Database, 
   Key, 
   CreditCard, 
-  Mail, 
-  ShieldCheck, 
-  Cpu, 
   Cloud,
-  Lock,
-  Layers,
-  Sparkles
+  Layers
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 

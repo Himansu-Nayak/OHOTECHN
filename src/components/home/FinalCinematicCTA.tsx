@@ -4,12 +4,8 @@ import * as React from 'react';
 import Link from 'next/link';
 import { 
   ArrowRight, 
-  Sparkles, 
   Mail, 
-  Phone, 
-  ShieldCheck, 
-  CheckCircle2,
-  Terminal
+  Phone
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { FlippingText } from '@/components/ui/FlippingText';

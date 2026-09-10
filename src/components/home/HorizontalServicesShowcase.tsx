@@ -230,7 +230,7 @@ export function HorizontalServicesShowcase() {
                           {item.category}
                         </span>
                         <span className="text-xs font-mono font-bold text-white tracking-widest">
-                          [{item.number} // 06]
+                          [{item.number} {'//'} 06]
                         </span>
                       </div>
                     </div>

@@ -3,14 +3,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { 
-  Building2, 
-  Stethoscope, 
-  ShoppingBag, 
   ArrowRight, 
   CheckCircle2, 
-  FileText,
-  ShieldCheck,
-  Activity
+  FileText
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 

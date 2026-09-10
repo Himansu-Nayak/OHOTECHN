@@ -3,18 +3,14 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { 
-  Code2, 
   Globe, 
   Smartphone, 
-  Cpu, 
   Layers, 
   Building2, 
   TrendingUp, 
   ArrowRight, 
   CheckCircle2, 
-  Wrench,
-  Sparkles,
-  ShieldCheck
+  Wrench
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Terminal, Activity, ShieldCheck, Database, Layers, Globe } from 'lucide-react';
+import { ArrowRight, Database, Layers, Globe } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { FlippingText } from '@/components/ui/FlippingText';
 import { Tilt3D } from '@/components/ui/Tilt3D';
@@ -175,7 +175,7 @@ export function CinematicHero() {
                   </p>
                   <div className="flex items-center gap-1.5 text-[10px] font-mono text-amber-400">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                    Uptime: 99.98% SLA
+                    Uptime: High-Availability Cluster
                   </div>
                 </div>
 

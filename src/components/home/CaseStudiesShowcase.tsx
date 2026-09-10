@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, CheckCircle2, TrendingUp, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Tilt3D } from '@/components/ui/Tilt3D';
 
@@ -111,7 +111,7 @@ export function CaseStudiesShowcase() {
                               [{study.tag}]
                             </span>
                             <span className="text-xs font-mono text-neutral-500">
-                              0{idx + 1} // 03
+                              0{idx + 1} {'//'} 03
                             </span>
                           </div>
 

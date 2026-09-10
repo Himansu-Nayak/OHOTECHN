@@ -10,10 +10,6 @@ import {
   Sparkles, 
   Network, 
   Server,
-  ArrowDown,
-  Activity,
-  CheckCircle2,
-  Lock,
   Zap
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
@@ -96,7 +92,7 @@ const systemNodes: SystemNode[] = [
     id: 'infrastructure',
     step: '08',
     name: 'Containerized Cloud Infrastructure',
-    role: 'Auto-Scaling Pods, Health Telemetry & 99.98% SLA',
+    role: 'Auto-Scaling Pods, Health Telemetry & High-Availability Clusters',
     specs: 'Multi-AZ Cloud Deployment',
     icon: Server,
     tech: 'Docker, Kubernetes, AWS'

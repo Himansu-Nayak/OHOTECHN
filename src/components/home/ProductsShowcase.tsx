@@ -7,11 +7,9 @@ import {
   Stethoscope, 
   Briefcase, 
   ShoppingBag, 
-  Factory, 
   ArrowRight, 
   CheckCircle2, 
-  Sparkles,
-  ExternalLink
+  Sparkles
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 

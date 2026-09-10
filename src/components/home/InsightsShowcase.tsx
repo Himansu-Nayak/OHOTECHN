@@ -4,10 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { 
   BookOpen, 
-  ArrowRight, 
-  Clock, 
-  Tag,
-  Sparkles
+  ArrowRight
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
