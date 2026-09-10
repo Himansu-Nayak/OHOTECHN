@@ -39,6 +39,7 @@ import { ClientTestimonialsCarousel } from '@/components/home/ClientTestimonials
 import { EnterpriseFAQSection } from '@/components/home/EnterpriseFAQSection';
 import { LiveTerminalShowcase } from '@/components/home/LiveTerminalShowcase';
 import { InteractiveMeshPlayground } from '@/components/home/InteractiveMeshPlayground';
+import { NarrativeStatementSection } from '@/components/home/NarrativeStatementSection';
 import { FlippingText } from '@/components/ui/FlippingText';
 import { SplitLineText } from '@/components/ui/SplitLineText';
 
@@ -164,6 +165,11 @@ export default function WideStudioPage() {
         </ScrollReveal>
 
       </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          01.45 EXECUTIVE NARRATIVE STATEMENT (SIGNATURE UNITED CARRIERS MOMENT)
+          ───────────────────────────────────────────────────────────── */}
+      <NarrativeStatementSection />
 
       {/* ─────────────────────────────────────────────────────────────
           01.5 3D CANVAS TURNTABLE SEQUENCE (SIGNATURE AWARDS MOMENT)
