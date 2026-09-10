@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { getMySubscriptionsApi, cancelSubscriptionApi } from '@/api/subscriptions';
 import { Subscription } from '@/api/types';
+import { CustomerPortalNav } from '@/components/portal/CustomerPortalNav';
 
 export default function SubscriptionsPage() {
   const { user } = useAuth();
@@ -69,6 +70,7 @@ export default function SubscriptionsPage() {
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8">
       <main className="max-w-5xl w-full mx-auto" id="subscriptions-main">
+        <CustomerPortalNav />
         
         <div className="mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 font-mono text-xs font-bold uppercase tracking-wider mb-2">

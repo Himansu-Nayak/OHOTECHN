@@ -53,7 +53,7 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (request.getEmail() != null && userRepository.existsByEmail(request.getEmail())) {
+        if (request.getEmail() != null && userRepository.existsByEmailIgnoreCase(request.getEmail().trim())) {
             throw new BadRequestException("Email is already registered!");
         }
         if (request.getPhone() != null && userRepository.existsByPhone(request.getPhone())) {
@@ -101,11 +101,7 @@ public class AuthService {
                 "User registered with email: " + savedUser.getEmail());
 
         if (savedUser.getEmail() != null) {
-            try {
-                otpService.sendOtp(savedUser.getEmail(), "EMAIL", OtpPurpose.EMAIL_VERIFICATION);
-            } catch (Exception e) {
-                // Non-blocking notification/OTP dispatch log
-            }
+            otpService.sendOtp(savedUser.getEmail(), "EMAIL", OtpPurpose.EMAIL_VERIFICATION);
         }
 
         Authentication authentication = authenticationManager.authenticate(
@@ -130,8 +126,8 @@ public class AuthService {
         String username = request.getUsername();
 
         User user = (username != null && username.contains("@"))
-                ? userRepository.findByEmail(username).orElse(null)
-                : userRepository.findByPhone(username).orElse(null);
+                ? userRepository.findByEmailIgnoreCase(username.trim()).orElse(null)
+                : userRepository.findByPhone(username.trim()).orElse(null);
 
         if (user != null) {
             if (user.getLockoutUntil() != null && user.getLockoutUntil().isAfter(java.time.LocalDateTime.now())) {
@@ -245,7 +241,7 @@ public class AuthService {
         otpService.verifyOtp(normalizedTarget, rawOtpCode, OtpPurpose.LOGIN);
 
         User user = (normalizedTarget.contains("@"))
-                ? userRepository.findByEmail(normalizedTarget).orElseThrow(() -> new BadRequestException("Account not found"))
+                ? userRepository.findByEmailIgnoreCase(normalizedTarget).orElseThrow(() -> new BadRequestException("Account not found"))
                 : userRepository.findByPhone(normalizedTarget).orElseThrow(() -> new BadRequestException("Account not found"));
 
         if (!user.isEnabled()) {
@@ -283,7 +279,7 @@ public class AuthService {
         otpService.verifyOtp(normalizedTarget, rawOtpCode, OtpPurpose.EMAIL_VERIFICATION);
 
         User user = (normalizedTarget.contains("@"))
-                ? userRepository.findByEmail(normalizedTarget).orElse(null)
+                ? userRepository.findByEmailIgnoreCase(normalizedTarget).orElse(null)
                 : userRepository.findByPhone(normalizedTarget).orElse(null);
 
         if (user != null) {
@@ -316,7 +312,7 @@ public class AuthService {
             throw new BadRequestException("Password reset token has expired. Please request a new OTP.");
         }
 
-        User user = userRepository.findByEmail(normalizedEmail)
+        User user = userRepository.findByEmailIgnoreCase(normalizedEmail)
                 .orElseThrow(() -> new BadRequestException("User account not found."));
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
@@ -324,12 +320,15 @@ public class AuthService {
         user.setLockoutUntil(null);
         userRepository.save(user);
 
+        // Revoke all active refresh tokens on password reset for security
+        refreshTokenRepository.deleteByUser(user);
+
         // Consume single-use reset token
         verification.setResetToken(null);
         verification.setResetTokenExpiry(null);
         otpRepository.save(verification);
 
         auditService.logUserEvent(user, "USER_PASSWORD_RESET_SUCCESS", "User", String.valueOf(user.getId()),
-                "Password reset successfully via OTP reset authorization");
+                "Password reset successfully via OTP reset authorization (all active refresh tokens revoked)");
     }
 }

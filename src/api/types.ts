@@ -10,6 +10,7 @@ export interface UserDto {
   id: number;
   name: string;
   email: string;
+  officialEmail?: string;
   phone?: string;
   role: 'CUSTOMER' | 'ADMIN' | 'DEVELOPER' | 'ROLE_CUSTOMER' | 'ROLE_ADMIN' | 'ROLE_DEVELOPER' | string;
   enabled: boolean;
@@ -52,21 +53,23 @@ export interface Page<T> {
 export interface CartItem {
   id: number;
   product: ProductDto;
+  productPlan?: ProductPlanDto;
   quantity: number;
-  price: number;
+  price?: number;
 }
 
 export interface Cart {
   id: number;
   user?: UserDto;
   items: CartItem[];
-  totalAmount: number;
-  totalItems: number;
+  totalAmount?: number;
+  totalItems?: number;
 }
 
 export interface OrderItem {
   id: number;
   product: ProductDto;
+  productPlan?: ProductPlanDto;
   quantity: number;
   price: number;
 }
@@ -187,6 +190,7 @@ export interface SoftwareReleaseDto {
   fileSize?: number;
   platform: Platform;
   active: boolean;
+  checksum?: string;
   releaseDate?: string;
   createdAt?: string;
 }
@@ -591,6 +595,121 @@ export interface CrmMarketingAnalyticsDto {
   revenueBySource: Record<string, number>;
 }
 
+export interface DeveloperOverviewDto {
+  applicationName: string;
+  version: string;
+  environment: string;
+  backendStatus: string;
+  databaseStatus: string;
+  emailStatus: string;
+  otpStatus: string;
+  razorpayStatus: string;
+  storageStatus: string;
+  crmStatus: string;
+  authStatus: string;
+  activeFeatureFlagsCount: number;
+  totalUsersCount: number;
+  totalReleasesCount: number;
+  lastConfigurationUpdate: string;
+  recentActivity: Array<{
+    action: string;
+    status: string;
+    timestamp: string;
+  }>;
+}
 
+export interface RazorpayConfigDto {
+  keyId: string;
+  maskedKeySecret: string;
+  keySecret?: string;
+  environment: 'TEST' | 'LIVE' | string;
+  enabled: boolean;
+  source: 'ENVIRONMENT' | 'DEVELOPER_CONFIG' | string;
+  configured: boolean;
+  lastTestedAt?: string;
+  lastTestStatus?: string;
+}
 
+export interface EmailConfigDto {
+  host: string;
+  port: number;
+  username: string;
+  maskedPassword: string;
+  password?: string;
+  fromEmail: string;
+  fromName: string;
+  auth: boolean;
+  sslEnable: boolean;
+  starttlsEnable: boolean;
+  enabled: boolean;
+  source: 'ENVIRONMENT' | 'DEVELOPER_CONFIG' | string;
+  configured: boolean;
+  lastTestedAt?: string;
+  lastTestStatus?: string;
+}
+
+export interface StorageConfigDto {
+  provider: 'LOCAL' | 'S3' | 'R2' | 'MINIO' | string;
+  localBaseDir?: string;
+  bucket?: string;
+  region?: string;
+  endpoint?: string;
+  accessKey?: string;
+  maskedSecretKey: string;
+  secretKey?: string;
+  pathStyle: boolean;
+  enabled: boolean;
+  source: 'ENVIRONMENT' | 'DEVELOPER_CONFIG' | string;
+  configured: boolean;
+  lastTestedAt?: string;
+  lastTestStatus?: string;
+}
+
+export interface OtpConfigDto {
+  expiryMinutes: number;
+  cooldownSeconds: number;
+  maxAttempts: number;
+  enabled: boolean;
+  source: string;
+}
+
+export interface ApiConfigDto {
+  backendUrl: string;
+  frontendUrl: string;
+  allowedCorsOrigins: string[];
+  newCorsOrigin?: string;
+  environment: string;
+  activeProfile: string;
+  healthStatus: string;
+}
+
+export interface FeatureFlagDto {
+  id: number;
+  flagKey: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  category: string;
+  updatedBy: string;
+  updatedAt?: string;
+}
+
+export interface SystemHealthDto {
+  status: 'UP' | 'DEGRADED' | 'DOWN' | string;
+  uptimeMs: number;
+  timestamp: string;
+  components: Record<string, any>;
+  systemMetrics: {
+    totalMemoryMb?: number;
+    freeMemoryMb?: number;
+    maxMemoryMb?: number;
+    availableProcessors?: number;
+  };
+}
+
+export interface TestIntegrationRequest {
+  provider?: string;
+  testRecipientEmail?: string;
+  notes?: string;
+}
 

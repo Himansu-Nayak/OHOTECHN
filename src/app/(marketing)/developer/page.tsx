@@ -63,7 +63,7 @@ export default function DeveloperStudioPage() {
   }, [activeTab, startDateStr, endDateStr, fetchAnalytics]);
 
   const [users, setUsers] = React.useState<DevUser[]>([
-    { id: 1, email: 'kampainfraa@gmail.com', name: 'Jagabandhu Kampa', role: 'ROLE_DEVELOPER' },
+    { id: 1, email: 'developer@ohotechn.com', name: 'Jagabandhu Kampa', role: 'ROLE_DEVELOPER' },
     { id: 2, email: 'himansu@ohotech.com', name: 'Himansu Nayak', role: 'ROLE_DEVELOPER' },
     { id: 3, email: 'admin@ohotech.com', name: 'System Admin', role: 'ROLE_ADMIN' },
     { id: 4, email: 'customer@client.com', name: 'Enterprise Client', role: 'ROLE_CUSTOMER' },
@@ -109,6 +109,17 @@ export default function DeveloperStudioPage() {
       showToast('Developer AI Command Executed!', 'success');
     }, 900);
   };
+
+  const isDev =
+    user && (user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER');
+
+  if (isLoading || !user || !isDev) {
+    return (
+      <div className="min-h-screen bg-[#f7f7f5] flex items-center justify-center font-mono text-xs text-slate-500">
+        Authenticating Developer Studio Access...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
@@ -513,8 +524,8 @@ export default function DeveloperStudioPage() {
               <div className="space-y-4 font-mono text-xs">
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-[#0d0d0e] block">Resend Email Target</span>
-                    <span className="text-[11px] text-slate-500">kampainfraa@gmail.com</span>
+                    <span className="font-bold text-[#0d0d0e] block">Resend Email Gateway</span>
+                    <span className="text-[11px] text-slate-500">noreply@ohotechn.com</span>
                   </div>
                   <span className="text-emerald-600 font-bold bg-emerald-100 px-2.5 py-1 rounded-lg">VERIFIED</span>
                 </div>

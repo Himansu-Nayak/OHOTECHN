@@ -30,9 +30,18 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!process.env.RESEND_API_KEY) {
+      return NextResponse.json(
+        { error: 'Email delivery service is currently not configured.' },
+        { status: 503 }
+      );
+    }
+
+    const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || process.env.SUPPORT_EMAIL || 'support@ohotechn.com';
+
     const { data, error } = await resend.emails.send({
-      from: 'OHO TECH <onboarding@resend.dev>',
-      to: ['kampainfraa@gmail.com'],
+      from: 'OHO TECH <noreply@ohotechn.com>',
+      to: [adminEmail],
       replyTo: email,
       subject: `[OHO TECH] ${finalSubject} from ${name}`,
       html: `
@@ -82,10 +91,11 @@ export async function POST(request: Request) {
       },
       { status: 200 }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Server error:', err);
+    const message = err instanceof Error ? err.message : 'Something went wrong.';
     return NextResponse.json(
-      { error: err.message || 'Something went wrong.' },
+      { error: message },
       { status: 500 }
     );
   }

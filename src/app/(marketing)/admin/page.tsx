@@ -7,13 +7,24 @@ import { Sparkles, ShoppingBag, ShieldCheck, DollarSign, Users, FileText, Settin
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
-import { UserDto, License, Subscription, SoftwareReleaseDto, ProductPlanDto, ContactEnquiry, AnalyticsDashboardDto } from '@/api/types';
-import { getAdminUsersApi, updateAdminUserStatusApi, updateAdminUserRoleApi } from '@/api/users';
+import { UserDto, License, Subscription, SoftwareReleaseDto, ProductPlanDto, ContactEnquiry, AnalyticsDashboardDto, Customer360Dto, Order, ProductDto } from '@/api/types';
+import { getAdminUsersApi, updateAdminUserStatusApi, updateAdminUserRoleApi, assignAdminUserOfficialEmailApi } from '@/api/users';
 import { getAdminLicensesApi, updateAdminLicenseStatusApi, revokeAdminLicenseApi } from '@/api/licenses';
 import { getAdminSubscriptionsApi, updateAdminSubscriptionStatusApi } from '@/api/subscriptions';
 import { getAdminReleasesApi, createAdminReleaseApi, toggleAdminReleaseStatusApi, deleteAdminReleaseApi } from '@/api/releases';
 import { getAdminProductPlansApi, createAdminProductPlanApi, toggleAdminProductPlanStatusApi, deleteAdminProductPlanApi } from '@/api/plans';
-import { getAnalyticsDashboardApi, getAdminEnquiriesApi, updateAdminEnquiryStatusApi } from '@/api/admin';
+import {
+  getAnalyticsDashboardApi,
+  getAdminEnquiriesApi,
+  updateAdminEnquiryStatusApi,
+  getAdminOrdersApi,
+  updateAdminOrderStatusApi,
+  getAdminProductsApi,
+  updateAdminProductStatusApi,
+  updateAdminProductApi,
+  getCustomer360Api,
+  getAdminStatsApi,
+} from '@/api/admin';
 
 interface Stats {
   totalProducts: number;
@@ -101,27 +112,111 @@ export default function AdminConsolePage() {
 
   const [stats, setStats] = React.useState<Stats>({
     totalProducts: 28,
-    totalOrders: 14,
-    totalUsers: 8,
-    totalQuotes: 12,
-    totalRevenue: 645000,
+    totalOrders: 0,
+    totalUsers: 0,
+    totalQuotes: 0,
+    totalRevenue: 0,
     systemStatus: 'OPERATIONAL_100',
   });
 
-  const [products, setProducts] = React.useState<ProductItem[]>([
-    { id: 1, name: 'School Management Software', price: 35000, stock: 50, description: 'K-12 administration portal.', active: true, serviceType: 'Education' },
-    { id: 2, name: 'University Management System', price: 99000, stock: 50, description: 'Multi-campus university ERP.', active: true, serviceType: 'Education' },
-    { id: 3, name: 'Hospital Management Software (HMS)', price: 75000, stock: 50, description: 'OPD/IPD, EMR, Doctor schedules, Pharmacy.', active: true, serviceType: 'Healthcare' },
-    { id: 4, name: 'IVF & Fertility Clinic Software', price: 85000, stock: 50, description: 'IVF cycle tracking, embryology lab.', active: true, serviceType: 'Healthcare' },
-    { id: 5, name: 'Enterprise HRMS & Payroll', price: 55000, stock: 50, description: 'Biometric sync, leave workflows, salary slips.', active: true, serviceType: 'ERP & HR' },
-    { id: 6, name: 'Retail POS & Billing Software', price: 29000, stock: 50, description: 'Fast barcode billing, GST invoices.', active: true, serviceType: 'Retail & POS' },
-  ]);
+  const fetchStats = React.useCallback(async () => {
+    try {
+      const res = await getAdminStatsApi();
+      if (res.success && res.data) {
+        setStats(res.data);
+      }
+    } catch (err: any) {
+      console.warn('Backend stats fetch warning:', err?.message);
+    }
+  }, []);
 
-  const [orders, setOrders] = React.useState<OrderItem[]>([
-    { id: 101, totalAmount: 75000, status: 'COMPLETED', shippingAddress: 'Bhubaneswar, Odisha', contactPhone: '+91 98765 43210' },
-    { id: 102, totalAmount: 35000, status: 'PROCESSING', shippingAddress: 'Cuttack, Odisha', contactPhone: '+91 98765 11111' },
-    { id: 103, totalAmount: 55000, status: 'PENDING', shippingAddress: 'Bangalore, Karnataka', contactPhone: '+91 98765 22222' },
-  ]);
+  React.useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  // Admin Products State
+  const [productsList, setProductsList] = React.useState<ProductDto[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = React.useState(false);
+  const [productSearch, setProductSearch] = React.useState('');
+
+  const fetchProducts = React.useCallback(async () => {
+    setIsLoadingProducts(true);
+    try {
+      const res = await getAdminProductsApi(0, 50, productSearch || undefined);
+      if (res.success && res.data) {
+        const data = res.data;
+        setProductsList(data.content || []);
+        setStats((prev) => ({ ...prev, totalProducts: data.totalElements || data.content?.length || 0 }));
+      }
+    } catch (err: any) {
+      console.warn('Backend products fetch warning:', err?.message);
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  }, [productSearch]);
+
+  const handleProductPriceChange = (id: number, newPrice: number) => {
+    setProductsList((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, price: newPrice } : p))
+    );
+  };
+
+  const handleSaveProductPrice = async (prod: ProductDto) => {
+    try {
+      const res = await updateAdminProductApi(prod.id, { price: prod.price, name: prod.name, description: prod.description });
+      if (res.success) {
+        showToast(`Saved updated price for ${prod.name}`, 'success');
+        fetchProducts();
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update product', 'error');
+    }
+  };
+
+  const handleToggleProductStatus = async (prod: ProductDto) => {
+    try {
+      const newActive = !prod.active;
+      const res = await updateAdminProductStatusApi(prod.id, newActive);
+      if (res.success) {
+        showToast(`Product ${prod.name} ${newActive ? 'activated' : 'deactivated'}`, 'success');
+        fetchProducts();
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update product status', 'error');
+    }
+  };
+
+  // Admin Orders State
+  const [ordersList, setOrdersList] = React.useState<Order[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = React.useState(false);
+
+  const fetchOrders = React.useCallback(async () => {
+    setIsLoadingOrders(true);
+    try {
+      const res = await getAdminOrdersApi();
+      if (res.success && res.data) {
+        const data = res.data;
+        setOrdersList(data);
+        setStats((prev) => ({ ...prev, totalOrders: data.length }));
+      }
+    } catch (err: any) {
+      console.warn('Backend orders fetch warning:', err?.message);
+    } finally {
+      setIsLoadingOrders(false);
+    }
+  }, []);
+
+  const handleOrderStatus = async (id: number, newStatus: string) => {
+    try {
+      const res = await updateAdminOrderStatusApi(id, newStatus);
+      if (res.success && res.data) {
+        showToast(`Order #${id} status updated to ${newStatus}`, 'success');
+        fetchOrders();
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update order status', 'error');
+    }
+  };
 
   // Admin Quote & Demo Request Management State
   const [enquiries, setEnquiries] = React.useState<ContactEnquiry[]>([]);
@@ -177,6 +272,10 @@ export default function AdminConsolePage() {
   const [filterRole, setFilterRole] = React.useState('');
   const [isLoadingUsers, setIsLoadingUsers] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState<UserDto | null>(null);
+  const [selectedUser360, setSelectedUser360] = React.useState<Customer360Dto | null>(null);
+  const [isLoading360, setIsLoading360] = React.useState(false);
+  const [officialEmailInput, setOfficialEmailInput] = React.useState('');
+  const [isAssigningEmail, setIsAssigningEmail] = React.useState(false);
 
   // Fetch Users with Search, Role, and Pagination
   const fetchUsers = React.useCallback(async () => {
@@ -196,6 +295,42 @@ export default function AdminConsolePage() {
       setIsLoadingUsers(false);
     }
   }, [page, searchQuery, filterRole]);
+
+  const handleOpenUserModal = async (u: UserDto) => {
+    setSelectedUser(u);
+    setOfficialEmailInput(u.officialEmail || '');
+    setIsLoading360(true);
+    try {
+      const res = await getCustomer360Api(u.id);
+      if (res.success && res.data) {
+        setSelectedUser360(res.data);
+      } else {
+        setSelectedUser360(null);
+      }
+    } catch (e) {
+      console.warn('Customer 360 fetch warning:', e);
+      setSelectedUser360(null);
+    } finally {
+      setIsLoading360(false);
+    }
+  };
+
+  const handleAssignOfficialEmail = async () => {
+    if (!selectedUser || !officialEmailInput.trim()) return;
+    setIsAssigningEmail(true);
+    try {
+      const res = await assignAdminUserOfficialEmailApi(selectedUser.id, officialEmailInput.trim());
+      if (res.success && res.data) {
+        showToast(`Assigned official email ${officialEmailInput} to ${selectedUser.name}`, 'success');
+        setSelectedUser(res.data);
+        fetchUsers();
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to assign official email', 'error');
+    } finally {
+      setIsAssigningEmail(false);
+    }
+  };
 
   // Priority 4 Admin State
   const [adminLicenses, setAdminLicenses] = React.useState<License[]>([]);
@@ -242,11 +377,13 @@ export default function AdminConsolePage() {
   React.useEffect(() => {
     if (!user) return;
     if (activeTab === 'users') fetchUsers();
+    if (activeTab === 'products') fetchProducts();
+    if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'licenses') fetchAdminLicenses();
     if (activeTab === 'subscriptions') fetchAdminSubs();
     if (activeTab === 'releases') fetchAdminReleases();
     if (activeTab === 'plans') fetchAdminPlans();
-  }, [user, activeTab, fetchUsers, fetchAdminLicenses, fetchAdminSubs, fetchAdminReleases, fetchAdminPlans]);
+  }, [user, activeTab, fetchUsers, fetchProducts, fetchOrders, fetchAdminLicenses, fetchAdminSubs, fetchAdminReleases, fetchAdminPlans]);
 
   const handleToggleUserStatus = async (targetUser: UserDto) => {
     try {
@@ -281,20 +418,6 @@ export default function AdminConsolePage() {
   ]);
   const [isExecutingAi, setIsExecutingAi] = React.useState(false);
 
-  const handlePriceChange = (id: number, newPrice: number) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, price: newPrice } : p))
-    );
-    showToast(`Updated product #${id} price to ₹${newPrice.toLocaleString('en-IN')}`, 'success');
-  };
-
-  const handleOrderStatus = (id: number, newStatus: string) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o))
-    );
-    showToast(`Order #${id} status updated to ${newStatus}`, 'success');
-  };
-
   const handleAiSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!aiPrompt.trim()) return;
@@ -315,7 +438,14 @@ export default function AdminConsolePage() {
     }, 1000);
   };
 
-  if (isLoading || !user) {
+  const isAdminOrDev =
+    user &&
+    (user.role === 'ROLE_ADMIN' ||
+      user.role === 'ADMIN' ||
+      user.role === 'ROLE_DEVELOPER' ||
+      user.role === 'DEVELOPER');
+
+  if (isLoading || !user || !isAdminOrDev) {
     return (
       <div className="min-h-screen bg-[#f7f7f5] flex items-center justify-center font-mono text-xs text-slate-500">
         Authenticating Admin Console Access...
@@ -400,7 +530,7 @@ export default function AdminConsolePage() {
                 activeTab === 'products' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
               )}
             >
-              ⚡ Turnkey Products Catalog ({products.length})
+              ⚡ Turnkey Products Catalog ({productsList.length})
             </button>
 
             <button
@@ -420,7 +550,7 @@ export default function AdminConsolePage() {
                 activeTab === 'orders' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
               )}
             >
-              📦 Customer Orders ({orders.length})
+              📦 Customer Orders ({ordersList.length})
             </button>
 
             <button
@@ -666,7 +796,7 @@ export default function AdminConsolePage() {
                   {stats.totalQuotes} Inquiries
                 </div>
                 <span className="text-[11px] font-mono text-purple-600 font-bold mt-1 block">
-                  Target: kampainfraa@gmail.com
+                  Target: support@ohotechn.com
                 </span>
               </div>
             </div>
@@ -729,7 +859,7 @@ export default function AdminConsolePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-[#0d0d0e]">
-                  {products.map((prod) => (
+                  {productsList.map((prod) => (
                     <tr key={prod.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-4 px-4 font-bold text-slate-400">#PROD-0{prod.id}</td>
                       <td className="py-4 px-4 font-bold">{prod.name}</td>
@@ -738,21 +868,30 @@ export default function AdminConsolePage() {
                         <input
                           type="number"
                           value={prod.price}
-                          onChange={(e) => handlePriceChange(prod.id, Number(e.target.value))}
+                          onChange={(e) => handleProductPriceChange(prod.id, Number(e.target.value))}
                           className="w-28 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-300 font-extrabold focus:outline-none focus:border-sky-500"
                         />
                       </td>
                       <td className="py-4 px-4">
-                        <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 text-[10px]">
-                          In Stock ({prod.stock})
+                        <span className={cn(
+                          "px-2.5 py-1 rounded-full font-bold border text-[10px]",
+                          prod.active ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"
+                        )}>
+                          {prod.active ? `Active (${prod.stock || 100})` : 'Inactive'}
                         </span>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-4 flex items-center gap-2">
                         <button
-                          onClick={() => showToast(`Saved changes for ${prod.name}`, 'success')}
+                          onClick={() => handleSaveProductPrice(prod)}
                           className="px-3 py-1.5 rounded-lg bg-[#0d0d0e] hover:bg-emerald-600 text-white font-bold transition-all text-[11px] cursor-pointer"
                         >
                           Save
+                        </button>
+                        <button
+                          onClick={() => handleToggleProductStatus(prod)}
+                          className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold transition-all text-[11px] cursor-pointer"
+                        >
+                          {prod.active ? 'Disable' : 'Enable'}
                         </button>
                       </td>
                     </tr>
@@ -934,7 +1073,7 @@ export default function AdminConsolePage() {
             </div>
 
             <div className="space-y-4">
-              {orders.map((ord) => (
+              {ordersList.map((ord) => (
                 <div key={ord.id} className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
                   <div>
                     <div className="flex items-center gap-3">

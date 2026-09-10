@@ -2,6 +2,7 @@ import { apiClient } from './client';
 import { ApiResponse, ContactEnquiry, LeadSource } from './types';
 import { validateContactForm } from '@/lib/validators';
 import { getCapturedUtmParams } from '@/lib/utmTracker';
+import { getErrorMessage } from '@/lib/utils';
 
 export interface ContactParams {
   name: string;
@@ -78,9 +79,9 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
     } else {
       emailError = resendData.error || 'Failed to send email notification.';
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.warn('Resend email fetch warning:', err);
-    emailError = err.message || 'Email service unreachable.';
+    emailError = getErrorMessage(err, 'Email service unreachable.');
   }
 
   // 2. Save to Spring Boot backend database & CRM lead pipeline
@@ -119,7 +120,7 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
   if (emailSent) {
     return {
       success: true,
-      message: 'Your message has been sent successfully to kampainfraa@gmail.com!',
+      message: 'Your message has been sent successfully!',
     };
   }
 

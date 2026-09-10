@@ -1,7 +1,5 @@
-import { apiClient, getAccessToken } from './client';
+import { apiClient, getAccessToken, API_BASE_URL } from './client';
 import { ApiResponse, ProductDto, SoftwareReleaseDto } from './types';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export async function getMyEntitledProductsApi(): Promise<ApiResponse<ProductDto[]>> {
   return apiClient<ProductDto[]>('/api/products/my', {
@@ -29,6 +27,18 @@ export async function downloadReleaseApi(productId: number | string, releaseId: 
   }
 
   return await res.blob();
+}
+
+export async function getPresignedDownloadUrlApi(
+  productId: number | string,
+  releaseId: number | string
+): Promise<ApiResponse<{ downloadUrl: string; expiresInMinutes: string; storageProvider: string }>> {
+  return apiClient<{ downloadUrl: string; expiresInMinutes: string; storageProvider: string }>(
+    `/api/products/my/${productId}/download-url/${releaseId}`,
+    {
+      method: 'GET',
+    }
+  );
 }
 
 // Admin APIs

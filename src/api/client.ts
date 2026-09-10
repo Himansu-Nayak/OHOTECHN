@@ -1,6 +1,6 @@
 import { ApiResponse } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export function getAccessToken(): string | null {
   if (typeof window !== 'undefined') {
@@ -82,14 +82,27 @@ export async function apiClient<T>(
     }));
 
     if (!response.ok || !data.success) {
-      throw new Error(data.message || `API Request failed with status ${response.status}`);
+      let errorMsg = data.message || `API Request failed with status ${response.status}`;
+      if (data.data && typeof data.data === 'object' && !Array.isArray(data.data)) {
+        const fieldErrors = Object.values(data.data).filter((v): v is string => typeof v === 'string');
+        if (fieldErrors.length > 0) {
+          errorMsg = fieldErrors.join('; ');
+        }
+      }
+      throw new Error(errorMsg);
     }
 
     return data;
-  } catch (error: any) {
-    if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
-      throw new Error('Backend server (http://localhost:8080) is offline or starting up. Please ensure Spring Boot is running.');
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    const isNetworkError =
+      error instanceof TypeError ||
+      message === 'Failed to fetch' ||
+      message.includes('fetch');
+
+    if (isNetworkError) {
+      throw new Error(`Backend server (${API_BASE_URL}) is offline or starting up. Please ensure Spring Boot is running.`);
     }
-    throw new Error(error.message || 'Network error occurred. Please check your connection.');
+    throw new Error(message || 'Network error occurred. Please check your connection.');
   }
 }

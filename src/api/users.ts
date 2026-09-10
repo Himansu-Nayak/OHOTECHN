@@ -78,3 +78,12 @@ export async function updateAdminUserRoleApi(id: number | string, role: string):
     body: JSON.stringify({ role }),
   });
 }
+
+// 8. Admin assign official company email
+export async function assignAdminUserOfficialEmailApi(id: number | string, officialEmail: string): Promise<ApiResponse<UserDto>> {
+  return apiClient<UserDto>(`/api/admin/users/${id}/official-email`, {
+    method: 'PUT',
+    body: JSON.stringify({ officialEmail }),
+  });
+}
+

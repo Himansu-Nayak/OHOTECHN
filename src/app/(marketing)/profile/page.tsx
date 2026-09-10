@@ -6,6 +6,7 @@ import { User, Mail, Phone, Lock, Save, ShieldCheck, CheckCircle2, KeyRound, Ale
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { updateProfileApi, changePasswordApi } from '@/api/users';
+import { CustomerPortalNav } from '@/components/portal/CustomerPortalNav';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -113,6 +114,7 @@ export default function ProfilePage() {
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
       <main className="max-w-2xl w-full mx-auto space-y-8" id="profile-main">
+        <CustomerPortalNav />
         
         {/* Profile Card */}
         <div className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-12 shadow-sm">

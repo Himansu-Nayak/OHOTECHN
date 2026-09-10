@@ -110,7 +110,7 @@ oho_tech/
 - **Authentication System**: User registration, login, JWT token refresh, and user profile sync (`GET /api/auth/me`).
 - **Product Ecosystem**: 28 turnkey software products categorized across 13 enterprise industries.
 - **Cart & Order Flow**: Full cart management and checkout integration connected to Spring Boot REST endpoints.
-- **Dual Contact & Quote Delivery**: Direct email delivery via Resend API (`kampainfraa@gmail.com`) with Spring Boot DB persistence.
+- **Dual Contact & Quote Delivery**: Direct email delivery via Resend API (`noreply@ohotechn.com`) with Spring Boot DB persistence.
 
 ---
 

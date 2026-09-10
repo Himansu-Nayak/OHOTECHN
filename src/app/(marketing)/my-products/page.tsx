@@ -8,6 +8,7 @@ import { getMyEntitledProductsApi } from '@/api/releases';
 import { getMyLicensesApi } from '@/api/licenses';
 import { getMySubscriptionsApi } from '@/api/subscriptions';
 import { ProductDto, License, Subscription } from '@/api/types';
+import { CustomerPortalNav } from '@/components/portal/CustomerPortalNav';
 
 export default function MyProductsPage() {
   const { user } = useAuth();
@@ -54,6 +55,7 @@ export default function MyProductsPage() {
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8">
       <main className="max-w-5xl w-full mx-auto" id="my-products-main">
+        <CustomerPortalNav />
         
         <div className="mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-2">

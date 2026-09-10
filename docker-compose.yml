@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # PostgreSQL 17 Relational Database Service
+  # ============================================================================
+  postgres:
+    image: postgres:17-alpine
+    container_name: ohotech-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-OHOTECH}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-OHOTECH}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ohotech-network
+
+  # ============================================================================
+  # Spring Boot 4.1 Java Backend Service
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ohotech-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-OHOTECH}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-please_set_a_long_secure_production_jwt_secret_32_bytes}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      JWT_REFRESH_EXPIRATION_MS: ${JWT_REFRESH_EXPIRATION_MS:-604800000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-}
+      SPRING_MAIL_FROM_ADDRESS: ${SPRING_MAIL_FROM_ADDRESS:-onboarding@resend.dev}
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-LOCAL}
+      STORAGE_LOCAL_BASE_DIR: /app/storage
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT:-}
+    ports:
+      - "8080:8080"
+    volumes:
+      - backend_storage:/app/storage
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ohotech-network
+
+  # ============================================================================
+  # Next.js 16.3 Frontend Service
+  # ============================================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ohotech-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:8080}
+      NEXT_PUBLIC_RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - ohotech-network
+
+# ==============================================================================
+# Persistent Volumes & Networks
+# ==============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  backend_storage:
+    driver: local
+
+networks:
+  ohotech-network:
+    driver: bridge

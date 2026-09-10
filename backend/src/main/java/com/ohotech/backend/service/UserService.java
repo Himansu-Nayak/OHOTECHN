@@ -7,6 +7,7 @@ import com.ohotech.backend.entity.Role;
 import com.ohotech.backend.entity.User;
 import com.ohotech.backend.exception.BadRequestException;
 import com.ohotech.backend.exception.ResourceNotFoundException;
+import com.ohotech.backend.repository.RefreshTokenRepository;
 import com.ohotech.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditService auditService;
     private final NotificationService notificationService;
@@ -68,7 +70,11 @@ public class UserService {
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
-        log.info("User #{} successfully changed their password.", user.getId());
+
+        // Security: Invalidate all active refresh tokens for the user upon password change
+        refreshTokenRepository.deleteByUser(user);
+
+        log.info("User #{} successfully changed their password. Active refresh tokens invalidated.", user.getId());
     }
 
     public Page<UserDto> getUsersAdmin(int page, int size, String search, String roleStr) {

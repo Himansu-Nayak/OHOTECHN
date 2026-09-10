@@ -92,7 +92,7 @@ public class OtpService {
 
         if (isEmail) {
             String htmlBody = emailTemplateService.buildOtpEmail(recipientName, rawOtpCode, actualPurpose);
-            emailService.sendHtmlEmail(normalizedTarget, "OHO TECHN - Verification Code", htmlBody);
+            emailService.sendOtpEmail(normalizedTarget, "OHO TECHN - Verification Code", htmlBody, actualPurpose);
         } else {
             // DEV Mode SMS logging without raw OTP in prod logs
             logger.info("[DEV SMS OTP MODE] Target: {} | Purpose: {} | OTP Generated", normalizedTarget, actualPurpose);

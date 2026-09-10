@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { getNotificationsApi, markNotificationAsReadApi, markAllNotificationsAsReadApi, deleteNotificationApi } from '@/api/notifications';
 import { NotificationDto } from '@/api/types';
+import { CustomerPortalNav } from '@/components/portal/CustomerPortalNav';
 import { cn } from '@/lib/utils';
 
 export default function NotificationsPage() {
@@ -102,6 +103,7 @@ export default function NotificationsPage() {
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8">
       <main className="max-w-5xl w-full mx-auto" id="notifications-main">
+        <CustomerPortalNav />
         
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">

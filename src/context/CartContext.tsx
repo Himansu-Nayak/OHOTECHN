@@ -1,10 +1,27 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Cart, ProductDto } from '../api/types';
+import { Cart, CartItem, ProductDto } from '../api/types';
 import { getCartApi, addToCartApi, updateCartItemQuantityApi, removeFromCartApi, clearCartApi } from '../api/cart';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
+
+export function getCartItemUnitPrice(item: CartItem): number {
+  if (item.productPlan && item.productPlan.price !== undefined && item.productPlan.price !== null) {
+    return Number(item.productPlan.price);
+  }
+  if (item.product && item.product.price !== undefined && item.product.price !== null) {
+    return Number(item.product.price);
+  }
+  if (item.price !== undefined && item.price !== null) {
+    return Number(item.price);
+  }
+  return 0;
+}
+
+export function getCartItemSubtotal(item: CartItem): number {
+  return getCartItemUnitPrice(item) * (item.quantity || 1);
+}
 
 interface CartContextType {
   cart: Cart | null;
@@ -16,6 +33,7 @@ interface CartContextType {
   removeItem: (itemId: number) => Promise<void>;
   clearCart: () => Promise<void>;
   refreshCart: () => Promise<void>;
+  getItemUnitPrice: (item: CartItem) => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -122,7 +140,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const itemCount = cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
-  const totalAmount = cart?.totalAmount || cart?.items?.reduce((acc, item) => acc + (item.price * item.quantity), 0) || 0;
+  const totalAmount = cart?.totalAmount !== undefined && cart?.totalAmount !== null
+    ? Number(cart.totalAmount)
+    : (cart?.items?.reduce((acc, item) => acc + getCartItemSubtotal(item), 0) || 0);
 
   return (
     <CartContext.Provider
@@ -136,6 +156,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         clearCart,
         refreshCart,
+        getItemUnitPrice: getCartItemUnitPrice,
       }}
     >
       {children}

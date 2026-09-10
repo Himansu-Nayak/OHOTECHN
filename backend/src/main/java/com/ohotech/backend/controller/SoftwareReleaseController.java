@@ -34,6 +34,9 @@ public class SoftwareReleaseController {
     @GetMapping("/products/my")
     public ResponseEntity<ApiResponse<List<Product>>> getMyEntitledProducts(
             @AuthenticationPrincipal UserPrincipal currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Unauthorized"));
+        }
         List<Product> products = softwareReleaseService.getEntitledProducts(currentUser.getId());
         return ResponseEntity.ok(ApiResponse.success("Entitled products retrieved", products));
     }
@@ -42,6 +45,9 @@ public class SoftwareReleaseController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> getMyEntitledProductDetails(
             @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable Long productId) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Unauthorized"));
+        }
         boolean entitled = softwareReleaseService.isUserEntitledToProduct(currentUser.getId(), productId);
         return ResponseEntity.ok(ApiResponse.success("Entitlement status fetched", Map.of("productId", productId, "entitled", entitled)));
     }
@@ -50,6 +56,9 @@ public class SoftwareReleaseController {
     public ResponseEntity<ApiResponse<List<SoftwareReleaseDto>>> getEntitledReleases(
             @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable Long productId) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Unauthorized"));
+        }
         List<SoftwareReleaseDto> releases = softwareReleaseService.getEntitledProductReleases(currentUser.getId(), productId);
         return ResponseEntity.ok(ApiResponse.success("Product releases retrieved", releases));
     }
@@ -59,6 +68,9 @@ public class SoftwareReleaseController {
             @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable Long productId,
             @PathVariable Long releaseId) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         SoftwareRelease release = softwareReleaseService.getSoftwareReleaseForDownload(currentUser.getId(), productId, releaseId);
 
@@ -66,15 +78,7 @@ public class SoftwareReleaseController {
         auditService.logEvent("SOFTWARE_DOWNLOADED", "SoftwareRelease", String.valueOf(release.getId()),
                 "Downloaded release v" + release.getVersion() + " (" + release.getPlatform() + ") for product " + release.getProduct().getName());
 
-        // Generate digital package binary payload for release download
-        String content = "OHO TECHN SOFTWARE RELEASE\n" +
-                         "Product: " + release.getProduct().getName() + "\n" +
-                         "Version: " + release.getVersion() + "\n" +
-                         "Platform: " + release.getPlatform() + "\n" +
-                         "Release Notes:\n" + (release.getReleaseNotes() != null ? release.getReleaseNotes() : "Standard Release") + "\n" +
-                         "License Notice: This binary is licensed to " + currentUser.getEmail() + ".\n";
-
-        byte[] binaryData = content.getBytes(StandardCharsets.UTF_8);
+        byte[] binaryData = softwareReleaseService.getReleaseBinaryBytes(currentUser.getId(), productId, releaseId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -82,6 +86,27 @@ public class SoftwareReleaseController {
         headers.setContentLength(binaryData.length);
 
         return new ResponseEntity<>(binaryData, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/products/my/{productId}/download-url/{releaseId}")
+    public ResponseEntity<ApiResponse<Map<String, String>>> getPresignedDownloadUrl(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PathVariable Long productId,
+            @PathVariable Long releaseId) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Unauthorized"));
+        }
+
+        String presignedUrl = softwareReleaseService.getPresignedDownloadUrl(currentUser.getId(), productId, releaseId);
+
+        auditService.logEvent("SOFTWARE_DOWNLOAD_URL_GENERATED", "SoftwareRelease", String.valueOf(releaseId),
+                "Generated secure download URL for release #" + releaseId);
+
+        return ResponseEntity.ok(ApiResponse.success("Presigned download URL generated", Map.of(
+                "downloadUrl", presignedUrl,
+                "expiresInMinutes", "60",
+                "storageProvider", softwareReleaseService.getStorageService().getProviderType()
+        )));
     }
 
     // Admin / Developer Endpoints

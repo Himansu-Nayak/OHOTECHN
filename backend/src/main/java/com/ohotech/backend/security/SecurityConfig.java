@@ -48,7 +48,18 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*", frontendUrl));
+        java.util.List<String> origins = new java.util.ArrayList<>();
+        origins.add("http://localhost:*");
+        origins.add("http://127.0.0.1:*");
+        if (frontendUrl != null && !frontendUrl.isBlank()) {
+            for (String origin : frontendUrl.split(",")) {
+                String trimmed = origin.trim();
+                if (!trimmed.isEmpty()) {
+                    origins.add(trimmed);
+                }
+            }
+        }
+        configuration.setAllowedOriginPatterns(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
         configuration.setAllowCredentials(true);
@@ -89,6 +100,7 @@ public class SecurityConfig {
                     "/api/contact",
                     "/api/webhooks/**"
                 ).permitAll()
+                .requestMatchers("/api/products/my/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/admin/crm/**").hasAuthority("ROLE_ADMIN")

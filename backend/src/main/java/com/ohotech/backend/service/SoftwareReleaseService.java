@@ -5,7 +5,9 @@ import com.ohotech.backend.entity.*;
 import com.ohotech.backend.exception.BadRequestException;
 import com.ohotech.backend.exception.ResourceNotFoundException;
 import com.ohotech.backend.repository.*;
+import com.ohotech.backend.storage.StorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class SoftwareReleaseService {
     private final SubscriptionRepository subscriptionRepository;
     private final LicenseRepository licenseRepository;
     private final OrderRepository orderRepository;
+    private final StorageService storageService;
 
     public boolean isUserEntitledToProduct(Long userId, Long productId) {
         // 1. Check Subscriptions
@@ -91,6 +94,22 @@ public class SoftwareReleaseService {
         }
 
         return release;
+    }
+
+    public String getPresignedDownloadUrl(Long userId, Long productId, Long releaseId) {
+        SoftwareRelease release = getSoftwareReleaseForDownload(userId, productId, releaseId);
+        String targetPath = release.getFilePath() != null ? release.getFilePath() : "releases/" + release.getFileName();
+        return storageService.generatePresignedDownloadUrl(targetPath, 60);
+    }
+
+    public byte[] getReleaseBinaryBytes(Long userId, Long productId, Long releaseId) {
+        SoftwareRelease release = getSoftwareReleaseForDownload(userId, productId, releaseId);
+        String targetPath = release.getFilePath() != null ? release.getFilePath() : "releases/" + release.getFileName();
+        return storageService.downloadFileBytes(targetPath);
+    }
+
+    public StorageService getStorageService() {
+        return storageService;
     }
 
     // Admin CRUD

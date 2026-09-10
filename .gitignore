@@ -35,9 +35,11 @@ yarn-error.log*
 .env.local
 !.env.example
 
-# logs
+# logs & build artifacts
 *.log
 backend/test_output.log
+backend/target/
+backend/storage/
 
 # vercel
 .vercel

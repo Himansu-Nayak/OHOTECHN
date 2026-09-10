@@ -35,6 +35,19 @@ public class DataInitializer implements CommandLineRunner {
             jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN description TYPE VARCHAR(2000) USING description::text");
             jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN previous_value TYPE VARCHAR(2000) USING previous_value::text");
             jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN new_value TYPE VARCHAR(2000) USING new_value::text");
+            jdbcTemplate.execute("ALTER TABLE IF EXISTS otp_verifications ALTER COLUMN otp_code DROP NOT NULL");
+            
+            // Ensure refresh_tokens table exists without destructively dropping existing sessions
+            jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS refresh_tokens (
+                    id BIGSERIAL PRIMARY KEY,
+                    user_id BIGINT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+                    token VARCHAR(255) NOT NULL UNIQUE,
+                    expiry_date TIMESTAMP WITH TIME ZONE NOT NULL
+                )
+            """);
+            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id)");
+            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token)");
         } catch (Exception e) {
             log.warn("Schema initialization warning: {}", e.getMessage());
         }

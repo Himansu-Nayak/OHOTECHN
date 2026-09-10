@@ -28,7 +28,7 @@ public class OtpVerification {
     @Builder.Default
     private OtpPurpose purpose = OtpPurpose.EMAIL_VERIFICATION;
 
-    @Column(nullable = false)
+    @Column(name = "expiry_time", nullable = false)
     private LocalDateTime expiryTime;
 
     @Builder.Default
@@ -44,6 +44,7 @@ public class OtpVerification {
     @Column(name = "reset_token_expiry")
     private LocalDateTime resetTokenExpiry;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @PrePersist

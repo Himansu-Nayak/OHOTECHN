@@ -118,7 +118,7 @@ function QuoteFormContent() {
           <div className="mb-8 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono flex items-center gap-3">
             <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             <div>
-              <span className="font-bold">Step 3 of Buyer Journey:</span> Requesting Commercial Quote for <strong className="underline">{productParam}</strong>. Our team will email full source code license &amp; deployment details to kampainfraa@gmail.com.
+              <span className="font-bold">Step 3 of Buyer Journey:</span> Requesting Commercial Quote for <strong className="underline">{productParam}</strong>. Our team will email full source code license &amp; deployment details directly to your registered email address.
             </div>
           </div>
         )}
@@ -289,7 +289,7 @@ function QuoteFormContent() {
           </div>
 
           <div className="pt-6 border-t border-white/10 mt-6 text-xs text-slate-400 font-mono">
-            Direct Email Delivery: <span className="text-emerald-400 font-bold">kampainfraa@gmail.com</span>
+            Direct Support: <span className="text-emerald-400 font-bold">support@ohotechn.com</span>
           </div>
         </div>
       </div>

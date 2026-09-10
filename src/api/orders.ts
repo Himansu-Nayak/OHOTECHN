@@ -1,7 +1,5 @@
-import { apiClient, getAccessToken } from './client';
+import { apiClient, getAccessToken, API_BASE_URL } from './client';
 import { ApiResponse, Order } from './types';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export interface CreateOrderParams {
   shippingAddress: string;

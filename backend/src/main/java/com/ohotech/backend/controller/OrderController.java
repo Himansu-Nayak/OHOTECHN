@@ -57,9 +57,11 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Order order = orderService.getOrderById(currentUser.getId(), id);
-        if (order == null) {
-            // Admin override check if user is admin/developer
+        Order order;
+        try {
+            order = orderService.getOrderById(currentUser.getId(), id);
+        } catch (ResourceNotFoundException e) {
+            // Check if user is admin or developer to allow downloading customer invoices
             boolean isAdmin = currentUser.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_DEVELOPER"));
             if (isAdmin) {
@@ -68,7 +70,7 @@ public class OrderController {
                         .findFirst()
                         .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
             } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                throw e;
             }
         }
 
