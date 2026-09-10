@@ -61,7 +61,7 @@ const realProducts: ProductItem[] = [
     ],
     metrics: [
       { label: 'OPD Flow', val: '< 2min Queue' },
-      { label: 'EMR Privacy', val: 'HIPAA Compliant' },
+      { label: 'EMR Privacy', val: 'Role-Based Privacy' },
       { label: 'Billing Engine', val: 'GST & TPA Ready' }
     ],
     demoSlug: 'hospital-management-software',

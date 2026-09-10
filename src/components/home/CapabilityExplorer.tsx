@@ -36,7 +36,7 @@ const capabilities: Capability[] = [
     badge: 'TURNKEY SOLUTIONS',
     desc: 'Ready-to-deploy, white-label enterprise products including SchoolCloud ERP, HealthOS Hospital Management, FinCore NBFC, and Omnichannel RetailPOS.',
     icon: Building2,
-    tech: ['Next.js 15', 'Spring Boot', 'PostgreSQL', 'Multi-Tenant Architecture'],
+    tech: ['Next.js 16', 'Spring Boot', 'PostgreSQL', 'Multi-Tenant Architecture'],
     link: '/products',
     visualTitle: 'Modular Platform Engine',
     visualMetrics: [

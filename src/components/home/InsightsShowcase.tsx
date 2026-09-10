@@ -34,7 +34,7 @@ const articles: ArticleItem[] = [
     title: 'Architecting Offline-First EMR & Hospital Information Systems with Real-Time Cloud Sync',
     date: 'AUGUST 2026',
     readTime: '5 MIN READ',
-    excerpt: 'Strategies for designing resilient hospital clinical terminals that function seamlessly during network dropouts while ensuring complete HIPAA audit compliance.',
+    excerpt: 'Strategies for designing resilient hospital clinical terminals that function seamlessly during network dropouts while ensuring complete clinical audit compliance.',
     slug: 'healthcare'
   },
   {

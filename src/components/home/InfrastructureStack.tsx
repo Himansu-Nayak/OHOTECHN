@@ -25,7 +25,7 @@ const layers: StackLayer[] = [
     layer: 'LAYER 01',
     name: 'Presentation & Client Layer',
     role: 'Server-side rendered web applications, native mobile interfaces, and low-latency POS terminals.',
-    technologies: ['Next.js 15 (Turbopack)', 'React 19', 'Tailwind CSS', 'Kotlin Android', 'Swift iOS'],
+    technologies: ['Next.js 16 (Turbopack)', 'React 19', 'Tailwind CSS', 'Kotlin Android', 'Swift iOS'],
     icon: Globe
   },
   {

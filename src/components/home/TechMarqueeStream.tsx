@@ -4,7 +4,7 @@ import React from 'react';
 import { Cpu, Server, Code2, Database, ShieldCheck, Zap, Globe, Smartphone, Lock, Terminal } from 'lucide-react';
 
 const TECH_ITEMS = [
-  { name: 'NEXT.JS 15 // TURBOPACK', icon: Zap },
+  { name: 'NEXT.JS 16 // TURBOPACK', icon: Zap },
   { name: 'JAVA 21 & SPRING BOOT 3', icon: Server },
   { name: 'REACT 19 SERVER COMPONENTS', icon: Code2 },
   { name: 'POSTGRESQL & ENTERPRISE JPA', icon: Database },
