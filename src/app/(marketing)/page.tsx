@@ -3,19 +3,21 @@
 import * as React from 'react';
 import { CinematicHero } from '@/components/home/CinematicHero';
 import { ScrollFrameSequence } from '@/components/ui/ScrollFrameSequence';
+import { TechMarqueeStream } from '@/components/home/TechMarqueeStream';
 import { TechnologyStatement } from '@/components/home/TechnologyStatement';
 import { HorizontalServicesShowcase } from '@/components/home/HorizontalServicesShowcase';
 import { CapabilityExplorer } from '@/components/home/CapabilityExplorer';
 import { SystemArchitectureFlow } from '@/components/home/SystemArchitectureFlow';
 import { ProductsShowcase } from '@/components/home/ProductsShowcase';
 import { ServicesExplorer } from '@/components/home/ServicesExplorer';
+import { DirectorSection } from '@/components/home/DirectorSection';
 import { VerifiedCaseStudies } from '@/components/home/VerifiedCaseStudies';
 import { InfrastructureStack } from '@/components/home/InfrastructureStack';
 import { TrustProofSection } from '@/components/home/TrustProofSection';
 import { EditorialAboutSection } from '@/components/home/EditorialAboutSection';
 import { InsightsShowcase } from '@/components/home/InsightsShowcase';
+import { EnterpriseFAQSection } from '@/components/home/EnterpriseFAQSection';
 import { FinalCinematicCTA } from '@/components/home/FinalCinematicCTA';
-import { TechMarqueeStream } from '@/components/home/TechMarqueeStream';
 
 export default function WideStudioPage() {
   return (
@@ -27,76 +29,86 @@ export default function WideStudioPage() {
       <CinematicHero />
 
       {/* ─────────────────────────────────────────────────────────────
-          01.2 3D HARDWARE TURNTABLE SEQUENCE (SCROLL SCRUBBER)
+          02. 3D HARDWARE TURNTABLE SEQUENCE (SCROLL SCRUBBER)
           ───────────────────────────────────────────────────────────── */}
       <section id="hardware-sequence" className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[28px] sm:rounded-[44px] overflow-hidden border-2 border-slate-800 shadow-2xl">
         <ScrollFrameSequence />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          01.5 TECH MARQUEE STREAM
+          03. TECH MARQUEE STREAM
           ───────────────────────────────────────────────────────────── */}
       <section id="tech-stack" className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[24px] sm:rounded-[36px] overflow-hidden shadow-lg">
         <TechMarqueeStream />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          02. EDITORIAL TECHNOLOGY STATEMENT
+          04. EDITORIAL TECHNOLOGY STATEMENT
           ───────────────────────────────────────────────────────────── */}
       <TechnologyStatement />
 
       {/* ─────────────────────────────────────────────────────────────
-          02.5 HORIZONTAL PINNED SERVICES SHOWCASE
+          05. HORIZONTAL PINNED SERVICES SHOWCASE
           ───────────────────────────────────────────────────────────── */}
       <HorizontalServicesShowcase />
 
       {/* ─────────────────────────────────────────────────────────────
-          03. CAPABILITY EXPLORER (WHAT OHO TECH BUILDS)
-          ───────────────────────────────────────────────────────────── */}
-      <CapabilityExplorer />
-
-      {/* ─────────────────────────────────────────────────────────────
-          04. LIVING SYSTEM ARCHITECTURE FLOW ("EVERYTHING CONNECTS")
+          06. LIVING SYSTEM ARCHITECTURE FLOW ("EVERYTHING CONNECTS")
           ───────────────────────────────────────────────────────────── */}
       <SystemArchitectureFlow />
 
       {/* ─────────────────────────────────────────────────────────────
-          05. REAL PRODUCTS & PLATFORMS SHOWCASE
+          07. REAL PRODUCTS & PLATFORMS SHOWCASE
           ───────────────────────────────────────────────────────────── */}
       <ProductsShowcase />
 
       {/* ─────────────────────────────────────────────────────────────
-          06. INTERACTIVE SERVICES EXPLORER
+          08. CAPABILITY EXPLORER (WHAT OHO TECH BUILDS)
+          ───────────────────────────────────────────────────────────── */}
+      <CapabilityExplorer />
+
+      {/* ─────────────────────────────────────────────────────────────
+          09. INTERACTIVE SERVICES EXPLORER
           ───────────────────────────────────────────────────────────── */}
       <ServicesExplorer />
 
       {/* ─────────────────────────────────────────────────────────────
-          07. VERIFIED CASE STUDIES (PROBLEM -> APPROACH -> SYSTEM -> RESULT)
+          10. FOUNDER & MANAGING DIRECTOR LEADERSHIP
+          ───────────────────────────────────────────────────────────── */}
+      <DirectorSection />
+
+      {/* ─────────────────────────────────────────────────────────────
+          11. VERIFIED CASE STUDIES (PROBLEM -> APPROACH -> ARCHITECTURE -> RESULT)
           ───────────────────────────────────────────────────────────── */}
       <VerifiedCaseStudies />
 
       {/* ─────────────────────────────────────────────────────────────
-          08. LAYERED INFRASTRUCTURE & TECHNOLOGY STACK
+          12. LAYERED INFRASTRUCTURE & TECHNOLOGY STACK
           ───────────────────────────────────────────────────────────── */}
       <InfrastructureStack />
 
       {/* ─────────────────────────────────────────────────────────────
-          09. ENTERPRISE TRUST & ENGINEERING PROOF
+          13. ENTERPRISE TRUST & ARCHITECTURAL PROOF
           ───────────────────────────────────────────────────────────── */}
       <TrustProofSection />
 
       {/* ─────────────────────────────────────────────────────────────
-          10. EDITORIAL ABOUT OHO TECH & ENGINEERING PHILOSOPHY
+          14. EDITORIAL ABOUT OHO TECH & ENGINEERING PHILOSOPHY
           ───────────────────────────────────────────────────────────── */}
       <EditorialAboutSection />
 
       {/* ─────────────────────────────────────────────────────────────
-          11. TECHNICAL INSIGHTS & PERSPECTIVES
+          15. TECHNICAL INSIGHTS & PERSPECTIVES
           ───────────────────────────────────────────────────────────── */}
       <InsightsShowcase />
 
       {/* ─────────────────────────────────────────────────────────────
-          12. DRAMATIC FINAL ACTION CTA
+          16. ENTERPRISE FAQ & TECHNICAL GOVERNANCE
+          ───────────────────────────────────────────────────────────── */}
+      <EnterpriseFAQSection />
+
+      {/* ─────────────────────────────────────────────────────────────
+          17. DRAMATIC FINAL ACTION CTA
           ───────────────────────────────────────────────────────────── */}
       <FinalCinematicCTA />
 
