@@ -19,8 +19,11 @@ import { EditorialAboutSection } from '@/components/home/EditorialAboutSection';
 import { InsightsShowcase } from '@/components/home/InsightsShowcase';
 import { EnterpriseFAQSection } from '@/components/home/EnterpriseFAQSection';
 import { FinalCinematicCTA } from '@/components/home/FinalCinematicCTA';
+import { SystemEstimateModal } from '@/components/home/SystemEstimateModal';
 
 export default function WideStudioPage() {
+  const [isEstimateOpen, setIsEstimateOpen] = React.useState(false);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-8 pt-2 sm:pt-4 px-3 sm:px-4 lg:px-6 selection:bg-[#0d0d0e] selection:text-white overflow-x-hidden">
       
@@ -116,7 +119,15 @@ export default function WideStudioPage() {
       {/* ─────────────────────────────────────────────────────────────
           17. DRAMATIC FINAL ACTION CTA
           ───────────────────────────────────────────────────────────── */}
-      <FinalCinematicCTA />
+      <FinalCinematicCTA onOpenEstimate={() => setIsEstimateOpen(true)} />
+
+      {/* ─────────────────────────────────────────────────────────────
+          18. INTERACTIVE SYSTEM ESTIMATE MODAL & ARCHITECTURE CALCULATOR
+          ───────────────────────────────────────────────────────────── */}
+      <SystemEstimateModal 
+        isOpen={isEstimateOpen} 
+        onClose={() => setIsEstimateOpen(false)} 
+      />
 
     </div>
   );

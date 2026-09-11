@@ -10,7 +10,11 @@ import {
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { FlippingText } from '@/components/ui/FlippingText';
 
-export function FinalCinematicCTA() {
+interface FinalCinematicCTAProps {
+  onOpenEstimate?: () => void;
+}
+
+export function FinalCinematicCTA({ onOpenEstimate }: FinalCinematicCTAProps = {}) {
   return (
     <section id="contact-cta" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] px-6 sm:px-12 lg:px-20 py-14 sm:py-24 shadow-2xl relative overflow-hidden text-center grid-pattern-dark">
       
@@ -55,6 +59,17 @@ export function FinalCinematicCTA() {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </Link>
+
+            {onOpenEstimate && (
+              <button
+                type="button"
+                id="cta-architecture-estimate"
+                onClick={onOpenEstimate}
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-900/90 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] active:translate-y-0 active:scale-[0.99] text-center backdrop-blur-md cursor-pointer"
+              >
+                <span>⚡ Configure Architecture Spec</span>
+              </button>
+            )}
 
             <Link
               id="cta-book-demo"

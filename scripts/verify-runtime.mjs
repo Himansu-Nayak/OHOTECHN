@@ -38,7 +38,7 @@ async function verifyRuntime() {
   // 1. Desktop Viewport (1440x900)
   console.log('\n[1] Testing Desktop Viewport (1440x900)...');
   await page.setViewport({ width: 1440, height: 900 });
-  const response = await page.goto('http://localhost:3000', { waitUntil: 'networkidle2', timeout: 30000 });
+  const response = await page.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 15000 });
   console.log(`HTTP Status: ${response.status()}`);
 
   // Wait for preloader to animate out (~2.5s)
@@ -201,7 +201,7 @@ async function verifyRuntime() {
   // 2. Test /developer Route
   console.log('\n[3] Testing /developer Route...');
   const devPage = await browser.newPage();
-  const devRes = await devPage.goto('http://localhost:3000/developer', { waitUntil: 'networkidle2', timeout: 30000 });
+  const devRes = await devPage.goto('http://localhost:3000/developer', { waitUntil: 'domcontentloaded', timeout: 15000 });
   console.log(`/developer HTTP status: ${devRes.status()}`);
   const devPageTitle = await devPage.title();
   console.log(`/developer Title: ${devPageTitle}`);
@@ -211,7 +211,7 @@ async function verifyRuntime() {
   console.log('\n[3.1] Testing Laptop Viewport (1280x800)...');
   const laptopPage = await browser.newPage();
   await laptopPage.setViewport({ width: 1280, height: 800 });
-  const lapRes = await laptopPage.goto('http://localhost:3000', { waitUntil: 'networkidle2', timeout: 30000 });
+  const lapRes = await laptopPage.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 15000 });
   console.log(`Laptop HTTP status: ${lapRes.status()}`);
   await laptopPage.close();
 
@@ -219,7 +219,7 @@ async function verifyRuntime() {
   console.log('\n[3.2] Testing Tablet Viewport (768x1024)...');
   const tabPage = await browser.newPage();
   await tabPage.setViewport({ width: 768, height: 1024 });
-  const tabRes = await tabPage.goto('http://localhost:3000', { waitUntil: 'networkidle2', timeout: 30000 });
+  const tabRes = await tabPage.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 15000 });
   console.log(`Tablet HTTP status: ${tabRes.status()}`);
   await tabPage.close();
 
@@ -227,7 +227,7 @@ async function verifyRuntime() {
   console.log('\n[4] Testing Mobile Viewport (390x844)...');
   const mobilePage = await browser.newPage();
   await mobilePage.setViewport({ width: 390, height: 844, isMobile: true });
-  const mobRes = await mobilePage.goto('http://localhost:3000', { waitUntil: 'networkidle2', timeout: 30000 });
+  const mobRes = await mobilePage.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 15000 });
   console.log(`Mobile HTTP status: ${mobRes.status()}`);
   
   // Wait for loader
@@ -243,7 +243,7 @@ async function verifyRuntime() {
   console.log('\n[5] Testing prefers-reduced-motion: reduce...');
   const rmPage = await browser.newPage();
   await rmPage.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
-  await rmPage.goto('http://localhost:3000', { waitUntil: 'networkidle2', timeout: 30000 });
+  await rmPage.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 15000 });
   await new Promise(r => setTimeout(r, 1000));
   const rmHeroVisible = await rmPage.evaluate(() => {
     const hero = document.getElementById('hero');
