@@ -2,12 +2,14 @@
 
 import * as React from 'react';
 import { CinematicHero } from '@/components/home/CinematicHero';
+import { StatCounterStrip } from '@/components/home/StatCounterStrip';
 import { ScrollFrameSequence } from '@/components/ui/ScrollFrameSequence';
-import { TechMarqueeStream } from '@/components/home/TechMarqueeStream';
+import { PartnerLogosMarquee } from '@/components/home/PartnerLogosMarquee';
 import { TechnologyStatement } from '@/components/home/TechnologyStatement';
 import { HorizontalServicesShowcase } from '@/components/home/HorizontalServicesShowcase';
 import { CapabilityExplorer } from '@/components/home/CapabilityExplorer';
 import { SystemArchitectureFlow } from '@/components/home/SystemArchitectureFlow';
+import { LayeredParallaxSection } from '@/components/home/LayeredParallaxSection';
 import { ProductsShowcase } from '@/components/home/ProductsShowcase';
 import { ServicesExplorer } from '@/components/home/ServicesExplorer';
 import { DirectorSection } from '@/components/home/DirectorSection';
@@ -17,6 +19,7 @@ import { GlobalInfrastructureMap } from '@/components/home/GlobalInfrastructureM
 import { TrustProofSection } from '@/components/home/TrustProofSection';
 import { EditorialAboutSection } from '@/components/home/EditorialAboutSection';
 import { InsightsShowcase } from '@/components/home/InsightsShowcase';
+import { TestimonialsCarousel } from '@/components/home/TestimonialsCarousel';
 import { EnterpriseFAQSection } from '@/components/home/EnterpriseFAQSection';
 import { FinalCinematicCTA } from '@/components/home/FinalCinematicCTA';
 import { SystemEstimateModal } from '@/components/home/SystemEstimateModal';
@@ -30,15 +33,16 @@ export default function WideStudioPage() {
       {/* 01. CINEMATIC HERO */}
       <CinematicHero />
 
+      {/* 01.1 ANIMATED STAT-COUNTER STRIP */}
+      <StatCounterStrip />
+
       {/* 02. 3D HARDWARE TURNTABLE SEQUENCE */}
       <section id="hardware-sequence" className="w-full overflow-hidden">
         <ScrollFrameSequence />
       </section>
 
-      {/* 03. TECH MARQUEE STREAM */}
-      <section id="tech-stack" className="w-full overflow-hidden border-y border-white/5">
-        <TechMarqueeStream />
-      </section>
+      {/* 03. ENTERPRISE PARTNERS & CLIENTS DUAL MARQUEE */}
+      <PartnerLogosMarquee />
 
       {/* 04. EDITORIAL TECHNOLOGY STATEMENT */}
       <TechnologyStatement />
@@ -48,6 +52,9 @@ export default function WideStudioPage() {
 
       {/* 06. LIVING SYSTEM ARCHITECTURE FLOW */}
       <SystemArchitectureFlow />
+
+      {/* 06.1 SPATIAL MULTI-LAYER PARALLAX ARCHITECTURE */}
+      <LayeredParallaxSection />
 
       {/* 07. REAL PRODUCTS & PLATFORMS SHOWCASE */}
       <ProductsShowcase />
@@ -78,6 +85,9 @@ export default function WideStudioPage() {
 
       {/* 16. TECHNICAL INSIGHTS & PERSPECTIVES */}
       <InsightsShowcase />
+
+      {/* 16.1 CLIENT TESTIMONIALS & OUTCOMES CAROUSEL */}
+      <TestimonialsCarousel />
 
       {/* 17. ENTERPRISE FAQ */}
       <EnterpriseFAQSection />

@@ -11,6 +11,8 @@ import { NoiseOverlay } from '@/components/ui/NoiseOverlay';
 import { PageTransitionOverlay } from '@/components/ui/PageTransitionOverlay';
 import { LiveSystemStatusDock } from '@/components/ui/LiveSystemStatusDock';
 import { MagneticCursor } from '@/components/ui/MagneticCursor';
+import { MegaMenuOverlay } from '@/components/ui/MegaMenuOverlay';
+import { StickyHeaderCTA } from '@/components/ui/StickyHeaderCTA';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -20,6 +22,8 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           <SmoothScrollProvider>
             <SiteIntroLoader />
             <PageTransitionOverlay />
+            <MegaMenuOverlay />
+            <StickyHeaderCTA />
             <NoiseOverlay />
             <MagneticCursor />
             <AwwwardsBadge />

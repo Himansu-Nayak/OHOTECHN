@@ -271,6 +271,45 @@
     transform-origin: left;
     transform: scaleX(1);
   }
+
+  /* Pure CSS Infinite Marquee Animations */
+  @keyframes marqueeLeft {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+  }
+
+  @keyframes marqueeRight {
+    0% { transform: translate3d(-50%, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+  }
+
+  .animate-marquee-left {
+    display: flex;
+    width: max-content;
+    animation: marqueeLeft 35s linear infinite;
+  }
+
+  .animate-marquee-right {
+    display: flex;
+    width: max-content;
+    animation: marqueeRight 35s linear infinite;
+  }
+
+  .marquee-track:hover .animate-marquee-left,
+  .marquee-track:hover .animate-marquee-right {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none !important;
+    transform: none !important;
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

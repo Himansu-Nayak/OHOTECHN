@@ -48,6 +48,20 @@ const FAQS: FAQItem[] = [
     question: 'What engagement models and payment structures are available?',
     answer: 'We provide transparent milestone-based contracts for custom turnkey projects, dedicated engineering squads, and flexible software licensing across our ready-to-deploy platforms (SchoolCloud, HealthOS, FinCore, RetailPOS).',
   },
+  {
+    id: 'faq-6',
+    number: '06',
+    category: 'SPRINT TIMELINES & MILESTONES',
+    question: 'What is the standard delivery timeline for enterprise software projects?',
+    answer: 'Typical MVP deployments ship within 4 to 8 weeks through agile 2-week sprint cycles. Every sprint concludes with an interactive deployment build, source code sync, and milestone verification demo.',
+  },
+  {
+    id: 'faq-7',
+    number: '07',
+    category: 'POST-LAUNCH GOVERNANCE',
+    question: 'Do you provide SLA-backed maintenance and 24/7 technical support?',
+    answer: 'Yes. Every project includes structured post-launch warranty support, automated uptime telemetry monitoring, security patch management, and dedicated Level-3 engineering escalation channels.',
+  },
 ];
 
 export function EnterpriseFAQSection() {
