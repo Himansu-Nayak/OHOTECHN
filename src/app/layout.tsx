@@ -24,8 +24,8 @@ export default function RootLayout({
   children,
 }: LayoutProps<'/'>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${jetBrainsMono.variable}`}>
-      <body className="min-h-screen bg-[#f7f7f5] text-[#0d0d0e] font-sans antialiased selection:bg-[#0d0d0e] selection:text-white">
+    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${jetBrainsMono.variable}`} suppressHydrationWarning>
+      <body className="min-h-screen bg-[#f7f7f5] text-[#0d0d0e] font-sans antialiased selection:bg-[#0d0d0e] selection:text-white" suppressHydrationWarning>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

@@ -182,7 +182,7 @@ export default function Footer() {
 
         {/* Bottom Copyright Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 font-mono">
-          <div>
+          <div suppressHydrationWarning>
             © {new Date().getFullYear()} OHO TECH. All rights reserved.
           </div>
 
