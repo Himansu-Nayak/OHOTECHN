@@ -13,6 +13,7 @@ import { ServicesExplorer } from '@/components/home/ServicesExplorer';
 import { DirectorSection } from '@/components/home/DirectorSection';
 import { VerifiedCaseStudies } from '@/components/home/VerifiedCaseStudies';
 import { InfrastructureStack } from '@/components/home/InfrastructureStack';
+import { GlobalInfrastructureMap } from '@/components/home/GlobalInfrastructureMap';
 import { TrustProofSection } from '@/components/home/TrustProofSection';
 import { EditorialAboutSection } from '@/components/home/EditorialAboutSection';
 import { InsightsShowcase } from '@/components/home/InsightsShowcase';
@@ -88,7 +89,12 @@ export default function WideStudioPage() {
       <InfrastructureStack />
 
       {/* ─────────────────────────────────────────────────────────────
-          13. ENTERPRISE TRUST & ARCHITECTURAL PROOF
+          13. GLOBAL CLOUD & EDGE INFRASTRUCTURE TOPOLOGY MAP
+          ───────────────────────────────────────────────────────────── */}
+      <GlobalInfrastructureMap />
+
+      {/* ─────────────────────────────────────────────────────────────
+          14. ENTERPRISE TRUST & ARCHITECTURAL PROOF
           ───────────────────────────────────────────────────────────── */}
       <TrustProofSection />
 

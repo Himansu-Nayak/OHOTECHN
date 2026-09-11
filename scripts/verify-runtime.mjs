@@ -138,6 +138,35 @@ async function verifyRuntime() {
   });
   console.log(`Living System Architecture check:`, archInfo);
 
+  // Check Global Infrastructure Map
+  const mapInfo = await page.evaluate(() => {
+    const map = document.getElementById('global-network');
+    if (!map) return { found: false };
+    const text = map.innerText;
+    const canvas = map.querySelector('canvas');
+    return {
+      found: true,
+      hasHeading: text.includes('GLOBAL CLOUD TOPOLOGY') || text.includes('Global Scale'),
+      hasNodes: text.includes('India Central') && text.includes('Singapore') && text.includes('Frankfurt'),
+      hasCanvas: !!canvas
+    };
+  });
+  console.log(`Global Infrastructure Map check:`, mapInfo);
+
+  // Check Verified Case Studies
+  const caseStudiesInfo = await page.evaluate(() => {
+    const cs = document.getElementById('case-studies');
+    if (!cs) return { found: false };
+    const text = cs.innerText;
+    return {
+      found: true,
+      hasHeading: text.includes('DEPLOYED SYSTEMS BLUEPRINT') || text.includes('Proven Engineering in Action'),
+      hasCategories: text.includes('Healthcare & Hospitals') && text.includes('Educational Institutions'),
+      hasBlueprint: text.includes('DEPLOYED ARCHITECTURAL TOPOLOGY')
+    };
+  });
+  console.log(`Verified Case Studies check:`, caseStudiesInfo);
+
   // Check Director Section
   const directorInfo = await page.evaluate(() => {
     const dir = document.getElementById('director');
