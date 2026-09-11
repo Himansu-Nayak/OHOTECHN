@@ -165,198 +165,198 @@ export function VerifiedCaseStudies() {
       id="case-studies"
       role="region"
       aria-label="OHO TECH Verified Architecture Case Studies and Enterprise Deployments"
-      className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 px-4 sm:px-8 lg:px-12 py-12 sm:py-16 bg-white border-2 border-slate-200/80 rounded-[28px] sm:rounded-[44px] shadow-sm relative overflow-hidden"
+      className="w-full bg-[#0a0a0b] text-[#e8e8e6] py-20 sm:py-28 px-6 sm:px-10 lg:px-16 relative overflow-hidden"
     >
-      
-      {/* Section Header */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10 sm:mb-14 pb-6 border-b border-slate-200">
-        <div className="max-w-3xl">
-          <ScrollReveal yOffset={15} duration={0.6}>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3">
-              <FileText className="w-3.5 h-3.5 text-emerald-600" />
-              <span>DEPLOYED SYSTEMS BLUEPRINT // CASE STUDIES</span>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal yOffset={20} duration={0.7} delay={0.1}>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#0d0d0e] tracking-tight leading-tight sm:leading-[1.1] mb-3">
-              Proven Engineering in Action.
-            </h2>
-            <p className="text-xs sm:text-base text-slate-600 font-normal leading-relaxed">
-              Real enterprise transformations structured through precise architectural execution, from root operational bottleneck to measured business outcome.
-            </p>
-          </ScrollReveal>
-        </div>
-
-        {/* Global CTA */}
-        <div className="shrink-0">
-          <Link
-            href="/get-quote"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:-translate-y-0.5"
-          >
-            <span>Request System Blueprint</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </div>
-
-      {/* Interactive Case Study Category Filter Navigation */}
-      <div className="flex flex-wrap items-center gap-2.5 mb-8 pb-2 border-b border-slate-100">
-        {CASE_STUDIES.map((cs) => {
-          const isActive = cs.id === activeStudyId;
-          return (
-            <button
-              key={cs.id}
-              onClick={() => setActiveStudyId(cs.id)}
-              className={`px-4 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
-                isActive
-                  ? 'bg-[#0d0d0e] text-white shadow-md'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200/60'
-              }`}
-            >
-              <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-400' : 'bg-slate-400'}`} />
-              <span>{cs.category}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Active Case Study Master Blueprint Presentation */}
-      <div className="bg-[#fafafa] border-2 border-slate-200 rounded-3xl p-6 sm:p-10 transition-all duration-300">
-        
-        {/* Top Metadata Strip */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-5 mb-8 border-b border-slate-200/80">
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono text-[10px] font-bold uppercase tracking-wider">
-              {activeStudy.tag}
-            </span>
-            <span className="text-xs font-mono text-slate-500 hidden sm:inline">
-              Client Profile: {activeStudy.clientProfile}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-mono text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>VERIFIED PRODUCTION DEPLOYMENT</span>
-          </div>
-        </div>
-
-        {/* Case Study Title */}
-        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0d0d0e] tracking-tight mb-8">
-          {activeStudy.title}
-        </h3>
-
-        {/* Challenge vs Engineered Approach (2-Column Grid) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          
-          <div className="p-6 rounded-2xl bg-white border border-red-200 shadow-2xs">
-            <div className="flex items-center gap-2 text-[11px] font-mono font-bold text-red-600 uppercase tracking-wider mb-2">
-              <span className="w-2 h-2 rounded-full bg-red-500" />
-              <span>01 // THE ROOT OPERATIONAL CHALLENGE</span>
-            </div>
-            <p className="text-sm text-slate-700 leading-relaxed font-normal">
-              {activeStudy.challenge}
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white border border-emerald-200 shadow-2xs">
-            <div className="flex items-center gap-2 text-[11px] font-mono font-bold text-emerald-700 uppercase tracking-wider mb-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>02 // THE ENGINEERED SYSTEM SOLUTION</span>
-            </div>
-            <p className="text-sm text-slate-700 leading-relaxed font-normal">
-              {activeStudy.approach}
-            </p>
-          </div>
-
-        </div>
-
-        {/* Architectural Blueprint Matrix (4 Layers) */}
-        <div className="mb-8 p-6 rounded-2xl bg-[#0c0d11] text-white border border-slate-800">
-          <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
-            <div className="flex items-center gap-2">
-              <Layers className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider">
-                DEPLOYED ARCHITECTURAL TOPOLOGY
-              </span>
-            </div>
-            <span className="text-[10px] font-mono text-emerald-400">PROD READY // ACID COMPLIANT</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
-            <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-[9px] uppercase text-slate-400 block mb-1">CLIENT INTERFACES</span>
-              <span className="text-slate-100 font-bold">{activeStudy.architectureBlueprint.frontend}</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-[9px] uppercase text-slate-400 block mb-1">SERVICES &amp; LOGIC</span>
-              <span className="text-slate-100 font-bold">{activeStudy.architectureBlueprint.services}</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-[9px] uppercase text-slate-400 block mb-1">DATA &amp; CACHE PERSISTENCE</span>
-              <span className="text-slate-100 font-bold">{activeStudy.architectureBlueprint.database}</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-[9px] uppercase text-slate-400 block mb-1">DEPLOYMENT &amp; INFRA</span>
-              <span className="text-slate-100 font-bold">{activeStudy.architectureBlueprint.infrastructure}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Verifiable Operational Metrics Grid */}
-        <div className="mb-8">
-          <div className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
-            <span>MEASURED OPERATIONAL IMPACT &amp; ROI</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {activeStudy.metrics.map((m, idx) => (
-              <div key={idx} className="p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-                <span className="text-[10px] font-mono text-slate-500 uppercase block mb-1">
-                  {m.label}
-                </span>
-                <span className="text-3xl font-black text-[#0d0d0e] tracking-tight block mb-1">
-                  {m.value}
-                </span>
-                <span className="text-xs text-slate-600 font-normal">
-                  {m.detail}
-                </span>
+      <div className="max-w-7xl mx-auto">
+        {/* Section Header */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 sm:mb-16 pb-8 border-b border-white/10">
+          <div className="max-w-3xl">
+            <ScrollReveal yOffset={15} duration={0.6}>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
+                <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                <span>DEPLOYED SYSTEMS BLUEPRINT // CASE STUDIES</span>
               </div>
-            ))}
-          </div>
-        </div>
+            </ScrollReveal>
 
-        {/* Deliverables & Bottom Verdict Strip */}
-        <div className="pt-6 border-t border-slate-200/80 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div>
-            <span className="text-[10px] font-mono uppercase text-slate-500 block mb-2 font-bold">
-              CORE DELIVERABLE MODULES
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {activeStudy.deliverables.map((del, idx) => (
-                <span key={idx} className="px-3 py-1 rounded-lg bg-slate-200/70 text-slate-800 text-xs font-medium">
-                  {del}
-                </span>
-              ))}
-            </div>
+            <ScrollReveal yOffset={20} duration={0.7} delay={0.1}>
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight mb-4 uppercase">
+                Proven Engineering in Action.
+              </h2>
+              <p className="text-sm sm:text-base text-slate-400 font-normal leading-relaxed">
+                Real enterprise transformations structured through precise architectural execution, from root operational bottleneck to measured business outcome.
+              </p>
+            </ScrollReveal>
           </div>
 
-          <div className="shrink-0 flex items-center gap-3">
+          {/* Global CTA */}
+          <div className="shrink-0">
             <Link
-              href={`/solutions`}
-              className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-mono text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5"
+              href="/get-quote"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-lg hover:-translate-y-0.5"
             >
-              <span>Explore All Solutions</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              <span>Request System Blueprint</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
 
-      </div>
+        {/* Interactive Case Study Category Filter Navigation */}
+        <div className="flex flex-wrap items-center gap-2.5 mb-8 pb-4 border-b border-white/5">
+          {CASE_STUDIES.map((cs) => {
+            const isActive = cs.id === activeStudyId;
+            return (
+              <button
+                key={cs.id}
+                onClick={() => setActiveStudyId(cs.id)}
+                className={`px-4 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-emerald-500 text-black font-extrabold shadow-md'
+                    : 'bg-white/5 hover:bg-white/10 text-slate-400 border border-white/5'
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-black' : 'bg-slate-600'}`} />
+                <span>{cs.category}</span>
+              </button>
+            );
+          })}
+        </div>
 
+        {/* Active Case Study Master Blueprint Presentation */}
+        <div className="bg-[#111113] border border-white/10 rounded-3xl p-6 sm:p-10 transition-all duration-300">
+          
+          {/* Top Metadata Strip */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-6 mb-8 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono text-[10px] font-bold uppercase tracking-wider">
+                {activeStudy.tag}
+              </span>
+              <span className="text-xs font-mono text-slate-400 hidden sm:inline">
+                Client Profile: {activeStudy.clientProfile}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>VERIFIED PRODUCTION DEPLOYMENT</span>
+            </div>
+          </div>
+
+          {/* Case Study Title */}
+          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-8">
+            {activeStudy.title}
+          </h3>
+
+          {/* Challenge vs Engineered Approach (2-Column Grid) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            <div className="p-6 rounded-2xl bg-white/[0.02] border border-red-500/20">
+              <div className="flex items-center gap-2 text-[11px] font-mono font-bold text-red-400 uppercase tracking-wider mb-3">
+                <span className="w-2 h-2 rounded-full bg-red-400" />
+                <span>01 // THE ROOT OPERATIONAL CHALLENGE</span>
+              </div>
+              <p className="text-sm text-slate-300 leading-relaxed font-normal">
+                {activeStudy.challenge}
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white/[0.02] border border-emerald-500/20">
+              <div className="flex items-center gap-2 text-[11px] font-mono font-bold text-emerald-400 uppercase tracking-wider mb-3">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span>02 // THE ENGINEERED SYSTEM SOLUTION</span>
+              </div>
+              <p className="text-sm text-slate-300 leading-relaxed font-normal">
+                {activeStudy.approach}
+              </p>
+            </div>
+
+          </div>
+
+          {/* Architectural Blueprint Matrix (4 Layers) */}
+          <div className="mb-8 p-6 rounded-2xl bg-[#0a0a0b] text-white border border-white/10">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider">
+                  DEPLOYED ARCHITECTURAL TOPOLOGY
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-400">PROD READY // ACID COMPLIANT</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
+              <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-[9px] uppercase text-slate-400 block mb-1">CLIENT INTERFACES</span>
+                <span className="text-white font-bold">{activeStudy.architectureBlueprint.frontend}</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-[9px] uppercase text-slate-400 block mb-1">SERVICES &amp; LOGIC</span>
+                <span className="text-white font-bold">{activeStudy.architectureBlueprint.services}</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-[9px] uppercase text-slate-400 block mb-1">DATA &amp; CACHE PERSISTENCE</span>
+                <span className="text-white font-bold">{activeStudy.architectureBlueprint.database}</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-[9px] uppercase text-slate-400 block mb-1">DEPLOYMENT &amp; INFRA</span>
+                <span className="text-white font-bold">{activeStudy.architectureBlueprint.infrastructure}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Verifiable Operational Metrics Grid */}
+          <div className="mb-8">
+            <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <span>MEASURED OPERATIONAL IMPACT &amp; ROI</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {activeStudy.metrics.map((m, idx) => (
+                <div key={idx} className="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                  <span className="text-[10px] font-mono text-slate-400 uppercase block mb-2">
+                    {m.label}
+                  </span>
+                  <span className="text-3xl font-black text-white tracking-tight block mb-2">
+                    {m.value}
+                  </span>
+                  <span className="text-xs text-slate-400 font-normal">
+                    {m.detail}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Deliverables & Bottom Verdict Strip */}
+          <div className="pt-6 border-t border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-slate-400 block mb-2 font-bold">
+                CORE DELIVERABLE MODULES
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {activeStudy.deliverables.map((del, idx) => (
+                  <span key={idx} className="px-3 py-1 rounded-lg bg-white/5 text-slate-300 text-xs font-medium border border-white/5">
+                    {del}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="shrink-0 flex items-center gap-3">
+              <Link
+                href={`/solutions`}
+                className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>Explore All Solutions</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </section>
   );
 }

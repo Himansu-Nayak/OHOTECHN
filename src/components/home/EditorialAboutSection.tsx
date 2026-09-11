@@ -10,7 +10,8 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 export function EditorialAboutSection() {
   return (
-    <section id="about" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 px-4 sm:px-8 lg:px-12 py-12 sm:py-20 bg-white border-2 border-slate-200/80 rounded-[28px] sm:rounded-[44px] shadow-sm relative overflow-hidden">
+    <section id="about" className="w-full py-20 sm:py-28 px-6 sm:px-10 lg:px-16 bg-[#0a0a0b] relative">
+      <div className="max-w-7xl mx-auto">
       
       {/* Background Subtle Gradient */}
       <div className="absolute top-0 right-1/4 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -20,23 +21,23 @@ export function EditorialAboutSection() {
         {/* Left Column: Editorial Manifesto */}
         <div className="lg:col-span-7">
           <ScrollReveal yOffset={15} duration={0.6}>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
-              <Building2 className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
+              <Building2 className="w-3.5 h-3.5 text-emerald-400" />
               <span>ABOUT OHO TECH</span>
             </div>
           </ScrollReveal>
 
           <ScrollReveal yOffset={20} duration={0.7} delay={0.1}>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#0d0d0e] tracking-tight leading-tight sm:leading-[1.1] mb-6">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight mb-6 uppercase">
               Engineering Digital Foundations for Enterprise Growth.
             </h2>
           </ScrollReveal>
 
           <ScrollReveal yOffset={18} duration={0.65} delay={0.15}>
-            <p className="text-xs sm:text-base text-slate-600 leading-relaxed font-normal mb-4">
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal mb-4">
               OHO TECH was established to bridge the gap between complex software engineering and pragmatic business operations. We build resilient digital platforms, ERP systems, and automated growth engines that help companies operate with clarity and speed.
             </p>
-            <p className="text-xs sm:text-base text-slate-600 leading-relaxed font-normal mb-8">
+            <p className="text-sm sm:text-base text-slate-400 leading-relaxed font-normal mb-8">
               Headquartered with a focus on enterprise-grade reliability, our cross-functional team combines full-stack architects, product designers, and growth engineers to deliver software that produces measurable operational value from day one.
             </p>
           </ScrollReveal>
@@ -45,7 +46,7 @@ export function EditorialAboutSection() {
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href="/about"
-                className="px-7 py-3.5 rounded-full bg-[#0d0d0e] hover:bg-emerald-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all inline-flex items-center gap-2 font-mono shadow-md"
+                className="px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider transition-all inline-flex items-center gap-2 font-mono shadow-lg"
               >
                 <span>Read Company Story</span>
                 <ArrowRight className="w-4 h-4" />
@@ -53,7 +54,7 @@ export function EditorialAboutSection() {
 
               <Link
                 href="/careers"
-                className="px-7 py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all font-mono"
+                className="px-7 py-3.5 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-extrabold text-xs uppercase tracking-wider transition-all font-mono border border-white/10"
               >
                 Join Our Engineering Team
               </Link>
@@ -110,6 +111,7 @@ export function EditorialAboutSection() {
 
       </div>
 
+      </div>
     </section>
   );
 }

@@ -25,105 +25,67 @@ export default function WideStudioPage() {
   const [isEstimateOpen, setIsEstimateOpen] = React.useState(false);
 
   return (
-    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-8 pt-2 sm:pt-4 px-3 sm:px-4 lg:px-6 selection:bg-[#0d0d0e] selection:text-white overflow-x-hidden">
+    <div className="bg-[#0a0a0b] text-[#e8e8e6] min-h-screen overflow-x-hidden">
       
-      {/* ─────────────────────────────────────────────────────────────
-          01. CINEMATIC HERO (OHO TECH DIGITAL SYSTEMS PLATFORM)
-          ───────────────────────────────────────────────────────────── */}
+      {/* 01. CINEMATIC HERO */}
       <CinematicHero />
 
-      {/* ─────────────────────────────────────────────────────────────
-          02. 3D HARDWARE TURNTABLE SEQUENCE (SCROLL SCRUBBER)
-          ───────────────────────────────────────────────────────────── */}
-      <section id="hardware-sequence" className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[28px] sm:rounded-[44px] overflow-hidden border-2 border-slate-800 shadow-2xl">
+      {/* 02. 3D HARDWARE TURNTABLE SEQUENCE */}
+      <section id="hardware-sequence" className="w-full overflow-hidden">
         <ScrollFrameSequence />
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          03. TECH MARQUEE STREAM
-          ───────────────────────────────────────────────────────────── */}
-      <section id="tech-stack" className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 rounded-[24px] sm:rounded-[36px] overflow-hidden shadow-lg">
+      {/* 03. TECH MARQUEE STREAM */}
+      <section id="tech-stack" className="w-full overflow-hidden border-y border-white/5">
         <TechMarqueeStream />
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          04. EDITORIAL TECHNOLOGY STATEMENT
-          ───────────────────────────────────────────────────────────── */}
+      {/* 04. EDITORIAL TECHNOLOGY STATEMENT */}
       <TechnologyStatement />
 
-      {/* ─────────────────────────────────────────────────────────────
-          05. HORIZONTAL PINNED SERVICES SHOWCASE
-          ───────────────────────────────────────────────────────────── */}
+      {/* 05. HORIZONTAL PINNED SERVICES SHOWCASE */}
       <HorizontalServicesShowcase />
 
-      {/* ─────────────────────────────────────────────────────────────
-          06. LIVING SYSTEM ARCHITECTURE FLOW ("EVERYTHING CONNECTS")
-          ───────────────────────────────────────────────────────────── */}
+      {/* 06. LIVING SYSTEM ARCHITECTURE FLOW */}
       <SystemArchitectureFlow />
 
-      {/* ─────────────────────────────────────────────────────────────
-          07. REAL PRODUCTS & PLATFORMS SHOWCASE
-          ───────────────────────────────────────────────────────────── */}
+      {/* 07. REAL PRODUCTS & PLATFORMS SHOWCASE */}
       <ProductsShowcase />
 
-      {/* ─────────────────────────────────────────────────────────────
-          08. CAPABILITY EXPLORER (WHAT OHO TECH BUILDS)
-          ───────────────────────────────────────────────────────────── */}
+      {/* 08. CAPABILITY EXPLORER */}
       <CapabilityExplorer />
 
-      {/* ─────────────────────────────────────────────────────────────
-          09. INTERACTIVE SERVICES EXPLORER
-          ───────────────────────────────────────────────────────────── */}
+      {/* 09. INTERACTIVE SERVICES EXPLORER */}
       <ServicesExplorer />
 
-      {/* ─────────────────────────────────────────────────────────────
-          10. FOUNDER & MANAGING DIRECTOR LEADERSHIP
-          ───────────────────────────────────────────────────────────── */}
+      {/* 10. FOUNDER & MANAGING DIRECTOR LEADERSHIP */}
       <DirectorSection />
 
-      {/* ─────────────────────────────────────────────────────────────
-          11. VERIFIED CASE STUDIES (PROBLEM -> APPROACH -> ARCHITECTURE -> RESULT)
-          ───────────────────────────────────────────────────────────── */}
+      {/* 11. VERIFIED CASE STUDIES */}
       <VerifiedCaseStudies />
 
-      {/* ─────────────────────────────────────────────────────────────
-          12. LAYERED INFRASTRUCTURE & TECHNOLOGY STACK
-          ───────────────────────────────────────────────────────────── */}
+      {/* 12. LAYERED INFRASTRUCTURE & TECHNOLOGY STACK */}
       <InfrastructureStack />
 
-      {/* ─────────────────────────────────────────────────────────────
-          13. GLOBAL CLOUD & EDGE INFRASTRUCTURE TOPOLOGY MAP
-          ───────────────────────────────────────────────────────────── */}
+      {/* 13. GLOBAL CLOUD & EDGE INFRASTRUCTURE MAP */}
       <GlobalInfrastructureMap />
 
-      {/* ─────────────────────────────────────────────────────────────
-          14. ENTERPRISE TRUST & ARCHITECTURAL PROOF
-          ───────────────────────────────────────────────────────────── */}
+      {/* 14. ENTERPRISE TRUST & ARCHITECTURAL PROOF */}
       <TrustProofSection />
 
-      {/* ─────────────────────────────────────────────────────────────
-          14. EDITORIAL ABOUT OHO TECH & ENGINEERING PHILOSOPHY
-          ───────────────────────────────────────────────────────────── */}
+      {/* 15. EDITORIAL ABOUT OHO TECH */}
       <EditorialAboutSection />
 
-      {/* ─────────────────────────────────────────────────────────────
-          15. TECHNICAL INSIGHTS & PERSPECTIVES
-          ───────────────────────────────────────────────────────────── */}
+      {/* 16. TECHNICAL INSIGHTS & PERSPECTIVES */}
       <InsightsShowcase />
 
-      {/* ─────────────────────────────────────────────────────────────
-          16. ENTERPRISE FAQ & TECHNICAL GOVERNANCE
-          ───────────────────────────────────────────────────────────── */}
+      {/* 17. ENTERPRISE FAQ */}
       <EnterpriseFAQSection />
 
-      {/* ─────────────────────────────────────────────────────────────
-          17. DRAMATIC FINAL ACTION CTA
-          ───────────────────────────────────────────────────────────── */}
+      {/* 18. DRAMATIC FINAL ACTION CTA */}
       <FinalCinematicCTA onOpenEstimate={() => setIsEstimateOpen(true)} />
 
-      {/* ─────────────────────────────────────────────────────────────
-          18. INTERACTIVE SYSTEM ESTIMATE MODAL & ARCHITECTURE CALCULATOR
-          ───────────────────────────────────────────────────────────── */}
+      {/* 19. SYSTEM ESTIMATE MODAL */}
       <SystemEstimateModal 
         isOpen={isEstimateOpen} 
         onClose={() => setIsEstimateOpen(false)} 
@@ -132,3 +94,4 @@ export default function WideStudioPage() {
     </div>
   );
 }
+

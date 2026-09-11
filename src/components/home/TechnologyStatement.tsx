@@ -90,7 +90,7 @@ export function TechnologyStatement() {
   return (
     <section 
       id="technology-statement"
-      className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 bg-[#0c0d11] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] px-4 sm:px-8 lg:px-14 py-12 sm:py-20 shadow-2xl relative overflow-hidden"
+      className="w-full bg-[#0c0d11] text-white py-20 sm:py-28 px-6 sm:px-10 lg:px-16 relative overflow-hidden"
     >
       {/* Background Architectural Mesh & Subtle Lighting */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent_75%)] pointer-events-none" />

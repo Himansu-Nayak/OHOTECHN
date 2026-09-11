@@ -258,8 +258,9 @@ export function GlobalInfrastructureMap() {
       ref={containerRef}
       role="region"
       aria-label="OHO TECH Global Infrastructure and Multi-Region Deployment Topology"
-      className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-[#0c0d11] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] p-4 sm:p-8 lg:p-14 shadow-2xl relative overflow-hidden"
+      className="w-full py-20 sm:py-28 px-6 sm:px-10 lg:px-16 bg-[#0c0d11] text-white relative overflow-hidden"
     >
+      <div className="max-w-7xl mx-auto relative">
       {/* Ambient background glows */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
@@ -532,7 +533,7 @@ export function GlobalInfrastructureMap() {
         </div>
 
       </div>
-
+      </div>
     </section>
   );
 }

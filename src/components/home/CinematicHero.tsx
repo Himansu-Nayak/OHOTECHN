@@ -27,39 +27,30 @@ export function CinematicHero() {
   return (
     <section 
       id="hero" 
-      className="max-w-[1536px] w-full mx-auto mb-8 sm:mb-12 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] px-4 sm:px-8 lg:px-14 py-10 sm:py-16 lg:py-20 shadow-2xl relative overflow-hidden"
+      className="relative w-full min-h-screen flex flex-col justify-center bg-[#0a0a0b] text-white px-6 sm:px-10 lg:px-16 py-20 sm:py-28 overflow-hidden"
     >
-      {/* Background Architectural Mesh & Ambient Light */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(16,185,129,0.18),transparent_70%)] pointer-events-none" />
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
-      
-      {/* Precision Grid Overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.07] pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
-        }}
-      />
+      {/* Ambient Radial Glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(16,185,129,0.12),transparent_70%)] pointer-events-none" />
+      <div className="absolute top-1/3 right-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-5xl mx-auto text-center">
+      <div className="relative z-10 max-w-7xl mx-auto">
         
         {/* Top Status Capsule */}
         <ScrollReveal yOffset={16} duration={0.6} delay={0.05}>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/15 text-slate-200 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-6 shadow-inner backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-8 backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
-            <span>ENTERPRISE TECHNOLOGY PLATFORM // ARCHITECTURE &amp; PRODUCTS</span>
+            <span>ENTERPRISE TECHNOLOGY PLATFORM</span>
           </div>
         </ScrollReveal>
 
         {/* Main Brand & Headline */}
         <ScrollReveal yOffset={24} duration={0.7} delay={0.15}>
-          <div className="font-mono text-xs sm:text-sm font-bold text-emerald-400 tracking-[0.25em] uppercase mb-3">
+          <div className="font-mono text-xs sm:text-sm font-bold text-emerald-400 tracking-[0.25em] uppercase mb-4">
             OHO TECH
           </div>
-          <h1 className="text-3xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-tight sm:leading-[1.08] mb-6">
-            BUILDING DIGITAL SYSTEMS THAT MOVE BUSINESS FORWARD.
+          <h1 className="text-[clamp(2.5rem,7vw,8rem)] font-black tracking-tighter text-white leading-[0.95] mb-8 uppercase">
+            Building digital systems that move business forward.
           </h1>
         </ScrollReveal>
 

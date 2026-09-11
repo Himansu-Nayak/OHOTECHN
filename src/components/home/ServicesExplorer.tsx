@@ -103,7 +103,8 @@ export function ServicesExplorer() {
   const activeService = realServices.find((s) => s.id === selectedService) || realServices[0];
 
   return (
-    <section id="services-explorer" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 px-4 sm:px-8 lg:px-12 py-12 sm:py-16 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] shadow-2xl relative overflow-hidden grid-pattern-dark">
+    <section id="services-explorer" className="w-full py-20 sm:py-28 px-6 sm:px-10 lg:px-16 bg-[#0d0d0e] text-white relative overflow-hidden grid-pattern-dark">
+      <div className="max-w-7xl mx-auto relative">
       
       {/* Ambient Lighting */}
       <div className="absolute top-0 left-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -230,7 +231,7 @@ export function ServicesExplorer() {
         </div>
 
       </div>
-
+      </div>
     </section>
   );
 }

@@ -60,9 +60,9 @@ export function EnterpriseFAQSection() {
   return (
     <section 
       id="faq" 
-      className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] py-12 sm:py-20 px-4 sm:px-8 lg:px-12 shadow-2xl relative overflow-hidden grid-pattern-dark"
+      className="w-full bg-[#0d0d0e] text-white py-20 sm:py-28 px-6 sm:px-10 lg:px-16 relative grid-pattern-dark"
     >
-      <div className="max-w-5xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <ScrollReveal yOffset={15} duration={0.6}>

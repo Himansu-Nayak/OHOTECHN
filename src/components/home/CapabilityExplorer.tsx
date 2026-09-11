@@ -157,7 +157,7 @@ export function CapabilityExplorer() {
   const activeCap = capabilities.find((c) => c.id === selectedId) || capabilities[0];
 
   return (
-    <section id="capabilities" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] p-4 sm:p-10 lg:p-14 shadow-2xl relative overflow-hidden grid-pattern-dark">
+    <section id="capabilities" className="w-full bg-[#0d0d0e] text-white py-20 sm:py-28 px-6 sm:px-10 lg:px-16 relative overflow-hidden grid-pattern-dark">
       
       {/* Background Lighting */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />

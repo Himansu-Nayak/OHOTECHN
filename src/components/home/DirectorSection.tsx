@@ -19,8 +19,9 @@ export function DirectorSection() {
   return (
     <section 
       id="director" 
-      className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] p-5 sm:p-10 lg:p-14 shadow-2xl relative overflow-hidden grid-pattern-dark"
+      className="w-full py-20 sm:py-28 px-6 sm:px-10 lg:px-16 bg-[#0d0d0e] text-white relative overflow-hidden grid-pattern-dark"
     >
+      <div className="max-w-7xl mx-auto relative">
       {/* Ambient Lighting */}
       <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-sky-500/10 rounded-full blur-[130px] pointer-events-none" />
@@ -193,6 +194,7 @@ export function DirectorSection() {
         </ScrollReveal>
       </div>
 
+      </div>
     </section>
   );
 }

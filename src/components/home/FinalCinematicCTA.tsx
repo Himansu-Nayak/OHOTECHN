@@ -16,7 +16,7 @@ interface FinalCinematicCTAProps {
 
 export function FinalCinematicCTA({ onOpenEstimate }: FinalCinematicCTAProps = {}) {
   return (
-    <section id="contact-cta" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[28px] sm:rounded-[44px] px-6 sm:px-12 lg:px-20 py-14 sm:py-24 shadow-2xl relative overflow-hidden text-center grid-pattern-dark">
+    <section id="contact-cta" className="relative w-full min-h-screen flex items-center justify-center bg-[#0a0a0b] text-white px-6 sm:px-12 lg:px-20 py-24 sm:py-32 overflow-hidden text-center">
       
       {/* Background Radial Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,rgba(16,185,129,0.15),transparent_70%)] pointer-events-none" />

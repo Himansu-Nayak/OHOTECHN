@@ -52,22 +52,23 @@ const trustPillars: TrustPillar[] = [
 
 export function TrustProofSection() {
   return (
-    <section id="trust-proof" className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 px-4 sm:px-8 lg:px-12 py-12 sm:py-16 bg-white border-2 border-slate-200/80 rounded-[28px] sm:rounded-[44px] shadow-sm relative overflow-hidden">
+    <section id="trust-proof" className="w-full py-20 sm:py-28 px-6 sm:px-10 lg:px-16 bg-[#0a0a0b] relative">
+      <div className="max-w-7xl mx-auto">
       
       {/* Header */}
-      <div className="max-w-3xl mb-10 sm:mb-14">
+      <div className="max-w-3xl mb-12 sm:mb-16 pb-6 border-b border-white/10">
         <ScrollReveal yOffset={15} duration={0.6}>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             <span>ENTERPRISE TRUST &amp; COMPLIANCE</span>
           </div>
         </ScrollReveal>
 
         <ScrollReveal yOffset={20} duration={0.7} delay={0.1}>
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#0d0d0e] tracking-tight leading-tight sm:leading-[1.1] mb-3">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight mb-4 uppercase">
             Built for Real-World Business Workflows.
           </h2>
-          <p className="text-xs sm:text-base text-slate-600 font-normal leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-400 font-normal leading-relaxed">
             Our engineering standards prioritize data integrity, deterministic business logic, and transparent architecture you can rely on indefinitely.
           </p>
         </ScrollReveal>
@@ -79,28 +80,28 @@ export function TrustProofSection() {
           const Icon = tp.icon;
           return (
             <ScrollReveal key={tp.title} yOffset={20} duration={0.6} delay={idx * 0.08}>
-              <div className="p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#fafafa] border-2 border-slate-200/80 hover:border-slate-400/80 transition-all duration-300 flex flex-col justify-between">
+              <div className="p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#111113] border border-white/10 hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="font-mono text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    <span className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                       {tp.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-bold text-[#0d0d0e] mb-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
                     {tp.title}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal mb-6">
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-normal mb-6">
                     {tp.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-200 flex items-center gap-2 text-xs font-mono font-bold text-emerald-700">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <div className="pt-4 border-t border-white/10 flex items-center gap-2 text-xs font-mono font-bold text-emerald-400">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>{tp.specs}</span>
                 </div>
               </div>
@@ -109,6 +110,7 @@ export function TrustProofSection() {
         })}
       </div>
 
+      </div>
     </section>
   );
 }

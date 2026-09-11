@@ -25,7 +25,7 @@ export default function RootLayout({
 }: LayoutProps<'/'>) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${jetBrainsMono.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen bg-[#f7f7f5] text-[#0d0d0e] font-sans antialiased selection:bg-[#0d0d0e] selection:text-white" suppressHydrationWarning>
+      <body className="min-h-screen bg-[#0a0a0b] text-[#e8e8e6] font-sans antialiased selection:bg-emerald-500 selection:text-black" suppressHydrationWarning>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
