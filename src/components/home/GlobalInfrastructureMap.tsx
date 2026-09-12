@@ -15,6 +15,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { DotGlobe } from '@/components/ui/DotGlobe';
 
 interface RegionNode {
   id: string;
@@ -135,6 +136,7 @@ const REGION_NODES: RegionNode[] = [
 export function GlobalInfrastructureMap() {
   const [selectedNodeId, setSelectedNodeId] = React.useState<string>('in-hub');
   const [isPinging, setIsPinging] = React.useState<boolean>(false);
+  const [viewMode, setViewMode] = React.useState<'2d' | '3d'>('2d');
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -286,19 +288,43 @@ export function GlobalInfrastructureMap() {
           </p>
         </div>
 
-        {/* Live Simulation Ping Action */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Header Actions: 2D/3D Mode & Ping Simulation */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          {/* 2D vs 3D Mode Toggle */}
+          <div className="flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/10">
+            <button
+              onClick={() => setViewMode('2d')}
+              className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider transition-all duration-200 ${
+                viewMode === '2d'
+                  ? 'bg-emerald-500 text-black shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              2D Matrix
+            </button>
+            <button
+              onClick={() => setViewMode('3d')}
+              className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider transition-all duration-200 ${
+                viewMode === '3d'
+                  ? 'bg-emerald-500 text-black shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              3D Orbit
+            </button>
+          </div>
+
           <button
             onClick={triggerPingSweep}
             disabled={isPinging}
-            className={`px-5 py-2.5 rounded-full font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-300 ${
+            className={`px-4 sm:px-5 py-2 rounded-full font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-300 ${
               isPinging
                 ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.4)]'
                 : 'bg-white/10 hover:bg-emerald-500 hover:text-black border border-white/20 text-white'
             }`}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isPinging ? 'animate-spin' : ''}`} />
-            <span>{isPinging ? 'Sweeping Latency...' : 'Ping Global Network'}</span>
+            <span>{isPinging ? 'Sweeping Latency...' : 'Ping Network'}</span>
           </button>
         </div>
       </div>
@@ -306,115 +332,127 @@ export function GlobalInfrastructureMap() {
       {/* Main Grid: Interactive Map & Live Telemetry Inspector */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
         
-        {/* Left 8 Cols: World Topology Projection Map */}
+        {/* Left 8 Cols: World Topology Projection Map / 3D Orbit Globe */}
         <div className="lg:col-span-8 bg-[#12151d]/90 border border-white/15 rounded-3xl p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden min-h-[360px] sm:min-h-[480px]">
           
           {/* Top Map Status Strip */}
           <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pb-3 border-b border-white/10 relative z-20">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="text-white font-bold">7 REGIONAL NODES ONLINE</span>
+              <span className="text-white font-bold">
+                {viewMode === '2d' ? '7 REGIONAL NODES ONLINE' : 'INTERACTIVE 3D ORBIT TOPOLOGY'}
+              </span>
             </div>
             <div className="hidden sm:flex items-center gap-4 text-slate-500">
-              <span>ANYCAST BGP ACTIVE</span>
+              <span>{viewMode === '2d' ? 'ANYCAST BGP ACTIVE' : 'DRAG TO ROTATE SPHERE'}</span>
               <span>•</span>
               <span>TLS 1.3 MESH</span>
             </div>
           </div>
 
-          {/* Interactive Map Visual Area */}
-          <div className="relative w-full h-[280px] sm:h-[380px] my-auto">
-            
-            {/* Background Canvas for Curved Animated Beams */}
-            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-10" />
+          {/* Interactive Visual Area (2D Map or 3D Globe) */}
+          {viewMode === '3d' ? (
+            <div className="relative w-full h-[280px] sm:h-[380px] my-auto flex items-center justify-center">
+              <DotGlobe size={320} className="scale-90 sm:scale-100" />
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[10px] font-mono text-slate-300 pointer-events-none flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>WebGL 3D SPHERE // DRAG TO ROTATE</span>
+              </div>
+            </div>
+          ) : (
+            <div className="relative w-full h-[280px] sm:h-[380px] my-auto">
+              
+              {/* Background Canvas for Curved Animated Beams */}
+              <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-10" />
 
-            {/* Stylized World Dots Grid Background (SVG) */}
-            <svg 
-              className="absolute inset-0 w-full h-full opacity-20 pointer-events-none select-none" 
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 1000 500" 
-              preserveAspectRatio="xMidYMid slice"
-            >
-              {/* Simplified world continent outlines for high-tech aesthetic */}
-              <path 
-                d="M150,120 Q200,90 280,100 Q320,150 280,220 Q220,240 180,200 Z" 
-                fill="rgba(255,255,255,0.06)" 
-              />
-              <path 
-                d="M220,260 Q280,280 300,360 Q260,420 220,380 Z" 
-                fill="rgba(255,255,255,0.06)" 
-              />
-              <path 
-                d="M450,100 Q550,80 580,160 Q520,200 460,180 Z" 
-                fill="rgba(255,255,255,0.06)" 
-              />
-              <path 
-                d="M480,220 Q560,240 540,360 Q480,380 460,280 Z" 
-                fill="rgba(255,255,255,0.06)" 
-              />
-              <path 
-                d="M600,100 Q800,80 880,180 Q780,260 660,220 Z" 
-                fill="rgba(255,255,255,0.06)" 
-              />
-              <path 
-                d="M780,320 Q860,330 840,400 Q760,400 780,320 Z" 
-                fill="rgba(255,255,255,0.06)" 
-              />
-            </svg>
+              {/* Stylized World Dots Grid Background (SVG) */}
+              <svg 
+                className="absolute inset-0 w-full h-full opacity-20 pointer-events-none select-none" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 1000 500" 
+                preserveAspectRatio="xMidYMid slice"
+              >
+                {/* Simplified world continent outlines for high-tech aesthetic */}
+                <path 
+                  d="M150,120 Q200,90 280,100 Q320,150 280,220 Q220,240 180,200 Z" 
+                  fill="rgba(255,255,255,0.06)" 
+                />
+                <path 
+                  d="M220,260 Q280,280 300,360 Q260,420 220,380 Z" 
+                  fill="rgba(255,255,255,0.06)" 
+                />
+                <path 
+                  d="M450,100 Q550,80 580,160 Q520,200 460,180 Z" 
+                  fill="rgba(255,255,255,0.06)" 
+                />
+                <path 
+                  d="M480,220 Q560,240 540,360 Q480,380 460,280 Z" 
+                  fill="rgba(255,255,255,0.06)" 
+                />
+                <path 
+                  d="M600,100 Q800,80 880,180 Q780,260 660,220 Z" 
+                  fill="rgba(255,255,255,0.06)" 
+                />
+                <path 
+                  d="M780,320 Q860,330 840,400 Q760,400 780,320 Z" 
+                  fill="rgba(255,255,255,0.06)" 
+                />
+              </svg>
 
-            {/* Interactive Node Markers */}
-            {REGION_NODES.map((node) => {
-              const isSelected = node.id === selectedNodeId;
-              const isPrimary = node.type === 'Primary Core';
+              {/* Interactive Node Markers */}
+              {REGION_NODES.map((node) => {
+                const isSelected = node.id === selectedNodeId;
+                const isPrimary = node.type === 'Primary Core';
 
-              return (
-                <button
-                  key={node.id}
-                  onClick={() => setSelectedNodeId(node.id)}
-                  onMouseEnter={() => setSelectedNodeId(node.id)}
-                  style={{
-                    left: `${node.coords.x}%`,
-                    top: `${node.coords.y}%`,
-                    transform: 'translate(-50%, -50%)'
-                  }}
-                  className={`absolute z-20 group focus:outline-none transition-transform duration-300 ${
-                    isSelected ? 'scale-125 z-30' : 'hover:scale-110'
-                  }`}
-                  aria-label={`${node.name} node`}
-                >
-                  <div className="relative flex items-center justify-center">
-                    {/* Pulsing ring for selected/primary */}
-                    {(isSelected || isPrimary) && (
-                      <span className={`absolute w-8 h-8 rounded-full animate-ping opacity-60 ${
-                        isPrimary ? 'bg-emerald-400' : 'bg-cyan-400'
-                      }`} />
-                    )}
+                return (
+                  <button
+                    key={node.id}
+                    onClick={() => setSelectedNodeId(node.id)}
+                    onMouseEnter={() => setSelectedNodeId(node.id)}
+                    style={{
+                      left: `${node.coords.x}%`,
+                      top: `${node.coords.y}%`,
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                    className={`absolute z-20 group focus:outline-none transition-transform duration-300 ${
+                      isSelected ? 'scale-125 z-30' : 'hover:scale-110'
+                    }`}
+                    aria-label={`${node.name} node`}
+                  >
+                    <div className="relative flex items-center justify-center">
+                      {/* Pulsing ring for selected/primary */}
+                      {(isSelected || isPrimary) && (
+                        <span className={`absolute w-8 h-8 rounded-full animate-ping opacity-60 ${
+                          isPrimary ? 'bg-emerald-400' : 'bg-cyan-400'
+                        }`} />
+                      )}
 
-                    {/* Outer Glow Ring */}
-                    <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center border transition-colors ${
-                      isSelected
-                        ? 'bg-emerald-500 text-black border-white shadow-[0_0_15px_#34d399]'
-                        : isPrimary
-                          ? 'bg-emerald-950/80 border-emerald-400 text-emerald-300'
-                          : 'bg-slate-900/90 border-cyan-400/60 text-cyan-300'
-                    }`}>
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-current" />
+                      {/* Outer Glow Ring */}
+                      <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center border transition-colors ${
+                        isSelected
+                          ? 'bg-emerald-500 text-black border-white shadow-[0_0_15px_#34d399]'
+                          : isPrimary
+                            ? 'bg-emerald-950/80 border-emerald-400 text-emerald-300'
+                            : 'bg-slate-900/90 border-cyan-400/60 text-cyan-300'
+                      }`}>
+                        <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-current" />
+                      </div>
+
+                      {/* Node Tooltip Label (Desktop) */}
+                      <div className={`absolute top-full mt-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded text-[9px] font-mono tracking-wider transition-all pointer-events-none ${
+                        isSelected
+                          ? 'bg-emerald-500 text-black font-bold opacity-100 shadow-md'
+                          : 'bg-black/80 text-slate-300 opacity-70 group-hover:opacity-100 border border-white/10'
+                      }`}>
+                        {node.name.split('(')[0].trim()}
+                      </div>
                     </div>
+                  </button>
+                );
+              })}
 
-                    {/* Node Tooltip Label (Desktop) */}
-                    <div className={`absolute top-full mt-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded text-[9px] font-mono tracking-wider transition-all pointer-events-none ${
-                      isSelected
-                        ? 'bg-emerald-500 text-black font-bold opacity-100 shadow-md'
-                        : 'bg-black/80 text-slate-300 opacity-70 group-hover:opacity-100 border border-white/10'
-                    }`}>
-                      {node.name.split('(')[0].trim()}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-
-          </div>
+            </div>
+          )}
 
           {/* Bottom Fast Selector Badges */}
           <div className="pt-3 border-t border-white/10 flex flex-wrap gap-2 relative z-20">
