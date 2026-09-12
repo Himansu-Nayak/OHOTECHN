@@ -29,17 +29,11 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     ).matches;
     if (prefersReducedMotion) return;
 
-    // Disable on touch devices to preserve native momentum scrolling
-    const isTouchDevice =
-      'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (isTouchDevice) return;
-
     // Initialize Lenis with responsive settings
     const lenis = new Lenis({
       duration: 1.1,            // Smooth but responsive
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 0,       // Disable touch processing entirely
     });
 
     lenisRef.current = lenis;
@@ -53,6 +47,21 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     };
     gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0);
+
+    // Initial ScrollTrigger layout recalibration
+    const refreshTimer1 = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+
+    const refreshTimer2 = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 600);
+
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(() => {
+        ScrollTrigger.refresh();
+      }).catch(() => {});
+    }
 
     // Smoothly scroll to in-page anchor links with sticky header offset
     const handleAnchorClick = (e: MouseEvent) => {
@@ -75,6 +84,8 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     document.addEventListener('click', handleAnchorClick);
 
     return () => {
+      clearTimeout(refreshTimer1);
+      clearTimeout(refreshTimer2);
       document.removeEventListener('click', handleAnchorClick);
       gsap.ticker.remove(tickerCallback);
       lenis.destroy();

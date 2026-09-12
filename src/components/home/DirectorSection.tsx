@@ -98,7 +98,7 @@ export function DirectorSection() {
                   </div>
 
                   <h4 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-snug">
-                    &quot;We don&apos;t build software to add friction. We engineer systems that eliminate operational bottlenecks and scale reliably.&quot;
+                    {"\"We don't build software to add friction. We engineer systems that eliminate operational bottlenecks and scale reliably.\""}
                   </h4>
 
                   <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">

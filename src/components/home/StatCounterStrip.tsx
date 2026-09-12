@@ -86,7 +86,7 @@ export function StatCounterStrip() {
       return;
     }
 
-    // Set initial text to 0
+    // Set initial text to 0 on mount
     STATS.forEach((stat, idx) => {
       const el = numbersRef.current[idx];
       if (el) {
@@ -94,35 +94,45 @@ export function StatCounterStrip() {
       }
     });
 
+    let hasAnimated = false;
+    const playCountUp = () => {
+      if (hasAnimated) return;
+      hasAnimated = true;
+      STATS.forEach((stat, idx) => {
+        const el = numbersRef.current[idx];
+        if (!el) return;
+
+        const proxy = { val: 0 };
+        gsap.to(proxy, {
+          val: stat.targetValue,
+          duration: 2.0,
+          ease: 'power3.out',
+          delay: idx * 0.1,
+          onUpdate: () => {
+            el.textContent = `${stat.prefix || ''}${proxy.val.toFixed(stat.decimals || 0)}${stat.suffix}`;
+          },
+          onComplete: () => {
+            el.textContent = `${stat.prefix || ''}${stat.targetValue.toFixed(stat.decimals || 0)}${stat.suffix}`;
+          },
+        });
+      });
+    };
+
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: container,
-        start: 'top 85%',
+        start: 'top 88%',
         once: true,
-        onEnter: () => {
-          STATS.forEach((stat, idx) => {
-            const el = numbersRef.current[idx];
-            if (!el) return;
-
-            const proxy = { val: 0 };
-            gsap.to(proxy, {
-              val: stat.targetValue,
-              duration: 2.2,
-              ease: 'power3.out',
-              delay: idx * 0.1,
-              onUpdate: () => {
-                el.textContent = `${stat.prefix || ''}${proxy.val.toFixed(stat.decimals || 0)}${stat.suffix}`;
-              },
-              onComplete: () => {
-                el.textContent = `${stat.prefix || ''}${stat.targetValue.toFixed(stat.decimals || 0)}${stat.suffix}`;
-              },
-            });
-          });
-        },
+        onEnter: playCountUp,
       });
     }, container);
 
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 200);
+
     return () => {
+      clearTimeout(refreshTimer);
       ctx.revert();
     };
   }, []);
