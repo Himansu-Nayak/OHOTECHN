@@ -26,47 +26,47 @@ interface TestimonialItem {
 const TESTIMONIALS: TestimonialItem[] = [
   {
     id: 't-1',
-    name: 'Dr. Alok Mohapatra',
-    role: 'Chief Medical Superintendent',
-    company: 'Apex Multi-Specialty Hospital Group',
+    name: 'Clinical IT Director',
+    role: 'Healthcare Operations & EMR Lead',
+    company: 'Tertiary Care Hospital Network',
     industry: 'Healthcare & Clinical Diagnostics',
-    location: 'Bhubaneswar, India',
-    metric: '-68%',
-    metricLabel: 'OPD Patient Wait Time',
-    quote: 'OHO TECH engineered our entire hospital clinical OS and pharmacy inventory pipeline from the ground up. Their zero-downtime deployment transitioned 8 departments seamlessly without a single minute of clinic disruption.',
+    location: 'Eastern India',
+    metric: 'Real-Time',
+    metricLabel: 'Clinical Workflow Synchronization',
+    quote: 'OHO TECH engineered our clinical hospital management and pharmacy inventory workflow from the ground up. Their zero-downtime deployment transitioned multi-floor departments smoothly without operational disruption.',
   },
   {
     id: 't-2',
-    name: 'Rameshwar Patnaik',
-    role: 'Dean of Academic Technology',
-    company: 'Centurion University & Vocational Campuses',
-    industry: 'Higher Education & Vocational ERP',
-    location: 'Odisha & Andhra Pradesh',
-    metric: '6,500+',
-    metricLabel: 'Active Enrolled Students Managed',
-    quote: 'The multi-campus SchoolCloud ERP unified our admissions, biometric attendance, and examination fee ledger into a single reliable platform. Their founder-level oversight made all the difference in execution speed.',
+    name: 'Academic Technology Dean',
+    role: 'University Systems & Portals',
+    company: 'Higher Education Campus Network',
+    industry: 'Higher Education & Academics',
+    location: 'Regional Campuses',
+    metric: 'Unified',
+    metricLabel: 'Multi-Branch Student Information',
+    quote: 'The multi-campus student management system unified our admissions, faculty attendance, and examination fee ledgers into a single reliable platform with responsive technical support.',
   },
   {
     id: 't-3',
-    name: 'Siddharth Varma',
-    role: 'Head of Operations & Logistics',
-    company: 'Nexus Omni-Retail Distribution',
+    name: 'Operations & Supply Lead',
+    role: 'Multi-Store Inventory Distribution',
+    company: 'Omni-Channel Retail Network',
     industry: 'Retail & Warehouse Logistics',
-    location: 'Hyderabad, India',
-    metric: '100.00%',
-    metricLabel: 'Inventory Sync Accuracy',
-    quote: 'Our multi-branch retail POS now processes sub-second barcode scans and syncs ledger batches instantly across 6 warehouse distribution hubs. OHO TECH is our most dependable technology engineering partner.',
+    location: 'Regional Hubs',
+    metric: 'Sub-Second',
+    metricLabel: 'POS Transaction Processing',
+    quote: 'Our multi-branch retail POS now processes sub-second barcode scans and syncs ledger batches across warehouse distribution hubs with dependable database performance.',
   },
   {
     id: 't-4',
-    name: 'Priyanka Senapati',
-    role: 'Vice President of Engineering',
-    company: 'FinTrack Commercial Capital',
-    industry: 'Fintech & Microfinance',
-    location: 'Bengaluru, India',
-    metric: '12 Mins',
-    metricLabel: 'Loan Approval & KYC Cycle',
-    quote: 'By replacing our legacy paper underwriting with OHO TECH’s double-entry ACID ledger and automated Aadhaar/PAN KYC gateway, we accelerated loan disbursal times from 3 business days down to minutes.',
+    name: 'Financial Engineering Head',
+    role: 'Core Ledger & Underwriting Lead',
+    company: 'Fintech & Commercial Services',
+    industry: 'Fintech & Commercial Billing',
+    location: 'Metropolitan Operations',
+    metric: 'Automated',
+    metricLabel: 'Double-Entry Ledger Audit Trail',
+    quote: 'By structuring a clean double-entry ledger architecture with automated payment gateway verification, our billing and account reconciliation cycles run with complete operational clarity.',
   },
 ];
 
@@ -86,7 +86,7 @@ export function TestimonialsCarousel() {
   return (
     <section
       id="testimonials"
-      aria-label="Verified Client Testimonials and Commercial Outcomes"
+      aria-label="Client Feedback and Domain Outcomes"
       className="w-full bg-[#0a0a0b] text-[#e8e8e6] py-20 sm:py-28 px-6 sm:px-10 lg:px-16 relative overflow-hidden border-t border-white/10"
     >
       {/* Background radial glow */}
@@ -100,16 +100,16 @@ export function TestimonialsCarousel() {
             <ScrollReveal yOffset={15} duration={0.6}>
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
                 <Quote className="w-3.5 h-3.5" />
-                <span>COMMERCIAL VALIDATION // CLIENT REPUTATION</span>
+                <span>CLIENT COLLABORATION // DOMAIN FEEDBACK</span>
               </div>
             </ScrollReveal>
 
             <ScrollReveal yOffset={20} duration={0.7} delay={0.1}>
               <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase">
-                Voices of Experience.
+                Client Perspectives.
               </h2>
               <p className="text-sm sm:text-base text-slate-400 font-normal leading-relaxed mt-2 max-w-xl">
-                Real feedback from enterprise leaders running mission-critical operations on OHO TECH software systems.
+                Representative feedback from domain leaders collaborating with OHO TECH across custom software and digital infrastructure projects.
               </p>
             </ScrollReveal>
           </div>

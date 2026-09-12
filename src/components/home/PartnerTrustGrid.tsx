@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { 
-  ShieldCheck, 
   Cloud, 
   Database, 
   Cpu, 
@@ -19,7 +18,9 @@ import {
   ShoppingBag,
   Landmark,
   Truck,
-  CheckCircle2
+  CheckCircle2,
+  ShieldAlert,
+  SlidersHorizontal
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
@@ -43,44 +44,44 @@ interface PartnerCategory {
 const PARTNER_CATEGORIES: PartnerCategory[] = [
   {
     id: 'cloud-platforms',
-    title: 'Cloud & Infrastructure Ecosystem',
-    subtitle: 'HYPERSCALE & COMPUTE PLATFORMS',
-    tag: 'PLATFORM TIER',
+    title: 'Cloud & Infrastructure Stack',
+    subtitle: 'CORE COMPUTE & MANAGED PLATFORMS',
+    tag: 'INFRASTRUCTURE',
     partners: [
-      { id: 'aws', name: 'Amazon Web Services', tier: 'APN ADVANCED', badge: 'Cloud Infra', metric: 'Multi-AZ VPC', icon: Cloud },
-      { id: 'gcp', name: 'Google Cloud Platform', tier: 'KUBERNETES GKE', badge: 'Compute Engine', metric: 'Global VPC', icon: Globe },
-      { id: 'azure', name: 'Microsoft Azure', tier: 'ENTERPRISE GOLD', badge: 'Active Directory', metric: 'FedRAMP', icon: Server },
-      { id: 'pg', name: 'PostgreSQL Core', tier: 'ACID CLUSTERS', badge: 'Relational DB', metric: 'WAL Sync', icon: Database },
-      { id: 'redis', name: 'Redis Enterprise', tier: 'IN-MEMORY CACHE', badge: 'Low Latency', metric: '<1ms SLA', icon: Cpu },
-      { id: 'docker', name: 'Docker / OCI Core', tier: 'CONTAINER OPS', badge: 'Microservices', metric: 'Zero Drift', icon: Layers },
+      { id: 'aws', name: 'Amazon Web Services', tier: 'CLOUD COMPUTE', badge: 'VPC & S3', metric: 'Multi-AZ', icon: Cloud },
+      { id: 'gcp', name: 'Google Cloud Platform', tier: 'KUBERNETES GKE', badge: 'Container Engine', metric: 'Cloud Run', icon: Globe },
+      { id: 'azure', name: 'Microsoft Azure', tier: 'ENTERPRISE APPS', badge: 'Identity & Auth', metric: 'App Services', icon: Server },
+      { id: 'pg', name: 'PostgreSQL Database', tier: 'RELATIONAL CORE', badge: 'ACID Sharding', metric: 'WAL Replicas', icon: Database },
+      { id: 'redis', name: 'Redis Cache Layer', tier: 'IN-MEMORY STORE', badge: 'Fast Invalidation', metric: '<2ms Latency', icon: Cpu },
+      { id: 'docker', name: 'Docker & OCI Runtime', tier: 'STANDARDIZED OPS', badge: 'Microservices', metric: 'Zero Drift', icon: Layers },
     ]
   },
   {
-    id: 'client-deployments',
-    title: 'Enterprise Client Deployments',
-    subtitle: 'MISSION-CRITICAL PRODUCTION SYSTEMS',
-    tag: 'VERIFIED CLIENTS',
+    id: 'industries-served',
+    title: 'Industries & Domain Systems',
+    subtitle: 'ENGINEERED APPLICATION DOMAINS',
+    tag: 'DOMAINS SERVED',
     partners: [
-      { id: 'c1', name: 'Apex Multi-Specialty Hospital', tier: 'HEALTHCARE ERP', badge: '250+ Beds', metric: 'HL7 / EMR', icon: Stethoscope },
-      { id: 'c2', name: 'Centurion University Network', tier: 'EDU LMS PORTAL', badge: '6,500+ Students', metric: '99.98% SLA', icon: GraduationCap },
-      { id: 'c3', name: 'Nexus Omni-Retail Chain', tier: 'COMMERCE POS', badge: '40k+ Live SKUs', metric: 'Real-time Sync', icon: ShoppingBag },
-      { id: 'c4', name: 'FinTrack Commercial Capital', tier: 'FINTECH CORE', badge: 'Banking Ledger', metric: 'Double-Entry', icon: Landmark },
-      { id: 'c5', name: 'Global Fleet MachShip Corridors', tier: 'LOGISTICS & 3PL', badge: 'Cross-Border', metric: 'GPS Telemetry', icon: Truck },
-      { id: 'c6', name: 'BioCare IVF & Clinical Labs', tier: 'MEDTECH LABS', badge: 'Diagnostic Engine', metric: 'HIPAA Sealed', icon: ShieldCheck },
+      { id: 'ind-1', name: 'Healthcare & Clinical Systems', tier: 'EMR & PATIENT FLOW', badge: 'Hospital OS', metric: 'HL7 Workflows', icon: Stethoscope },
+      { id: 'ind-2', name: 'Higher Education & Academics', tier: 'CAMPUS LMS CORE', badge: 'Student Portals', metric: 'Fee Ledgers', icon: GraduationCap },
+      { id: 'ind-3', name: 'Retail & Multi-Store Commerce', tier: 'POS & INVENTORY', badge: 'Catalog Engine', metric: 'Live SKU Sync', icon: ShoppingBag },
+      { id: 'ind-4', name: 'Financial & Accounting Tools', tier: 'DOUBLE-ENTRY LEDGER', badge: 'Billing & Invoicing', metric: 'Audit Trails', icon: Landmark },
+      { id: 'ind-5', name: 'Logistics & Fleet Dispatch', tier: 'TELEMETRY & ROUTING', badge: 'Asset Tracking', metric: 'Milestone Ops', icon: Truck },
+      { id: 'ind-6', name: 'Diagnostic Labs & MedTech', tier: 'SAMPLE PROCESSING', badge: 'Automated Reports', metric: 'Secure Access', icon: Lock },
     ]
   },
   {
-    id: 'security-standards',
-    title: 'Security & Compliance Frameworks',
-    subtitle: 'GOVERNANCE, PROTOCOLS & RUNTIME',
-    tag: 'AUDIT VERIFIED',
+    id: 'engineering-practices',
+    title: 'Engineering Practices & Protocols',
+    subtitle: 'DEVELOPMENT INTEGRITY & SECURITY PROTOCOLS',
+    tag: 'STANDARDS & BEST PRACTICES',
     partners: [
-      { id: 'iso', name: 'ISO 27001 Security Standard', tier: 'INFO SECURITY', badge: 'ISMS Certified', metric: 'Annual Audit', icon: Lock },
-      { id: 'dpdp', name: 'GDPR / DPDP Compliance', tier: 'DATA PRIVACY', badge: 'Zero-Retention', metric: 'AES-256 GCM', icon: FileCheck2 },
-      { id: 'pci', name: 'PCI-DSS Level 1 Ready', tier: 'FINANCIAL DATA', badge: 'Tokenized Flow', metric: 'TLS 1.3 Enforced', icon: ShieldCheck },
-      { id: 'ts', name: 'TypeScript Strict Runtime', tier: 'TYPE INTEGRITY', badge: 'Zero Runtime Err', metric: 'Strict Null', icon: Terminal },
-      { id: 'next', name: 'Next.js 16 Edge Architecture', tier: 'DISTRIBUTED CDN', badge: 'React 19 Core', metric: '<18ms TTFB', icon: Workflow },
-      { id: 'sla', name: '24/7 Production SLA Guarantee', tier: 'ENTERPRISE OPS', badge: 'Mission Control', metric: '99.99% Uptime', icon: CheckCircle2 },
+      { id: 'sec-1', name: 'Security-First Architecture', tier: 'ACCESS CONTROL', badge: 'Defense-in-Depth', metric: 'mTLS & RBAC', icon: Lock },
+      { id: 'sec-2', name: 'Data Privacy Principles', tier: 'ENCRYPTION AT REST', badge: 'Zero Data Retention', metric: 'AES-256 GCM', icon: FileCheck2 },
+      { id: 'sec-3', name: 'Secure Payment Workflows', tier: 'TOKENIZED GATEWAYS', badge: 'PCI Architecture', metric: 'TLS 1.3 Strict', icon: CheckCircle2 },
+      { id: 'sec-4', name: 'Strict TypeScript Integrity', tier: 'COMPILE-TIME SAFETY', badge: 'Static Type Check', metric: 'Strict Nulls', icon: Terminal },
+      { id: 'sec-5', name: 'Modern Full-Stack Next.js', tier: 'EDGE COMPATIBLE', badge: 'React Server Comp', metric: '<25ms TTFB', icon: Workflow },
+      { id: 'sec-6', name: 'Continuous System Telemetry', tier: 'OBSERVABILITY & LOGS', badge: 'Health Monitoring', metric: '24/7 Metrics', icon: Cpu },
     ]
   }
 ];
@@ -95,7 +96,7 @@ export function PartnerTrustGrid() {
   return (
     <section
       id="partners-matrix"
-      aria-label="Enterprise Technology Partners and Client Deployments Matrix"
+      aria-label="Technology Stack and Industry Solutions Matrix"
       className="w-full bg-[#0a0a0b] text-[#e8e8e6] py-20 sm:py-28 px-6 sm:px-10 lg:px-16 border-y border-white/10 relative overflow-hidden"
     >
       {/* Ambient background lightings */}
@@ -109,16 +110,16 @@ export function PartnerTrustGrid() {
           <ScrollReveal yOffset={15} duration={0.6}>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>INSTITUTIONAL TRUST &amp; ECOSYSTEM MATRIX</span>
+              <span>TECHNOLOGY ECOSYSTEM &amp; DOMAIN MATRIX</span>
             </div>
           </ScrollReveal>
 
           <ScrollReveal yOffset={20} duration={0.7} delay={0.1}>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight uppercase leading-tight mb-4">
-              Verified Partners. <span className="text-slate-400">Enterprise Scale.</span>
+              Modern Stack. <span className="text-slate-400">Proven Architecture.</span>
             </h2>
             <p className="text-xs sm:text-base text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto">
-              A structured network of cloud alliances, mission-critical client deployments, and international compliance standards.
+              Our engineering foundation leverages proven cloud infrastructure, rigorous security practices, and custom software systems across enterprise domains.
             </p>
           </ScrollReveal>
 
@@ -133,7 +134,7 @@ export function PartnerTrustGrid() {
                     : 'bg-white/5 text-slate-400 border border-white/10 hover:text-white hover:border-white/20'
                 }`}
               >
-                All Ecosystem ({PARTNER_CATEGORIES.reduce((acc, c) => acc + c.partners.length, 0)})
+                All Domains ({PARTNER_CATEGORIES.reduce((acc, c) => acc + c.partners.length, 0)})
               </button>
               {PARTNER_CATEGORIES.map(cat => (
                 <button
@@ -170,7 +171,7 @@ export function PartnerTrustGrid() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-mono font-bold text-emerald-400/90 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full uppercase">
-                    {category.partners.length} Nodes Online
+                    {category.partners.length} Capabilities
                   </span>
                 </div>
               </div>
@@ -190,7 +191,7 @@ export function PartnerTrustGrid() {
                       <span className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 border-b border-l border-white/20 group-hover:border-emerald-400 transition-colors pointer-events-none" />
                       <span className="absolute bottom-1.5 right-1.5 w-1.5 h-1.5 border-b border-r border-white/20 group-hover:border-emerald-400 transition-colors pointer-events-none" />
 
-                      {/* Top Row: Icon & Status Dot */}
+                      {/* Top Row: Icon & Status Label */}
                       <div className="flex items-center justify-between mb-3">
                         <div className="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-emerald-500/10 border border-white/10 group-hover:border-emerald-500/30 flex items-center justify-center text-slate-400 group-hover:text-emerald-400 transition-all duration-300">
                           <IconComponent className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
@@ -200,7 +201,7 @@ export function PartnerTrustGrid() {
                         </span>
                       </div>
 
-                      {/* Middle: Partner / Client Name */}
+                      {/* Middle: Partner / Capability Name */}
                       <div className="my-auto">
                         <h4 className="text-xs sm:text-sm font-bold text-white tracking-tight leading-snug group-hover:text-emerald-300 transition-colors line-clamp-2">
                           {partner.name}
@@ -227,7 +228,7 @@ export function PartnerTrustGrid() {
           ))}
         </div>
 
-        {/* Bottom Trust Assurance Bar */}
+        {/* Bottom Assurance Bar (Clean, unasserted technical governance) */}
         <div className="mt-12 sm:mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
@@ -235,17 +236,17 @@ export function PartnerTrustGrid() {
             </div>
             <div>
               <p className="text-xs sm:text-sm font-bold text-white">
-                100% Cryptographically Verified SLAs &amp; Enterprise Governance
+                Direct Technical Governance &amp; Modular Code Ownership
               </p>
               <p className="text-[11px] text-slate-400 font-mono">
-                Direct client agreements, zero subcontracting handoffs, full code ownership.
+                Engineered with modern best practices, zero hidden dependencies, and full source access.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
             <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
-              ALL 18 ECOSYSTEM NODES VERIFIED
+              ENTERPRISE SOFTWARE INTEGRITY
             </span>
           </div>
         </div>
