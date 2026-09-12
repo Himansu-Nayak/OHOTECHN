@@ -158,6 +158,7 @@ export function CapabilityExplorer() {
 
   return (
     <section id="capabilities" className="w-full bg-[#0d0d0e] text-white py-20 sm:py-28 px-6 sm:px-10 lg:px-16 relative overflow-hidden grid-pattern-dark">
+      <div className="max-w-7xl mx-auto relative z-10">
       
       {/* Background Lighting */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -303,6 +304,7 @@ export function CapabilityExplorer() {
           </div>
         </div>
 
+      </div>
       </div>
 
     </section>

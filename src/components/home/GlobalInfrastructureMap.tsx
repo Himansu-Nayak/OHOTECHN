@@ -459,8 +459,8 @@ export function GlobalInfrastructureMap() {
               {/* Latency & Uptime Stat Strip */}
               <div className="grid grid-cols-2 gap-3 mb-5">
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase block">
-                    EDGE LATENCY
+                  <span className="text-[9.5px] font-mono text-slate-400 uppercase tracking-wider block">
+                    TARGET EDGE LATENCY
                   </span>
                   <span className="text-lg font-black text-emerald-400 font-mono">
                     {selectedNode.latency}
@@ -468,8 +468,8 @@ export function GlobalInfrastructureMap() {
                 </div>
 
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase block">
-                    SLA AVAILABILITY
+                  <span className="text-[9.5px] font-mono text-slate-400 uppercase tracking-wider block">
+                    TARGET SLA OBJECTIVE
                   </span>
                   <span className="text-lg font-black text-cyan-400 font-mono">
                     {selectedNode.uptime}
@@ -533,6 +533,18 @@ export function GlobalInfrastructureMap() {
         </div>
 
       </div>
+
+      {/* Architectural Topology Footnote */}
+      <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-slate-400">
+        <div className="flex items-center gap-2">
+          <Shield className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <span>Multi-Cloud Architecture Topology: AWS EC2 Multi-AZ + Cloudflare Anycast + Tier-1 Interconnect Routing</span>
+        </div>
+        <span className="text-slate-400">
+          * Latency figures represent standard benchmark target objectives across edge points of presence.
+        </span>
+      </div>
+
       </div>
     </section>
   );
