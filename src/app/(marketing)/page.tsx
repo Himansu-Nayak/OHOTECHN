@@ -4,7 +4,7 @@ import * as React from 'react';
 import { CinematicHero } from '@/components/home/CinematicHero';
 import { StatCounterStrip } from '@/components/home/StatCounterStrip';
 import { ScrollFrameSequence } from '@/components/ui/ScrollFrameSequence';
-import { PartnerLogosMarquee } from '@/components/home/PartnerLogosMarquee';
+import { PartnerTrustGrid } from '@/components/home/PartnerTrustGrid';
 import { TechnologyStatement } from '@/components/home/TechnologyStatement';
 import { HorizontalServicesShowcase } from '@/components/home/HorizontalServicesShowcase';
 import { BusinessRoadmapJourney } from '@/components/home/BusinessRoadmapJourney';
@@ -42,8 +42,8 @@ export default function WideStudioPage() {
         <ScrollFrameSequence />
       </section>
 
-      {/* 03. ENTERPRISE PARTNERS & CLIENTS DUAL MARQUEE */}
-      <PartnerLogosMarquee />
+      {/* 03. CATEGORIZED PARTNER & CLIENT TRUST MATRIX GRID */}
+      <PartnerTrustGrid />
 
       {/* 04. EDITORIAL TECHNOLOGY STATEMENT */}
       <TechnologyStatement />
