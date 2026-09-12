@@ -7,6 +7,7 @@ import { ScrollFrameSequence } from '@/components/ui/ScrollFrameSequence';
 import { PartnerLogosMarquee } from '@/components/home/PartnerLogosMarquee';
 import { TechnologyStatement } from '@/components/home/TechnologyStatement';
 import { HorizontalServicesShowcase } from '@/components/home/HorizontalServicesShowcase';
+import { BusinessRoadmapJourney } from '@/components/home/BusinessRoadmapJourney';
 import { CapabilityExplorer } from '@/components/home/CapabilityExplorer';
 import { SystemArchitectureFlow } from '@/components/home/SystemArchitectureFlow';
 import { LayeredParallaxSection } from '@/components/home/LayeredParallaxSection';
@@ -49,6 +50,9 @@ export default function WideStudioPage() {
 
       {/* 05. HORIZONTAL PINNED SERVICES SHOWCASE */}
       <HorizontalServicesShowcase />
+
+      {/* 05.1 BUSINESS ROADMAP & MULTIMODAL ENGINEERING JOURNEY */}
+      <BusinessRoadmapJourney />
 
       {/* 06. LIVING SYSTEM ARCHITECTURE FLOW */}
       <SystemArchitectureFlow />
