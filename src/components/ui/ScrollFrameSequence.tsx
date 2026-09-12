@@ -152,79 +152,59 @@ export function ScrollFrameSequence({
     [getBestAvailableImage]
   );
 
-  // Progressive intelligent preloading
+  // High-performance concurrent preloading
   useEffect(() => {
     isMountedRef.current = true;
     const images: (HTMLImageElement | null)[] = new Array(totalFrames).fill(null);
+    imagesRef.current = images;
     let loadedCount = 0;
 
-    // Phase 1: Load Frame 0 immediately
-    const firstImg = new Image();
-    firstImg.src = getFrameUrl(0);
-    firstImg.onload = () => {
-      if (!isMountedRef.current) return;
-      images[0] = firstImg;
-      loadedCount++;
-      setLoadProgress(Math.round((loadedCount / totalFrames) * 100));
-      renderCanvasFrame(0);
-    };
-    firstImg.onerror = () => {
-      if (!isMountedRef.current) return;
-      setHasError(true);
-    };
-    images[0] = firstImg;
-
-    // Phase 2: Key anchor frames for instant responsiveness
-    const keyIndices = [18, 36, 54, 71];
-    keyIndices.forEach((idx) => {
-      if (idx < totalFrames && !images[idx]) {
-        const keyImg = new Image();
-        keyImg.src = getFrameUrl(idx);
-        keyImg.onload = () => {
-          if (!isMountedRef.current) return;
-          images[idx] = keyImg;
+    const loadIndex = (idx: number) => {
+      return new Promise<void>((resolve) => {
+        const img = new Image();
+        img.src = getFrameUrl(idx);
+        img.onload = () => {
+          if (!isMountedRef.current) return resolve();
+          images[idx] = img;
           loadedCount++;
           setLoadProgress(Math.round((loadedCount / totalFrames) * 100));
+          if (idx === currentFrameRef.current || (idx === 0 && currentFrameRef.current === 0)) {
+            renderCanvasFrame(idx);
+          }
+          resolve();
         };
-        images[idx] = keyImg;
-      }
-    });
-
-    // Phase 3: Remaining frames loaded progressively in batches
-    let currentBatchIdx = 1;
-    const loadBatch = () => {
-      if (!isMountedRef.current) return;
-      const batchSize = 6;
-      for (let i = 0; i < batchSize && currentBatchIdx < totalFrames; i++) {
-        const targetIdx = currentBatchIdx++;
-        if (!images[targetIdx]) {
-          const img = new Image();
-          img.src = getFrameUrl(targetIdx);
-          img.onload = () => {
-            if (!isMountedRef.current) return;
-            images[targetIdx] = img;
-            loadedCount++;
-            setLoadProgress(Math.round((loadedCount / totalFrames) * 100));
-          };
-          images[targetIdx] = img;
-        }
-      }
-      if (currentBatchIdx < totalFrames && isMountedRef.current) {
-        if ('requestIdleCallback' in window) {
-          (window as any).requestIdleCallback(loadBatch);
-        } else {
-          setTimeout(loadBatch, 40);
-        }
-      }
+        img.onerror = () => {
+          if (idx === 0) setHasError(true);
+          resolve();
+        };
+      });
     };
 
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(loadBatch);
-    } else {
-      setTimeout(loadBatch, 50);
-    }
+    // Load key frames first, then remainder in concurrent batches
+    (async () => {
+      // 1. Initial key frames for instant first paint
+      await Promise.all([0, 18, 36, 54, 71].map(loadIndex));
+      renderCanvasFrame(currentFrameRef.current);
+      if (typeof window !== 'undefined') {
+        ScrollTrigger.refresh();
+      }
 
-    imagesRef.current = images;
+      // 2. Load all other frames in parallel batches of 12
+      const remaining: number[] = [];
+      for (let i = 0; i < totalFrames; i++) {
+        if (!images[i]) remaining.push(i);
+      }
+
+      const BATCH_SIZE = 12;
+      for (let i = 0; i < remaining.length; i += BATCH_SIZE) {
+        if (!isMountedRef.current) break;
+        const chunk = remaining.slice(i, i + BATCH_SIZE);
+        await Promise.all(chunk.map(loadIndex));
+      }
+      if (typeof window !== 'undefined') {
+        ScrollTrigger.refresh();
+      }
+    })();
 
     return () => {
       isMountedRef.current = false;
@@ -240,6 +220,47 @@ export function ScrollFrameSequence({
     return () => window.removeEventListener('resize', handleResize);
   }, [renderCanvasFrame]);
 
+  // Direct Interactive Pointer Drag Rotation
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragStartFrameRef = useRef(0);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+    dragStartFrameRef.current = currentFrameRef.current;
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    const deltaX = e.clientX - dragStartXRef.current;
+    // 1 frame per 8 pixels dragged
+    const frameOffset = Math.round(deltaX / 8);
+    let newFrame = (dragStartFrameRef.current + frameOffset) % totalFrames;
+    if (newFrame < 0) newFrame += totalFrames;
+    if (newFrame !== currentFrameRef.current) {
+      currentFrameRef.current = newFrame;
+      renderCanvasFrame(newFrame);
+
+      const progress = newFrame / totalFrames;
+      if (progress < 0.33) {
+        setActiveStage(0);
+      } else if (progress < 0.66) {
+        setActiveStage(1);
+      } else {
+        setActiveStage(2);
+      }
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    isDraggingRef.current = false;
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+    } catch {}
+  };
+
   // GSAP ScrollTrigger Sequence Scrubbing
   useEffect(() => {
     const container = containerRef.current;
@@ -254,6 +275,10 @@ export function ScrollFrameSequence({
       return;
     }
 
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 400);
+
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: container,
@@ -263,6 +288,7 @@ export function ScrollFrameSequence({
         pinSpacing: true,
         scrub: 0.5,
         onUpdate: (self) => {
+          if (isDraggingRef.current) return;
           const progress = self.progress;
           const targetFrame = Math.min(
             Math.floor(progress * totalFrames),
@@ -285,7 +311,10 @@ export function ScrollFrameSequence({
       });
     }, container);
 
-    return () => ctx.revert();
+    return () => {
+      clearTimeout(timer);
+      ctx.revert();
+    };
   }, [totalFrames, pinHeight, renderCanvasFrame]);
 
   return (
@@ -345,7 +374,13 @@ export function ScrollFrameSequence({
           </div>
 
           {/* 3D Hardware Canvas */}
-          <div className="relative w-full h-full max-h-[500px] sm:max-h-[580px] flex items-center justify-center">
+          <div
+            className="relative w-full h-full max-h-[500px] sm:max-h-[580px] flex items-center justify-center select-none touch-none"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+          >
             {hasError ? (
               <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center rounded-2xl bg-white/5 border border-white/10">
                 <Cpu className="w-12 h-12 text-emerald-400 mb-3" />
@@ -353,10 +388,17 @@ export function ScrollFrameSequence({
                 <span className="text-xs text-slate-400 mt-1">High-Throughput Digital Platform Engine</span>
               </div>
             ) : (
-              <canvas
-                ref={canvasRef}
-                className="w-full h-full object-contain cursor-grab active:cursor-grabbing drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
-              />
+              <>
+                <canvas
+                  ref={canvasRef}
+                  className="w-full h-full object-contain cursor-grab active:cursor-grabbing drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)] select-none"
+                />
+                {/* Floating drag rotation hint pill */}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-mono text-slate-300 pointer-events-none flex items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>DRAG TO ROTATE 360° // SCROLL TO SCRUB</span>
+                </div>
+              </>
             )}
           </div>
         </div>

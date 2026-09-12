@@ -38,7 +38,7 @@ export default function WideStudioPage() {
       <StatCounterStrip />
 
       {/* 02. 3D HARDWARE TURNTABLE SEQUENCE */}
-      <section id="hardware-sequence" className="w-full overflow-hidden">
+      <section id="hardware-sequence" className="w-full">
         <ScrollFrameSequence />
       </section>
 
