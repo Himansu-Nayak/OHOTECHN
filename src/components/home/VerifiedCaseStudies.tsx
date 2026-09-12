@@ -14,7 +14,8 @@ import {
   ChevronRight,
   ExternalLink,
   Zap,
-  Activity
+  Activity,
+  Info
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
@@ -55,8 +56,8 @@ const CASE_STUDIES: CaseStudy[] = [
       infrastructure: 'Containerized Deployment // Isolated On-Premise & Cloud Sync'
     },
     metrics: [
-      { label: 'Patient Triage Workflow', value: '< 4 Mins', detail: 'Streamlined intake to consultation handoff' },
-      { label: 'Pharmacy Ledger Accuracy', value: 'High Precision', detail: 'Synchronized inventory & batch dispensing' },
+      { label: 'Patient Triage Workflow', value: 'Sub-4 Min Goal', detail: 'Illustrative intake-to-consultation benchmark target' },
+      { label: 'Pharmacy Ledger Accuracy', value: 'High Precision', detail: 'Target batch dispensing & stock sync' },
       { label: 'Audit Trail Reliability', value: 'Complete', detail: 'Digital clinical records for compliance reviews' }
     ],
     deliverables: [
@@ -65,7 +66,7 @@ const CASE_STUDIES: CaseStudy[] = [
       'IPD / OPD Ward Bed Management Grid',
       'Automated Diagnostic Lab Dispatch'
     ],
-    systemVerdict: 'Digitized prescription paperwork, established zero-latency pharmacy ledger updates, and significantly reduced OPD patient wait times.'
+    systemVerdict: 'Designed to digitize prescription paperwork, establish zero-latency pharmacy ledger updates, and reduce OPD patient wait times.'
   },
   {
     id: 'campus-erp',
@@ -83,9 +84,9 @@ const CASE_STUDIES: CaseStudy[] = [
       infrastructure: 'Cloud Container Service // Global Edge CDN'
     },
     metrics: [
-      { label: 'Fee Ledger Updates', value: 'Real-Time', detail: 'Automated ledger balance via payment webhooks' },
-      { label: 'Batch Grade Processing', value: 'Sub-3s', detail: 'Automated grade compilation across departments' },
-      { label: 'Portal Accessibility', value: '24/7 Available', detail: 'Multi-device access for students & faculty' }
+      { label: 'Fee Ledger Reconciliation', value: 'Real-Time Goal', detail: 'Target automated ledger balance via payment webhooks' },
+      { label: 'Batch Grade Processing', value: 'Sub-3s Target', detail: 'Illustrative batch grade compilation benchmark' },
+      { label: 'Portal Accessibility', value: '24/7 Target', detail: 'High-availability architecture target' }
     ],
     deliverables: [
       'Multi-Branch Tenant Isolation Engine',
@@ -93,7 +94,7 @@ const CASE_STUDIES: CaseStudy[] = [
       'Biometric & RFID Attendance Integration',
       'Self-Service Student Transcript Generator'
     ],
-    systemVerdict: 'Unified institutional operations across all physical campuses into a centralized administrative control center with automated financial governance.'
+    systemVerdict: 'Designed to unify institutional operations across multiple campuses into a centralized administrative control center with automated financial governance.'
   },
   {
     id: 'retail-omnichannel',
@@ -111,9 +112,9 @@ const CASE_STUDIES: CaseStudy[] = [
       infrastructure: 'Dockerized Microservices // Encrypted Local Data Stores'
     },
     metrics: [
-      { label: 'Barcode Processing Speed', value: '< 200ms', detail: 'Sub-second thermal receipt checkout latency' },
-      { label: 'Inventory Drift Prevention', value: 'Real-Time', detail: 'Immediate stock depletion across all store counters' },
-      { label: 'Offline Resilience', value: '100% Uptime', detail: 'Transactions queue locally when internet drops' }
+      { label: 'Barcode Processing Goal', value: '< 200ms Goal', detail: 'Illustrative checkout latency performance target' },
+      { label: 'Inventory Drift Prevention', value: 'Real-Time Goal', detail: 'Target stock synchronization across store counters' },
+      { label: 'Offline Resilience', value: 'Fail-Safe Mode', detail: 'Local transaction queueing architecture during network outage' }
     ],
     deliverables: [
       'Offline-First Local Terminal Billing Engine',
@@ -121,7 +122,7 @@ const CASE_STUDIES: CaseStudy[] = [
       'Multi-Store Consolidated Tax & GST Ledger',
       'Supplier Purchase Order Automation'
     ],
-    systemVerdict: 'Prevented stockout discrepancies across multi-location stores, achieved sub-second counter checkouts, and secured uninterrupted offline operation.'
+    systemVerdict: 'Engineered to prevent stockout discrepancies across multi-location stores, achieve sub-second counter checkouts, and secure uninterrupted offline operation.'
   },
   {
     id: 'fintech-ledger',
@@ -139,9 +140,9 @@ const CASE_STUDIES: CaseStudy[] = [
       infrastructure: 'Private Cloud VPC // KMS Encrypted Storage'
     },
     metrics: [
-      { label: 'Underwriting Verification', value: 'Automated', detail: 'Instant document parsing and eligibility verification' },
-      { label: 'Payment Reconciliation', value: 'Sub-Minute', detail: 'Automated bank & UPI statement reconciliation' },
-      { label: 'Ledger Audit Trail', value: 'Strict ACID', detail: 'Double-entry transaction balances with audit history' }
+      { label: 'Underwriting Verification', value: 'Automated Target', detail: 'Design target for automated document parsing' },
+      { label: 'Payment Reconciliation', value: 'Sub-Minute Target', detail: 'Target automated bank statement reconciliation' },
+      { label: 'Ledger Audit Integrity', value: 'Strict ACID', detail: 'Cryptographic transaction balancing target' }
     ],
     deliverables: [
       'Automated KYC Verification Flow',
@@ -149,7 +150,7 @@ const CASE_STUDIES: CaseStudy[] = [
       'Automated Payment Schedule & Reminders Daemon',
       'Field Collection Management Application'
     ],
-    systemVerdict: 'Accelerated underwriting cycles to under 15 minutes, automated installment tracking, and established bank-grade audit reliability.'
+    systemVerdict: 'Designed to accelerate underwriting cycles, automate installment tracking, and establish bank-grade audit reliability.'
   }
 ];
 
@@ -174,16 +175,16 @@ export function VerifiedCaseStudies() {
             <ScrollReveal yOffset={15} duration={0.6}>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
                 <FileText className="w-3.5 h-3.5 text-emerald-400" />
-                <span>SYSTEM BLUEPRINTS // ARCHITECTURAL CASE STUDIES</span>
+                <span>REPRESENTATIVE SYSTEM BLUEPRINTS // ARCHITECTURAL SOLUTIONS</span>
               </div>
             </ScrollReveal>
 
             <ScrollReveal yOffset={20} duration={0.7} delay={0.1}>
               <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight mb-4 uppercase">
-                Proven Engineering in Action.
+                Architecture Blueprints.
               </h2>
               <p className="text-sm sm:text-base text-slate-400 font-normal leading-relaxed">
-                Technical blueprints structured through precise architectural execution, from operational bottlenecks to resilient software systems.
+                Illustrative technical blueprints demonstrating how OHO TECH designs modular software architectures for common industry bottlenecks.
               </p>
             </ScrollReveal>
           </div>
@@ -193,7 +194,7 @@ export function VerifiedCaseStudies() {
               href="/contact" 
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs font-mono uppercase tracking-wider transition-all duration-200 shadow-lg shrink-0"
             >
-              <span>Request System Blueprint</span>
+              <span>Consult On Architecture</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </ScrollReveal>
@@ -240,6 +241,17 @@ export function VerifiedCaseStudies() {
           {/* Right Column: Detailed Architecture Showcase */}
           <div className="lg:col-span-8 bg-[#111113] border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
             
+            {/* Prominent Architectural Target Disclosure Banner */}
+            <div className="mb-6 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                <Info className="w-4 h-4 shrink-0" />
+                <span>Architectural Reference Model // Benchmark Targets (Illustrative)</span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-400 hidden sm:inline-block uppercase">
+                Design Target
+              </span>
+            </div>
+
             {/* Header / Tag */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-6 border-b border-white/10 mb-6">
               <div>
@@ -308,7 +320,7 @@ export function VerifiedCaseStudies() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               {activeStudy.metrics.map((metric, mIdx) => (
                 <div key={mIdx} className="p-4 rounded-xl bg-white/[0.03] border border-white/10">
-                  <span className="text-2xl font-black text-emerald-400 tracking-tight block">
+                  <span className="text-xl sm:text-2xl font-black text-emerald-400 tracking-tight block">
                     {metric.value}
                   </span>
                   <span className="text-xs font-bold text-white block mt-1">
@@ -325,7 +337,7 @@ export function VerifiedCaseStudies() {
             <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider block">
-                  SYSTEM OUTCOME VERDICT
+                  DESIGN OUTCOME TARGET
                 </span>
                 <p className="text-xs sm:text-sm text-slate-200 mt-1">
                   {activeStudy.systemVerdict}

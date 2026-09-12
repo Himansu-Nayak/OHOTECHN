@@ -7,7 +7,8 @@ import {
   Quote, 
   Star, 
   CheckCircle2, 
-  Building2 
+  Building2,
+  Info
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
@@ -30,9 +31,9 @@ const TESTIMONIALS: TestimonialItem[] = [
     role: 'Healthcare Operations & EMR Lead',
     company: 'Tertiary Care Hospital Network',
     industry: 'Healthcare & Clinical Diagnostics',
-    location: 'Eastern India',
+    location: 'Eastern India Region',
     metric: 'Real-Time',
-    metricLabel: 'Clinical Workflow Synchronization',
+    metricLabel: 'Clinical Workflow Sync Target',
     quote: 'OHO TECH engineered our clinical hospital management and pharmacy inventory workflow from the ground up. Their zero-downtime deployment transitioned multi-floor departments smoothly without operational disruption.',
   },
   {
@@ -41,9 +42,9 @@ const TESTIMONIALS: TestimonialItem[] = [
     role: 'University Systems & Portals',
     company: 'Higher Education Campus Network',
     industry: 'Higher Education & Academics',
-    location: 'Regional Campuses',
+    location: 'Regional Campus Network',
     metric: 'Unified',
-    metricLabel: 'Multi-Branch Student Information',
+    metricLabel: 'Multi-Branch Information System',
     quote: 'The multi-campus student management system unified our admissions, faculty attendance, and examination fee ledgers into a single reliable platform with responsive technical support.',
   },
   {
@@ -52,9 +53,9 @@ const TESTIMONIALS: TestimonialItem[] = [
     role: 'Multi-Store Inventory Distribution',
     company: 'Omni-Channel Retail Network',
     industry: 'Retail & Warehouse Logistics',
-    location: 'Regional Hubs',
+    location: 'Regional Hub Network',
     metric: 'Sub-Second',
-    metricLabel: 'POS Transaction Processing',
+    metricLabel: 'POS Transaction Benchmark',
     quote: 'Our multi-branch retail POS now processes sub-second barcode scans and syncs ledger batches across warehouse distribution hubs with dependable database performance.',
   },
   {
@@ -63,9 +64,9 @@ const TESTIMONIALS: TestimonialItem[] = [
     role: 'Core Ledger & Underwriting Lead',
     company: 'Fintech & Commercial Services',
     industry: 'Fintech & Commercial Billing',
-    location: 'Metropolitan Operations',
+    location: 'Metropolitan Financial Hub',
     metric: 'Automated',
-    metricLabel: 'Double-Entry Ledger Audit Trail',
+    metricLabel: 'Double-Entry Audit Benchmark',
     quote: 'By structuring a clean double-entry ledger architecture with automated payment gateway verification, our billing and account reconciliation cycles run with complete operational clarity.',
   },
 ];
@@ -98,9 +99,9 @@ export function TestimonialsCarousel() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 pb-6 border-b border-white/10">
           <div>
             <ScrollReveal yOffset={15} duration={0.6}>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
-                <Quote className="w-3.5 h-3.5" />
-                <span>CLIENT COLLABORATION // DOMAIN FEEDBACK</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
+                <Info className="w-3.5 h-3.5" />
+                <span>SAMPLE CLIENT ARCHETYPES // ILLUSTRATIVE FEEDBACK</span>
               </div>
             </ScrollReveal>
 
@@ -109,7 +110,7 @@ export function TestimonialsCarousel() {
                 Client Perspectives.
               </h2>
               <p className="text-sm sm:text-base text-slate-400 font-normal leading-relaxed mt-2 max-w-xl">
-                Representative feedback from domain leaders collaborating with OHO TECH across custom software and digital infrastructure projects.
+                Representative feedback archetypes illustrating typical collaboration outcomes across custom software and digital infrastructure engagements.
               </p>
             </ScrollReveal>
           </div>
@@ -142,6 +143,17 @@ export function TestimonialsCarousel() {
             key={current.id}
             className="bg-[#121318]/90 border border-white/10 rounded-3xl p-6 sm:p-12 lg:p-14 shadow-2xl backdrop-blur-xl transition-all duration-300"
           >
+            {/* Prominent High-Visibility Disclosure Banner Directly On Card */}
+            <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">
+                <Info className="w-4 h-4 shrink-0" />
+                <span>Representative Feedback Archetype — Pending Client Production Authorization</span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-400 hidden sm:inline-block uppercase">
+                Illustrative Persona
+              </span>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 items-center">
               
               {/* Left Column: Metric & Corporate Profile */}
@@ -152,7 +164,7 @@ export function TestimonialsCarousel() {
                 </div>
 
                 <div>
-                  <span className="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight block">
+                  <span className="text-3xl sm:text-4xl font-black text-white font-mono tracking-tight block">
                     {current.metric}
                   </span>
                   <span className="text-xs font-mono text-emerald-400 uppercase tracking-wider block mt-1">
@@ -175,12 +187,12 @@ export function TestimonialsCarousel() {
                   </span>
                 </div>
 
-                {/* 5-Star Rating */}
+                {/* Star Rating Badge */}
                 <div className="flex items-center gap-1 text-amber-400 pt-1">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
                   ))}
-                  <span className="text-[10px] font-mono text-slate-400 ml-2">VERIFIED REVIEW</span>
+                  <span className="text-[10px] font-mono text-slate-400 ml-2">REPRESENTATIVE RATING</span>
                 </div>
               </div>
 
@@ -191,30 +203,14 @@ export function TestimonialsCarousel() {
                   &ldquo;{current.quote}&rdquo;
                 </p>
 
-                <div className="flex items-center gap-2 text-xs font-mono text-emerald-400">
+                <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>PRODUCTION VERIFIED ARCHITECTURAL DEPLOYMENT</span>
+                  <span>ARCHITECTURE BLUEPRINT &amp; OUTCOME TARGET MODEL</span>
                 </div>
               </div>
 
             </div>
           </div>
-        </div>
-
-        {/* Carousel Pagination Dots */}
-        <div className="flex items-center justify-center gap-2 mt-8">
-          {TESTIMONIALS.map((t, idx) => (
-            <button
-              key={t.id}
-              onClick={() => setCurrentIndex(idx)}
-              aria-label={`Go to testimonial ${idx + 1} from ${t.company}`}
-              className={`h-2 rounded-full transition-all cursor-pointer ${
-                idx === currentIndex
-                  ? 'w-8 bg-emerald-400'
-                  : 'w-2 bg-white/20 hover:bg-white/40'
-              }`}
-            />
-          ))}
         </div>
 
       </div>
