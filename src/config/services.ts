@@ -155,6 +155,46 @@ export const services: Service[] = [
     emoji: '🔌',
     features: ['RESTful & GraphQL APIs', 'Payment Gateway Sync', 'CRM & ERP Connectors', 'Webhook Setup', 'API Security'],
   },
+  {
+    slug: 'ai-ml-solutions',
+    name: 'Neural AI & Tensor Systems',
+    category: 'technology',
+    description:
+      'Custom fine-tuned large language models, enterprise vector similarity databases, and real-time predictive telemetry pipelines for business intelligence and process automation.',
+    iconName: 'Cpu',
+    emoji: '🧠',
+    features: ['Custom LLM Fine-Tuning & Prompt Shields', 'pgvector & HNSW Vector Search', 'Streaming Inference Edge Proxies', 'Predictive Telemetry & Real-Time Analytics'],
+  },
+  {
+    slug: 'web-development',
+    name: 'Enterprise Web Platforms',
+    category: 'technology',
+    description:
+      'Next-generation high-concurrency web engines built with React 19, Next.js App Router, Turbopack, and serverless edge functions for global low-latency performance.',
+    iconName: 'Layers',
+    emoji: '🌐',
+    features: ['React 19 & Next.js 16 App Router', 'Turbopack Zero-Lag Compilation', 'Tailwind CSS 4 Precision Styling', 'Streaming SSR & Global Edge CDN'],
+  },
+  {
+    slug: 'mobile-apps',
+    name: 'Native Mobile Engineering',
+    category: 'technology',
+    description:
+      'Fluid 120 FPS iOS and Android ecosystems engineered with native Swift, Kotlin Multiplatform, and resilient offline synchronization.',
+    iconName: 'Smartphone',
+    emoji: '📱',
+    features: ['Native Swift & SwiftUI (iOS)', 'Kotlin Multiplatform (Android)', 'Offline-First SQLite Sync Engine', 'Biometric Security & Push Telemetry'],
+  },
+  {
+    slug: 'erp-systems',
+    name: 'Distributed ERP & Ledger',
+    category: 'technology',
+    description:
+      'Mission-critical enterprise resource planning systems with cryptographic audit trails, multi-branch inventory coordination, and real-time financial ledger synchronization.',
+    iconName: 'Database',
+    emoji: '📊',
+    features: ['Multi-Branch Inventory & Warehousing', 'Immutable Audit Trails & Cryptographic RBAC', 'Connected Banking & Auto-Reconciliation', 'High-Throughput Concurrent Processing'],
+  },
 
   // ── Digital Growth Services ──────────────────────────────
   {
