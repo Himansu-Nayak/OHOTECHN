@@ -113,7 +113,8 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
   return (
     <div
       ref={cardRef}
-      className="w-full rounded-2xl sm:rounded-3xl bg-[#121316]/95 border border-white/10 hover:border-emerald-500/40 transition-all duration-300 p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+      data-cursor-text="CASE STUDY"
+      className="w-full rounded-2xl sm:rounded-3xl bg-[#121316]/95 border border-white/10 hover:border-emerald-500/40 transition-all duration-300 p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden group/card cursor-pointer"
     >
       {/* Background Accent Glow */}
       <div 
