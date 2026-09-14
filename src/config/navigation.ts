@@ -44,6 +44,9 @@ export const growthServicesNav: NavLink[] = [
 ];
 
 export const resourcesNav: NavLink[] = [
+  { name: 'Case Studies & Work', href: '/work', description: 'Verified enterprise case studies & architecture.' },
+  { name: 'Technology Stack', href: '/technology', description: 'Distributed runtimes, stack specs & cloud mesh.' },
+  { name: 'Engineering Insights', href: '/insights', description: 'Technical whitepapers & system design articles.' },
   { name: 'Pricing & Plans', href: '/pricing', description: 'Enterprise software pricing, licenses & billing.' },
   { name: 'Software Downloads', href: '/downloads', description: 'Official desktop apps, installers & mobile APKs.' },
   { name: 'Licenses & Keys', href: '/licenses', description: 'License key validation & device activation portal.' },
@@ -52,6 +55,9 @@ export const resourcesNav: NavLink[] = [
 
 export const companyNav: NavLink[] = [
   { name: 'About Us', href: '/about', description: 'Our mission, leadership, and engineering principles.' },
+  { name: 'Selected Work', href: '/work', description: 'Representative enterprise deployments and architectures.' },
+  { name: 'Technology Architecture', href: '/technology', description: 'Foundational engineering pillars and runtimes.' },
+  { name: 'Engineering Insights', href: '/insights', description: 'Deep-dive technical whitepapers and system designs.' },
   { name: 'Careers', href: '/careers', description: 'Join our technology & growth engineering team.' },
   { name: 'Partner With Us', href: '/partner', description: 'Channel partnerships for agencies & developers.' },
   { name: 'Contact', href: '/contact', description: 'Get in touch with our team for project inquiries.' },
