@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { MOTION_TOKENS, isReducedMotion } from '@/lib/motion';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -40,7 +41,7 @@ export function ScrollReveal({
   distance = 24,
   yOffset,
   from = 'bottom',
-  duration = 0.75,
+  duration = MOTION_TOKENS.duration.medium,
   delay = 0,
   once = true,
   triggerStart = 'top 88%',
@@ -55,7 +56,7 @@ export function ScrollReveal({
     if (!el) return;
 
     // Skip animation for reduced-motion users
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (isReducedMotion()) {
       gsap.set(el, { opacity: 1, x: 0, y: 0 });
       return;
     }

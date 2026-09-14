@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { MOTION_TOKENS, isReducedMotion } from '@/lib/motion';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -59,12 +60,7 @@ export function Tilt3D({
     const card = cardRef.current;
     if (!container || !card) return;
 
-    // Check for reduced motion
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
-
-    if (prefersReducedMotion) {
+    if (isReducedMotion()) {
       gsap.set(card, {
         transform: 'none',
         opacity: 1,
