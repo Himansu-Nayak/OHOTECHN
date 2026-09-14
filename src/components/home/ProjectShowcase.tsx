@@ -34,6 +34,8 @@ interface ProjectShowcaseProps {
 export function ProjectShowcase({ project, index, priorityImage = false }: ProjectShowcaseProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const imageElementRef = useRef<HTMLDivElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
   const isEven = index % 2 === 1;
 
   useEffect(() => {
@@ -43,20 +45,61 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
     const isMobile = window.innerWidth < 768;
 
     if (prefersReducedMotion || isMobile) return;
-    if (!cardRef.current || !imageContainerRef.current) return;
+    if (!cardRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Subtle parallax on image container
-      gsap.to(imageContainerRef.current, {
-        y: 32,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: cardRef.current,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: 0.8,
-        },
-      });
+      // 1. Image scale reveal: starts slightly zoomed in at 1.08, settles at 1.0
+      if (imageElementRef.current) {
+        gsap.fromTo(
+          imageElementRef.current,
+          { scale: 1.08 },
+          {
+            scale: 1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: cardRef.current,
+              start: 'top 85%',
+              end: 'center 45%',
+              scrub: 0.6,
+            },
+          }
+        );
+      }
+
+      // 2. Subtle parallax on image container
+      if (imageContainerRef.current) {
+        gsap.to(imageContainerRef.current, {
+          y: 28,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: cardRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 0.8,
+          },
+        });
+      }
+
+      // 3. Staggered reveal for text content
+      if (textContainerRef.current) {
+        gsap.fromTo(
+          textContainerRef.current.children,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            stagger: 0.08,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: cardRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
     }, cardRef);
 
     return () => ctx.revert();
@@ -82,7 +125,11 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
           ref={imageContainerRef}
           className={`lg:col-span-6 w-full ${isEven ? 'lg:col-start-7' : ''}`}
         >
-          <div className="relative w-full h-64 sm:h-80 lg:h-96 rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 bg-black/60 shadow-xl group">
+          <div 
+            ref={imageElementRef}
+            data-cursor-text="CASE STUDY"
+            className="relative w-full h-64 sm:h-80 lg:h-96 rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 bg-black/60 shadow-xl group"
+          >
             <Image
               src={project.image}
               alt={project.title}
@@ -110,9 +157,12 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
         </div>
 
         {/* Narrative & Technical Spec Side */}
-        <div className={`lg:col-span-6 flex flex-col justify-between ${
-          isEven ? 'lg:col-start-1' : ''
-        }`}>
+        <div 
+          ref={textContainerRef}
+          className={`lg:col-span-6 flex flex-col justify-between ${
+            isEven ? 'lg:col-start-1' : ''
+          }`}
+        >
           <div>
             {/* Top Category Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 font-mono text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-3">

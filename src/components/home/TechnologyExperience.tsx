@@ -250,9 +250,87 @@ const TECH_DOMAINS: TechDomain[] = [
 ];
 
 export function TechnologyExperience() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const statementRef = useRef<HTMLDivElement>(null);
+  const pillarsRef = useRef<HTMLDivElement>(null);
+  const explorerRef = useRef<HTMLDivElement>(null);
+
   const [selectedDomainIndex, setSelectedDomainIndex] = useState<number>(0);
   const currentDomain = TECH_DOMAINS[selectedDomainIndex] || TECH_DOMAINS[0];
   const DomainIcon = currentDomain.icon;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion || !sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // 1. Statement entrance
+      if (statementRef.current) {
+        gsap.fromTo(
+          statementRef.current.children,
+          { opacity: 0, y: 28 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: statementRef.current,
+              start: 'top 82%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
+
+      // 2. Foundation pillars stagger
+      if (pillarsRef.current) {
+        gsap.fromTo(
+          pillarsRef.current.children,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            stagger: 0.1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: pillarsRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
+
+      // 3. Explorer container reveal
+      if (explorerRef.current) {
+        gsap.fromTo(
+          explorerRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: explorerRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSelectDomain = useCallback((index: number) => {
     setSelectedDomainIndex(index);
@@ -260,6 +338,7 @@ export function TechnologyExperience() {
 
   return (
     <section 
+      ref={sectionRef}
       id="technology" 
       aria-label="OHO TECH Technology Foundation and Architecture Matrix"
       className="w-full bg-[#0a0a0b] text-white py-20 sm:py-28 lg:py-36 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
@@ -276,7 +355,7 @@ export function TechnologyExperience() {
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         
         {/* ── PART 1: STRONG EDITORIAL FOUNDATION STATEMENT ── */}
-        <div className="mb-16 sm:mb-24 pb-12 border-b border-white/10">
+        <div ref={statementRef} className="mb-16 sm:mb-24 pb-12 border-b border-white/10">
           
           {/* Pre-title Capsule */}
           <div className="flex items-center gap-2 mb-6">
@@ -300,7 +379,7 @@ export function TechnologyExperience() {
           </div>
 
           {/* 3 Core Architectural Pillars Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+          <div ref={pillarsRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
             {FOUNDATION_PILLARS.map((pillar, pIdx) => {
               const Icon = pillar.icon;
               return (
@@ -340,7 +419,7 @@ export function TechnologyExperience() {
         </div>
 
         {/* ── PART 2: INTERACTIVE 8-DOMAIN TECHNOLOGY PRESENTATION ── */}
-        <div>
+        <div ref={explorerRef}>
           
           {/* Matrix Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-12">

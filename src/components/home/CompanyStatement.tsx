@@ -13,6 +13,13 @@ import {
   Users
 } from 'lucide-react';
 
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
 const ETHOS_PILLARS = [
   {
     number: '01',
@@ -47,8 +54,43 @@ const ETHOS_PILLARS = [
 ];
 
 export function CompanyStatement() {
+  const sectionRef = React.useRef<HTMLElement>(null);
+  const gridRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion || !sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      if (gridRef.current) {
+        gsap.fromTo(
+          gridRef.current.children,
+          { opacity: 0, y: 32 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            stagger: 0.12,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section 
+      ref={sectionRef}
       id="about" 
       className="w-full bg-[#0d0d10] text-white py-16 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
     >
@@ -77,7 +119,7 @@ export function CompanyStatement() {
         </div>
 
         {/* 3 Ethos Pillars Responsive Grid: 1 col mobile, 3 cols desktop */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
+        <div ref={gridRef} className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
           {ETHOS_PILLARS.map((pillar, idx) => {
             const Icon = pillar.icon;
             return (
