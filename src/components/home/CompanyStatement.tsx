@@ -52,6 +52,9 @@ export function CompanyStatement() {
       id="about" 
       className="w-full bg-[#0d0d10] text-white py-16 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
     >
+      {/* Top transition blend from DirectorSection */}
+      <div className="absolute top-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-b from-[#0d0d0e] to-transparent pointer-events-none z-0" />
+
       {/* Ambient background glow */}
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-emerald-500/5 rounded-full blur-[140px] pointer-events-none" />
 

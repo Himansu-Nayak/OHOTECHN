@@ -10,9 +10,15 @@ export function ExperienceShowcase() {
       id="experience" 
       className="w-full bg-[#0a0a0b] text-white relative overflow-hidden"
     >
-      <div className="w-full">
+      {/* Top transition blend from TechnologyExperience */}
+      <div className="absolute top-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-b from-[#0a0a0b] to-transparent pointer-events-none z-20" />
+
+      <div className="w-full relative z-10">
         <ScrollFrameSequence />
       </div>
+
+      {/* Bottom transition blend into DirectorSection */}
+      <div className="absolute bottom-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-t from-[#0d0d0e] to-transparent pointer-events-none z-20" />
     </section>
   );
 }
