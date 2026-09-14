@@ -48,49 +48,54 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
     if (!cardRef.current) return;
 
     const ctx = gsap.context(() => {
-      // 1. Image scale reveal: starts slightly zoomed in at 1.08, settles at 1.0
+      // 1. Cinematic Image Scale Reveal
       if (imageElementRef.current) {
         gsap.fromTo(
           imageElementRef.current,
-          { scale: 1.08 },
+          { scale: 1.15, opacity: 0.75 },
           {
             scale: 1,
-            ease: 'power2.out',
+            opacity: 1,
+            ease: 'power3.out',
             scrollTrigger: {
               trigger: cardRef.current,
-              start: 'top 85%',
-              end: 'center 45%',
-              scrub: 0.6,
+              start: 'top 88%',
+              end: 'center 40%',
+              scrub: 0.8,
             },
           }
         );
       }
 
-      // 2. Subtle parallax on image container
+      // 2. Pronounced Parallax on Image Container
       if (imageContainerRef.current) {
-        gsap.to(imageContainerRef.current, {
-          y: 28,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: cardRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 0.8,
-          },
-        });
+        gsap.fromTo(
+          imageContainerRef.current,
+          { y: -30 },
+          {
+            y: 30,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: cardRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.0,
+            },
+          }
+        );
       }
 
       // 3. Staggered reveal for text content
       if (textContainerRef.current) {
         gsap.fromTo(
           textContainerRef.current.children,
-          { opacity: 0, y: 24 },
+          { opacity: 0, y: 35 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.7,
-            stagger: 0.08,
-            ease: 'power3.out',
+            duration: 0.85,
+            stagger: 0.1,
+            ease: 'power4.out',
             scrollTrigger: {
               trigger: cardRef.current,
               start: 'top 80%',

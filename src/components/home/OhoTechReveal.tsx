@@ -43,23 +43,45 @@ export function OhoTechReveal() {
     if (prefersReducedMotion) return;
 
     const ctx = gsap.context(() => {
-      // Scroll-driven scale and opacity reveal
+      // 1. Grand Signature Wordmark Scale & Opacity Growth
       gsap.fromTo(
         wordmark,
-        { scale: 0.92, opacity: 0.7, y: 25 },
+        { scale: 0.72, opacity: 0.15, y: 60 },
         {
           scale: 1,
           opacity: 1,
           y: 0,
-          ease: 'power2.out',
+          ease: 'power3.out',
           scrollTrigger: {
             trigger: container,
             start: 'top 85%',
-            end: 'center 50%',
-            scrub: 0.6,
+            end: 'center 45%',
+            scrub: 0.8,
           },
         }
       );
+
+      // 2. 3 Brand Pillars Stagger Reveal
+      const pillars = container.querySelectorAll('.grid > div');
+      if (pillars.length > 0) {
+        gsap.fromTo(
+          pillars,
+          { opacity: 0, y: 35 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: container,
+              start: 'top 60%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
     }, container);
 
     return () => ctx.revert();

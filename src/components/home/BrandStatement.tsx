@@ -115,46 +115,46 @@ export function BrandStatement() {
       // 1. Progressive Typography Stagger & Scale Entrance
       gsap.fromTo(
         [title1Ref.current, title2Ref.current, title3Ref.current],
-        { opacity: 0, y: 32, scale: 0.96 },
+        { opacity: 0, y: 55, scale: 0.92 },
         {
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 0.8,
-          stagger: 0.14,
-          ease: 'power3.out',
+          duration: 0.95,
+          stagger: 0.16,
+          ease: 'power4.out',
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top 80%',
+            start: 'top 82%',
             toggleActions: 'play none none none',
             once: true,
           },
         }
       );
 
-      // 2. Subtle horizontal parallax on title lines (desktop)
+      // 2. Bold horizontal parallax on title lines (desktop)
       if (!isMobile) {
         if (title1Ref.current) {
           gsap.to(title1Ref.current, {
-            x: -24,
+            x: -80,
             ease: 'none',
             scrollTrigger: {
               trigger: sectionRef.current,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 0.6,
+              scrub: 0.8,
             },
           });
         }
         if (title3Ref.current) {
           gsap.to(title3Ref.current, {
-            x: 24,
+            x: 80,
             ease: 'none',
             scrollTrigger: {
               trigger: sectionRef.current,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 0.6,
+              scrub: 0.8,
             },
           });
         }

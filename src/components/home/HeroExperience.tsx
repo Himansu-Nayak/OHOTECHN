@@ -72,84 +72,116 @@ export function HeroExperience() {
         return;
       }
 
-      // 1. Subtle Entrance Stagger Timeline
+      // 1. Cinematic Entrance Stagger Timeline
       const entranceTl = gsap.timeline({
-        defaults: { ease: 'power3.out' }
+        defaults: { ease: 'power4.out' }
       });
 
       entranceTl
         .fromTo(
           [headlineLine1Ref.current, headlineLine2Ref.current, headlineLine3Ref.current],
-          { opacity: 0, y: 36 },
-          { opacity: 1, y: 0, duration: 0.85, stagger: 0.12, clearProps: 'transform' }
+          { opacity: 0, y: 55 },
+          { opacity: 1, y: 0, duration: 1.0, stagger: 0.14 }
         )
         .fromTo(
           editorialTextRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.7 },
-          '-=0.45'
+          { opacity: 0, y: 28 },
+          { opacity: 1, y: 0, duration: 0.8 },
+          '-=0.55'
         )
         .fromTo(
           ctaGroupRef.current,
-          { opacity: 0, y: 18 },
-          { opacity: 1, y: 0, duration: 0.6 },
-          '-=0.4'
-        )
-        .fromTo(
-          previewCardRef.current,
-          { opacity: 0, y: 30, scale: 0.98 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.8 },
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 0.7 },
           '-=0.5'
         )
         .fromTo(
+          previewCardRef.current,
+          { opacity: 0, y: 40, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'power3.out' },
+          '-=0.6'
+        )
+        .fromTo(
           telemetryGridRef.current,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.6 },
-          '-=0.4'
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.7 },
+          '-=0.5'
         );
 
-      // 2. Scroll-Driven Typography Kinetic Movement (14islands Inspired)
-      if (!isMobile && containerRef.current) {
-        // Line 1 drifts subtly left
-        if (headlineLine1Ref.current) {
-          gsap.to(headlineLine1Ref.current, {
-            x: -36,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: 'top top',
-              end: 'bottom top',
-              scrub: 0.6,
-            }
-          });
-        }
+      // 2. Scroll-Driven Kinetic Movement & Depth (14islands Inspired)
+      if (containerRef.current) {
+        if (!isMobile) {
+          // Line 1 drifts left
+          if (headlineLine1Ref.current) {
+            gsap.to(headlineLine1Ref.current, {
+              x: -110,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.8,
+              }
+            });
+          }
 
-        // Line 2 drifts subtly right
-        if (headlineLine2Ref.current) {
-          gsap.to(headlineLine2Ref.current, {
-            x: 36,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: 'top top',
-              end: 'bottom top',
-              scrub: 0.6,
-            }
-          });
-        }
+          // Line 2 drifts right
+          if (headlineLine2Ref.current) {
+            gsap.to(headlineLine2Ref.current, {
+              x: 110,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.8,
+              }
+            });
+          }
 
-        // Preview Card subtle parallax depth
-        if (previewCardRef.current) {
-          gsap.to(previewCardRef.current, {
-            y: 48,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: 'top top',
-              end: 'bottom top',
-              scrub: 0.8,
-            }
-          });
+          // Line 3 drifts left
+          if (headlineLine3Ref.current) {
+            gsap.to(headlineLine3Ref.current, {
+              x: -55,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.8,
+              }
+            });
+          }
+
+          // Preview Card noticeable parallax depth
+          if (previewCardRef.current) {
+            gsap.to(previewCardRef.current, {
+              y: 95,
+              scale: 0.96,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1.0,
+              }
+            });
+          }
+        } else {
+          // Mobile: graceful vertical fade & drift
+          if (headlineLine1Ref.current && headlineLine2Ref.current && headlineLine3Ref.current) {
+            gsap.to([headlineLine1Ref.current, headlineLine2Ref.current, headlineLine3Ref.current], {
+              y: -30,
+              opacity: 0.6,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.8,
+              }
+            });
+          }
         }
       }
     }, containerRef);
