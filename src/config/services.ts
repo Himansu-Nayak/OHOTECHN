@@ -106,6 +106,36 @@ export const services: Service[] = [
     features: ['Native Android (Kotlin)', 'Flutter / React Native', 'Offline Storage', 'Push Notifications', 'Play Store Deployment'],
   },
   {
+    slug: 'ios-app-development',
+    name: 'iOS App Development',
+    category: 'technology',
+    description:
+      'Native Swift and SwiftUI iOS applications designed for Apple platforms with exceptional performance and fluid interactive animations.',
+    iconName: 'Smartphone',
+    emoji: '🍎',
+    features: ['Native Swift & SwiftUI', 'Apple CoreData & CloudKit', 'StoreKit In-App Purchases', 'Apple Health & CoreML Sync', 'App Store Review & Release'],
+  },
+  {
+    slug: 'custom-software-development',
+    name: 'Custom Software Development',
+    category: 'technology',
+    description:
+      'Bespoke software engineered to solve exact operational workflows, eliminate manual friction, and scale with high concurrency.',
+    iconName: 'Code2',
+    emoji: '⚡',
+    features: ['Tailored Business Logic', 'Event-Driven Architecture', 'Role-Based Access Control', 'Dedicated Database Topology', 'Comprehensive SLA Support'],
+  },
+  {
+    slug: 'cloud-infrastructure',
+    name: 'Cloud & DevOps Infrastructure',
+    category: 'technology',
+    description:
+      'Enterprise AWS, Docker, Kubernetes, and Terraform infrastructure engineering with high availability, automated failover, and zero downtime.',
+    iconName: 'Cloud',
+    emoji: '☁️',
+    features: ['AWS / Cloudflare Edge Setup', 'Docker & Kubernetes Clustering', 'Terraform Infrastructure as Code', 'Automated CI/CD Pipelines', '24/7 Telemetry & DDoS Shield'],
+  },
+  {
     slug: 'erp-solutions',
     name: 'ERP Solutions',
     category: 'technology',
@@ -135,7 +165,67 @@ export const services: Service[] = [
       'Data-driven SEO strategies to rank higher on search engines, drive organic traffic, and generate qualified leads.',
     iconName: 'Search',
     emoji: '🔍',
-    features: ['Technical SEO', 'On-Page Optimization', 'Link Building', 'Keyword Strategy', 'Monthly Analytics'],
+    features: ['Technical SEO & Core Web Vitals', 'On-Page Architecture', 'Authority Link Building', 'Keyword Intelligence', 'Monthly Performance Telemetry'],
+  },
+  {
+    slug: 'social-media-marketing',
+    name: 'Social Media Marketing',
+    category: 'marketing',
+    description:
+      'Strategic social content, brand narrative development, and audience acquisition across LinkedIn, Instagram, X, and YouTube.',
+    iconName: 'Share2',
+    emoji: '📲',
+    features: ['Multi-Channel Strategy', 'High-Converting Creative Assets', 'Community Management', 'Audience Retargeting', 'Growth Analytics'],
+  },
+  {
+    slug: 'google-ads',
+    name: 'Google Ads & Search PPC',
+    category: 'marketing',
+    description:
+      'Precision Google Search, Performance Max, and Display ad campaigns architected for maximum return on ad spend (ROAS).',
+    iconName: 'Megaphone',
+    emoji: '🎯',
+    features: ['High-Intent Search Campaigns', 'Performance Max Optimization', 'Negative Keyword Hardening', 'Conversion Tracking Pixels', 'ROAS Maximization'],
+  },
+  {
+    slug: 'facebook-meta-ads',
+    name: 'Meta & Instagram Advertising',
+    category: 'marketing',
+    description:
+      'Creative-led Facebook and Instagram ad funnels engineered to convert cold audiences into loyal enterprise clients.',
+    iconName: 'Layers',
+    emoji: '📸',
+    features: ['Dynamic Creative Testing', 'Lookalike & Custom Audiences', 'Funnel Retargeting Sequences', 'CAPI Conversion Tracking', 'Creative Velocity'],
+  },
+  {
+    slug: 'branding-graphic-design',
+    name: 'Branding & Graphic Design',
+    category: 'marketing',
+    description:
+      'Visual identity systems, design tokens, brand guidelines, and high-impact digital marketing assets.',
+    iconName: 'Palette',
+    emoji: '🎨',
+    features: ['Complete Brand Guidelines', 'Logo & Iconography Suites', 'Design Systems & Typography', 'Marketing Collateral', 'Vector Asset Libraries'],
+  },
+  {
+    slug: 'whatsapp-marketing',
+    name: 'WhatsApp Marketing & Automation',
+    category: 'marketing',
+    description:
+      'Official WhatsApp Business API integration, broadcast campaigns, automated customer chatbots, and instant lead notification bots.',
+    iconName: 'MessageCircle',
+    emoji: '💬',
+    features: ['WhatsApp Business API', 'Automated Lead Bots', 'Transactional Broadcasts', 'Payment Link Integration', 'CRM Webhook Sync'],
+  },
+  {
+    slug: 'email-marketing',
+    name: 'Email Marketing & Lead Nurture',
+    category: 'marketing',
+    description:
+      'High-deliverability automated email sequences, transactional updates, newsletter engines, and segmentation workflows.',
+    iconName: 'Mail',
+    emoji: '✉️',
+    features: ['Automated Drip Workflows', 'DKIM / SPF / DMARC Deliverability', 'Dynamic Segmentation', 'A/B Subject Testing', 'Open & CTR Analytics'],
   },
   {
     slug: 'digital-marketing',

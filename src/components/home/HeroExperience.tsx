@@ -289,6 +289,7 @@ export function HeroExperience() {
                     src="/images/3d-software-dev.jpg"
                     alt="OHO TECH Engineering Architecture"
                     fill
+                    sizes="(max-width: 768px) 100vw, 400px"
                     className="object-cover object-center opacity-85 hover:scale-105 transition-transform duration-700"
                     priority
                   />
