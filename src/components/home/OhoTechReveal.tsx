@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import NextImage from 'next/image';
 import { Sparkles, ShieldCheck, Cpu, ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -34,12 +33,10 @@ const BRAND_PILLARS = [
 export function OhoTechReveal() {
   const containerRef = React.useRef<HTMLElement>(null);
   const wordmarkRef = React.useRef<HTMLDivElement>(null);
-  const logoCardRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const container = containerRef.current;
     const wordmark = wordmarkRef.current;
-    const logoCard = logoCardRef.current;
     if (!container || !wordmark) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -63,24 +60,6 @@ export function OhoTechReveal() {
           },
         }
       );
-
-      if (logoCard) {
-        gsap.fromTo(
-          logoCard,
-          { y: 30, opacity: 0.8 },
-          {
-            y: 0,
-            opacity: 1,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: container,
-              start: 'top 75%',
-              end: 'center 45%',
-              scrub: 0.6,
-            },
-          }
-        );
-      }
     }, container);
 
     return () => ctx.revert();
@@ -102,38 +81,19 @@ export function OhoTechReveal() {
       <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col items-center text-center">
         
         {/* Brand Chapter Sub-header */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] mb-8 sm:mb-12">
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] mb-6 sm:mb-8">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>SIGNATURE DIGITAL ENGINEERING AGENCY</span>
-        </div>
-
-        {/* Official Brand Emblem Badge Card */}
-        <div 
-          ref={logoCardRef}
-          className="mb-8 sm:mb-12 group"
-        >
-          <div className="bg-white/95 hover:bg-white p-4 sm:p-6 rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.25)] border-2 border-white/30 inline-flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
-            <NextImage
-              src="/OHO_TECH_LOGO.png"
-              alt="OHO TECH Brand Logo"
-              width={260}
-              height={80}
-              priority
-              quality={100}
-              unoptimized
-              className="h-10 sm:h-14 lg:h-16 w-auto object-contain"
-            />
-          </div>
         </div>
 
         {/* Signature Massive Brand Wordmark */}
         <div 
           ref={wordmarkRef}
-          className="w-full my-4 sm:my-6 overflow-hidden"
+          className="w-full my-2 sm:my-4 overflow-hidden"
         >
-          <h1 className="text-[clamp(3.75rem,15vw,17.5rem)] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-500 leading-[0.88] uppercase select-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
+          <h2 className="text-[clamp(3.75rem,15vw,17.5rem)] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-500 leading-[0.88] uppercase select-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
             OHO TECH
-          </h1>
+          </h2>
         </div>
 
         {/* Narrative Thesis */}
