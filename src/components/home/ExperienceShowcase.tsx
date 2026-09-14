@@ -14,7 +14,7 @@ export function ExperienceShowcase() {
       <div className="absolute top-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-b from-[#0a0a0b] to-transparent pointer-events-none z-20" />
 
       <div className="w-full relative z-10">
-        <ScrollFrameSequence />
+        <ScrollFrameSequence totalFrames={0} />
       </div>
 
       {/* Bottom transition blend into DirectorSection */}

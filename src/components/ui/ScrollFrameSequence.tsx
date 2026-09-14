@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { ArrowRight, Layers, ShieldCheck, Zap, Sparkles, Cpu, Activity } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -180,10 +181,36 @@ export function ScrollFrameSequence({
       });
     };
 
-    // Load key frames first, then remainder in concurrent batches
+    if (totalFrames === 0) {
+      setHasError(true);
+      return;
+    }
+
+    // Test initial frame 0 first; if missing, fail gracefully without firing 72 404 requests
     (async () => {
-      // 1. Initial key frames for instant first paint
-      await Promise.all([0, 18, 36, 54, 71].map(loadIndex));
+      const firstFrameValid = await new Promise<boolean>((resolve) => {
+        const testImg = new Image();
+        testImg.src = getFrameUrl(0);
+        testImg.onload = () => {
+          if (!isMountedRef.current) return resolve(false);
+          images[0] = testImg;
+          loadedCount = 1;
+          setLoadProgress(Math.round((1 / totalFrames) * 100));
+          renderCanvasFrame(0);
+          resolve(true);
+        };
+        testImg.onerror = () => {
+          if (isMountedRef.current) setHasError(true);
+          resolve(false);
+        };
+      });
+
+      if (!firstFrameValid || !isMountedRef.current) {
+        return;
+      }
+
+      // 1. Initial key frames for quick scrubbing
+      await Promise.all([18, 36, 54, 71].filter(i => i < totalFrames).map(loadIndex));
       renderCanvasFrame(currentFrameRef.current);
       if (typeof window !== 'undefined') {
         ScrollTrigger.refresh();
@@ -191,13 +218,13 @@ export function ScrollFrameSequence({
 
       // 2. Load all other frames in parallel batches of 12
       const remaining: number[] = [];
-      for (let i = 0; i < totalFrames; i++) {
-        if (!images[i]) remaining.push(i);
+      for (let i = 1; i < totalFrames; i++) {
+        if (!images[i] && ![18, 36, 54, 71].includes(i)) remaining.push(i);
       }
 
       const BATCH_SIZE = 12;
       for (let i = 0; i < remaining.length; i += BATCH_SIZE) {
-        if (!isMountedRef.current) break;
+        if (!isMountedRef.current || hasError) break;
         const chunk = remaining.slice(i, i + BATCH_SIZE);
         await Promise.all(chunk.map(loadIndex));
       }
@@ -382,10 +409,20 @@ export function ScrollFrameSequence({
             onPointerCancel={handlePointerUp}
           >
             {hasError ? (
-              <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center rounded-2xl bg-white/5 border border-white/10">
-                <Cpu className="w-12 h-12 text-emerald-400 mb-3" />
-                <span className="font-mono text-sm font-bold text-white">OHO CORE HARDWARE ARCHITECTURE</span>
-                <span className="text-xs text-slate-400 mt-1">High-Throughput Digital Platform Engine</span>
+              <div className="relative w-full h-full min-h-[320px] max-h-[480px] rounded-2xl overflow-hidden border border-white/10 bg-black/60 shadow-2xl flex items-center justify-center group">
+                <NextImage
+                  src="/images/3d-enterprise-node.jpg"
+                  alt="OHO CORE Enterprise Architecture Node"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 800px"
+                  className="object-cover object-center opacity-85 group-hover:scale-105 transition-transform duration-700"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-transparent opacity-80" />
+                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] sm:text-xs text-white px-3.5 py-2 rounded-xl bg-black/75 backdrop-blur-md border border-white/15">
+                  <span className="text-emerald-400 font-bold">NODE: MULTI-TENANT CORE</span>
+                  <span className="text-slate-300">HIGH-AVAILABILITY CLUSTER</span>
+                </div>
               </div>
             ) : (
               <>
