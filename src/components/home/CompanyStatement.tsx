@@ -67,11 +67,11 @@ export function CompanyStatement() {
       if (gridRef.current) {
         gsap.fromTo(
           gridRef.current.children,
-          { opacity: 0, y: 32 },
+          { opacity: 0, y: 35 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.75,
+            duration: 0.8,
             stagger: 0.12,
             ease: 'power3.out',
             scrollTrigger: {
@@ -82,6 +82,23 @@ export function CompanyStatement() {
             },
           }
         );
+
+        if (!prefersReducedMotion && window.innerWidth >= 1024) {
+          const cards = Array.from(gridRef.current.children);
+          cards.forEach((card, idx) => {
+            const offset = (idx - 1) * 20;
+            gsap.to(card, {
+              y: offset,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: gridRef.current,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 0.9,
+              },
+            });
+          });
+        }
       }
     }, sectionRef);
 

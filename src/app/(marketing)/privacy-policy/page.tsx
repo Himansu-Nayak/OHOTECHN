@@ -1,14 +1,24 @@
 import * as React from 'react';
 import { ShieldCheck, Info } from 'lucide-react';
+import { Metadata } from 'next';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
-export const metadata = {
-  title: 'Privacy Policy | OHO TECH',
+export const metadata: Metadata = buildMetadata({
+  title: 'Privacy Policy & Data Protection',
   description: 'Privacy policy and data protection guidelines for OHO TECH software and digital services.',
-};
+  path: '/privacy-policy',
+});
 
 export default function PrivacyPolicyPage() {
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Privacy Policy', url: '/privacy-policy' },
+  ]);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 px-4 sm:px-6 lg:px-8">
+      <JsonLd data={breadcrumbs} />
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}

@@ -287,16 +287,16 @@ export function TechnologyExperience() {
         );
       }
 
-      // 2. Foundation pillars stagger
+      // 2. Foundation pillars stagger & differential depth
       if (pillarsRef.current) {
         gsap.fromTo(
           pillarsRef.current.children,
-          { opacity: 0, y: 30 },
+          { opacity: 0, y: 32 },
           {
             opacity: 1,
             y: 0,
             duration: 0.75,
-            stagger: 0.1,
+            stagger: 0.12,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: pillarsRef.current,
@@ -306,17 +306,36 @@ export function TechnologyExperience() {
             },
           }
         );
+
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!prefersReduced && window.innerWidth >= 768) {
+          const pillars = Array.from(pillarsRef.current.children);
+          pillars.forEach((p, idx) => {
+            const offset = idx === 1 ? -16 : 16;
+            gsap.to(p, {
+              y: offset,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: pillarsRef.current,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 0.8,
+              },
+            });
+          });
+        }
       }
 
-      // 3. Explorer container reveal
+      // 3. Explorer container reveal & scroll-driven domain progression
       if (explorerRef.current) {
         gsap.fromTo(
           explorerRef.current,
-          { opacity: 0, y: 24 },
+          { opacity: 0, y: 28, scale: 0.98 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.7,
+            scale: 1,
+            duration: 0.75,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: explorerRef.current,
@@ -326,6 +345,21 @@ export function TechnologyExperience() {
             },
           }
         );
+
+        // Scroll progress drives domain sequence smoothly
+        if (window.innerWidth >= 1024) {
+          ScrollTrigger.create({
+            trigger: explorerRef.current,
+            start: 'top 70%',
+            end: 'bottom 40%',
+            scrub: 0.8,
+            onUpdate: (self) => {
+              const total = TECH_DOMAINS.length;
+              const idx = Math.min(total - 1, Math.max(0, Math.floor(self.progress * total * 0.999)));
+              setSelectedDomainIndex(idx);
+            },
+          });
+        }
       }
     }, sectionRef);
 
@@ -385,7 +419,7 @@ export function TechnologyExperience() {
               return (
                 <div 
                   key={pIdx}
-                  className="p-6 sm:p-7 rounded-2xl bg-[#121316]/90 border border-white/10 hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between shadow-xl"
+                  className="p-6 sm:p-7 rounded-2xl bg-[#121316]/90 border border-white/10 hover:border-emerald-500/40 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 flex flex-col justify-between shadow-xl"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
@@ -454,7 +488,7 @@ export function TechnologyExperience() {
                   aria-controls={`tech-domain-panel-${domain.id}`}
                   tabIndex={0}
                   onClick={() => handleSelectDomain(idx)}
-                  className={`p-3 sm:p-4 rounded-xl text-left border transition-all duration-200 cursor-pointer flex flex-col justify-between group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
+                  className={`p-3 sm:p-4 rounded-xl text-left border transition-all duration-200 cursor-pointer flex flex-col justify-between group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 hover:-translate-y-0.5 ${
                     isSelected
                       ? 'bg-[#181920] border-emerald-500/50 shadow-xl ring-1 ring-emerald-500/30 text-white'
                       : 'bg-[#111215]/80 border-white/10 hover:border-white/20 text-slate-400 hover:text-white'
@@ -479,9 +513,10 @@ export function TechnologyExperience() {
 
           {/* Active Domain Deep Inspector (Progressive Reveal Stage) */}
           <div 
+            key={currentDomain.id}
             id={`tech-domain-panel-${currentDomain.id}`}
             role="tabpanel"
-            className="w-full rounded-2xl sm:rounded-3xl bg-[#14151a]/95 border border-white/15 p-6 sm:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+            className="w-full rounded-2xl sm:rounded-3xl bg-[#14151a]/95 border border-white/15 p-6 sm:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden animate-in fade-in duration-300 zoom-in-98"
           >
             {/* Ambient Corner Glow */}
             <div 

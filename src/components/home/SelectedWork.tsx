@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { FolderGit2, ArrowRight, Sparkles } from 'lucide-react';
 import { ProjectShowcase, ProjectData } from '@/components/home/ProjectShowcase';
+import { TextReveal } from '@/components/ui/TextReveal';
 
 const REAL_PROJECTS: ProjectData[] = [
   {
@@ -100,9 +101,9 @@ export function SelectedWork() {
               <FolderGit2 className="w-3.5 h-3.5" />
               <span>CASE STUDY ARCHIVE // 05</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase">
+            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase">
               Selected Work
-            </h2>
+            </TextReveal>
           </div>
           
           <div className="max-w-md text-left md:text-right">

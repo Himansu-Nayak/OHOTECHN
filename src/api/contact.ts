@@ -11,6 +11,7 @@ export interface ContactParams {
   subject?: string;
   message: string;
   serviceType?: string;
+  budget?: string;
   timeline?: string;
   formType?: string;
   interestedProduct?: string;
@@ -65,6 +66,7 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
         company: params.company || '',
         subject: params.subject || params.serviceType || 'Contact Enquiry',
         serviceType: params.serviceType || params.subject,
+        budget: params.budget || '',
         timeline: params.timeline || '',
         message: params.message,
         projectDescription: params.message,
@@ -75,6 +77,11 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
     const resendData = await resendRes.json();
     if (resendRes.ok && resendData.success) {
       emailSent = true;
+      return {
+        success: true,
+        message: 'Your message has been received successfully! Our engineering team will contact you within 24 hours.',
+        data: resendData.data,
+      };
     } else {
       emailError = resendData.error || 'Failed to send email notification.';
     }
@@ -83,7 +90,7 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
     emailError = err.message || 'Email service unreachable.';
   }
 
-  // 2. Save to Spring Boot backend database & CRM lead pipeline
+  // 2. Fallback to Spring Boot backend database & CRM lead pipeline if email route was unavailable
   try {
     const backendRes = await apiClient<ContactEnquiry>('/api/contact', {
       method: 'POST',
@@ -107,20 +114,12 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
     if (backendRes.success) {
       return {
         success: true,
-        message: 'Your message has been sent successfully!',
+        message: 'Your message has been received successfully! Our engineering team will contact you within 24 hours.',
         data: backendRes.data,
       };
     }
   } catch (backendErr) {
-    console.warn('Spring Boot backend enquiry save skipped/unavailable:', backendErr);
-  }
-
-  // If email was sent via Resend, return success even if backend is offline
-  if (emailSent) {
-    return {
-      success: true,
-      message: 'Your message has been sent successfully to kampainfraa@gmail.com!',
-    };
+    console.warn('Spring Boot CRM backend save skipped:', backendErr);
   }
 
   return {

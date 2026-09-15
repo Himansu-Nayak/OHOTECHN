@@ -26,14 +26,14 @@ import {
 import { services, technologyServices, marketingServices, Service } from '@/config/services';
 import { DeliveryRoadmap } from '@/components/services/DeliveryRoadmap';
 
-export const metadata: Metadata = {
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
+
+export const metadata: Metadata = buildMetadata({
   title: 'Core Engineering & Digital Services | OHO TECH',
   description: 'Explore OHO TECH\'s full spectrum of software development, distributed cloud infrastructure, enterprise ERP/EMR systems, AI neural pipelines, and spatial UI/UX design.',
-  openGraph: {
-    title: 'Core Engineering & Digital Services | OHO TECH',
-    description: 'Explore OHO TECH\'s full spectrum of software development, distributed cloud infrastructure, enterprise ERP/EMR systems, AI neural pipelines, and spatial UI/UX design.',
-  },
-};
+  path: '/services',
+});
 
 // Map each service to specific architectural specifications
 const SERVICE_SPECS: Record<string, { specs: { label: string; value: string }[]; highlightTag: string; accent: string }> = {
@@ -103,8 +103,14 @@ export default function ServicesPage() {
   const coreTech = services.filter((s) => s.category === 'technology');
   const digitalGrowth = services.filter((s) => s.category === 'marketing');
 
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Core Services', url: '/services' },
+  ];
+
   return (
     <main className="min-h-screen bg-[#07080c] text-white pt-28 sm:pt-36 pb-24 px-4 sm:px-6 lg:px-12 relative overflow-hidden font-sans">
+      <JsonLd data={getBreadcrumbJsonLd(breadcrumbs)} />
       {/* Ambient background glows */}
       <div className="absolute top-20 left-1/4 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-emerald-500/5 rounded-full blur-[190px] pointer-events-none" />
       <div className="absolute top-1/2 right-10 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-cyan-500/5 rounded-full blur-[190px] pointer-events-none" />

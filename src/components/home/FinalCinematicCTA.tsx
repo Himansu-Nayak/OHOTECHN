@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { FlippingText } from '@/components/ui/FlippingText';
+import { MagneticCTA } from '@/components/ui/MagneticCTA';
 
 interface FinalCinematicCTAProps {
   onOpenEstimate?: () => void;
@@ -51,35 +52,41 @@ export function FinalCinematicCTA({ onOpenEstimate }: FinalCinematicCTAProps = {
         {/* Dual Primary Action Buttons */}
         <ScrollReveal yOffset={15} duration={0.55} delay={0.3}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 sm:mb-14 w-full max-w-md sm:max-w-none mx-auto">
-            <Link
-              id="cta-get-quote"
-              href="/get-quote"
-              className="w-full sm:w-auto px-9 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-[0_0_25px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 hover:shadow-[0_0_35px_rgba(16,185,129,0.5)] active:translate-y-0 active:scale-[0.99] text-center group"
-            >
-              <span className="inline-flex items-center gap-2">
-                <FlippingText text="Get a Quote" />
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
+            <MagneticCTA strength={0.28} maxOffset={12} className="w-full sm:w-auto">
+              <Link
+                id="cta-get-quote"
+                href="/get-quote"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-[0_0_25px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 hover:shadow-[0_0_35px_rgba(16,185,129,0.5)] active:translate-y-0 active:scale-[0.99] text-center group button-tactile glow-focus inline-flex items-center justify-center"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <FlippingText text="Get a Quote" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform arrow-slide" />
+                </span>
+              </Link>
+            </MagneticCTA>
 
             {onOpenEstimate && (
-              <button
-                type="button"
-                id="cta-architecture-estimate"
-                onClick={onOpenEstimate}
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-900/90 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] active:translate-y-0 active:scale-[0.99] text-center backdrop-blur-md cursor-pointer"
-              >
-                <span>⚡ Configure Architecture Spec</span>
-              </button>
+              <MagneticCTA strength={0.22} maxOffset={10} className="w-full sm:w-auto">
+                <button
+                  type="button"
+                  id="cta-architecture-estimate"
+                  onClick={onOpenEstimate}
+                  className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-900/90 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] active:translate-y-0 active:scale-[0.99] text-center backdrop-blur-md cursor-pointer button-tactile glow-focus"
+                >
+                  <span>⚡ Configure Architecture Spec</span>
+                </button>
+              </MagneticCTA>
             )}
 
-            <Link
-              id="cta-book-demo"
-              href="/book-demo"
-              className="w-full sm:w-auto px-9 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.99] text-center backdrop-blur-md"
-            >
-              <FlippingText text="Book a Demo" />
-            </Link>
+            <MagneticCTA strength={0.24} maxOffset={10} className="w-full sm:w-auto">
+              <Link
+                id="cta-book-demo"
+                href="/book-demo"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.99] text-center backdrop-blur-md button-tactile glow-focus inline-flex items-center justify-center"
+              >
+                <FlippingText text="Book a Demo" />
+              </Link>
+            </MagneticCTA>
           </div>
         </ScrollReveal>
 

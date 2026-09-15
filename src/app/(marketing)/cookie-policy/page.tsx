@@ -1,14 +1,24 @@
 import * as React from 'react';
 import { Cookie, Info } from 'lucide-react';
+import { Metadata } from 'next';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
-export const metadata = {
-  title: 'Cookie Policy | OHO TECH',
-  description: 'Information about how OHO TECH uses cookies and web technologies.',
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'Cookie Policy',
+  description: 'Information about how OHO TECH utilizes cookies and modern web analytics technologies.',
+  path: '/cookie-policy',
+});
 
 export default function CookiePolicyPage() {
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Cookie Policy', url: '/cookie-policy' },
+  ]);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 px-4 sm:px-6 lg:px-8">
+      <JsonLd data={breadcrumbs} />
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}

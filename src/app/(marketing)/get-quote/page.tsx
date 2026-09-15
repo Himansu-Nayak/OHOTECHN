@@ -144,12 +144,13 @@ function QuoteFormContent() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className={labelClass}>
+                <label htmlFor="quote-name" className={labelClass}>
                   Your Name <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="name"
+                  id="quote-name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="e.g. Rahul Sharma"
@@ -159,12 +160,13 @@ function QuoteFormContent() {
               </div>
 
               <div>
-                <label className={labelClass}>
+                <label htmlFor="quote-email" className={labelClass}>
                   Work Email <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="email"
                   name="email"
+                  id="quote-email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="rahul@company.com"
@@ -176,10 +178,11 @@ function QuoteFormContent() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className={labelClass}>Phone Number</label>
+                <label htmlFor="quote-phone" className={labelClass}>Phone Number</label>
                 <input
                   type="tel"
                   name="phone"
+                  id="quote-phone"
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="+91 98765 43210"
@@ -188,10 +191,11 @@ function QuoteFormContent() {
               </div>
 
               <div>
-                <label className={labelClass}>Company / Organization</label>
+                <label htmlFor="quote-company" className={labelClass}>Company / Organization</label>
                 <input
                   type="text"
                   name="company"
+                  id="quote-company"
                   value={formData.company}
                   onChange={handleChange}
                   placeholder="Company Name"
@@ -202,10 +206,11 @@ function QuoteFormContent() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className={labelClass}>Service / Product Type</label>
+                <label htmlFor="quote-service-type" className={labelClass}>Service / Product Type</label>
                 <input
                   type="text"
                   name="serviceType"
+                  id="quote-service-type"
                   value={formData.serviceType}
                   onChange={handleChange}
                   placeholder="e.g. Custom Software, Hospital EMR, School ERP"
@@ -214,9 +219,10 @@ function QuoteFormContent() {
               </div>
 
               <div>
-                <label className={labelClass}>Estimated Budget Range</label>
+                <label htmlFor="quote-budget-range" className={labelClass}>Estimated Budget Range</label>
                 <select
                   name="budgetRange"
+                  id="quote-budget-range"
                   value={formData.budgetRange}
                   onChange={handleChange}
                   className={inputClass}
@@ -231,11 +237,12 @@ function QuoteFormContent() {
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label htmlFor="quote-project-description" className={labelClass}>
                 Project Details / Requirements <span className="text-rose-500">*</span>
               </label>
               <textarea
                 name="projectDescription"
+                id="quote-project-description"
                 value={formData.projectDescription}
                 onChange={handleChange}
                 rows={5}

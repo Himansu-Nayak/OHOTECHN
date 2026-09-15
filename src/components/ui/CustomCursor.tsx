@@ -26,7 +26,7 @@ export function CustomCursor() {
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (!isVisible) setIsVisible(true);
+      setIsVisible(true);
 
       if (cursorDotRef.current) {
         cursorDotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
@@ -56,7 +56,7 @@ export function CustomCursor() {
       setIsVisible(false);
     };
 
-    // Smooth lerp for outer ring
+    // Smooth lerp for outer ring via GSAP ticker
     const renderLoop = () => {
       ringX += (mouseX - ringX) * 0.18;
       ringY += (mouseY - ringY) * 0.18;
@@ -64,20 +64,18 @@ export function CustomCursor() {
       if (cursorRingRef.current) {
         cursorRingRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
       }
-
-      animId = requestAnimationFrame(renderLoop);
     };
 
     window.addEventListener('mousemove', onMouseMove, { passive: true });
     document.addEventListener('mouseleave', onMouseLeave);
-    animId = requestAnimationFrame(renderLoop);
+    gsap.ticker.add(renderLoop);
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseleave', onMouseLeave);
-      cancelAnimationFrame(animId);
+      gsap.ticker.remove(renderLoop);
     };
-  }, [isVisible]);
+  }, []);
 
   if (!isVisible) return null;
 

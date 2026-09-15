@@ -15,10 +15,14 @@ import {
   Boxes,
   Activity,
   CheckCircle2,
-  ChevronRight
+  ChevronRight,
+  Sparkles
 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import { useMotion } from '@/components/experience/MotionContext';
+import { TextReveal } from '@/components/ui/TextReveal';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -154,30 +158,26 @@ export function ServicesExperience() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinTrackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [isMobileOrReduced, setIsMobileOrReduced] = useState<boolean>(false);
+  const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  const { setActiveScene, setActiveServiceIndex, setActiveServiceAccent } = useMotion();
 
   const activeService = SERVICES_DATA[activeIndex] || SERVICES_DATA[0];
   const ActiveIcon = activeService.icon;
 
-  // Detect Mobile or Reduced-Motion preference
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const checkState = () => {
-      const isMobile = window.innerWidth < 1024;
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      setIsMobileOrReduced(isMobile || prefersReduced);
-    };
-
-    checkState();
-    window.addEventListener('resize', checkState);
-    return () => window.removeEventListener('resize', checkState);
+    setIsMounted(true);
   }, []);
 
-  // GSAP ScrollTrigger Pinning & Sequential Activation for Desktop
+  // GSAP ScrollTrigger True Pinned Cinematic Scene
   useEffect(() => {
-    if (typeof window === 'undefined' || isMobileOrReduced) return;
+    if (typeof window === 'undefined') return;
     if (!sectionRef.current || !pinTrackRef.current) return;
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth < 1024;
+    if (prefersReduced || isMobile) return;
 
     const totalSteps = SERVICES_DATA.length;
 
@@ -185,29 +185,39 @@ export function ServicesExperience() {
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: 'top top',
-        end: () => `+=${window.innerHeight * (totalSteps * 0.75)}`,
+        end: () => `+=${window.innerHeight * 4.5}`,
         pin: pinTrackRef.current,
         scrub: 0.5,
         anticipatePin: 1,
+        onEnter: () => setActiveScene('services'),
+        onEnterBack: () => setActiveScene('services'),
         onUpdate: (self) => {
           const progress = self.progress;
-          // Calculate active step based on progress
-          const rawIndex = Math.floor(progress * totalSteps);
-          const nextIndex = Math.min(totalSteps - 1, Math.max(0, rawIndex));
-          setActiveIndex(nextIndex);
+          setScrollProgress(progress);
+          // Calculate step index smoothly
+          const calculatedIndex = Math.min(
+            totalSteps - 1,
+            Math.max(0, Math.floor(progress * totalSteps * 0.999))
+          );
+          setActiveIndex(calculatedIndex);
+          setActiveServiceIndex(calculatedIndex);
+          if (SERVICES_DATA[calculatedIndex]) {
+            setActiveServiceAccent(SERVICES_DATA[calculatedIndex].accent);
+          }
         },
       });
     }, sectionRef);
 
-    return () => {
-      ctx.revert();
-    };
-  }, [isMobileOrReduced]);
+    return () => ctx.revert();
+  }, [isMounted, setActiveScene, setActiveServiceIndex, setActiveServiceAccent]);
 
-  // Handle Manual/Keyboard Selection
   const handleSelectService = useCallback((index: number) => {
     setActiveIndex(index);
-  }, []);
+    setActiveServiceIndex(index);
+    if (SERVICES_DATA[index]) {
+      setActiveServiceAccent(SERVICES_DATA[index].accent);
+    }
+  }, [setActiveServiceIndex, setActiveServiceAccent]);
 
   return (
     <section 
@@ -216,195 +226,205 @@ export function ServicesExperience() {
       aria-label="OHO TECH Core Engineering Services"
       className="w-full bg-[#0a0a0b] text-white relative overflow-hidden"
     >
-      {/* Background Ambient Glows */}
-      <div className="absolute top-1/3 right-10 w-96 sm:w-[500px] h-96 sm:h-[500px] bg-emerald-500/5 rounded-full blur-[160px] pointer-events-none" />
+      {/* Background Dynamic Ambient Glows matching Active Accent */}
+      <div 
+        className="absolute top-1/4 right-10 w-96 sm:w-[600px] h-96 sm:h-[600px] rounded-full blur-[170px] pointer-events-none transition-colors duration-700 opacity-20"
+        style={{ backgroundColor: activeService.accent }}
+      />
       <div className="absolute bottom-10 left-10 w-96 sm:w-[500px] h-96 sm:h-[500px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
 
-      {/* Main Track Container */}
+      {/* Main Pinned Stage Container (Holds the Viewport on Desktop) */}
       <div 
         ref={pinTrackRef}
-        className="w-full min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24"
+        className="w-full lg:h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-12 py-16 sm:py-20 lg:py-0 relative z-10"
       >
         <div className="max-w-7xl mx-auto w-full">
           
           {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-14 pb-6 border-b border-white/10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-white/10">
             <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3 sm:mb-4">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3">
                 <Boxes className="w-3.5 h-3.5" />
-                <span>CAPABILITY ECOSYSTEM // 04</span>
+                <span>CAPABILITY ECOSYSTEM // 04 • SCROLL CONTROLLED STAGE</span>
               </div>
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase">
+              <TextReveal as="h2" splitType="words" className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight uppercase">
                 Core Engineering Services
-              </h2>
+              </TextReveal>
             </div>
             
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-xs text-slate-400 uppercase tracking-wider">
-                SCROLL OR SELECT TO EXPLORE
-              </span>
-              <div className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-2 font-mono text-xs text-slate-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>CONTINUE SCROLLING TO ADVANCE SCENE</span>
+              </div>
+              <div className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1.5 rounded-full">
                 0{activeIndex + 1} / 0{SERVICES_DATA.length}
               </div>
             </div>
           </div>
 
-          {/* Desktop & Tablet: Interactive Typography-Led Sequential Split Stage */}
-          <div className="hidden lg:grid grid-cols-12 gap-8 lg:gap-12 items-start">
-            
-            {/* Left Column: Typography-Led Sequential Services List */}
-            <div className="col-span-7 flex flex-col gap-3">
-              {SERVICES_DATA.map((service, idx) => {
-                const isActive = activeIndex === idx;
-                const ItemIcon = service.icon;
+          {/* Pinned Storytelling Scroll Progress Scrubber */}
+          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-8 hidden lg:block relative">
+            <div 
+              className="h-full transition-all duration-300 ease-out rounded-full shadow-[0_0_15px_rgba(16,185,129,0.8)]"
+              style={{ 
+                width: `${((activeIndex + 1) / SERVICES_DATA.length) * 100}%`,
+                background: `linear-gradient(to right, #10b981, ${activeService.accent})`
+              }}
+            />
+          </div>
 
-                return (
-                  <div
-                    key={service.id}
-                    className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                      isActive 
-                        ? 'bg-[#14151a] border-emerald-500/40 shadow-2xl ring-1 ring-emerald-500/30' 
-                        : 'bg-[#0f1013]/60 border-white/5 hover:border-white/15 hover:bg-[#121317]'
-                    }`}
-                  >
-                    {/* Typographic Header Button */}
+          {/* Desktop: Pinned Multi-State Interactive Split Stage */}
+          <div className="hidden lg:grid grid-cols-12 gap-8 lg:gap-10 items-stretch">
+            
+            {/* Left Column: Sequential Service Selector Tabs & Details */}
+            <div className="col-span-7 flex flex-col justify-between space-y-2.5">
+              
+              {/* Navigation Rail of 6 Services */}
+              <div className="grid grid-cols-3 gap-2 mb-2">
+                {SERVICES_DATA.map((service, idx) => {
+                  const isActive = activeIndex === idx;
+                  const Icon = service.icon;
+
+                  return (
                     <button
+                      key={service.id}
                       type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      aria-controls={`service-panel-${service.id}`}
                       onClick={() => handleSelectService(idx)}
-                      className="w-full text-left p-5 sm:p-6 flex items-center justify-between group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                      className={`p-3 rounded-xl border text-left transition-all duration-300 cursor-pointer flex items-center justify-between group ${
+                        isActive
+                          ? 'bg-[#181920] border-emerald-500/50 shadow-lg ring-1 ring-emerald-500/30'
+                          : 'bg-[#101115]/70 border-white/5 hover:border-white/20 hover:bg-[#14151a]'
+                      }`}
                     >
-                      <div className="flex items-center gap-4 sm:gap-6">
-                        <span className={`font-mono text-sm sm:text-base font-bold transition-colors ${
-                          isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-slate-300'
-                        }`}>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className={`font-mono text-xs font-bold ${isActive ? 'text-emerald-400' : 'text-slate-400'}`}>
                           {service.number}
                         </span>
-
-                        <span className={`text-xl sm:text-2xl lg:text-3xl tracking-tight transition-all duration-300 uppercase ${
-                          isActive 
-                            ? 'font-black text-white scale-[1.02] origin-left' 
-                            : 'font-semibold text-slate-300 group-hover:text-white'
-                        }`}>
-                          {service.title}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-3 shrink-0">
-                        <span className={`px-2.5 py-0.5 rounded-full font-mono text-[9px] uppercase tracking-wider font-bold transition-all ${
-                          isActive 
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
-                            : 'bg-white/5 text-slate-400 border border-white/10'
-                        }`}>
+                        <span className={`font-mono text-[11px] font-bold uppercase truncate ${isActive ? 'text-white' : 'text-slate-300'}`}>
                           {service.category}
                         </span>
-
-                        <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${
-                          isActive ? 'rotate-90 text-emerald-400' : 'text-slate-500 group-hover:text-slate-300'
-                        }`} />
                       </div>
+                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
                     </button>
+                  );
+                })}
+              </div>
 
-                    {/* Active Expanded Drawer (Smooth reveal with clipping/specs) */}
-                    {isActive && (
-                      <div 
-                        id={`service-panel-${service.id}`}
-                        className="px-5 sm:px-6 pb-6 pt-2 border-t border-white/10 space-y-5 animate-in fade-in duration-300"
-                      >
-                        {/* Description */}
-                        <p className="text-sm text-slate-300 leading-relaxed font-normal">
-                          {service.description}
-                        </p>
+              {/* Active Service Deep Dive Card with Spatial Kinetic Transitions */}
+              <div 
+                key={activeService.id}
+                className="flex-1 rounded-2xl bg-[#121318]/95 border border-white/15 p-6 sm:p-7 shadow-2xl flex flex-col justify-between relative overflow-hidden animate-in fade-in slide-in-from-left-4 duration-300"
+              >
+                <div>
+                  {/* Category & Step Header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4 font-mono text-xs">
+                    <span className="text-emerald-400 font-bold tracking-wider">
+                      SPECIFICATION // {activeService.number} — {activeService.category}
+                    </span>
+                    <span className="text-slate-400 text-[10px] uppercase tracking-wider">
+                      ZERO-DOWNTIME ARCHITECTURE
+                    </span>
+                  </div>
 
-                        {/* 3 Performance Specs Grid */}
-                        <div className="grid grid-cols-3 gap-3 p-3 rounded-xl bg-black/40 border border-white/5">
-                          {service.specs.map((spec, sIdx) => (
-                            <div key={sIdx} className="text-left">
-                              <div className="font-mono text-[9px] text-slate-400 uppercase tracking-wider truncate">
-                                {spec.label}
-                              </div>
-                              <div className="font-mono text-xs sm:text-sm font-bold text-white truncate mt-0.5">
-                                {spec.value}
-                              </div>
-                            </div>
-                          ))}
+                  {/* Subtitle & Title */}
+                  <div className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                    {activeService.subtitle}
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase leading-tight mb-3">
+                    {activeService.title}
+                  </h3>
+
+                  {/* Narrative Description */}
+                  <p className="text-sm text-slate-300 leading-relaxed font-normal mb-5">
+                    {activeService.description}
+                  </p>
+
+                  {/* 3 Benchmarks Specs */}
+                  <div className="grid grid-cols-3 gap-3 p-3.5 rounded-xl bg-black/50 border border-white/5 mb-5">
+                    {activeService.specs.map((spec, sIdx) => (
+                      <div key={sIdx} className="text-left">
+                        <div className="font-mono text-[9px] text-slate-400 uppercase tracking-wider truncate">
+                          {spec.label}
                         </div>
-
-                        {/* Technology Pills & Action Link Row */}
-                        <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-                          <div className="flex flex-wrap gap-1.5">
-                            {service.technologies.map((tech, tIdx) => (
-                              <span 
-                                key={tIdx}
-                                className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 font-mono text-[10px] text-slate-300"
-                              >
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
-
-                          <Link
-                            href={service.href}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 group/link"
-                          >
-                            <span>EXPLORE CAPABILITY</span>
-                            <ArrowUpRight className="w-4 h-4 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                          </Link>
+                        <div className="font-mono text-xs sm:text-sm font-bold text-white truncate mt-0.5">
+                          {spec.value}
                         </div>
                       </div>
-                    )}
+                    ))}
                   </div>
-                );
-              })}
+
+                  {/* Technology Badges */}
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {activeService.technologies.map((tech, tIdx) => (
+                      <span 
+                        key={tIdx}
+                        className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 font-mono text-[10px] text-slate-300 font-medium"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card Action Link */}
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between mt-4">
+                  <span className="font-mono text-xs text-slate-400">
+                    Production Architecture Ready
+                  </span>
+                  <Link
+                    href={activeService.href}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-lg group/link"
+                  >
+                    <span>EXPLORE CAPABILITY</span>
+                    <ArrowUpRight className="w-4 h-4 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                  </Link>
+                </div>
+
+              </div>
+
             </div>
 
-            {/* Right Column: Visual Stage / Active Canvas Showcase */}
-            <div className="col-span-5 sticky top-28">
-              <div className="w-full rounded-2xl sm:rounded-3xl bg-[#14151a] border border-white/15 p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-                
+            {/* Right Column: Visual Stage / 3D Asset Spatial Window */}
+            <div className="col-span-5 flex flex-col">
+              <div 
+                key={`visual-${activeService.id}`}
+                className="w-full h-full rounded-2xl sm:rounded-3xl bg-[#14151a] border border-white/15 p-6 shadow-2xl backdrop-blur-xl flex flex-col justify-between relative overflow-hidden animate-in fade-in zoom-in-95 duration-400"
+              >
                 {/* Visual Stage Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5 font-mono text-xs">
+                <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4 font-mono text-xs">
                   <div className="flex items-center gap-2 text-slate-300">
-                    <ActiveIcon className="w-4 h-4 text-emerald-400" />
-                    <span className="font-bold">{activeService.category} SPECIFICATION</span>
+                    <ActiveIcon className="w-4 h-4" style={{ color: activeService.accent }} />
+                    <span className="font-bold">{activeService.category} RUNTIME</span>
                   </div>
                   <span className="text-emerald-400 font-bold">100% PRODUCTION READY</span>
                 </div>
 
                 {/* 3D Visual Asset Canvas */}
-                <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden mb-5 border border-white/10 bg-black/60">
+                <div className="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-black/60 shadow-xl group">
                   <Image
                     src={activeService.image}
                     alt={activeService.title}
                     fill
+                    sizes="(max-width: 1200px) 50vw, 600px"
                     className="object-cover object-center opacity-85 transition-transform duration-700 hover:scale-105"
                     priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#14151a] via-transparent to-transparent opacity-90" />
                   
                   {/* Floating Overlay Pill */}
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-white/90 px-3 py-1.5 rounded-lg bg-black/70 backdrop-blur-md border border-white/10">
-                    <span className="text-emerald-400 font-bold">CAPABILITY // {activeService.number}</span>
-                    <span>{activeService.title}</span>
+                  <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-center justify-between font-mono text-[10px] text-white/90 px-3.5 py-2 rounded-xl bg-black/75 backdrop-blur-md border border-white/15">
+                    <span className="text-emerald-400 font-bold">STAGE // 0{activeIndex + 1}</span>
+                    <span className="truncate max-w-[200px]">{activeService.title}</span>
                   </div>
                 </div>
-
-                {/* Active Subtitle & Summary */}
-                <div className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                  {activeService.subtitle}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4">
-                  {activeService.title}
-                </h3>
 
                 {/* Direct Capability Link */}
                 <Link
                   href={activeService.href}
-                  className="w-full py-3 px-5 rounded-xl bg-white/5 hover:bg-emerald-500 hover:text-black border border-white/10 hover:border-emerald-500 font-mono text-xs font-bold text-slate-300 transition-all duration-200 flex items-center justify-between group/btn"
+                  className="w-full py-3.5 px-5 rounded-xl bg-white/5 hover:bg-emerald-500 hover:text-black border border-white/10 hover:border-emerald-500 font-mono text-xs font-bold text-slate-300 transition-all duration-200 flex items-center justify-between group/btn shadow-md"
                 >
-                  <span>VIEW DETAILED ARCHITECTURE</span>
+                  <span>VIEW ARCHITECTURAL SPECIFICATION</span>
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
 
@@ -417,7 +437,6 @@ export function ServicesExperience() {
           <div className="lg:hidden flex flex-col gap-4">
             {SERVICES_DATA.map((service, idx) => {
               const isOpen = activeIndex === idx;
-              const ItemIcon = service.icon;
 
               return (
                 <div
@@ -428,7 +447,7 @@ export function ServicesExperience() {
                       : 'bg-[#0f1013] border-white/10'
                   }`}
                 >
-                  {/* Card Header Accordion Trigger */}
+                  {/* Card Header Trigger */}
                   <button
                     type="button"
                     onClick={() => setActiveIndex(isOpen ? -1 : idx)}

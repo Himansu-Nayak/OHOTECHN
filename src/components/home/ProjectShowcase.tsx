@@ -48,18 +48,18 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
     if (!cardRef.current) return;
 
     const ctx = gsap.context(() => {
-      // 1. Cinematic Image Scale Reveal
+      // 1. Cinematic Image Scale Scrub inside Frame
       if (imageElementRef.current) {
         gsap.fromTo(
           imageElementRef.current,
-          { scale: 1.15, opacity: 0.75 },
+          { scale: 1.18, opacity: 0.8 },
           {
             scale: 1,
             opacity: 1,
-            ease: 'power3.out',
+            ease: 'none',
             scrollTrigger: {
               trigger: cardRef.current,
-              start: 'top 88%',
+              start: 'top 90%',
               end: 'center 40%',
               scrub: 0.8,
             },
@@ -67,13 +67,13 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
         );
       }
 
-      // 2. Pronounced Parallax on Image Container
+      // 2. Pronounced Parallax on Image Container (Slow velocity)
       if (imageContainerRef.current) {
         gsap.fromTo(
           imageContainerRef.current,
-          { y: -30 },
+          { y: -55 },
           {
-            y: 30,
+            y: 55,
             ease: 'none',
             scrollTrigger: {
               trigger: cardRef.current,
@@ -85,17 +85,33 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
         );
       }
 
-      // 3. Staggered reveal for text content
+      // 3. Differential Parallax on Text Narrative (Medium velocity)
       if (textContainerRef.current) {
         gsap.fromTo(
+          textContainerRef.current,
+          { y: 30 },
+          {
+            y: -20,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: cardRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.9,
+            },
+          }
+        );
+
+        // Stagger entrance of text elements
+        gsap.fromTo(
           textContainerRef.current.children,
-          { opacity: 0, y: 35 },
+          { opacity: 0, y: 30 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.85,
-            stagger: 0.1,
-            ease: 'power4.out',
+            duration: 0.8,
+            stagger: 0.08,
+            ease: 'power3.out',
             scrollTrigger: {
               trigger: cardRef.current,
               start: 'top 80%',
@@ -104,6 +120,21 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
             },
           }
         );
+      }
+
+      // 4. Project Handoff: Smooth exit compression as card scrolls past center
+      if (cardRef.current) {
+        gsap.to(cardRef.current, {
+          scale: 0.95,
+          opacity: 0.82,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: cardRef.current,
+            start: 'center 35%',
+            end: 'bottom top',
+            scrub: 0.8,
+          },
+        });
       }
     }, cardRef);
 
@@ -114,11 +145,11 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
     <div
       ref={cardRef}
       data-cursor-text="CASE STUDY"
-      className="w-full rounded-2xl sm:rounded-3xl bg-[#121316]/95 border border-white/10 hover:border-emerald-500/40 transition-all duration-300 p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden group/card cursor-pointer"
+      className="w-full rounded-2xl sm:rounded-3xl bg-[#121316]/95 border border-white/10 hover:border-emerald-500/40 hover:shadow-2xl transition-all duration-300 p-6 sm:p-8 lg:p-10 shadow-xl backdrop-blur-xl relative overflow-hidden group/card cursor-pointer"
     >
       {/* Background Accent Glow */}
       <div 
-        className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-[130px] pointer-events-none opacity-20"
+        className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-[130px] pointer-events-none opacity-20 group-hover/card:opacity-35 transition-opacity duration-500"
         style={{ backgroundColor: project.accent }}
       />
 
@@ -134,13 +165,13 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
           <div 
             ref={imageElementRef}
             data-cursor-text="CASE STUDY"
-            className="relative w-full h-64 sm:h-80 lg:h-96 rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 bg-black/60 shadow-xl group"
+            className="relative w-full h-64 sm:h-80 lg:h-[400px] xl:h-[440px] rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 bg-black/60 shadow-xl group"
           >
             <Image
               src={project.image}
               alt={project.title}
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 650px"
               loading={priorityImage ? 'eager' : 'lazy'}
               priority={priorityImage}
               className="object-cover object-center opacity-85 group-hover:scale-105 group-hover:opacity-95 transition-all duration-700"

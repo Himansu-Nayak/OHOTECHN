@@ -46,7 +46,7 @@ export function OhoTechReveal() {
       // 1. Grand Signature Wordmark Scale & Opacity Growth
       gsap.fromTo(
         wordmark,
-        { scale: 0.72, opacity: 0.15, y: 60 },
+        { scale: 0.65, opacity: 0.1, y: 70 },
         {
           scale: 1,
           opacity: 1,
@@ -54,9 +54,9 @@ export function OhoTechReveal() {
           ease: 'power3.out',
           scrollTrigger: {
             trigger: container,
-            start: 'top 85%',
-            end: 'center 45%',
-            scrub: 0.8,
+            start: 'top 88%',
+            end: 'center 40%',
+            scrub: 1.0,
           },
         }
       );
@@ -92,7 +92,7 @@ export function OhoTechReveal() {
       ref={containerRef}
       id="reveal" 
       aria-label="OHO TECH Brand Signature"
-      className="w-full bg-[#050608] text-white pt-24 sm:pt-36 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden select-none border-t border-white/5"
+      className="w-full bg-[#07080c] text-white pt-20 sm:pt-32 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden select-none border-t border-white/5"
     >
       {/* Ambient background glows */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(16,185,129,0.14),transparent_70%)] pointer-events-none" />

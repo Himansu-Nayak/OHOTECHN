@@ -8,9 +8,9 @@ import { SelectedWork } from '@/components/home/SelectedWork';
 import { TechnologyExperience } from '@/components/home/TechnologyExperience';
 import { ExperienceShowcase } from '@/components/home/ExperienceShowcase';
 import { DirectorSection } from '@/components/home/DirectorSection';
+import { ProcessSection } from '@/components/home/ProcessSection';
 import { CompanyStatement } from '@/components/home/CompanyStatement';
 import { FinalCTA } from '@/components/home/FinalCTA';
-import { OhoTechReveal } from '@/components/home/OhoTechReveal';
 import { SystemEstimateModal } from '@/components/home/SystemEstimateModal';
 
 /**
@@ -27,8 +27,7 @@ import { SystemEstimateModal } from '@/components/home/SystemEstimateModal';
  * ├── ExistingDirectorSection (Japabandhu Kampa & Himansu Nayak MCA - Unchanged)
  * ├── CompanyStatement        (Who We Are / What We Believe / What We Build)
  * ├── FinalCTA                (LET'S BUILD SOMETHING GREAT.)
- * ├── OhoTechReveal           (Signature OHO TECH Curtain Reveal)
- * └── ExistingFooter          (rendered in layout.tsx - Footer.tsx untouched)
+ * └── UnifiedFooter           (rendered in layout.tsx - OHO TECH Reveal & Directory)
  */
 export default function HomePage() {
   const [isEstimateOpen, setIsEstimateOpen] = React.useState(false);
@@ -54,7 +53,10 @@ export default function HomePage() {
       {/* 06. Experience Showcase */}
       <ExperienceShowcase />
 
-      {/* 07. Existing Director Section (100% Preserved) */}
+      {/* 07. 5-Phase Engineering Roadmap */}
+      <ProcessSection />
+
+      {/* 08. Existing Director Section (100% Preserved) */}
       <DirectorSection />
 
       {/* 08. Company Statement */}
@@ -62,9 +64,6 @@ export default function HomePage() {
 
       {/* 09. Final CTA */}
       <FinalCTA onOpenEstimate={() => setIsEstimateOpen(true)} />
-
-      {/* 10. OHO TECH Signature Reveal */}
-      <OhoTechReveal />
 
       {/* Interactive Architecture System Estimate Modal */}
       <SystemEstimateModal

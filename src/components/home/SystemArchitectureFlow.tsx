@@ -201,7 +201,6 @@ export function SystemArchitectureFlow() {
 
     const render = () => {
       if (!isVisibleRef.current) {
-        animationFrameId = requestAnimationFrame(render);
         return;
       }
 
@@ -252,15 +251,13 @@ export function SystemArchitectureFlow() {
         ctx.shadowBlur = 0;
         ctx.globalAlpha = 1;
       });
-
-      animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    gsap.ticker.add(render);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameId);
+      gsap.ticker.remove(render);
     };
   }, [activeLayer]);
 

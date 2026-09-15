@@ -9,6 +9,7 @@ import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, company
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { NotificationBell } from '../NotificationBell';
+import { MagneticCTA } from '@/components/ui/MagneticCTA';
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -35,6 +36,14 @@ export function Header() {
 
   return (
     <>
+      {/* Accessible Skip to Main Content Landmark */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-5 focus:py-2.5 focus:bg-[#0d0d0e] focus:text-white focus:rounded-full focus:shadow-2xl focus:border-2 focus:border-sky-400 focus:outline-none font-mono text-xs font-bold pointer-events-auto transition-all"
+      >
+        Skip to Main Content
+      </a>
+
       {/* Floating Top Navigation Header Bar */}
       <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-3 sm:px-4 pointer-events-none">
         <header
@@ -42,7 +51,7 @@ export function Header() {
           className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-4 sm:px-6 lg:px-7 py-2 sm:py-2.5 flex items-center justify-between gap-2 lg:gap-3 xl:gap-5 max-w-[1240px] w-full transition-all duration-300"
         >
           {/* Logo */}
-          <Link href="/" prefetch={true} id="logo-link" className="flex items-center shrink-0 group py-0.5">
+          <Link href="/" prefetch={true} id="logo-link" className="flex items-center shrink-0 group py-0.5" aria-label="OHO TECH Home">
             <NextImage
               src="/OHO_TECH_LOGO.png"
               alt="OHO TECH Logo"
@@ -56,7 +65,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation Links with Dropdowns */}
-          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 text-xs font-bold text-slate-700">
+          <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-0.5 xl:gap-1 text-xs font-bold text-slate-700">
             
             {/* 1. Solutions Dropdown */}
             <div
@@ -85,6 +94,8 @@ export function Header() {
                     toggleDropdown('solutions');
                   }}
                   aria-label="Toggle Solutions Dropdown"
+                  aria-haspopup="true"
+                  aria-expanded={openDropdown === 'solutions'}
                   className="p-0.5 text-slate-400 hover:text-black transition-colors"
                 >
                   <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openDropdown === 'solutions' && "rotate-180")} />
@@ -453,14 +464,14 @@ export function Header() {
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-flex px-3.5 py-1.5 rounded-full border border-slate-300 text-slate-800 hover:text-black hover:border-slate-400 font-extrabold text-xs tracking-tight transition-all"
+                  className="hidden sm:inline-flex px-3.5 py-1.5 rounded-full border border-slate-300 text-slate-800 hover:text-black hover:border-slate-400 font-extrabold text-xs tracking-tight transition-all button-tactile glow-focus"
                 >
                   Login
                 </Link>
 
                 <Link
                   href="/register"
-                  className="hidden xl:inline-flex px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100"
+                  className="hidden xl:inline-flex px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100 button-tactile glow-focus"
                 >
                   Register
                 </Link>
@@ -469,23 +480,29 @@ export function Header() {
 
             <Link
               href="/get-quote"
-              className="hidden xl:inline-flex px-3.5 py-1.5 sm:py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100 whitespace-nowrap"
+              className="hidden xl:inline-flex px-3.5 py-1.5 sm:py-2 rounded-full border border-slate-200 text-slate-700 hover:text-[#0d0d0e] font-extrabold text-xs tracking-tight transition-all hover:bg-slate-100 whitespace-nowrap button-tactile glow-focus"
             >
               Get a Quote
             </Link>
 
-            <Link
-              href="/book-demo"
-              className="hidden sm:inline-flex px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all shadow-sm whitespace-nowrap shrink-0"
-            >
-              Book a Demo
-            </Link>
+            <MagneticCTA strength={0.2} maxOffset={8} className="hidden sm:inline-flex">
+              <Link
+                href="/book-demo"
+                className="inline-flex px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs tracking-tight transition-all shadow-sm whitespace-nowrap shrink-0 button-tactile glow-focus"
+              >
+                Book a Demo
+              </Link>
+            </MagneticCTA>
 
             {/* Mobile Menu Toggle Button */}
             <button
+              id="mobile-menu-button"
+              type="button"
               onClick={() => setIsMobileOpen(true)}
-              className="lg:hidden p-2 text-slate-800 hover:text-[#0d0d0e] hover:bg-slate-100 rounded-full transition-colors shrink-0 flex items-center justify-center"
-              aria-label="Open navigation menu"
+              className="lg:hidden p-2 text-slate-800 hover:text-[#0d0d0e] hover:bg-slate-100 rounded-full transition-colors shrink-0 flex items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer"
+              aria-label="Open mobile navigation menu"
+              aria-expanded={isMobileOpen}
+              aria-controls="mobile-nav-drawer"
             >
               <Menu className="w-6 h-6 text-slate-900" />
             </button>
@@ -496,9 +513,19 @@ export function Header() {
 
       {/* Mobile Drawer */}
       {isMobileOpen && (
-        <div className="fixed inset-0 z-[60] lg:hidden transition-all duration-300">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl overflow-y-auto">
+        <div
+          id="mobile-nav-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile Navigation Menu"
+          className="fixed inset-0 z-[60] lg:hidden transition-all duration-300"
+        >
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsMobileOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl overflow-y-auto z-10">
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-slate-100">
                 <NextImage
@@ -510,39 +537,49 @@ export function Header() {
                   unoptimized
                   className="h-10 sm:h-12 w-auto object-contain"
                 />
-                <button onClick={() => setIsMobileOpen(false)} className="p-1 text-slate-400 hover:text-[#0d0d0e]">
+                <button
+                  id="mobile-nav-close"
+                  type="button"
+                  onClick={() => setIsMobileOpen(false)}
+                  className="p-2 -mr-2 text-slate-400 hover:text-[#0d0d0e] min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
+                  aria-label="Close mobile navigation menu"
+                >
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <div className="py-6 space-y-4 flex flex-col text-sm font-bold text-slate-700">
+              <nav aria-label="Mobile Navigation" className="py-6 space-y-3.5 flex flex-col text-sm font-bold text-slate-700">
                 {user && (
                   <div className="p-3 bg-sky-50 rounded-2xl mb-2">
                     <div className="text-xs font-black text-[#0d0d0e]">{user.name}</div>
                     <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
                   </div>
                 )}
-                <Link href="/" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Home</Link>
-                <Link href="/products" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Products &amp; Solutions</Link>
-                <Link href="/services" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Core Services</Link>
-                <Link href="/cart" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 flex items-center justify-between">
-                  <span>Cart</span>
-                  <span className="bg-sky-600 text-white text-xs px-2 py-0.5 rounded-full">{itemCount}</span>
+                <Link href="/" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Home</Link>
+                <Link href="/solutions" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Industry Solutions</Link>
+                <Link href="/services" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Core Services</Link>
+                <Link href="/work" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Selected Work &amp; Case Studies</Link>
+                <Link href="/technology" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Technology &amp; AI</Link>
+                <Link href="/products" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Products &amp; Modules</Link>
+                <Link href="/insights" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Engineering Insights</Link>
+                <Link href="/pricing" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Pricing &amp; Plans</Link>
+                <Link href="/about" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">About Us</Link>
+                <Link href="/contact" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Contact &amp; Discovery</Link>
+                <Link href="/cart" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1 flex items-center justify-between">
+                  <span>Shopping Cart</span>
+                  <span className="bg-sky-600 text-white text-xs px-2.5 py-0.5 rounded-full font-mono font-bold">{itemCount}</span>
                 </Link>
                 {user && (
-                  <Link href="/orders" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">My Orders</Link>
+                  <Link href="/orders" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">My Orders</Link>
                 )}
-                <Link href="/pricing" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Pricing &amp; Plans</Link>
-                <Link href="/about" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">About Us</Link>
-                <Link href="/contact" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600">Contact</Link>
-              </div>
+              </nav>
             </div>
 
             <div className="space-y-3 pt-6 border-t border-slate-100">
               <Link
                 href="/book-demo"
                 onClick={() => setIsMobileOpen(false)}
-                className="block w-full py-3 rounded-full bg-sky-600 text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-sky-700 transition-colors"
+                className="block w-full py-3.5 rounded-full bg-sky-600 text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-sky-700 transition-colors min-h-[44px]"
               >
                 Book a Demo
               </Link>
@@ -552,7 +589,7 @@ export function Header() {
                     logout();
                     setIsMobileOpen(false);
                   }}
-                  className="block w-full py-3 rounded-full bg-rose-600 text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-rose-700"
+                  className="block w-full py-3.5 rounded-full bg-rose-600 text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-rose-700 min-h-[44px]"
                 >
                   Logout
                 </button>
@@ -561,14 +598,14 @@ export function Header() {
                   <Link
                     href="/login"
                     onClick={() => setIsMobileOpen(false)}
-                    className="block w-full py-3 rounded-full border border-slate-300 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider hover:bg-slate-50"
+                    className="block w-full py-3 rounded-full border border-slate-300 text-[#0d0d0e] font-extrabold text-xs text-center uppercase tracking-wider hover:bg-slate-50 min-h-[44px] flex items-center justify-center"
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
                     onClick={() => setIsMobileOpen(false)}
-                    className="block w-full py-3 rounded-full bg-[#0d0d0e] text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-sky-600"
+                    className="block w-full py-3 rounded-full bg-[#0d0d0e] text-white font-extrabold text-xs text-center uppercase tracking-wider shadow-md hover:bg-sky-600 min-h-[44px] flex items-center justify-center"
                   >
                     Register
                   </Link>

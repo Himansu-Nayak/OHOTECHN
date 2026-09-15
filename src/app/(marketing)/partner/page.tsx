@@ -1,11 +1,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { CheckCircle2, Sparkles, ArrowRight, Handshake, ShieldCheck, Users } from 'lucide-react';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
-export const metadata: Metadata = {
-  title: 'Partner Ecosystem & Collaboration | OHO TECH',
+export const metadata: Metadata = buildMetadata({
+  title: 'Partner Ecosystem & Collaboration',
   description: 'Join the OHO TECH enterprise partner ecosystem. Reseller programs, agency collaboration, and technical developer integration partnerships.',
-};
+  path: '/partner',
+  tags: ['Partner Ecosystem', 'Reseller Program', 'Agency Collaboration', 'Developer API'],
+});
 
 const partnerTypes = [
   {
@@ -44,8 +48,14 @@ const partnerTypes = [
 ];
 
 export default async function PartnerPage() {
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Partners', url: '/partner' },
+  ]);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
+      <JsonLd data={breadcrumbs} />
       <main className="max-w-[1536px] w-full mx-auto" id="partner-main">
         
         {/* Hero Section */}

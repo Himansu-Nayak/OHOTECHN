@@ -112,6 +112,8 @@ const steps = [
   },
 ];
 
+import { TextReveal } from '@/components/ui/TextReveal';
+
 export function ProcessSection() {
   const [activeStep, setActiveStep] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(true);
@@ -158,30 +160,34 @@ export function ProcessSection() {
   const StepIcon = currentStep.icon;
 
   return (
-    <section className="max-w-[1536px] w-full mx-auto mb-10 sm:mb-16 bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[44px] p-4 sm:p-12 lg:p-16 shadow-sm relative overflow-hidden" id="how-we-work">
-      
-      {/* Outer Section Header */}
-      <div className="max-w-4xl mb-6 sm:mb-10 text-left">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-3">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0 animate-pulse" />
-          <span>ENGINEERING ROADMAP ⚡</span>
+    <section 
+      id="process" 
+      aria-label="5-Phase Software Engineering Roadmap"
+      className="w-full bg-[#0a0a0b] text-white py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
+    >
+      <div className="relative z-10 max-w-7xl mx-auto w-full">
+        {/* Section Header */}
+        <div className="max-w-4xl mb-12 sm:mb-16 text-left">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>ENGINEERING ROADMAP // 07</span>
+          </div>
+
+          <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase mb-4">
+            5-Phase Software Engineering Roadmap
+          </TextReveal>
+
+          <p className="text-sm sm:text-base text-slate-300 font-normal leading-relaxed max-w-3xl">
+            A transparent, end-to-end software delivery methodology—from initial discovery to live production launch and continuous 24/7 scaling.
+          </p>
         </div>
 
-        <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black text-[#0d0d0e] tracking-tight leading-[1.08] mb-3">
-          5-Phase Software Engineering Roadmap.
-        </h2>
-
-        <p className="text-sm sm:text-lg text-slate-600 font-normal leading-relaxed max-w-3xl">
-          A transparent, end-to-end software delivery methodology—from initial discovery to live production launch and continuous 24/7 scaling.
-        </p>
-      </div>
-
-      {/* Inner Dark Console Card Container */}
-      <div 
-        className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[24px] sm:rounded-[36px] p-4 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden grid-pattern-dark"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
+        {/* Inner Dark Console Card Container */}
+        <div 
+          className="bg-[#121316]/95 text-white border border-white/15 rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
         
         {/* Background Ambient Glowing Orbs */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none transition-all duration-700" />
@@ -468,8 +474,8 @@ export function ProcessSection() {
           </Link>
         </div>
 
+        </div>
       </div>
-
     </section>
   );
 }

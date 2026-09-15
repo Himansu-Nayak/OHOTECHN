@@ -13,12 +13,14 @@ import {
   ShieldCheck, 
   Activity, 
   Terminal, 
-  Boxes,
-  Lock,
-  Workflow
+  Boxes, 
+  Lock, 
+  Workflow 
 } from 'lucide-react';
 import { services, Service } from '@/config/services';
 import { DeliveryRoadmap } from '@/components/services/DeliveryRoadmap';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 interface PageProps {
   params: Promise<{
@@ -40,14 +42,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Service Not Found | OHO TECH' };
   }
 
-  return {
-    title: `${service.name} | Enterprise Architecture & Services | OHO TECH`,
+  return buildMetadata({
+    title: `${service.name} | Enterprise Engineering Services`,
     description: service.description,
-    openGraph: {
-      title: `${service.name} | OHO TECH Enterprise Services`,
-      description: service.description,
-    },
-  };
+    path: `/services/${service.slug}`,
+    tags: service.features || [],
+  });
 }
 
 export default async function ServiceDetailPage({ params }: PageProps) {
@@ -61,8 +61,15 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   const isTech = service.category === 'technology';
   const relatedServices = services.filter((s) => s.slug !== service.slug && s.category === service.category).slice(0, 2);
 
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Core Services', url: '/services' },
+    { name: service.name, url: `/services/${service.slug}` },
+  ];
+
   return (
     <main className="min-h-screen bg-[#07080c] text-white pt-28 sm:pt-36 pb-24 px-4 sm:px-6 lg:px-12 relative overflow-hidden font-sans">
+      <JsonLd data={getBreadcrumbJsonLd(breadcrumbs)} />
       {/* Ambient background glow */}
       <div className="absolute top-10 right-10 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-emerald-500/5 rounded-full blur-[190px] pointer-events-none" />
       <div className="absolute bottom-20 left-10 w-96 sm:w-[500px] h-96 sm:h-[500px] bg-cyan-500/5 rounded-full blur-[180px] pointer-events-none" />

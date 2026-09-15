@@ -13,9 +13,20 @@ import {
   Terminal, 
   AlertCircle,
   FileCode2,
-  Share2
+  Share2,
+  Cpu,
+  Layers,
+  ShieldCheck
 } from 'lucide-react';
-import { INSIGHT_ARTICLES, getInsightArticle } from '@/config/insights';
+import { 
+  INSIGHT_ARTICLES, 
+  getInsightArticle, 
+  getNextInsightArticle, 
+  getRelatedInsightArticles 
+} from '@/config/insights';
+
+import { buildMetadata, getBreadcrumbJsonLd, getTechArticleJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 interface PageProps {
   params: Promise<{
@@ -39,14 +50,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  return {
-    title: `${article.title} | Engineering Whitepaper | OHO TECH`,
+  return buildMetadata({
+    title: `${article.title} | Engineering Whitepaper`,
     description: article.abstract,
-    openGraph: {
-      title: `${article.title} | OHO TECH Engineering Whitepaper`,
-      description: article.abstract,
-    },
-  };
+    path: `/insights/${article.slug}`,
+    ogType: 'article',
+    publishedTime: article.publishedAt,
+    authors: [article.author.name],
+    tags: article.tags,
+  });
 }
 
 export default async function InsightDetailPage({ params }: PageProps) {
@@ -57,10 +69,29 @@ export default async function InsightDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const relatedArticles = INSIGHT_ARTICLES.filter((a) => a.slug !== article.slug).slice(0, 2);
+  const nextArticle = getNextInsightArticle(article.slug);
+  const relatedArticles = getRelatedInsightArticles(article.slug, 2);
+
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Engineering Insights', url: '/insights' },
+    { name: article.title, url: `/insights/${article.slug}` },
+  ];
+
+  const techArticleSchema = getTechArticleJsonLd({
+    title: article.title,
+    description: article.abstract,
+    url: `/insights/${article.slug}`,
+    publishedAt: article.publishedAt,
+    authorName: article.author.name,
+    authorRole: article.author.role,
+    tags: article.tags,
+  });
 
   return (
     <main className="min-h-screen bg-[#07080c] text-white pt-28 sm:pt-36 pb-24 px-4 sm:px-6 lg:px-12 relative overflow-hidden">
+      <JsonLd data={getBreadcrumbJsonLd(breadcrumbs)} />
+      <JsonLd data={techArticleSchema} />
       {/* Ambient background glow */}
       <div 
         className="absolute top-10 right-10 w-96 sm:w-[600px] h-96 sm:h-[600px] rounded-full blur-[190px] pointer-events-none opacity-20"
@@ -104,13 +135,16 @@ export default async function InsightDetailPage({ params }: PageProps) {
             </div>
 
             <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
-              <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-emerald-400" />{article.readTime}</span>
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                {article.readTime}
+              </span>
               <span>{article.publishedAt}</span>
             </div>
           </div>
 
           <div className="text-xs sm:text-sm font-mono font-bold text-slate-400 tracking-[0.2em] uppercase mb-3">
-            {article.category}
+            {article.categoryDisplay}
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.1] uppercase mb-6">
@@ -121,10 +155,10 @@ export default async function InsightDetailPage({ params }: PageProps) {
             {article.abstract}
           </p>
 
-          {/* Author Capsule */}
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#111216]/90 border border-white/10">
+          {/* Author Profile Capsule */}
+          <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-[#111216]/90 border border-white/10">
             <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-mono font-bold text-xs">
-              {article.author.name.charAt(0)}
+              {article.author.initials}
             </div>
             <div>
               <div className="text-xs font-bold text-white">{article.author.name}</div>
@@ -139,7 +173,7 @@ export default async function InsightDetailPage({ params }: PageProps) {
             <Sparkles className="w-4 h-4" />
             <span>ARCHITECTURAL INVARIANTS &amp; DESIGN PRINCIPLES</span>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {article.keyPrinciples.map((principle, idx) => (
               <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-emerald-100 leading-relaxed font-mono">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
@@ -162,7 +196,7 @@ export default async function InsightDetailPage({ params }: PageProps) {
                 </div>
               )}
 
-              <div className="space-y-4 text-sm sm:text-base text-slate-300 leading-relaxed">
+              <div className="space-y-4 text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
                 {section.content.map((paragraph, pIdx) => (
                   <p key={pIdx}>{paragraph}</p>
                 ))}
@@ -171,8 +205,9 @@ export default async function InsightDetailPage({ params }: PageProps) {
               {/* Callout box if present */}
               {section.callout && (
                 <div className="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 my-6">
-                  <div className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
-                    {section.callout.title}
+                  <div className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                    <span>{section.callout.title}</span>
                   </div>
                   <p className="text-xs sm:text-sm text-cyan-100/90 leading-relaxed">
                     {section.callout.text}
@@ -216,21 +251,47 @@ export default async function InsightDetailPage({ params }: PageProps) {
           </div>
         </section>
 
+        {/* Next Whitepaper Transition Card */}
+        {nextArticle && nextArticle.slug !== article.slug && (
+          <section className="mb-16 p-6 sm:p-8 rounded-3xl bg-[#111216] border border-white/10 hover:border-emerald-500/40 transition-all duration-300 shadow-xl group">
+            <div className="flex items-center justify-between font-mono text-xs text-slate-400 mb-2">
+              <span className="text-emerald-400 font-bold uppercase tracking-wider">NEXT WHITEPAPER // {nextArticle.number}</span>
+              <span>{nextArticle.readTime}</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug mb-3 group-hover:text-emerald-300 transition-colors">
+              <Link href={`/insights/${nextArticle.slug}`}>
+                {nextArticle.title}
+              </Link>
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed mb-6 line-clamp-2">
+              {nextArticle.abstract}
+            </p>
+            <Link
+              href={`/insights/${nextArticle.slug}`}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 hover:bg-emerald-500 hover:text-black text-emerald-300 font-mono text-xs font-bold uppercase tracking-wider transition-all"
+            >
+              <span>Continue Reading Next Paper</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </section>
+        )}
+
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
           <section className="mb-16 pt-10 border-t border-white/10">
-            <h3 className="text-xl font-black text-white uppercase tracking-tight mb-6">
-              More Architecture Notes
-            </h3>
+            <div className="flex items-center gap-2 font-mono text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">
+              <BookOpen className="w-4 h-4 text-emerald-400" />
+              <span>RELATED ARCHITECTURE NOTES</span>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {relatedArticles.map((rel) => (
                 <Link
                   key={rel.slug}
                   href={`/insights/${rel.slug}`}
-                  className="p-6 rounded-2xl bg-[#111216] border border-white/10 hover:border-emerald-500/40 transition-colors group block"
+                  className="p-6 rounded-2xl bg-[#111216] border border-white/10 hover:border-emerald-500/40 transition-all group block"
                 >
-                  <div className="font-mono text-[10px] text-slate-400 uppercase mb-1">{rel.category}</div>
-                  <h4 className="text-base font-bold text-white group-hover:text-emerald-300 transition-colors mb-2">
+                  <div className="font-mono text-[10px] text-slate-400 uppercase mb-1">{rel.categoryDisplay}</div>
+                  <h4 className="text-base font-bold text-white group-hover:text-emerald-300 transition-colors mb-2 leading-snug">
                     {rel.title}
                   </h4>
                   <div className="text-xs font-mono text-emerald-400 flex items-center gap-1">
@@ -253,17 +314,19 @@ export default async function InsightDetailPage({ params }: PageProps) {
               Consult on your system design
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 font-normal">
-              Connect with our technical architects to review implementation trade-offs.
+              Connect directly with our technical architects to review implementation trade-offs and latency budgets.
             </p>
           </div>
 
-          <Link
-            href="/contact"
-            className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-lg shrink-0 flex items-center justify-center gap-2"
-          >
-            <span>GET IN TOUCH</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3 shrink-0 w-full sm:w-auto">
+            <Link
+              href="/contact"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+            >
+              <span>GET IN TOUCH</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
       </div>

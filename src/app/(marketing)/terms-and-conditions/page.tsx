@@ -1,14 +1,24 @@
 import * as React from 'react';
 import { FileText, Info } from 'lucide-react';
+import { Metadata } from 'next';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
-export const metadata = {
-  title: 'Terms & Conditions | OHO TECH',
-  description: 'Standard terms of service and client project agreements for OHO TECH.',
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'Terms & Conditions',
+  description: 'Standard terms of service and client project agreements for OHO TECH software and digital services.',
+  path: '/terms-and-conditions',
+});
 
 export default function TermsAndConditionsPage() {
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Terms & Conditions', url: '/terms-and-conditions' },
+  ]);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 px-4 sm:px-6 lg:px-8">
+      <JsonLd data={breadcrumbs} />
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}

@@ -18,6 +18,8 @@ import {
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+import { useMotion } from '@/components/experience/MotionContext';
+
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
@@ -38,6 +40,8 @@ export function HeroExperience() {
   const ctaGroupRef = useRef<HTMLDivElement>(null);
   const previewCardRef = useRef<HTMLDivElement>(null);
   const telemetryGridRef = useRef<HTMLDivElement>(null);
+
+  const { setActiveScene } = useMotion();
 
   const [activeTelemetry, setActiveTelemetry] = React.useState<number>(0);
 
@@ -72,7 +76,7 @@ export function HeroExperience() {
         return;
       }
 
-      // 1. Cinematic Entrance Stagger Timeline
+      // 1. Cinematic Line-by-Line Entrance Timeline (Restrained 14islands style)
       const entranceTl = gsap.timeline({
         defaults: { ease: 'power4.out' }
       });
@@ -80,69 +84,91 @@ export function HeroExperience() {
       entranceTl
         .fromTo(
           [headlineLine1Ref.current, headlineLine2Ref.current, headlineLine3Ref.current],
-          { opacity: 0, y: 55 },
-          { opacity: 1, y: 0, duration: 1.0, stagger: 0.14 }
+          { yPercent: 110, opacity: 0 },
+          { yPercent: 0, opacity: 1, duration: 1.0, stagger: 0.12 }
         )
         .fromTo(
-          editorialTextRef.current,
-          { opacity: 0, y: 28 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          '-=0.55'
-        )
-        .fromTo(
-          ctaGroupRef.current,
-          { opacity: 0, y: 24 },
-          { opacity: 1, y: 0, duration: 0.7 },
-          '-=0.5'
-        )
-        .fromTo(
-          previewCardRef.current,
-          { opacity: 0, y: 40, scale: 0.94 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'power3.out' },
-          '-=0.6'
-        )
-        .fromTo(
-          telemetryGridRef.current,
+          [editorialTextRef.current, ctaGroupRef.current],
           { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.7 },
+          { opacity: 1, y: 0, duration: 0.65, stagger: 0.08, ease: 'power3.out' },
           '-=0.5'
+        )
+        .fromTo(
+          [previewCardRef.current, telemetryGridRef.current],
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.65, stagger: 0.08, ease: 'power3.out' },
+          '-=0.4'
         );
 
-      // 2. Scroll-Driven Kinetic Movement & Depth (14islands Inspired)
+      // 2. Scroll-Driven Multi-Tier Kinetic Lifecycle (14islands Inspired)
       if (containerRef.current) {
         if (!isMobile) {
-          // Line 1 drifts left
+          // Tier 1: Oversized Display Typography Kinetics
           if (headlineLine1Ref.current) {
             gsap.to(headlineLine1Ref.current, {
-              x: -110,
+              x: -160,
+              opacity: 0.72,
               ease: 'none',
               scrollTrigger: {
                 trigger: containerRef.current,
                 start: 'top top',
                 end: 'bottom top',
-                scrub: 0.8,
+                scrub: 0.7,
+                onEnter: () => setActiveScene('hero'),
+                onEnterBack: () => setActiveScene('hero'),
               }
             });
           }
 
-          // Line 2 drifts right
           if (headlineLine2Ref.current) {
             gsap.to(headlineLine2Ref.current, {
-              x: 110,
+              x: 160,
+              opacity: 0.72,
               ease: 'none',
               scrollTrigger: {
                 trigger: containerRef.current,
                 start: 'top top',
                 end: 'bottom top',
-                scrub: 0.8,
+                scrub: 0.7,
               }
             });
           }
 
-          // Line 3 drifts left
           if (headlineLine3Ref.current) {
             gsap.to(headlineLine3Ref.current, {
-              x: -55,
+              x: -90,
+              opacity: 0.72,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.7,
+              }
+            });
+          }
+
+          // Tier 2: Midground Tactile Glassmorphic Architecture Visual Card
+          if (previewCardRef.current) {
+            gsap.to(previewCardRef.current, {
+              y: 130,
+              scale: 0.92,
+              opacity: 0.82,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.9,
+              }
+            });
+          }
+
+          // Tier 3: Editorial Narrative & Action Group Exit Compression
+          if (editorialTextRef.current) {
+            gsap.to(editorialTextRef.current, {
+              y: -50,
+              opacity: 0.65,
               ease: 'none',
               scrollTrigger: {
                 trigger: containerRef.current,
@@ -153,26 +179,39 @@ export function HeroExperience() {
             });
           }
 
-          // Preview Card noticeable parallax depth
-          if (previewCardRef.current) {
-            gsap.to(previewCardRef.current, {
-              y: 95,
-              scale: 0.96,
+          if (ctaGroupRef.current) {
+            gsap.to(ctaGroupRef.current, {
+              y: -35,
+              opacity: 0.75,
               ease: 'none',
               scrollTrigger: {
                 trigger: containerRef.current,
                 start: 'top top',
                 end: 'bottom top',
-                scrub: 1.0,
+                scrub: 0.8,
+              }
+            });
+          }
+
+          if (telemetryGridRef.current) {
+            gsap.to(telemetryGridRef.current, {
+              y: -25,
+              opacity: 0.7,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.8,
               }
             });
           }
         } else {
-          // Mobile: graceful vertical fade & drift
+          // Mobile: graceful vertical fade & soft drift
           if (headlineLine1Ref.current && headlineLine2Ref.current && headlineLine3Ref.current) {
             gsap.to([headlineLine1Ref.current, headlineLine2Ref.current, headlineLine3Ref.current], {
-              y: -30,
-              opacity: 0.6,
+              y: -35,
+              opacity: 0.55,
               ease: 'none',
               scrollTrigger: {
                 trigger: containerRef.current,
@@ -235,33 +274,39 @@ export function HeroExperience() {
             OHO TECH STUDIO
           </div>
 
-          {/* Oversized Kinetic Headline (14islands Inspired Display Typography) */}
+          {/* Oversized Kinetic Headline (14islands Inspired Display Typography with Masked Overflow Reveals) */}
           <div className="space-y-1 sm:space-y-2 mb-8 sm:mb-12 select-none">
             
             {/* Line 01: DIGITAL TECHNOLOGY */}
-            <div 
-              ref={headlineLine1Ref}
-              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.88] uppercase"
-            >
-              DIGITAL TECHNOLOGY
+            <div className="overflow-hidden py-1">
+              <div 
+                ref={headlineLine1Ref}
+                className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.88] uppercase"
+              >
+                DIGITAL TECHNOLOGY
+              </div>
             </div>
 
             {/* Line 02: DESIGN × ENGINEERING */}
-            <div 
-              ref={headlineLine2Ref}
-              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 leading-[0.88] uppercase flex flex-wrap items-center gap-x-3 sm:gap-x-6"
-            >
-              <span>DESIGN</span>
-              <span className="text-white/40 font-mono text-3xl sm:text-5xl lg:text-7xl font-light">×</span>
-              <span>ENGINEERING</span>
+            <div className="overflow-hidden py-1">
+              <div 
+                ref={headlineLine2Ref}
+                className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 leading-[0.88] uppercase flex flex-wrap items-center gap-x-3 sm:gap-x-6"
+              >
+                <span>DESIGN</span>
+                <span className="text-white/40 font-mono text-3xl sm:text-5xl lg:text-7xl font-light">×</span>
+                <span>ENGINEERING</span>
+              </div>
             </div>
 
             {/* Line 03: INNOVATION. */}
-            <div 
-              ref={headlineLine3Ref}
-              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.88] uppercase"
-            >
-              INNOVATION.
+            <div className="overflow-hidden py-1">
+              <div 
+                ref={headlineLine3Ref}
+                className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.88] uppercase"
+              >
+                INNOVATION.
+              </div>
             </div>
 
           </div>

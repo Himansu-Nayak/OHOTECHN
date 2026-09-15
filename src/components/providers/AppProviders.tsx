@@ -1,20 +1,28 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { ToastProvider } from '@/context/ToastContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
-
-import { SmoothScrollProvider } from './SmoothScrollProvider';
+import { CustomCursor } from '@/components/ui/CustomCursor';
+import { NavigationProgress } from '@/components/ui/NavigationProgress';
+import { ScrollProvider } from './ScrollProvider';
+import { ExperienceProvider } from '@/components/experience/ExperienceProvider';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ToastProvider>
       <AuthProvider>
         <CartProvider>
-          <SmoothScrollProvider>
-            {children}
-          </SmoothScrollProvider>
+          <ScrollProvider>
+            <ExperienceProvider>
+              <Suspense fallback={null}>
+                <NavigationProgress />
+              </Suspense>
+              {children}
+              <CustomCursor />
+            </ExperienceProvider>
+          </ScrollProvider>
         </CartProvider>
       </AuthProvider>
     </ToastProvider>

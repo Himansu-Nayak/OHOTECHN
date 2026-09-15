@@ -145,6 +145,90 @@
     border-radius: 36px;
     box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.05);
   }
+
+  /* ── MICRO-INTERACTION SYSTEM ── */
+  
+  /* 1. Tactile Button Click Feedback */
+  .button-tactile {
+    transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease;
+  }
+  .button-tactile:active {
+    transform: scale(0.97);
+  }
+
+  /* 2. Smooth Arrow Slide on Hover */
+  .arrow-slide {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  *:hover > .arrow-slide,
+  .group:hover .arrow-slide {
+    transform: translateX(4px);
+  }
+
+  /* 3. Interactive Underline Sweep */
+  .interactive-link {
+    position: relative;
+    display: inline-block;
+  }
+  .interactive-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .interactive-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
+  /* 4. Hover Lift & Ambient Glow */
+  .hover-lift {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  /* 5. Precision Focus Rings for Keyboard Accessibility */
+  .glow-focus:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0284c7, 0 0 15px rgba(2, 132, 199, 0.4);
+  }
+
+  /* 6. Sovereign Page Transition Animation */
+  .page-enter-animation {
+    animation: pageEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: opacity, transform;
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Universal Keyboard Focus Outline */
+:focus-visible {
+  outline: 2px solid #0284c7 !important;
+  outline-offset: 2px !important;
+}
+
+/* Responsive Text Wrapping to prevent horizontal overflow */
+h1, h2, h3, h4, h5, h6, p, span, a, button {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Global Prefers Reduced Motion Safety */
@@ -156,5 +240,6 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transform: none !important;
   }
 }

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { AppProviders } from '@/components/providers/AppProviders';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { getOrganizationJsonLd, getWebSiteJsonLd } from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -89,6 +91,10 @@ export default function RootLayout({
 }: LayoutProps<'/'>) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${jetBrainsMono.variable}`}>
+      <head>
+        <JsonLd data={getOrganizationJsonLd()} />
+        <JsonLd data={getWebSiteJsonLd()} />
+      </head>
       <body className="min-h-screen bg-[#f7f7f5] text-[#0d0d0e] font-sans antialiased selection:bg-[#0d0d0e] selection:text-white">
         <AppProviders>{children}</AppProviders>
       </body>

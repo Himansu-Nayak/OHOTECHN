@@ -1,8 +1,17 @@
 // src/app/(marketing)/solutions/page.tsx
+import { Metadata } from 'next';
 import Link from 'next/link';
 import { industries } from '@/config/industries';
 import * as Icons from 'lucide-react';
 import { ArrowRight, Layers, Sparkles } from 'lucide-react';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
+
+export const metadata: Metadata = buildMetadata({
+  title: 'Industry Software Solutions & ERP Systems | OHO TECH',
+  description: 'Explore tailored enterprise software, clinic EMRs, university ERPs, retail POS engines, and hospitality management systems across 13 industries.',
+  path: '/solutions',
+});
 
 function DynamicIcon({ name, ...props }: { name: string } & Icons.LucideProps) {
   const Icon = Icons[name as keyof typeof Icons] as Icons.LucideIcon;
@@ -26,8 +35,14 @@ const industryEmojis: Record<string, string> = {
 };
 
 export default function SolutionsHubPage() {
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Industry Solutions', url: '/solutions' },
+  ];
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
+      <JsonLd data={getBreadcrumbJsonLd(breadcrumbs)} />
       <main className="max-w-[1536px] w-full mx-auto" id="solutions-hub-main">
         
         {/* Top Header Hero Container */}

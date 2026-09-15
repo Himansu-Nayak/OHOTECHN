@@ -1,9 +1,36 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Briefcase, MapPin, Clock, CheckCircle2 } from 'lucide-react';
+import { Metadata } from 'next';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 interface CareerDetailProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  return [
+    { slug: 'senior-full-stack-engineer' },
+    { slug: 'lead-system-architect' },
+    { slug: 'frontend-engineer' },
+    { slug: 'devops-cloud-engineer' },
+  ];
+}
+
+export async function generateMetadata({ params }: CareerDetailProps): Promise<Metadata> {
+  const { slug } = await params;
+  const formattedTitle = slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+  return buildMetadata({
+    title: `${formattedTitle} — Engineering Role`,
+    description: `Explore the ${formattedTitle} opening at OHO TECH. Join our team to engineer robust enterprise platforms and digital products.`,
+    path: `/careers/${slug}`,
+    tags: [formattedTitle, 'OHO TECH Jobs', 'Software Careers', 'Engineering'],
+  });
 }
 
 export default async function CareerDetailPage({ params }: CareerDetailProps) {
@@ -13,8 +40,15 @@ export default async function CareerDetailPage({ params }: CareerDetailProps) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Careers', url: '/careers' },
+    { name: formattedTitle, url: `/careers/${slug}` },
+  ]);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 px-4 sm:px-6 lg:px-8">
+      <JsonLd data={breadcrumbs} />
       <div className="max-w-4xl mx-auto">
         
         {/* Back Button */}

@@ -1,14 +1,24 @@
 import * as React from 'react';
 import { AlertCircle, Info } from 'lucide-react';
+import { Metadata } from 'next';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
-export const metadata = {
-  title: 'Disclaimer | OHO TECH',
-  description: 'General website and service disclaimer for OHO TECH.',
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'Disclaimer & Terms of Use',
+  description: 'General website information and service disclaimer for OHO TECH software and platform engineering.',
+  path: '/disclaimer',
+});
 
 export default function DisclaimerPage() {
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Disclaimer', url: '/disclaimer' },
+  ]);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 px-4 sm:px-6 lg:px-8">
+      <JsonLd data={breadcrumbs} />
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}

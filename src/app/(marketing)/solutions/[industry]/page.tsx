@@ -3,19 +3,34 @@ import Link from 'next/link';
 import { industries } from '@/config/industries';
 import { ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Metadata } from 'next';
+import { buildMetadata, getBreadcrumbJsonLd, getSoftwareApplicationJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
+
+export async function generateStaticParams() {
+  return industries.map((i) => ({
+    industry: i.slug,
+  }));
+}
 
 export async function generateMetadata(props: { params: Promise<{ industry: string }> }): Promise<Metadata> {
   const { industry: industrySlug } = await props.params;
   const industry = industries.find((i) => i.slug === industrySlug);
   
   if (!industry) {
-    return { title: 'Industry Not Found | OHO TECH' };
+    return buildMetadata({
+      title: 'Industry Solution Not Found',
+      description: 'The requested industry engineering solution could not be found.',
+      path: `/solutions/${industrySlug}`,
+      noIndex: true,
+    });
   }
 
-  return {
-    title: `${industry.name} Solutions | OHO TECH`,
+  return buildMetadata({
+    title: `${industry.name} Software & Enterprise Solutions`,
     description: industry.description,
-  };
+    path: `/solutions/${industry.slug}`,
+    tags: [industry.name, 'Enterprise Software', 'Industry ERP', 'System Architecture'],
+  });
 }
 
 export default async function IndustryDetailPage(props: { params: Promise<{ industry: string }> }) {
@@ -26,8 +41,23 @@ export default async function IndustryDetailPage(props: { params: Promise<{ indu
     notFound();
   }
 
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Solutions', url: '/solutions' },
+    { name: industry.name, url: `/solutions/${industry.slug}` },
+  ]);
+
+  const appSchema = getSoftwareApplicationJsonLd({
+    name: `${industry.name} Enterprise Platform`,
+    description: industry.description,
+    applicationCategory: 'BusinessApplication',
+    url: `/solutions/${industry.slug}`,
+  });
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white" id={`industry-detail-${industry.slug}`}>
+      <JsonLd data={breadcrumbs} />
+      <JsonLd data={appSchema} />
       <main className="max-w-[1536px] w-full mx-auto">
         
         {/* Industry Hero Section */}

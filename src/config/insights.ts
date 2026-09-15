@@ -1,7 +1,18 @@
+export type InsightCategory = 
+  | 'All'
+  | 'AI & Automation'
+  | 'Software Engineering'
+  | 'Enterprise Technology'
+  | 'Product Development'
+  | 'Digital Transformation'
+  | 'Technology'
+  | 'Company Updates';
+
 export interface InsightArticle {
   slug: string;
   number: string;
-  category: string;
+  category: InsightCategory;
+  categoryDisplay: string;
   title: string;
   subtitle: string;
   abstract: string;
@@ -10,6 +21,7 @@ export interface InsightArticle {
   author: {
     name: string;
     role: string;
+    initials: string;
   };
   accent: string;
   tags: string[];
@@ -32,11 +44,23 @@ export interface InsightArticle {
   verdict: string;
 }
 
+export const INSIGHT_CATEGORIES: InsightCategory[] = [
+  'All',
+  'AI & Automation',
+  'Software Engineering',
+  'Enterprise Technology',
+  'Product Development',
+  'Digital Transformation',
+  'Technology',
+  'Company Updates'
+];
+
 export const INSIGHT_ARTICLES: InsightArticle[] = [
   {
     slug: 'distributed-ledger-architecture',
     number: '01',
-    category: 'Distributed Systems & Fintech',
+    category: 'Software Engineering',
+    categoryDisplay: 'Distributed Systems & FinTech',
     title: 'Designing High-Throughput Double-Entry Financial Ledgers with Strict ACID Guarantees',
     subtitle: 'TRANSACTION INTEGRITY AT SCALE',
     abstract: 'How to build mathematically balanced, immutable double-entry financial transaction engines that withstand network partitioning, prevent race conditions, and achieve sub-millisecond execution.',
@@ -45,6 +69,7 @@ export const INSIGHT_ARTICLES: InsightArticle[] = [
     author: {
       name: 'Himansu Nayak (MCA)',
       role: 'Head of Technology & Systems Architecture, OHO TECH',
+      initials: 'HN'
     },
     accent: '#10b981',
     tags: ['Distributed Systems', 'Double-Entry Accounting', 'PostgreSQL', 'Go (Golang)', 'ACID', 'Event Sourcing'],
@@ -59,7 +84,7 @@ export const INSIGHT_ARTICLES: InsightArticle[] = [
         heading: '1. The Pitfalls of Mutable Balances in Enterprise FinTech',
         subheading: 'Why storing a balance integer column is an architectural anti-pattern',
         content: [
-          'In early-stage architectures, engineers frequently create an "accounts" table with a numerical "balance" column and execute updates like `UPDATE accounts SET balance = balance + 500 WHERE id = 42`. In high-concurrency environments, this approach quickly disintegrates due to lock contention, non-deterministic race conditions, and an inability to audit historical discrepancies.',
+          'In early-stage architectures, engineers frequently create an "accounts" table with a numerical "balance" column and execute updates like UPDATE accounts SET balance = balance + 500 WHERE id = 42. In high-concurrency environments, this approach quickly disintegrates due to lock contention, non-deterministic race conditions, and an inability to audit historical discrepancies.',
           'Double-entry bookkeeping is a 700-year-old mathematical invariant: the sum of all debits must equal the sum of all credits across every transaction boundary. In modern distributed systems, we translate this into an immutable append-only event ledger.'
         ],
         callout: {
@@ -117,17 +142,87 @@ export const INSIGHT_ARTICLES: InsightArticle[] = [
     verdict: 'Immutable double-entry event sourcing eliminates accounting drift, guarantees 100% auditable financial records, and delivers zero-downtime ledger throughput.'
   },
   {
-    slug: 'multi-tenant-hospital-isolation',
+    slug: 'enterprise-ai-document-pipeline',
     number: '02',
-    category: 'Healthcare Engineering & Cloud',
+    category: 'AI & Automation',
+    categoryDisplay: 'Enterprise AI & Automation',
+    title: 'Building Hallucination-Free Document OCR & Verification Pipelines with Self-Hosted Models',
+    subtitle: 'ACCURACY & DATA SOVEREIGNTY FOR HIGH-VOLUME KYC & INVOICING',
+    abstract: 'How OHO TECH designs sovereign AI pipelines that extract structured data from identity documents and GST tax invoices in under 4.2 seconds with strict deterministic validation schemas and zero external data leaks.',
+    publishedAt: 'September 2026',
+    readTime: '7 min read',
+    author: {
+      name: 'Himansu Nayak (MCA)',
+      role: 'Head of Technology & Systems Architecture, OHO TECH',
+      initials: 'HN'
+    },
+    accent: '#8b5cf6',
+    tags: ['AI Integration', 'Document OCR', 'PyTorch', 'pgvector', 'Data Sovereignty', 'Zero Hallucination'],
+    keyPrinciples: [
+      'Raw LLM text output is never ingested directly; every extracted field must conform to strict JSON schemas with regex checksums.',
+      'Optical Character Recognition runs on self-hosted GPU containers within the customer private cloud boundary.',
+      'Low-confidence extraction scores (< 0.88) automatically trigger asynchronous human-in-the-loop review queues.',
+      'Vector embeddings are partitioned by tenant ID using PostgreSQL pgvector with zero cross-organization leakage.'
+    ],
+    sections: [
+      {
+        heading: '1. The Danger of Unbounded LLM Extraction in Enterprise Systems',
+        subheading: 'Why generative text models fail in regulated tax and compliance environments',
+        content: [
+          'Generative AI models are probabilistic by nature. In financial, medical, and identity workflows, a 1% hallucination rate on invoice GSTIN numbers or PAN identifiers can trigger regulatory penalties and reconciliation failures.',
+          'OHO TECH employs a dual-stage deterministic pipeline: high-resolution computer vision extracts raw text glyphs with bounding box coordinates, followed by a constrained parser that enforces exact schema validation before any database record is created.'
+        ],
+        callout: {
+          type: 'tip',
+          title: 'Deterministic Verification Rule',
+          text: 'Every extracted GSTIN number is verified against the official Luhn-based checksum algorithm before being approved for ledger posting.'
+        }
+      },
+      {
+        heading: '2. Structuring the Asynchronous PyTorch & Redis Worker Mesh',
+        subheading: 'Processing 10,000 document pages per hour with bounded memory footprint',
+        content: [
+          'Document uploads stream directly to private S3-compatible object storage via pre-signed URLs. An AMQP message triggers isolated PyTorch OCR workers running on Kubernetes pods.',
+          'Extracted tokens hydrate into typed TypeScript contracts, calculate spatial confidence scores, and persist to PostgreSQL within 4.2 seconds.'
+        ],
+        codeSnippet: {
+          language: 'python',
+          filename: 'ocr_pipeline_worker.py',
+          code: `def process_document_payload(document_buffer: bytes, tenant_id: str) -> ExtractionResult:
+    # 1. Image preprocessing: deskew, normalize contrast, crop margins
+    preprocessed_img = image_preprocessor.normalize(document_buffer)
+    
+    # 2. Extract OCR tokens with bounding boxes & confidence vectors
+    tokens = self_hosted_ocr_engine.detect_glyphs(preprocessed_img)
+    
+    # 3. Apply deterministic regex schemas for PAN, Aadhaar, and GSTIN
+    validated_fields = {}
+    for rule in COMPLIANCE_SCHEMAS["INVOICE_V2"]:
+        match = rule.extract_and_validate(tokens)
+        if match.confidence < 0.88 or not match.is_checksum_valid():
+            return trigger_human_review_queue(document_buffer, tenant_id, match.reason)
+        validated_fields[rule.key] = match.value
+        
+    return ExtractionResult(status="AUTO_VERIFIED", fields=validated_fields, latency_ms=1420)`
+        }
+      }
+    ],
+    verdict: 'Combining self-hosted neural OCR with strict deterministic schema validation delivers rapid document automation while preserving 100% data sovereignty and zero hallucination risk.'
+  },
+  {
+    slug: 'multi-tenant-hospital-isolation',
+    number: '03',
+    category: 'Enterprise Technology',
+    categoryDisplay: 'Healthcare Engineering & Cloud',
     title: 'Architecting Zero-Leakage Multi-Tenant Hospital & Clinical Clouds',
-    subtitle: 'HIPAA/NABH COMPLIANT ROW-LEVEL SECURITY & ISOLATION',
+    subtitle: 'HIPAA & NABH COMPLIANT ROW-LEVEL SECURITY & ENCRYPTED ISOLATION',
     abstract: 'A deep-dive blueprint for multi-hospital cloud SaaS architectures that combine database partition isolation, role-based cryptography, and sub-second OPD triage.',
     publishedAt: 'August 2026',
     readTime: '7 min read',
     author: {
       name: 'Japabandhu Kampa',
-      role: 'Director of Enterprise Infrastructure, OHO TECH',
+      role: 'Founder & Director, OHO TECH',
+      initials: 'JK'
     },
     accent: '#06b6d4',
     tags: ['Healthcare EMR', 'PostgreSQL RLS', 'HIPAA Compliance', 'Zero-Trust', 'Next.js 16', 'WebSockets'],
@@ -140,10 +235,10 @@ export const INSIGHT_ARTICLES: InsightArticle[] = [
     sections: [
       {
         heading: '1. Multi-Tenancy Patterns: Database per Tenant vs Shared Schema with RLS',
-        subheading: 'Balancing cost efficiency with sovereign regulatory security',
+        subheading: 'Balancing infrastructure overhead with sovereign regulatory security',
         content: [
-          'Deploying a separate database for every small clinic creates unsustainable DevOps overhead. Conversely, relying solely on application-level `WHERE hospital_id = ?` clauses in SQL queries creates catastrophic risk of human developer error causing cross-tenant leaks.',
-          'The optimal solution is a unified database schema enforced by native PostgreSQL Row-Level Security (RLS). When the application opens a connection pool session, it sets a session variable `SET LOCAL app.current_hospital_id = ?`, rendering unauthorized records completely invisible to the database engine.'
+          'Deploying a separate database for every small clinic creates unsustainable DevOps overhead. Conversely, relying solely on application-level WHERE hospital_id = ? clauses in SQL queries creates catastrophic risk of human developer error causing cross-tenant leaks.',
+          'The optimal solution is a unified database schema enforced by native PostgreSQL Row-Level Security (RLS). When the application opens a connection pool session, it sets a session variable SET LOCAL app.current_hospital_id = ?, rendering unauthorized records completely invisible to the database engine.'
         ],
         codeSnippet: {
           language: 'sql',
@@ -177,8 +272,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;`
   },
   {
     slug: 'offline-first-pos-synchronization',
-    number: '03',
-    category: 'Edge Computing & Retail',
+    number: '04',
+    category: 'Product Development',
+    categoryDisplay: 'Edge Computing & Retail',
     title: 'Offline-First State Synchronization for Multi-Location Retail Depots',
     subtitle: 'ZERO-LATENCY COUNTER BILLING & INVENTORY CONVERGENCE',
     abstract: 'Designing offline-capable desktop POS billing terminals that maintain 100% operational continuity during network outages and synchronize seamlessly without race conditions upon reconnection.',
@@ -187,6 +283,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;`
     author: {
       name: 'Himansu Nayak (MCA)',
       role: 'Head of Technology & Systems Architecture, OHO TECH',
+      initials: 'HN'
     },
     accent: '#3b82f6',
     tags: ['Edge Computing', 'Retail POS', 'SQLite', 'CRDT', 'Offline-First', 'TypeScript'],
@@ -242,9 +339,57 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;`
     verdict: 'Offline-first terminal architectures guarantee zero checkout downtime, eliminate depot stockout surprises, and provide an invincible retail counter experience.'
   },
   {
+    slug: 'legacy-migration-strangler-fig',
+    number: '05',
+    category: 'Digital Transformation',
+    categoryDisplay: 'Enterprise Modernization',
+    title: 'Migrating High-Risk Enterprise Monoliths Using the Incremental Strangler Fig Pattern',
+    subtitle: 'ZERO-DOWNTIME LEGACY MODERNIZATION WITHOUT CODE DISRUPTIONS',
+    abstract: 'How to incrementally replace decades-old monolithic ERP systems with modern microservices, Next.js frontends, and automated CDC data replication without risking business downtime.',
+    publishedAt: 'August 2026',
+    readTime: '6 min read',
+    author: {
+      name: 'Japabandhu Kampa',
+      role: 'Founder & Director, OHO TECH',
+      initials: 'JK'
+    },
+    accent: '#ec4899',
+    tags: ['Digital Transformation', 'Strangler Fig', 'Change Data Capture', 'Legacy Modernization', 'Debezium', 'Kafka'],
+    keyPrinciples: [
+      'Never attempt "Big Bang" rewrites on live operational enterprise software.',
+      'Deploy an intelligent reverse-proxy routing layer in front of the legacy monolith on Day 1.',
+      'Use Change Data Capture (CDC) with Debezium to replicate database mutations in real time without modifying legacy code.',
+      'Migrate individual domain boundaries incrementally (e.g. Billing -> Inventory -> Patient Chart).'
+    ],
+    sections: [
+      {
+        heading: '1. The Fallacy of the "Big Bang" Software Overhaul',
+        subheading: 'Why 70% of complete system rewrites fail or run years over schedule',
+        content: [
+          'Attempting to rewrite an entire 15-year-old enterprise software stack in a single secret development phase is the highest-risk strategy in enterprise IT. Business logic has evolved over years, edge cases are undocumented, and user muscle memory is deeply entrenched.',
+          'The Strangler Fig pattern provides an orderly migration pathway: modern microservices are placed alongside the legacy core, intercepting specific URL paths and database events one service at a time until the legacy core can be safely decommissioned.'
+        ],
+        callout: {
+          type: 'architecture',
+          title: 'Routing Layer Topology',
+          text: 'An edge API gateway evaluates request paths: new endpoints route to Go/Node microservices, while legacy unmigrated routes pass transparently to the original backend.'
+        }
+      },
+      {
+        heading: '2. Real-Time Data Synchronization with Change Data Capture (CDC)',
+        subheading: 'Bi-directional synchronization during multi-month migration phases',
+        content: [
+          'By attaching Debezium to the legacy database transaction log (WAL/Binlog), every insert and update publishes to Apache Kafka streams instantly. Modern microservices ingest these streams and maintain their own optimized read-models without locking the legacy database.'
+        ]
+      }
+    ],
+    verdict: 'The Strangler Fig methodology turns risky enterprise overhauls into a predictable, non-disruptive evolution with zero operational downtime.'
+  },
+  {
     slug: 'edge-computed-academic-portals',
-    number: '04',
-    category: 'Cloud Scaling & Education',
+    number: '06',
+    category: 'Technology',
+    categoryDisplay: 'Cloud Scaling & Edge Architecture',
     title: 'Scaling Campus ERP to 100,000 Concurrent Student Sessions During Exam Result Release',
     subtitle: 'EDGE CACHING & DYNAMIC READ REPLICAS',
     abstract: 'How OHO TECH architected a high-concurrency educational results pipeline utilizing edge-computed HTML streams, Redis cache tiers, and serverless background PDF compilers.',
@@ -253,6 +398,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;`
     author: {
       name: 'OHO TECH Engineering Team',
       role: 'Systems Architecture Group',
+      initials: 'OT'
     },
     accent: '#f59e0b',
     tags: ['Next.js 16', 'Edge CDN', 'Redis', 'High Concurrency', 'Cloudflare Workers', 'PostgreSQL'],
@@ -276,8 +422,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;`
   },
   {
     slug: 'event-driven-microservices-in-go',
-    number: '05',
-    category: 'Backend Architecture',
+    number: '07',
+    category: 'Software Engineering',
+    categoryDisplay: 'Backend Systems & Microservices',
     title: 'Sub-15ms Event Pipelines with Go, Redis Streams and gRPC',
     subtitle: 'ASYNC MESSAGE PASSING FOR ENTERPRISE SOFTWARE',
     abstract: 'Practical patterns for structuring modular Go microservices communicating over protobuf schemas and asynchronous message streams with zero single-point-of-failure.',
@@ -286,8 +433,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;`
     author: {
       name: 'Himansu Nayak (MCA)',
       role: 'Head of Technology & Systems Architecture, OHO TECH',
+      initials: 'HN'
     },
-    accent: '#8b5cf6',
+    accent: '#14b8a6',
     tags: ['Go (Golang)', 'gRPC', 'Protocol Buffers', 'Redis Streams', 'Microservices', 'OpenTelemetry'],
     keyPrinciples: [
       'Prefer binary protocol buffers (protobuf) over JSON for high-frequency inter-service RPC calls.',
@@ -305,9 +453,67 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;`
       }
     ],
     verdict: 'Event-driven Go microservices communicating over gRPC deliver maximum CPU efficiency, resilience against cascading failures, and predictable sub-15ms system latency.'
+  },
+  {
+    slug: 'oho-tech-2026-roadmap-sovereign-code',
+    number: '08',
+    category: 'Company Updates',
+    categoryDisplay: 'Engineering Roadmap & Policy',
+    title: 'OHO TECH 2026 Architecture Manifesto: Why Digital Sovereignty Is the Only Sustainable Enterprise Model',
+    subtitle: '100% CODE HANDOVER, MODULAR ECOSYSTEMS & PRIVACY-FIRST RUNTIMES',
+    abstract: 'Our foundational commitment to client intellectual property ownership, vendor-neutral cloud deployments, and battle-tested vertical platforms engineered for long-term independence.',
+    publishedAt: 'June 2026',
+    readTime: '4 min read',
+    author: {
+      name: 'Japabandhu Kampa',
+      role: 'Founder & Director, OHO TECH',
+      initials: 'JK'
+    },
+    accent: '#e11d48',
+    tags: ['Company Updates', 'Code Sovereignty', 'Open Architecture', 'Multi-Cloud', 'Enterprise Strategy'],
+    keyPrinciples: [
+      'Clients receive full Git source code repositories and deployment manifests upon project delivery.',
+      'No hidden per-seat licensing fees or proprietary database locks.',
+      'All architectures run on standard container runtimes (Docker, Kubernetes) deployable on any cloud or on-premise hardware.',
+      'Direct access to lead system architects without sales intermediary layers.'
+    ],
+    sections: [
+      {
+        heading: '1. The SaaS Commoditization Trap',
+        subheading: 'Why monthly subscription software becomes an enterprise liability',
+        content: [
+          'Over the past decade, enterprises have become burdened by compounding monthly SaaS licensing fees for software they will never own. When vendors alter pricing tiers or discontinue APIs, organizations have no recourse.',
+          'OHO TECH provides an alternative: bespoke, high-performance software built on modular foundations that the client owns in perpetuity. You control your database schemas, your container configurations, and your deployment roadmap.'
+        ]
+      }
+    ],
+    verdict: 'True digital sovereignty gives organizations permanent control over their critical data assets, operational workflows, and technology spend.'
   }
 ];
 
 export function getInsightArticle(slug: string): InsightArticle | undefined {
   return INSIGHT_ARTICLES.find((a) => a.slug === slug);
+}
+
+export function getNextInsightArticle(currentSlug: string): InsightArticle {
+  const currentIndex = INSIGHT_ARTICLES.findIndex((a) => a.slug === currentSlug);
+  if (currentIndex === -1 || currentIndex === INSIGHT_ARTICLES.length - 1) {
+    return INSIGHT_ARTICLES[0];
+  }
+  return INSIGHT_ARTICLES[currentIndex + 1];
+}
+
+export function getRelatedInsightArticles(currentSlug: string, count: number = 2): InsightArticle[] {
+  const current = getInsightArticle(currentSlug);
+  if (!current) return INSIGHT_ARTICLES.slice(0, count);
+
+  // Match same category first, fallback to remaining articles
+  const sameCategory = INSIGHT_ARTICLES.filter(
+    (a) => a.slug !== currentSlug && a.category === current.category
+  );
+  const others = INSIGHT_ARTICLES.filter(
+    (a) => a.slug !== currentSlug && a.category !== current.category
+  );
+
+  return [...sameCategory, ...others].slice(0, count);
 }

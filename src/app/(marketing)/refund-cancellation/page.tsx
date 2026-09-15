@@ -1,14 +1,24 @@
 import * as React from 'react';
 import { RefreshCw, Info } from 'lucide-react';
+import { Metadata } from 'next';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
-export const metadata = {
-  title: 'Refund & Cancellation Policy | OHO TECH',
-  description: 'Project cancellation and refund terms for custom software and digital services.',
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'Refund & Cancellation Policy',
+  description: 'Project cancellation and refund terms for custom software, product licenses, and digital engineering services.',
+  path: '/refund-cancellation',
+});
 
 export default function RefundCancellationPage() {
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Refund & Cancellation Policy', url: '/refund-cancellation' },
+  ]);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 px-4 sm:px-6 lg:px-8">
+      <JsonLd data={breadcrumbs} />
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}

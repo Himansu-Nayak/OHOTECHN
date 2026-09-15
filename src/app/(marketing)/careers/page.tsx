@@ -1,13 +1,23 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Briefcase, MapPin, Clock, Sparkles, Send } from 'lucide-react';
+import { Metadata } from 'next';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
-export const metadata = {
-  title: 'Careers | OHO TECH',
-  description: 'Explore opportunities to work on software engineering, digital products, and enterprise solutions at OHO TECH.',
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'Careers & Engineering Opportunities',
+  description: 'Explore engineering opportunities at OHO TECH. Join our team to design and build enterprise software products, cloud systems, and scalable digital solutions.',
+  path: '/careers',
+  tags: ['Careers', 'Software Engineering Jobs', 'OHO TECH Careers', 'Developer Openings'],
+});
 
 export default function CareersPage() {
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Careers', url: '/careers' },
+  ]);
+
   const openPositions: Array<{
     title: string;
     department: string;
@@ -19,6 +29,7 @@ export default function CareersPage() {
 
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
+      <JsonLd data={breadcrumbs} />
       <main className="max-w-[1536px] w-full mx-auto" id="careers-main">
         
         {/* Page Header */}

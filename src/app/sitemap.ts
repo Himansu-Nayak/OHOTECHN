@@ -1,55 +1,183 @@
 import type { MetadataRoute } from 'next';
 import { services } from '@/config/services';
+import { industries } from '@/config/industries';
+import { WORK_PROJECTS } from '@/config/work';
+import { INSIGHT_ARTICLES } from '@/config/insights';
+import { siteConfig } from '@/config/site';
 
-const BASE_URL = 'https://ohotech.com';
+const BASE_URL = siteConfig.url || 'https://ohotech.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = [
-    '',
-    '/about',
-    '/services',
-    '/products',
-    '/solutions',
-    '/pricing',
-    '/contact',
-    '/get-quote',
-    '/book-demo',
-    '/partner',
-    '/careers',
-    '/developer',
-    '/privacy-policy',
-    '/terms-and-conditions',
-    '/refund-cancellation',
-    '/cookie-policy',
-    '/disclaimer',
-    '/licenses',
-  ].map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: route === '' ? 1.0 : route === '/services' || route === '/products' || route === '/solutions' ? 0.9 : 0.8,
-  }));
+  const currentDate = new Date();
 
-  const serviceRoutes = services.map((s) => ({
-    url: `${BASE_URL}/services/${s.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
+  // 1. Core Static Marketing & Company Routes
+  const staticRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}`,
+      lastModified: currentDate,
+      changeFrequency: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: `${BASE_URL}/work`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.95,
+    },
+    {
+      url: `${BASE_URL}/services`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.95,
+    },
+    {
+      url: `${BASE_URL}/technology`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.90,
+    },
+    {
+      url: `${BASE_URL}/solutions`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.90,
+    },
+    {
+      url: `${BASE_URL}/about`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${BASE_URL}/insights`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.90,
+    },
+    {
+      url: `${BASE_URL}/products`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${BASE_URL}/pricing`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.80,
+    },
+    {
+      url: `${BASE_URL}/contact`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${BASE_URL}/get-quote`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.80,
+    },
+    {
+      url: `${BASE_URL}/book-demo`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.80,
+    },
+    {
+      url: `${BASE_URL}/partner`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.70,
+    },
+    {
+      url: `${BASE_URL}/careers`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.70,
+    },
+    {
+      url: `${BASE_URL}/developer`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.70,
+    },
+    // Legal & Policy Pages
+    {
+      url: `${BASE_URL}/privacy-policy`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.50,
+    },
+    {
+      url: `${BASE_URL}/terms-and-conditions`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.50,
+    },
+    {
+      url: `${BASE_URL}/refund-cancellation`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.50,
+    },
+    {
+      url: `${BASE_URL}/cookie-policy`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.50,
+    },
+    {
+      url: `${BASE_URL}/disclaimer`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.50,
+    },
+    {
+      url: `${BASE_URL}/licenses`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.50,
+    },
+  ];
+
+  // 2. Dynamic Work Case Studies
+  const workRoutes: MetadataRoute.Sitemap = WORK_PROJECTS.map((project) => ({
+    url: `${BASE_URL}/work/${project.slug}`,
+    lastModified: currentDate,
+    changeFrequency: 'monthly',
     priority: 0.85,
   }));
 
-  const industryRoutes = [
-    'healthcare',
-    'education',
-    'retail-ecommerce',
-    'hospitality',
-    'finance-banking',
-    'logistics-supply-chain',
-  ].map((slug) => ({
-    url: `${BASE_URL}/solutions/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
+  // 3. Dynamic Insights Technical Whitepapers
+  const insightsRoutes: MetadataRoute.Sitemap = INSIGHT_ARTICLES.map((article) => ({
+    url: `${BASE_URL}/insights/${article.slug}`,
+    lastModified: currentDate,
+    changeFrequency: 'monthly',
     priority: 0.85,
   }));
 
-  return [...staticRoutes, ...serviceRoutes, ...industryRoutes];
+  // 4. Dynamic Engineering Services
+  const serviceRoutes: MetadataRoute.Sitemap = services.map((service) => ({
+    url: `${BASE_URL}/services/${service.slug}`,
+    lastModified: currentDate,
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  }));
+
+  // 5. Dynamic Industry Solutions
+  const industryRoutes: MetadataRoute.Sitemap = industries.map((industry) => ({
+    url: `${BASE_URL}/solutions/${industry.slug}`,
+    lastModified: currentDate,
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  }));
+
+  return [
+    ...staticRoutes,
+    ...workRoutes,
+    ...insightsRoutes,
+    ...serviceRoutes,
+    ...industryRoutes,
+  ];
 }

@@ -112,64 +112,75 @@ export function BrandStatement() {
     const isMobile = window.innerWidth < 768;
 
     const ctx = gsap.context(() => {
-      // 1. Progressive Typography Stagger & Scale Entrance
+      // 1. Progressive Typography Stagger & Masked Scale Entrance
       gsap.fromTo(
         [title1Ref.current, title2Ref.current, title3Ref.current],
-        { opacity: 0, y: 55, scale: 0.92 },
+        { yPercent: 110, opacity: 0 },
         {
+          yPercent: 0,
           opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.95,
-          stagger: 0.16,
+          duration: 1.0,
+          stagger: 0.18,
           ease: 'power4.out',
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top 82%',
+            start: 'top 78%',
             toggleActions: 'play none none none',
             once: true,
           },
         }
       );
 
-      // 2. Bold horizontal parallax on title lines (desktop)
+      // 2. Bold horizontal counter-parallax on title lines (desktop)
       if (!isMobile) {
         if (title1Ref.current) {
           gsap.to(title1Ref.current, {
-            x: -80,
+            x: -110,
             ease: 'none',
             scrollTrigger: {
               trigger: sectionRef.current,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 0.8,
+              scrub: 0.7,
+            },
+          });
+        }
+        if (title2Ref.current) {
+          gsap.to(title2Ref.current, {
+            scale: 1.04,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.7,
             },
           });
         }
         if (title3Ref.current) {
           gsap.to(title3Ref.current, {
-            x: 80,
+            x: 110,
             ease: 'none',
             scrollTrigger: {
               trigger: sectionRef.current,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 0.8,
+              scrub: 0.7,
             },
           });
         }
       }
 
-      // 3. 4 Architectural Pillars Staggered Entrance
+      // 3. 4 Architectural Pillars Staggered Entrance & Differential Depth
       if (pillarsGridRef.current) {
         gsap.fromTo(
           pillarsGridRef.current.children,
-          { opacity: 0, y: 30 },
+          { opacity: 0, y: 35 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.7,
-            stagger: 0.1,
+            duration: 0.75,
+            stagger: 0.12,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: pillarsGridRef.current,
@@ -179,18 +190,36 @@ export function BrandStatement() {
             },
           }
         );
+
+        if (!isMobile) {
+          // Even pillars drift slightly downward, odd pillars upward for 3D cascading feel
+          const pillars = Array.from(pillarsGridRef.current.children);
+          pillars.forEach((pillar, idx) => {
+            const yOffset = idx % 2 === 0 ? -18 : 18;
+            gsap.to(pillar, {
+              y: yOffset,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: pillarsGridRef.current,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 0.9,
+              },
+            });
+          });
+        }
       }
 
-      // 4. Commercial Outcomes Card Entrance
+      // 4. Commercial Outcomes Card Entrance & Scroll Exit Blend
       if (outcomesRef.current) {
         gsap.fromTo(
           outcomesRef.current,
-          { opacity: 0, y: 24, scale: 0.98 },
+          { opacity: 0, y: 30, scale: 0.96 },
           {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: 0.75,
+            duration: 0.8,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: outcomesRef.current,
@@ -212,10 +241,16 @@ export function BrandStatement() {
       id="brand-statement"
       className="w-full bg-[#0c0d11] text-white py-16 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
     >
+      {/* Top transition blend from Hero */}
+      <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#0a0a0b] to-transparent pointer-events-none z-0" />
+
       {/* Background Subtle Lighting */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent_75%)] pointer-events-none" />
       <div className="absolute top-1/3 right-10 w-72 sm:w-96 h-72 sm:h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-72 sm:w-96 h-72 sm:h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Bottom transition blend into ServicesExperience */}
+      <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#0a0a0b] to-transparent pointer-events-none z-0" />
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         
@@ -227,11 +262,17 @@ export function BrandStatement() {
           </div>
 
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase mb-4 sm:mb-6">
-            <span ref={title1Ref} className="inline-block">Strategy</span>
+            <div className="overflow-hidden py-1">
+              <span ref={title1Ref} className="inline-block will-change-transform">Strategy</span>
+            </div>
             <span className="text-emerald-400 font-mono text-2xl sm:text-4xl my-1 sm:my-2 block">×</span>
-            <span ref={title2Ref} className="inline-block">Design</span>
+            <div className="overflow-hidden py-1">
+              <span ref={title2Ref} className="inline-block will-change-transform">Design</span>
+            </div>
             <span className="text-cyan-400 font-mono text-2xl sm:text-4xl my-1 sm:my-2 block">×</span>
-            <span ref={title3Ref} className="inline-block">Technology</span>
+            <div className="overflow-hidden py-1">
+              <span ref={title3Ref} className="inline-block will-change-transform">Technology</span>
+            </div>
           </h2>
 
           <p className="text-sm sm:text-base lg:text-lg text-slate-300 font-normal max-w-2xl mx-auto leading-relaxed">
@@ -248,10 +289,10 @@ export function BrandStatement() {
               <div
                 key={pillar.id}
                 onClick={() => setActivePillar(idx)}
-                className={`p-6 sm:p-7 rounded-2xl sm:rounded-3xl border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                className={`p-6 sm:p-7 rounded-2xl sm:rounded-3xl border transition-all duration-300 cursor-pointer flex flex-col justify-between group/pillar hover:-translate-y-1.5 ${
                   isSelected
                     ? 'bg-[#16171d] border-emerald-500/40 shadow-xl ring-1 ring-emerald-500/30'
-                    : 'bg-[#121318]/80 border-white/10 hover:border-white/20 hover:bg-[#14151b]'
+                    : 'bg-[#121318]/80 border-white/10 hover:border-emerald-500/30 hover:bg-[#14151b] shadow-lg hover:shadow-emerald-500/5'
                 }`}
               >
                 <div>

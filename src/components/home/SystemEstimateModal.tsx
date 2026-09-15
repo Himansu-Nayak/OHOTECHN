@@ -356,8 +356,10 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <input
+                  id="estimate-client-name"
                   type="text"
                   required
+                  aria-label="Your Full Name"
                   placeholder="Your Name *"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
@@ -365,8 +367,10 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
                 />
 
                 <input
+                  id="estimate-client-email"
                   type="email"
                   required
+                  aria-label="Corporate Email Address"
                   placeholder="Corporate Email *"
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
@@ -374,7 +378,9 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
                 />
 
                 <input
+                  id="estimate-client-phone"
                   type="tel"
+                  aria-label="Phone or WhatsApp Number"
                   placeholder="Phone / WhatsApp"
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}

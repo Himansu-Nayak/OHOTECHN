@@ -2,11 +2,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { CheckCircle2, Sparkles, ArrowRight, ShieldCheck, Code2, Layers, TrendingUp } from 'lucide-react';
+import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/JsonLd';
 
-export const metadata: Metadata = {
-  title: 'Pricing & Engagement Models | OHO TECH',
+export const metadata: Metadata = buildMetadata({
+  title: 'Pricing & Enterprise Engagement Models',
   description: 'Transparent enterprise software engagement models, project-based engineering, dedicated developer pods, and managed digital growth retainers.',
-};
+  path: '/pricing',
+  tags: ['Pricing', 'Engagement Models', 'Software Engineering Rates', 'Dedicated Pods'],
+});
 
 const engagementModels = [
   {
@@ -85,8 +89,14 @@ const faqs = [
 ];
 
 export default async function PricingPage() {
+  const breadcrumbs = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Pricing & Engagement', url: '/pricing' },
+  ]);
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
+      <JsonLd data={breadcrumbs} />
       <main className="max-w-[1536px] w-full mx-auto" id="pricing-main">
         
         {/* Header Hero Section */}
