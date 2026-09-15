@@ -86,16 +86,12 @@ export function SelectedWork() {
     <section 
       id="selected-work" 
       aria-label="OHO TECH Selected Work and Case Studies"
-      className="w-full bg-[#0a0a0b] text-white py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      className="w-full bg-[#0a0a0b] text-white py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
     >
-      {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-10 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-cyan-500/5 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-emerald-500/5 rounded-full blur-[160px] pointer-events-none" />
-
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 sm:mb-20 pb-8 border-b border-white/10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 pb-8 border-b border-white/10">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
               <FolderGit2 className="w-3.5 h-3.5" />
@@ -116,8 +112,8 @@ export function SelectedWork() {
           </div>
         </div>
 
-        {/* Cinematic Case Studies Sequence using Reusable ProjectShowcase */}
-        <div className="space-y-12 sm:space-y-16 lg:space-y-20 mb-16 sm:mb-20">
+        {/* Flat Editorial Case Studies Sequence */}
+        <div className="space-y-0 mb-16 sm:mb-20">
           {REAL_PROJECTS.map((project, idx) => (
             <ProjectShowcase
               key={project.id}
@@ -128,10 +124,10 @@ export function SelectedWork() {
           ))}
         </div>
 
-        {/* Technical Architecture Consultation Strip */}
-        <div className="rounded-2xl sm:rounded-3xl bg-[#14151a] border border-white/15 p-6 sm:p-10 shadow-2xl backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+        {/* Technical Architecture Consultation Strip (Flat 1px Border) */}
+        <div className="bg-[#121316] border border-white/10 p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="text-center sm:text-left">
-            <h4 className="text-lg sm:text-xl font-bold text-white mb-2">
+            <h4 className="text-lg sm:text-xl font-bold text-white mb-2 uppercase tracking-tight">
               Require a custom architectural assessment for your organization?
             </h4>
             <p className="text-xs sm:text-sm text-slate-300 font-normal">
@@ -141,7 +137,7 @@ export function SelectedWork() {
 
           <Link
             href="/contact"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-lg shrink-0 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 shrink-0 flex items-center justify-center gap-2"
           >
             <span>CONSULT ON ARCHITECTURE</span>
             <ArrowRight className="w-4 h-4" />
