@@ -12,11 +12,7 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * HeroExperience (14islands Restraint Architecture)
- * 
- * - Full-bleed visual backdrop powered by the global Three.js WebGL canvas.
- * - Single focal opening statement: Oversized kinetic display headline revealed line-by-line.
- * - Zero dashboard chips, zero telemetry pills, zero preview cards competing for attention.
+ * Hero opening statement with scroll-linked kinetic typography.
  */
 export function HeroExperience() {
   const containerRef = useRef<HTMLElement>(null);
@@ -46,7 +42,7 @@ export function HeroExperience() {
         return;
       }
 
-      // 1. Line-by-Line Masked Entrance Reveal (14islands Signature Opening)
+      // Masked entrance timeline
       const entranceTl = gsap.timeline({
         defaults: { ease: 'power4.out' }
       });
@@ -116,7 +112,7 @@ export function HeroExperience() {
 
       <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col justify-center">
         
-        {/* Monolithic Kinetic Headline (14islands Oversized Display Typography) */}
+        {/* Kinetic headline display */}
         <div className="space-y-1 sm:space-y-2 mb-8 sm:mb-12 select-none">
           
           {/* Line 01 */}

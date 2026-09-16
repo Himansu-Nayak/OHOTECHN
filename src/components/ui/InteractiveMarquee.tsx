@@ -40,13 +40,7 @@ const TECH_BADGES: MarqueeItem[] = [
 ];
 
 /**
- * InteractiveMarquee (14islands Momentum Marquee Architecture)
- * 
- * - Driven 100% by Framer Motion (gesture / pointer / momentum physics).
- * - Drag + wheel responsive with spring-smoothed momentum.
- * - Velocity dynamically maps to subtle skew using useTransform without React re-renders.
- * - Zero GSAP ScrollTrigger coupling (pure gesture domain separation).
- * - Respects prefers-reduced-motion via useReducedMotion().
+ * Interactive momentum marquee ribbon with pointer drag physics and velocity mapping.
  */
 export function InteractiveMarquee() {
   const containerRef = useRef<HTMLDivElement>(null);

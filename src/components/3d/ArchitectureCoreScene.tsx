@@ -180,17 +180,6 @@ export function ArchitectureCoreScene() {
 
   return (
     <div className="relative w-full h-full min-h-[380px] lg:min-h-[460px] overflow-hidden bg-[#0d0e12]/60 border border-white/10 rounded-none">
-      {/* 14islands Precision Corner Reticles */}
-      <div className="absolute top-3 left-3 font-mono text-[10px] text-emerald-400 font-bold tracking-widest z-10 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
-        <span>TOPOLOGY ENGINE / R3F GL</span>
-      </div>
-
-      <div className="absolute bottom-3 right-3 font-mono text-[10px] text-slate-400 tracking-wider z-10">
-        INTERACTIVE 3D LATTICE
-      </div>
-
-      {/* React Three Fiber Canvas */}
       <Canvas
         dpr={[1, 1.5]}
         camera={{ position: [0, 1.5, 5.5], fov: 45 }}

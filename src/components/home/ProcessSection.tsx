@@ -184,26 +184,20 @@ export function ProcessSection() {
 
         {/* Inner Dark Console Card Container */}
         <div 
-          className="bg-[#121316]/95 text-white border border-white/15 rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+          className="bg-[#121316] text-white border border-white/10 rounded-none p-5 sm:p-8 lg:p-10 relative overflow-hidden"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-        
-        {/* Background Ambient Glowing Orbs */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none transition-all duration-700" />
-        <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Top Control Bar: Status Indicator & Auto-Play Toggle */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-8 pb-4 border-b border-white/10 relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 font-mono text-[11px] text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
-              <span className="font-bold">LIVE METHODOLOGY PIPELINE</span>
+          {/* Top Control Bar: Step Indicator & Auto-Play Toggle */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-8 pb-4 border-b border-white/10 relative z-10">
+            <div className="flex items-center gap-3 font-mono text-xs text-slate-400">
+              <span className="text-emerald-400 font-bold">
+                PHASE 0{activeStep + 1} / 05
+              </span>
+              <span>—</span>
+              <span>{steps[activeStep].title}</span>
             </div>
-            <span className="text-xs text-slate-400 font-mono hidden md:inline">
-              PHASE 0{activeStep + 1} OF 05 ACTIVE
-            </span>
-          </div>
 
           <div className="flex items-center gap-2">
             <button

@@ -393,10 +393,10 @@ export function TechnologyExperience() {
         {/* ── PART 1: STRONG EDITORIAL FOUNDATION STATEMENT ── */}
         <div ref={statementRef} className="mb-16 sm:mb-24 pb-12 border-b border-white/10">
           
-          {/* Pre-title Capsule */}
-          <div className="flex items-center gap-2 mb-6">
-            <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
-              06 // ARCHITECTURAL FOUNDATION &amp; TECHNOLOGY MATRIX
+          {/* Section Category Tag */}
+          <div className="mb-6">
+            <span className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-wider">
+              Foundation &amp; Architecture
             </span>
           </div>
 
@@ -542,11 +542,6 @@ export function TechnologyExperience() {
                     {currentDomain.subtitle}
                   </span>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2 font-mono text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1.5 rounded-full">
-                <Activity className="w-3.5 h-3.5 animate-pulse" />
-                <span>ACTIVE &amp; DEPLOYMENT TESTED</span>
               </div>
             </div>
 

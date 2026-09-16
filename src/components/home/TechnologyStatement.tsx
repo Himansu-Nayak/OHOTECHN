@@ -93,10 +93,8 @@ export function TechnologyStatement() {
       id="technology-statement"
       className="w-full bg-[#0c0d11] text-white py-20 sm:py-28 px-6 sm:px-10 lg:px-16 relative overflow-hidden"
     >
-      {/* Background Architectural Mesh & Subtle Lighting */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent_75%)] pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* Background Architectural Subtle Lighting */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.06),transparent_75%)] pointer-events-none" />
       
       {/* Precision Technical Grid Overlay */}
       <div 

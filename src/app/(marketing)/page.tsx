@@ -39,7 +39,7 @@ export default function HomePage() {
       {/* 01. Hero Experience */}
       <HeroExperience />
 
-      {/* 01b. 14islands Interactive Drag Marquee (Framer Motion Momentum) */}
+      {/* 01b. Interactive Drag Marquee */}
       <InteractiveMarquee />
 
       {/* 02. Brand Statement */}

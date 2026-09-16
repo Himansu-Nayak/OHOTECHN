@@ -30,12 +30,7 @@ export interface TextRevealProps {
 }
 
 /**
- * TextReveal (14islands Word/Line Kinetic Splitting Engine)
- * 
- * - Splits plain headings/paragraphs into lines/words via SplitType.
- * - Masks line containers with overflow: hidden to prevent Layout Shifts (CLS).
- * - Smoothly slides up from masked bounds using GPU transforms (yPercent + opacity).
- * - Fully respects prefers-reduced-motion (renders static and accessible without JS animation).
+ * Splits text into lines/words with overflow masking for scroll-triggered reveals.
  */
 export function TextReveal({
   children,

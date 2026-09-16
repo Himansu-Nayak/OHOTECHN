@@ -42,12 +42,7 @@ const PROJECT_VIDEOS: Record<string, string> = {
 const MotionLink = motion.create(Link);
 
 /**
- * ProjectShowcase (14islands Flat Editorial Grid Architecture)
- * 
- * - Tactile Framer Motion spring physics on whileHover and whileTap.
- * - Flat rectangle with 1px hairline border (clean editorial studio design).
- * - Instant scanability: Number + Category Tag + Title + Direct Link.
- * - CSS Hover Crossfade: Primary screenshot smoothly crossfades to secondary preview or video on hover/tap.
+ * Interactive project showcase card with spring hover physics and secondary preview crossfade.
  */
 export function ProjectShowcase({ project, index, priorityImage = false }: ProjectShowcaseProps) {
   const isEven = index % 2 === 1;

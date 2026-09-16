@@ -30,12 +30,7 @@ interface ScrollProviderProps {
 }
 
 /**
- * ScrollProvider
- * 
- * 14islands Scroll Architecture Principle:
- * ONE scroll authority app-wide. Lenis handles smooth virtual scrolling,
- * feeds GSAP ScrollTrigger updates, and is driven directly by GSAP's ticker.
- * Nothing else in the app free-runs on a secondary RAF scroll loop.
+ * Single scroll authority: synchronizes Lenis virtual scroll with GSAP ScrollTrigger ticker.
  */
 export function ScrollProvider({ children }: ScrollProviderProps) {
   const [lenisInstance, setLenisInstance] = useState<Lenis | null>(null);
