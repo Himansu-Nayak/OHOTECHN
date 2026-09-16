@@ -6,7 +6,6 @@ import gsap from 'gsap';
 
 export function CustomCursor() {
   const cursorContainerRef = useRef<HTMLDivElement>(null);
-  const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorRingRef = useRef<HTMLDivElement>(null);
   const [cursorText, setCursorText] = useState<string>('');
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -27,10 +26,6 @@ export function CustomCursor() {
       if (!isVisible && cursorContainerRef.current) {
         isVisible = true;
         cursorContainerRef.current.style.opacity = '1';
-      }
-
-      if (cursorDotRef.current) {
-        cursorDotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
       }
 
       // Check for interactive targets under cursor
@@ -98,12 +93,6 @@ export function CustomCursor() {
       style={{ opacity: 0 }}
       className="pointer-events-none fixed inset-0 z-[99999] overflow-hidden transition-opacity duration-150"
     >
-      {/* Precision Center Dot */}
-      <div
-        ref={cursorDotRef}
-        className="fixed top-0 left-0 -ml-1 -mt-1 w-2.5 h-2.5 rounded-full bg-emerald-400 pointer-events-none shadow-[0_0_12px_rgba(16,185,129,0.9)] will-change-transform"
-      />
-
       {/* Smooth Trailing Follower with Arrow Icon */}
       <div
         ref={cursorRingRef}
