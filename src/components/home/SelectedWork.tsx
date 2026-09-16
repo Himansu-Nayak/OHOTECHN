@@ -22,8 +22,8 @@ const REAL_PROJECTS: ProjectData[] = [
       'Automated Diagnostic Lab Dispatch'
     ],
     technologies: ['Next.js App Router', 'Go Microservices', 'PostgreSQL Core', 'HL7 / FHIR Adapters', 'Redis'],
-    image: '/ecosystem_healthcare.png',
-    href: '/solutions/healthcare',
+    image: '/images/work/3d-healthcare-emr.jpg',
+    href: '/work/healthcare-emr',
     accent: '#10b981',
     isPlaceholder: false,
   },
@@ -42,8 +42,8 @@ const REAL_PROJECTS: ProjectData[] = [
       'Digital Transcript Generator'
     ],
     technologies: ['React PWA', 'Node.js Microservices', 'PostgreSQL', 'Redis Cache', 'Edge CDN'],
-    image: '/ecosystem_education.png',
-    href: '/solutions/education',
+    image: '/images/work/3d-education-erp.jpg',
+    href: '/work/education-erp',
     accent: '#06b6d4',
     isPlaceholder: false,
   },
@@ -62,10 +62,10 @@ const REAL_PROJECTS: ProjectData[] = [
       'Barcode Scanning Engine'
     ],
     technologies: ['TypeScript', 'SQLite Edge Cache', 'Central PostgreSQL', 'WebSockets', 'Docker'],
-    image: '/images/3d-software-dev.jpg',
-    href: '/solutions/retail-ecommerce',
+    image: '/images/work/3d-retail-pos.jpg',
+    href: '/work/retail-pos',
     accent: '#3b82f6',
-    isPlaceholder: true,
+    isPlaceholder: false,
   },
   {
     id: 'hospitality-erp',
@@ -82,10 +82,30 @@ const REAL_PROJECTS: ProjectData[] = [
       'Housekeeping Dispatch'
     ],
     technologies: ['Next.js 16', 'Serverless Edge', 'Event Queues', 'Real-Time WebSockets', 'KMS Auth'],
-    image: '/images/3d-digital-growth.jpg',
-    href: '/solutions/hotel-hospitality',
+    image: '/images/work/3d-hospitality-erp.jpg',
+    href: '/work/hospitality-erp',
     accent: '#f59e0b',
-    isPlaceholder: true,
+    isPlaceholder: false,
+  },
+  {
+    id: 'fintech-ledger',
+    number: '05',
+    category: 'FINANCIAL TECHNOLOGY & NBFC',
+    title: 'Double-Entry Accounting Ledger & Loan Disbursal Engine',
+    subtitle: 'FINANCIAL TRANSACTION CORE & KYC PIPELINE',
+    pitch: 'Immutable double-entry ledger architecture with automated KYC verification webhooks and installment schedules.',
+    description: 'An immutable double-entry ledger architecture with automated KYC verification webhooks, installment schedules, and dynamic delinquency alerts.',
+    keyDeliverables: [
+      'Strict Double-Entry Ledger Core',
+      'Automated KYC OCR Verification',
+      'EMI Amortization Schedules',
+      'Field Loan Officer Companion'
+    ],
+    technologies: ['Go Microservices', 'PostgreSQL Vault', 'Distributed Lock Manager', 'Redis Streams', 'Docker'],
+    image: '/images/work/3d-fintech-ledger.jpg',
+    href: '/work/fintech-ledger',
+    accent: '#8b5cf6',
+    isPlaceholder: false,
   },
 ];
 

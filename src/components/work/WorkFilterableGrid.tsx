@@ -126,38 +126,32 @@ export function WorkFilterableGrid({ projects }: WorkFilterableGridProps) {
             <article 
               key={project.slug}
               data-cursor-text="CASE"
-              className="group rounded-3xl bg-[#111216]/90 border border-white/10 hover:border-emerald-500/50 p-6 sm:p-8 transition-all duration-300 flex flex-col justify-between shadow-2xl relative overflow-hidden hover-lift"
+              className="group border border-white/10 hover:border-emerald-500/40 bg-[#111216]/80 p-6 sm:p-8 transition-colors duration-300 flex flex-col justify-between shadow-2xl relative overflow-hidden"
             >
-              {/* Corner Ambient Glow */}
-              <div 
-                className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-[110px] pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity"
-                style={{ backgroundColor: project.accent }}
-              />
-
               <div>
-                {/* Visual Thumbnail with Scale */}
-                <div className="relative w-full h-52 sm:h-64 rounded-2xl overflow-hidden bg-black/60 border border-white/10 mb-6 group/thumb">
+                {/* Visual Thumbnail with Scale (16:9 flat frame) */}
+                <Link href={`/work/${project.slug}`} className="block relative w-full aspect-[16/9] overflow-hidden bg-black/60 border border-white/10 mb-6 group/thumb">
                   <Image
                     src={project.heroImage}
                     alt={project.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 600px"
-                    className="object-cover object-center opacity-85 group-hover/thumb:scale-105 group-hover/thumb:opacity-95 transition-all duration-700"
+                    className="object-cover object-center opacity-90 group-hover/thumb:scale-105 group-hover/thumb:opacity-100 transition-all duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-transparent to-transparent opacity-80" />
 
                   {/* Top Floating Badge */}
-                  <div className="absolute top-3 left-3 flex items-center gap-2 font-mono text-[10px] text-white px-3 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-white/15">
+                  <div className="absolute top-3 left-3 flex items-center gap-2 font-mono text-[10px] text-white px-3 py-1 bg-black/85 backdrop-blur-sm border border-white/10">
                     <span className="text-emerald-400 font-bold">PROJECT // {project.number}</span>
                     <span className="text-slate-400">•</span>
                     <span className="text-slate-300">{project.industry}</span>
                   </div>
 
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-slate-300 px-3 py-1.5 rounded-lg bg-black/80 backdrop-blur-md border border-white/10">
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-slate-300 px-3 py-1.5 bg-black/85 backdrop-blur-sm border border-white/10">
                     <span className="truncate">{project.clientArchetype}</span>
-                    <span className="text-emerald-400 font-bold ml-2 shrink-0">PRODUCTION READY</span>
+                    <span className="text-emerald-400 font-bold ml-2 shrink-0">PRODUCTION VERIFIED</span>
                   </div>
-                </div>
+                </Link>
 
                 {/* Category & Title */}
                 <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2">
@@ -165,7 +159,9 @@ export function WorkFilterableGrid({ projects }: WorkFilterableGridProps) {
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight mb-4 group-hover:text-emerald-300 transition-colors font-sans">
-                  {project.title}
+                  <Link href={`/work/${project.slug}`}>
+                    {project.title}
+                  </Link>
                 </h2>
 
                 <p className="text-sm text-slate-300 font-normal leading-relaxed mb-6">
@@ -183,7 +179,7 @@ export function WorkFilterableGrid({ projects }: WorkFilterableGridProps) {
                 </div>
 
                 {/* Metrics Highlight Strip */}
-                <div className="grid grid-cols-3 gap-2.5 mb-6 p-3 rounded-2xl bg-black/40 border border-white/5 font-mono text-center">
+                <div className="grid grid-cols-3 gap-2.5 mb-6 p-3 bg-black/40 border border-white/5 font-mono text-center">
                   {project.metrics.map((m, mIdx) => (
                     <div key={mIdx}>
                       <div className="text-sm sm:text-base font-black text-emerald-400">{m.value}</div>
@@ -197,7 +193,7 @@ export function WorkFilterableGrid({ projects }: WorkFilterableGridProps) {
               <div className="pt-6 border-t border-white/10 flex items-center justify-between">
                 <div className="flex flex-wrap gap-1.5 max-w-[60%]">
                   {project.technologies.slice(0, 3).map((t, tIdx) => (
-                    <span key={tIdx} className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] font-mono text-slate-300">
+                    <span key={tIdx} className="px-2 py-0.5 bg-white/5 border border-white/10 text-[10px] font-mono text-slate-300">
                       {t}
                     </span>
                   ))}
@@ -205,10 +201,10 @@ export function WorkFilterableGrid({ projects }: WorkFilterableGridProps) {
 
                 <Link
                   href={`/work/${project.slug}`}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/30 text-emerald-300 hover:text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-md button-tactile glow-focus group/btn"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/30 text-emerald-300 hover:text-black font-mono text-xs font-bold uppercase tracking-wider transition-colors duration-200 group/btn"
                 >
                   <span>Explore Case</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform arrow-slide" />
+                  <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
             </article>

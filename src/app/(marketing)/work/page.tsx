@@ -6,6 +6,7 @@ import { WorkFilterableGrid } from '@/components/work/WorkFilterableGrid';
 
 import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { TextReveal } from '@/components/ui/TextReveal';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Selected Work & Case Studies | OHO TECH Enterprise Platforms',
@@ -47,12 +48,15 @@ export default function WorkPage() {
             <span>ENTERPRISE CASE STUDY ARCHIVE // {WORK_PROJECTS.length.toString().padStart(2, '0')}</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05] uppercase mb-6">
-            <span>Selected Work.</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-              Engineered For Scale.
-            </span>
-          </h1>
+          <TextReveal 
+            as="h1" 
+            splitType="words"
+            immediate={true}
+            stagger={0.04}
+            className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05] uppercase mb-6"
+          >
+            Selected Work. Engineered For Scale.
+          </TextReveal>
 
           <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed max-w-3xl">
             A comprehensive index of mission-critical software systems, distributed enterprise architectures, and bespoke operational platforms engineered by OHO TECH.
@@ -62,8 +66,8 @@ export default function WorkPage() {
         {/* Filterable Case Studies Grid */}
         <WorkFilterableGrid projects={WORK_PROJECTS} />
 
-        {/* Architecture Consultation Strip */}
-        <div className="rounded-3xl bg-[#14151a] border border-white/15 p-8 sm:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+        {/* Architecture Consultation Strip (Flat Hairline Border) */}
+        <div className="bg-[#111216] border border-white/10 p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="text-center md:text-left">
             <span className="font-mono text-xs text-emerald-400 font-bold uppercase tracking-wider block mb-2">
               TECHNICAL CONSULTATION
@@ -71,14 +75,14 @@ export default function WorkPage() {
             <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-3">
               Require a custom architectural assessment?
             </h3>
-            <p className="text-sm sm:text-base text-slate-300 font-normal max-w-xl">
+            <p className="text-sm text-slate-300 font-normal max-w-xl">
               Our technical leadership directly evaluates system requirements, scale constraints, and deployment topologies with zero obligation.
             </p>
           </div>
 
           <Link
             href="/contact"
-            className="w-full md:w-auto px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-xl shrink-0 flex items-center justify-center gap-2"
+            className="w-full md:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center justify-center gap-2"
           >
             <span>CONSULT LEADERSHIP</span>
             <ArrowRight className="w-4 h-4" />

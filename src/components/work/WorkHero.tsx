@@ -15,6 +15,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { WorkProject } from '@/config/work';
 import { isReducedMotion } from '@/lib/motion';
+import { TextReveal } from '@/components/ui/TextReveal';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -116,14 +117,18 @@ export function WorkHero({ project }: WorkHeroProps) {
         </div>
       </div>
 
-      {/* Main Massive Editorial Title */}
+      {/* Main Massive Editorial Title with Kinetic Word Reveal */}
       <div className="mb-10 sm:mb-14">
-        <h1 
-          ref={headlineRef}
+        <TextReveal 
+          as="h1"
+          splitType="words"
+          immediate={true}
+          stagger={0.045}
+          duration={0.95}
           className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white tracking-tight leading-[0.98] uppercase will-change-transform"
         >
           {project.title}
-        </h1>
+        </TextReveal>
       </div>
 
       {/* Full-Bleed Media Frame (Flat 1px Hairline Border) */}
@@ -158,9 +163,16 @@ export function WorkHero({ project }: WorkHeroProps) {
       {/* Editorial Split Row: Statement & Narrative Lead */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start pt-6 pb-12 border-b border-white/10">
         <div className="lg:col-span-7">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-snug">
+          <TextReveal
+            as="h2"
+            splitType="words"
+            triggerStart="top 85%"
+            stagger={0.02}
+            duration={0.8}
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-snug"
+          >
             {project.summary}
-          </h2>
+          </TextReveal>
         </div>
         <div className="lg:col-span-5 space-y-5 text-sm sm:text-base text-slate-300 font-normal leading-relaxed">
           <p>{project.introduction.overview}</p>

@@ -22,6 +22,7 @@ import { WorkGallery } from '@/components/work/WorkGallery';
 import { WorkNextProject } from '@/components/work/WorkNextProject';
 import { buildMetadata, getBreadcrumbJsonLd, getSoftwareApplicationJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { TextReveal } from '@/components/ui/TextReveal';
 
 interface PageProps {
   params: Promise<{
@@ -101,9 +102,9 @@ export default async function WorkDetailPage({ params }: PageProps) {
                 <div className="font-mono text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
                   OPERATIONAL CHALLENGE
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 tracking-tight">
+                <TextReveal as="h3" splitType="words" className="text-2xl sm:text-3xl font-bold text-white mb-4 tracking-tight">
                   {project.challenge.title}
-                </h3>
+                </TextReveal>
                 <p className="text-sm text-slate-300 leading-relaxed mb-6 font-normal">
                   {project.challenge.description}
                 </p>
@@ -137,9 +138,9 @@ export default async function WorkDetailPage({ params }: PageProps) {
                 <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">
                   ENGINEERING TARGETS
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 tracking-tight">
+                <TextReveal as="h3" splitType="words" className="text-2xl sm:text-3xl font-bold text-white mb-4 tracking-tight">
                   Core Architectural Goals
-                </h3>
+                </TextReveal>
                 <p className="text-sm text-slate-300 leading-relaxed mb-6 font-normal">
                   {project.objective.primaryGoal}
                 </p>
@@ -178,9 +179,9 @@ export default async function WorkDetailPage({ params }: PageProps) {
             <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">
               TECHNICAL BLUEPRINT
             </div>
-            <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight uppercase mb-4">
+            <TextReveal as="h3" splitType="words" className="text-3xl sm:text-4xl font-black text-white tracking-tight uppercase mb-4">
               {project.solution.title}
-            </h3>
+            </TextReveal>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
               {project.solution.description}
             </p>
@@ -200,8 +201,8 @@ export default async function WorkDetailPage({ params }: PageProps) {
               <div className="text-white font-bold">{project.architecture.database}</div>
             </div>
             <div className="p-5 bg-[#111216] border border-white/10 font-mono text-xs">
-              <div className="text-slate-500 text-[10px] uppercase mb-1">INFRASTRUCTURE</div>
-              <div className="text-emerald-400 font-bold">{project.architecture.infrastructure}</div>
+              <div className="text-slate-500 text-[10px] uppercase mb-1">INFRASTRUCTURE & RESILIENCE</div>
+              <div className="text-white font-bold">{project.architecture.infrastructure}</div>
             </div>
           </div>
 
@@ -216,16 +217,16 @@ export default async function WorkDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* 5. CORE SYSTEM MODULES */}
+        {/* 5. MODULAR ARCHITECTURE BREAKDOWN */}
         <section className="py-14 sm:py-20 border-b border-white/10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-4 border-b border-white/10">
             <div>
               <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">
                 MODULAR CAPABILITIES
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
+              <TextReveal as="h3" splitType="words" className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
                 Core System Modules
-              </h3>
+              </TextReveal>
             </div>
             <span className="text-xs font-mono text-slate-400">
               {project.features.length} Enterprise Modules
@@ -278,9 +279,9 @@ export default async function WorkDetailPage({ params }: PageProps) {
             <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">
               EMPIRICAL EVIDENCE
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
+            <TextReveal as="h3" splitType="words" className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
               Measured Architectural Benchmarks
-            </h3>
+            </TextReveal>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -305,9 +306,9 @@ export default async function WorkDetailPage({ params }: PageProps) {
             <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">
               INTERACTIVE DOMAIN VISUALIZER
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
+            <TextReveal as="h3" splitType="words" className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
               Live Topology Inspector
-            </h3>
+            </TextReveal>
           </div>
 
           <WorkVisualizer project={project} />

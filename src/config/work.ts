@@ -110,7 +110,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     clientArchetype: 'Super-Specialty Hospital & Multi-Branch Clinic Network',
     industry: 'Healthcare',
     accent: '#10b981',
-    heroImage: '/ecosystem_healthcare.png',
+    heroImage: '/images/work/3d-healthcare-emr.jpg',
     quickSpecs: {
       domain: 'Multi-Department Clinical EMR & Ward Grid',
       deploymentTopology: 'Isolated On-Premise & Hybrid Cloud Sync',
@@ -265,9 +265,9 @@ export const WORK_PROJECTS: WorkProject[] = [
       'Encrypted Patient Health Records Portal (PWA)'
     ],
     gallery: [
-      { id: 'g1', title: 'HealthOS Clinical Bed Management Console', subtitle: 'Real-time ward occupancy & patient telemetry grid', image: '/ecosystem_healthcare.png', tag: 'Clinical Grid' },
-      { id: 'g2', title: 'Doctor EHR & Diagnostic Workflow Interface', subtitle: 'ICD-10 prescription and pathology dispatch portal', image: '/hero_ecosystem_illustration.jpg', tag: 'Doctor Console' },
-      { id: 'g3', title: 'Pharmacy Sub-Second Thermal POS Terminal', subtitle: 'Barcode scanning, FIFO batch selection & GST billing', image: '/images/3d-software-dev.jpg', tag: 'Dispensary POS' }
+      { id: 'g1', title: 'HealthOS Clinical Bed Management Console', subtitle: 'Real-time ward occupancy & patient telemetry grid', image: '/images/work/3d-healthcare-emr.jpg', tag: 'Clinical Grid' },
+      { id: 'g2', title: 'Doctor EHR & Diagnostic Workflow Interface', subtitle: 'ICD-10 prescription and pathology dispatch portal', image: '/images/work/3d-education-erp.jpg', tag: 'Doctor Console' },
+      { id: 'g3', title: 'Pharmacy Sub-Second Thermal POS Terminal', subtitle: 'Barcode scanning, FIFO batch selection & GST billing', image: '/images/work/3d-retail-pos.jpg', tag: 'Dispensary POS' }
     ],
     verdict: 'Designed to eliminate prescription paper trail lag, establish zero-latency pharmacy ledger updates, and optimize clinical patient flow across departments.',
     nextSlug: 'education-erp'
@@ -283,7 +283,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     clientArchetype: 'Multi-Campus Collegiate Network & State University Archetype',
     industry: 'Education',
     accent: '#06b6d4',
-    heroImage: '/ecosystem_education.png',
+    heroImage: '/images/work/3d-education-erp.jpg',
     quickSpecs: {
       domain: 'Multi-Campus Academic Governance & Examination Core',
       deploymentTopology: 'Multi-Tenant Partitioning with Global Edge CDN',
@@ -456,7 +456,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     clientArchetype: 'Multi-Location Retail Superstore Chain & Regional Warehouse Network',
     industry: 'Retail',
     accent: '#3b82f6',
-    heroImage: '/images/3d-software-dev.jpg',
+    heroImage: '/images/work/3d-retail-pos.jpg',
     quickSpecs: {
       domain: 'Offline-First Counter Billing & Warehouse Sync',
       deploymentTopology: 'Local SQLite Edge Nodes + Cloud Master Hub',
@@ -629,7 +629,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     clientArchetype: 'Boutique Resort Chain & Luxury Hotel Group',
     industry: 'Hospitality',
     accent: '#f59e0b',
-    heroImage: '/images/3d-digital-growth.jpg',
+    heroImage: '/images/work/3d-hospitality-erp.jpg',
     quickSpecs: {
       domain: 'Property Management & Restaurant Kitchen Display',
       deploymentTopology: 'Edge Serverless Functions + Real-Time WebSocket Bus',
@@ -802,7 +802,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     clientArchetype: 'Non-Banking Financial Company (NBFC) & Fintech Platform Archetype',
     industry: 'Fintech',
     accent: '#8b5cf6',
-    heroImage: '/images/3d-software-dev.jpg',
+    heroImage: '/images/work/3d-fintech-ledger.jpg',
     quickSpecs: {
       domain: 'Immutable Double-Entry Ledger & Loan Disbursal',
       deploymentTopology: 'Private Cloud VPC with Distributed Lock Manager',
