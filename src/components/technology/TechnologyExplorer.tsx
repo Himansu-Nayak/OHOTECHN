@@ -17,11 +17,12 @@ import {
   Code2,
   CheckCircle2,
   Lock,
-  ArrowRight
+  ArrowRight,
+  LucideIcon
 } from 'lucide-react';
 import { TECHNOLOGY_LAYERS, TechCapability } from '@/config/technology';
 
-const ICON_MAP: Record<string, React.ElementType> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   Monitor,
   Server,
   Database,

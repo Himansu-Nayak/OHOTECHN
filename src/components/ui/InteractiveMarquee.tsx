@@ -14,13 +14,14 @@ import {
   Zap, 
   Globe, 
   Workflow, 
-  Activity 
+  Activity,
+  LucideIcon
 } from 'lucide-react';
 
 interface MarqueeItem {
   name: string;
   category: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
 }
 
 const TECH_BADGES: MarqueeItem[] = [

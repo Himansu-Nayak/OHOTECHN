@@ -20,7 +20,8 @@ import {
   Zap,
   GitBranch,
   Monitor,
-  Code2
+  Code2,
+  LucideIcon
 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -29,13 +30,15 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+import { ArchitectureCoreScene } from '@/components/3d/ArchitectureCoreScene';
+
 interface TechDomain {
   id: string;
   category: string;
   title: string;
   subtitle: string;
   description: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   accent: string;
   technologies: string[];
   metrics: { label: string; value: string }[];
@@ -449,6 +452,11 @@ export function TechnologyExperience() {
             })}
           </div>
 
+        </div>
+
+        {/* ── 3D DISTRIBUTED ARCHITECTURE TOPOLOGY (R3F REAL 3D MODEL) ── */}
+        <div className="mb-14 sm:mb-20">
+          <ArchitectureCoreScene />
         </div>
 
         {/* ── PART 2: INTERACTIVE 8-DOMAIN TECHNOLOGY PRESENTATION ── */}

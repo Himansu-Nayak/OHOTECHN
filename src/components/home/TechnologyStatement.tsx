@@ -11,7 +11,8 @@ import {
   Workflow, 
   Database, 
   CheckCircle2,
-  ChevronDown
+  ChevronDown,
+  LucideIcon
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
@@ -21,7 +22,7 @@ interface ArchPillar {
   title: string;
   subtitle: string;
   description: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   tag: string;
   metric: string;
 }

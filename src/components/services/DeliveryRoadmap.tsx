@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Search, Palette, Code2, Rocket, ArrowRight, Check, Play, Pause, ChevronLeft, ChevronRight, Clock, FileCheck, Sparkles, Workflow } from 'lucide-react';
+import { Search, Palette, Code2, Rocket, ArrowRight, Check, Play, Pause, ChevronLeft, ChevronRight, Clock, FileCheck, Sparkles, Workflow, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PhaseStep {
@@ -10,7 +10,7 @@ interface PhaseStep {
   desc: string;
   timeframe: string;
   deliverables: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   highlights: string[];
 }
 

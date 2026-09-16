@@ -12,7 +12,8 @@ import {
   Sparkles,
   Zap,
   Lock,
-  GitBranch
+  GitBranch,
+  LucideIcon
 } from 'lucide-react';
 
 import gsap from 'gsap';
@@ -28,7 +29,7 @@ interface ArchPillar {
   title: string;
   subtitle: string;
   description: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   tag: string;
   metric: string;
 }

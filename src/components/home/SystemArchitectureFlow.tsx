@@ -16,7 +16,8 @@ import {
   Play,
   CheckCircle2,
   Lock,
-  Workflow
+  Workflow,
+  LucideIcon
 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
@@ -31,7 +32,7 @@ interface ArchLayer {
   security: string;
   tech: string;
   dataProtocol: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   accent: string;
 }
 

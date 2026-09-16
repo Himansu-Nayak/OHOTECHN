@@ -16,7 +16,8 @@ import {
   Activity,
   CheckCircle2,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  LucideIcon
 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -37,7 +38,7 @@ interface ServiceData {
   description: string;
   href: string;
   accent: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   specs: { label: string; value: string }[];
   technologies: string[];
   image: string;

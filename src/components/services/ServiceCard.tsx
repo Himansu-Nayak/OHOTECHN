@@ -23,6 +23,9 @@ import {
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const MotionLink = motion.create(Link);
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Code2,
@@ -51,16 +54,19 @@ export function ServiceCard({ service }: ServiceCardProps) {
   const isTech = service.category === 'technology';
 
   return (
-    <Link
+    <MotionLink
       href={`/services/${service.slug}`}
-      className="group block bg-white border border-slate-200/80 rounded-2xl p-7 sm:p-8 hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.995 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+      className="group block bg-white border border-slate-200 rounded-none p-6 sm:p-8 hover:border-emerald-500/60 transition-colors duration-200 flex flex-col justify-between cursor-pointer will-change-transform"
     >
       <div>
         {/* Top Header: Emoji Icon & Category Label */}
         <div className="flex items-center justify-between mb-6">
           <div
             className={cn(
-              "w-12 h-12 rounded-2xl flex items-center justify-center text-2xl transition-transform duration-200 group-hover:scale-110 border",
+              "w-10 h-10 rounded-none flex items-center justify-center text-xl transition-transform duration-200 group-hover:scale-105 border",
               isTech
                 ? "bg-emerald-50 text-emerald-600 border-emerald-200"
                 : "bg-amber-50 text-amber-600 border-amber-200"
@@ -71,10 +77,10 @@ export function ServiceCard({ service }: ServiceCardProps) {
 
           <span
             className={cn(
-              "text-[11px] font-mono font-semibold px-3 py-1 rounded-full border transition-colors",
+              "text-[10px] font-mono font-semibold px-2.5 py-1 rounded-none border transition-colors uppercase tracking-wider",
               isTech
-                ? "bg-slate-50 text-slate-600 border-slate-200/80 group-hover:border-slate-300"
-                : "bg-amber-50/60 text-amber-800 border-amber-200/60 group-hover:border-amber-300"
+                ? "bg-slate-50 text-slate-600 border-slate-200 group-hover:border-slate-300"
+                : "bg-amber-50 text-amber-800 border-amber-200 group-hover:border-amber-300"
             )}
           >
             {isTech ? 'Technology' : 'Digital Growth'}
@@ -98,6 +104,6 @@ export function ServiceCard({ service }: ServiceCardProps) {
         <span>Explore Service</span>
         <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all duration-200" />
       </div>
-    </Link>
+    </MotionLink>
   );
 }
