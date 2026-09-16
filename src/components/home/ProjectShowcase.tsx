@@ -135,7 +135,8 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
           </div>
 
           <div className="inline-flex items-center gap-2 font-mono text-xs font-bold text-white uppercase tracking-wider group-hover:text-emerald-400 transition-colors pt-4 border-t border-white/10">
-            <span>VIEW CASE STUDY →</span>
+            <span>VIEW CASE STUDY</span>
+            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
           </div>
         </div>
 
