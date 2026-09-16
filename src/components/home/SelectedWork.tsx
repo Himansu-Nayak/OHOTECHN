@@ -13,6 +13,7 @@ const REAL_PROJECTS: ProjectData[] = [
     category: 'HEALTHCARE & CLINICAL INFORMATICS',
     title: 'Hospital EMR & Multi-Department Clinical Platform',
     subtitle: 'ELECTRONIC MEDICAL RECORDS & WORKFLOW ENGINE',
+    pitch: 'Integrated clinical operating system unifying patient records, real-time ward beds, and pharmacy workflows.',
     description: 'An integrated clinical operating system unifying electronic medical records, real-time bed management, diagnostic pathology automation, and pharmacy billing.',
     keyDeliverables: [
       'Role-Based Doctor Consoles',
@@ -24,6 +25,7 @@ const REAL_PROJECTS: ProjectData[] = [
     image: '/ecosystem_healthcare.png',
     href: '/solutions/healthcare',
     accent: '#10b981',
+    isPlaceholder: false,
   },
   {
     id: 'education-erp',
@@ -31,6 +33,7 @@ const REAL_PROJECTS: ProjectData[] = [
     category: 'EDUCATION & ACADEMIC CONTINUUM',
     title: 'Multi-Campus University Management & Examination Platform',
     subtitle: 'DISTRIBUTED MULTI-CAMPUS ERP & STUDENT PORTAL',
+    pitch: 'Multi-campus institutional system unifying student records, proctored digital testing, and automated fee reconciliation.',
     description: 'An end-to-end institutional platform supporting multi-branch campus operations, automated fee reconciliation, proctored digital assessments, and student portals.',
     keyDeliverables: [
       'Multi-Branch Tenant Isolation',
@@ -42,6 +45,7 @@ const REAL_PROJECTS: ProjectData[] = [
     image: '/ecosystem_education.png',
     href: '/solutions/education',
     accent: '#06b6d4',
+    isPlaceholder: false,
   },
   {
     id: 'retail-pos',
@@ -49,6 +53,7 @@ const REAL_PROJECTS: ProjectData[] = [
     category: 'RETAIL & E-COMMERCE',
     title: 'High-Throughput Retail POS & Inventory Sync Engine',
     subtitle: 'OMNICHANNEL STORE & DEPOT BILLING SUITE',
+    pitch: 'Offline-first counter billing engine with real-time depot synchronization and automated GST ledgers.',
     description: 'An offline-first retail counter billing engine with real-time depot synchronization, GST-compliant invoicing, and multi-store warehouse inventory coordination.',
     keyDeliverables: [
       'Offline-First Terminal Billing',
@@ -60,6 +65,7 @@ const REAL_PROJECTS: ProjectData[] = [
     image: '/images/3d-software-dev.jpg',
     href: '/solutions/retail-ecommerce',
     accent: '#3b82f6',
+    isPlaceholder: true,
   },
   {
     id: 'hospitality-erp',
@@ -67,6 +73,7 @@ const REAL_PROJECTS: ProjectData[] = [
     category: 'HOTEL & HOSPITALITY',
     title: 'Hotel ERP, Kitchen Display & Multi-Channel Booking System',
     subtitle: 'UNIFIED PROPERTY & RESTAURANT POS PLATFORM',
+    pitch: 'Unified property management platform linking front-desk room reservations to kitchen display POS terminals.',
     description: 'A unified property management platform integrating front-desk room reservations, contactless dining POS, kitchen display workflows, and housekeeping operations.',
     keyDeliverables: [
       'Real-Time Room Reservation Grid',
@@ -78,6 +85,7 @@ const REAL_PROJECTS: ProjectData[] = [
     image: '/images/3d-digital-growth.jpg',
     href: '/solutions/hotel-hospitality',
     accent: '#f59e0b',
+    isPlaceholder: true,
   },
 ];
 

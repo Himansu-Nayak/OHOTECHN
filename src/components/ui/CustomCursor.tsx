@@ -81,7 +81,7 @@ export function CustomCursor() {
   if (!isVisible) return null;
 
   return (
-    <div className="hidden lg:block pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
+    <div id="custom-cursor" className="hidden lg:block pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
       {/* Precision Center Dot */}
       <div
         ref={cursorDotRef}
