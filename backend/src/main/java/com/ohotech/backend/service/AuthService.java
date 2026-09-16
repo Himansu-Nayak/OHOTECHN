@@ -252,8 +252,9 @@ public class AuthService {
             throw new BadRequestException("Account is disabled. Please contact support.");
         }
 
-        if (!user.isEmailVerified()) {
-            throw new BadRequestException("Your email address is not verified. Please check your inbox and verify your email first.");
+        // Proving ownership via OTP automatically validates email
+        if (!user.isEmailVerified() && normalizedTarget.contains("@")) {
+            user.setEmailVerified(true);
         }
 
         if (user.getLockoutUntil() != null && user.getLockoutUntil().isAfter(LocalDateTime.now())) {

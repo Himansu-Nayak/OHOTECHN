@@ -22,9 +22,8 @@ export function DirectorSection() {
       className="w-full py-20 sm:py-28 px-6 sm:px-10 lg:px-16 bg-[#0d0d0e] text-white relative overflow-hidden grid-pattern-dark"
     >
       <div className="max-w-7xl mx-auto relative">
-      {/* Ambient Lighting */}
-      <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-sky-500/10 rounded-full blur-[130px] pointer-events-none" />
+      {/* Ambient Subtle Radial */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.06),transparent_75%)] pointer-events-none" />
 
       {/* Top Section Header */}
       <div className="relative z-10 max-w-4xl mx-auto text-center mb-10 sm:mb-14">
@@ -49,7 +48,7 @@ export function DirectorSection() {
       <div className="relative z-10 max-w-5xl mx-auto mb-10 sm:mb-12">
         <ScrollReveal yOffset={24} duration={0.7} delay={0.15}>
           <Tilt3D maxTilt={3} scale={1.01}>
-            <div className="bg-[#141416]/95 border-2 border-white/15 rounded-3xl sm:rounded-[36px] p-6 sm:p-10 lg:p-12 shadow-2xl backdrop-blur-xl relative overflow-hidden hover:border-emerald-500/40 transition-all duration-300">
+            <div className="bg-[#14151a] border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 relative overflow-hidden hover:border-white/20 transition-all duration-300">
               
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 items-center">
                 

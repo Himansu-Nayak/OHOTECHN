@@ -114,8 +114,8 @@ export function CompanyStatement() {
       {/* Top transition blend from DirectorSection */}
       <div className="absolute top-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-b from-[#0d0d0e] to-transparent pointer-events-none z-0" />
 
-      {/* Ambient background glow */}
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-emerald-500/5 rounded-full blur-[140px] pointer-events-none" />
+      {/* Ambient subtle background radial */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.06),transparent_75%)] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         
@@ -142,7 +142,7 @@ export function CompanyStatement() {
             return (
               <div
                 key={idx}
-                className="p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl bg-[#141416]/95 border border-white/10 hover:border-emerald-500/40 hover:bg-[#18181b] transition-all duration-300 flex flex-col justify-between shadow-xl"
+                className="p-6 sm:p-8 lg:p-10 rounded-2xl bg-[#14151a] border border-white/10 hover:border-white/25 hover:bg-[#181920] transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   {/* Top Bar */}
@@ -184,7 +184,7 @@ export function CompanyStatement() {
         </div>
 
         {/* Company Summary Banner */}
-        <div className="rounded-2xl sm:rounded-3xl bg-[#141416]/90 border border-white/15 p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="rounded-2xl bg-[#14151a] border border-white/10 p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="max-w-2xl text-center sm:text-left">
             <h4 className="text-lg sm:text-xl font-bold text-white mb-2">
               Ready to explore our organizational capabilities?

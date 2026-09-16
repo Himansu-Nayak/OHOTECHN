@@ -245,9 +245,7 @@ export function BrandStatement() {
       <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#0a0a0b] to-transparent pointer-events-none z-0" />
 
       {/* Background Subtle Lighting */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent_75%)] pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-72 sm:w-96 h-72 sm:h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-72 sm:w-96 h-72 sm:h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.08),transparent_75%)] pointer-events-none" />
 
       {/* Bottom transition blend into ServicesExperience */}
       <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#0a0a0b] to-transparent pointer-events-none z-0" />
@@ -289,10 +287,10 @@ export function BrandStatement() {
               <div
                 key={pillar.id}
                 onClick={() => setActivePillar(idx)}
-                className={`p-6 sm:p-7 rounded-2xl sm:rounded-3xl border transition-all duration-300 cursor-pointer flex flex-col justify-between group/pillar hover:-translate-y-1.5 ${
+                className={`p-6 sm:p-7 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between group/pillar ${
                   isSelected
-                    ? 'bg-[#16171d] border-emerald-500/40 shadow-xl ring-1 ring-emerald-500/30'
-                    : 'bg-[#121318]/80 border-white/10 hover:border-emerald-500/30 hover:bg-[#14151b] shadow-lg hover:shadow-emerald-500/5'
+                    ? 'bg-[#16171d] border-emerald-500/50'
+                    : 'bg-[#121318] border-white/10 hover:border-white/25 hover:bg-[#14151b]'
                 }`}
               >
                 <div>
@@ -332,7 +330,7 @@ export function BrandStatement() {
         </div>
 
         {/* 3 Commercial Outcomes Grid: 1 col on mobile, 3 cols on tablet/desktop */}
-        <div ref={outcomesRef} className="rounded-2xl sm:rounded-3xl bg-[#141416]/90 border border-white/15 p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl">
+        <div ref={outcomesRef} className="rounded-2xl bg-[#14151a] border border-white/10 p-6 sm:p-8 lg:p-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {COMMERCIAL_OUTCOMES.map((item, idx) => {
               const ItemIcon = item.icon;

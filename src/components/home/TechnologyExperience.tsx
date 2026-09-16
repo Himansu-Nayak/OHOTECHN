@@ -375,11 +375,10 @@ export function TechnologyExperience() {
       ref={sectionRef}
       id="technology" 
       aria-label="OHO TECH Technology Foundation and Architecture Matrix"
-      className="w-full bg-[#0a0a0b] text-white py-20 sm:py-28 lg:py-36 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
+      className="w-full bg-[#0a0a0b]/80 backdrop-blur-[2px] text-white py-20 sm:py-28 lg:py-36 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
     >
       {/* Background Ambient Lighting */}
-      <div className="absolute top-1/4 right-0 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-emerald-500/5 rounded-full blur-[170px] pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-cyan-500/5 rounded-full blur-[170px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(16,185,129,0.06),transparent_75%)] pointer-events-none" />
 
       {/* Precision Technical Mesh Grid */}
       <div 
@@ -419,7 +418,7 @@ export function TechnologyExperience() {
               return (
                 <div 
                   key={pIdx}
-                  className="p-6 sm:p-7 rounded-2xl bg-[#121316]/90 border border-white/10 hover:border-emerald-500/40 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 flex flex-col justify-between shadow-xl"
+                  className="p-6 sm:p-7 rounded-2xl bg-[#121316] border border-white/10 hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
@@ -488,10 +487,10 @@ export function TechnologyExperience() {
                   aria-controls={`tech-domain-panel-${domain.id}`}
                   tabIndex={0}
                   onClick={() => handleSelectDomain(idx)}
-                  className={`p-3 sm:p-4 rounded-xl text-left border transition-all duration-200 cursor-pointer flex flex-col justify-between group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 hover:-translate-y-0.5 ${
+                  className={`p-3 sm:p-4 rounded-xl text-left border transition-all duration-200 cursor-pointer flex flex-col justify-between group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
                     isSelected
-                      ? 'bg-[#181920] border-emerald-500/50 shadow-xl ring-1 ring-emerald-500/30 text-white'
-                      : 'bg-[#111215]/80 border-white/10 hover:border-white/20 text-slate-400 hover:text-white'
+                      ? 'bg-[#181920] border-emerald-500/50 text-white'
+                      : 'bg-[#111215] border-white/10 hover:border-white/20 text-slate-400 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -516,14 +515,8 @@ export function TechnologyExperience() {
             key={currentDomain.id}
             id={`tech-domain-panel-${currentDomain.id}`}
             role="tabpanel"
-            className="w-full rounded-2xl sm:rounded-3xl bg-[#14151a]/95 border border-white/15 p-6 sm:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden animate-in fade-in duration-300 zoom-in-98"
+            className="w-full rounded-2xl bg-[#14151a] border border-white/10 p-6 sm:p-10 relative overflow-hidden animate-in fade-in duration-300"
           >
-            {/* Ambient Corner Glow */}
-            <div 
-              className="absolute -top-32 -right-32 w-80 h-80 rounded-full blur-[140px] pointer-events-none opacity-25"
-              style={{ backgroundColor: currentDomain.accent }}
-            />
-
             {/* Inspector Top Bar */}
             <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10 mb-8 font-mono text-xs">
               <div className="flex items-center gap-3">

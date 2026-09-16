@@ -76,12 +76,10 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
     <section 
       ref={sectionRef}
       id="cta" 
-      className="w-full bg-[#0a0a0b] text-white py-24 sm:py-32 lg:py-40 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
+      className="w-full bg-[#0a0a0b]/75 backdrop-blur-[2px] text-white py-24 sm:py-32 lg:py-40 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
     >
-      {/* Ambient background glows */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(16,185,129,0.12),transparent_70%)] pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-emerald-500/10 rounded-full blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none" />
+      {/* Ambient subtle background radial */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(16,185,129,0.06),transparent_70%)] pointer-events-none" />
 
       <div ref={contentRef} className="relative z-10 max-w-5xl mx-auto w-full text-center">
         
@@ -108,7 +106,7 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
           <Link
             id="cta-get-quote"
             href="/get-quote"
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-[0_0_30px_rgba(16,185,129,0.35)] hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 font-mono"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 font-mono"
           >
             <span>Get a Quote</span>
             <ArrowRight className="w-4 h-4" />
@@ -118,7 +116,7 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
             <button
               id="cta-calculate-estimate"
               onClick={onOpenEstimate}
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center backdrop-blur-md flex items-center justify-center gap-2 font-mono cursor-pointer"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 font-mono cursor-pointer"
             >
               <Calculator className="w-4 h-4 text-emerald-400" />
               <span>Instant Cost Estimate</span>
@@ -135,7 +133,7 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
         </div>
 
         {/* Direct Contact & Triage Hub */}
-        <div ref={triageCardRef} className="rounded-2xl sm:rounded-3xl bg-[#141416]/90 border border-white/15 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+        <div ref={triageCardRef} className="rounded-2xl bg-[#14151a] border border-white/10 p-6 sm:p-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
               
               <div className="flex items-center justify-center md:justify-start gap-3.5">

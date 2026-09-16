@@ -18,6 +18,7 @@ import {
   Lock,
   Workflow
 } from 'lucide-react';
+import gsap from 'gsap';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 interface ArchLayer {

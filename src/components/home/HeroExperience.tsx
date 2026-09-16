@@ -104,7 +104,7 @@ export function HeroExperience() {
       ref={containerRef}
       id="hero" 
       aria-label="OHO TECH Hero Statement"
-      className="relative w-full min-h-screen flex flex-col justify-center bg-[#0a0a0b] text-white px-5 sm:px-8 lg:px-16 py-24 sm:py-32 overflow-hidden border-b border-white/5"
+      className="relative w-full min-h-screen flex flex-col justify-center bg-transparent text-white px-5 sm:px-8 lg:px-16 py-24 sm:py-32 overflow-hidden border-b border-white/5"
     >
       {/* Editorial Ambient Depth Lighting */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.12),transparent_75%)] pointer-events-none" />

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { HeroExperience } from '@/components/home/HeroExperience';
+import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
 import { BrandStatement } from '@/components/home/BrandStatement';
 import { ServicesExperience } from '@/components/home/ServicesExperience';
 import { SelectedWork } from '@/components/home/SelectedWork';
@@ -33,10 +34,13 @@ export default function HomePage() {
   const [isEstimateOpen, setIsEstimateOpen] = React.useState(false);
 
   return (
-    <div className="w-full bg-[#0a0a0b] text-[#e8e8e6] min-h-screen overflow-x-hidden">
+    <div className="w-full bg-transparent text-[#e8e8e6] min-h-screen overflow-x-hidden">
       
       {/* 01. Hero Experience */}
       <HeroExperience />
+
+      {/* 01b. 14islands Interactive Drag Marquee (Framer Motion Momentum) */}
+      <InteractiveMarquee />
 
       {/* 02. Brand Statement */}
       <BrandStatement />

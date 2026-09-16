@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export interface ProjectData {
   id: string;
@@ -16,6 +17,7 @@ export interface ProjectData {
   technologies?: string[];
   image: string;
   hoverImage?: string;
+  video?: string;
   href: string;
   accent: string;
 }
@@ -33,22 +35,33 @@ const SECONDARY_HOVER_IMAGES: Record<string, string> = {
   'hospitality-erp': '/hero_workspace_editorial.jpg',
 };
 
+const PROJECT_VIDEOS: Record<string, string> = {
+  // Optional video paths for projects with mp4 previews
+};
+
+const MotionLink = motion.create(Link);
+
 /**
  * ProjectShowcase (14islands Flat Editorial Grid Architecture)
  * 
- * - Flat rectangle with 1px hairline border (no rounded corners, no drop shadow, no glow blob).
+ * - Tactile Framer Motion spring physics on whileHover and whileTap.
+ * - Flat rectangle with 1px hairline border (clean editorial studio design).
  * - Instant scanability: Number + Category Tag + Title + Direct Link.
- * - CSS Hover Swap: Primary screenshot smoothly crossfades to secondary preview state on hover/tap.
+ * - CSS Hover Crossfade: Primary screenshot smoothly crossfades to secondary preview or video on hover/tap.
  */
 export function ProjectShowcase({ project, index, priorityImage = false }: ProjectShowcaseProps) {
   const isEven = index % 2 === 1;
   const hoverImg = project.hoverImage || SECONDARY_HOVER_IMAGES[project.id] || project.image;
+  const videoSrc = project.video || PROJECT_VIDEOS[project.id];
 
   return (
-    <Link
+    <MotionLink
       href={project.href}
       data-cursor-text="EXPLORE"
-      className="group block w-full bg-[#0a0a0b] border-t border-b border-white/10 hover:border-emerald-500/50 transition-colors duration-300 py-10 sm:py-14 lg:py-16"
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.995 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+      className="group block w-full bg-[#0a0a0b] border-t border-b border-white/10 hover:border-emerald-500/50 py-10 sm:py-14 lg:py-16 cursor-pointer will-change-transform"
     >
       <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center ${
         isEven ? 'lg:grid-flow-dense' : ''
@@ -64,17 +77,28 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 800px"
               priority={priorityImage}
-              className="object-cover object-center transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-0"
+              className="object-cover object-center transition-all duration-500 ease-out group-hover:scale-105 group-hover:opacity-0"
             />
 
-            {/* Secondary Hover State Crossfade */}
-            <Image
-              src={hoverImg}
-              alt={`${project.title} Preview`}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 800px"
-              className="object-cover object-center opacity-0 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-105"
-            />
+            {/* Secondary Hover State Crossfade (Video or High-Detail Architecture Image) */}
+            {videoSrc ? (
+              <video
+                src={videoSrc}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+              />
+            ) : (
+              <Image
+                src={hoverImg}
+                alt={`${project.title} Preview`}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 800px"
+                className="object-cover object-center opacity-0 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:scale-105"
+              />
+            )}
 
             {/* Hairline Editorial Overlay Header */}
             <div className="absolute top-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] sm:text-xs text-white px-3 py-1.5 bg-black/80 backdrop-blur-sm border border-white/10">
@@ -111,7 +135,7 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
         </div>
 
       </div>
-    </Link>
+    </MotionLink>
   );
 }
 

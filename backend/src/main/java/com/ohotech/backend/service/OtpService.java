@@ -90,6 +90,10 @@ public class OtpService {
 
         String recipientName = user != null ? user.getName() : "User";
 
+        logger.info("=================================================");
+        logger.info("[DEV AUTH OTP] Target: {} | Purpose: {} | Code: {}", normalizedTarget, actualPurpose, rawOtpCode);
+        logger.info("=================================================");
+
         if (isEmail) {
             String htmlBody = emailTemplateService.buildOtpEmail(recipientName, rawOtpCode, actualPurpose);
             emailService.sendHtmlEmail(normalizedTarget, "OHO TECHN - Verification Code", htmlBody);

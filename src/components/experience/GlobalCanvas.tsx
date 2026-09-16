@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
+import gsap from 'gsap';
 import { useMotion } from './MotionContext';
 
 // Vertex Shader: Particle displacement driven by time, scroll velocity, and mouse attraction
