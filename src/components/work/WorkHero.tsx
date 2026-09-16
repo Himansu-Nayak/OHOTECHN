@@ -5,13 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { 
   ArrowLeft, 
-  FolderGit2, 
-  ShieldCheck, 
+  ArrowUpRight,
+  Layers, 
   Server, 
-  Zap, 
-  Activity,
-  Layers,
-  ArrowRight
+  ShieldCheck, 
+  Zap 
 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -31,7 +29,6 @@ export function WorkHero({ project }: WorkHeroProps) {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const imageWrapperRef = useRef<HTMLDivElement>(null);
   const imageInnerRef = useRef<HTMLDivElement>(null);
-  const specsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined' || isReducedMotion()) return;
@@ -43,63 +40,31 @@ export function WorkHero({ project }: WorkHeroProps) {
       if (headlineRef.current) {
         gsap.fromTo(
           headlineRef.current,
-          { opacity: 0, yPercent: 110 },
+          { opacity: 0, y: 40 },
           {
             opacity: 1,
-            yPercent: 0,
-            duration: 0.95,
-            ease: 'power4.out',
+            y: 0,
+            duration: 0.9,
+            ease: 'power3.out',
             delay: 0.1,
           }
         );
       }
 
-      // 2. Parallax and image scale reveal on scroll
+      // 2. Parallax scale reveal on scroll
       if (imageInnerRef.current && imageWrapperRef.current) {
         gsap.fromTo(
           imageInnerRef.current,
-          { scale: 1.12, opacity: 0.8 },
+          { scale: 1.08 },
           {
             scale: 1,
-            opacity: 1,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: imageWrapperRef.current,
-              start: 'top 85%',
-              end: 'bottom 40%',
-              scrub: 0.8,
-            },
-          }
-        );
-
-        gsap.fromTo(
-          imageWrapperRef.current,
-          { y: -15 },
-          {
-            y: 25,
             ease: 'none',
             scrollTrigger: {
               trigger: imageWrapperRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1.0,
+              start: 'top 85%',
+              end: 'bottom 20%',
+              scrub: 0.8,
             },
-          }
-        );
-      }
-
-      // 3. Stagger specs strip
-      if (specsRef.current) {
-        gsap.fromTo(
-          specsRef.current.children,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            stagger: 0.08,
-            ease: 'power3.out',
-            delay: 0.3,
           }
         );
       }
@@ -109,75 +74,62 @@ export function WorkHero({ project }: WorkHeroProps) {
   }, []);
 
   return (
-    <header ref={containerRef} className="relative mb-16 sm:mb-24">
-      {/* Ambient Radial Accent Aura */}
-      <div 
-        className="absolute -top-10 -right-10 sm:-right-20 w-80 sm:w-[650px] h-80 sm:h-[650px] rounded-full blur-[180px] pointer-events-none opacity-25 transition-opacity"
-        style={{ backgroundColor: project.accent }}
-      />
-      <div className="absolute top-1/2 left-0 w-72 sm:w-[480px] h-72 sm:h-[480px] bg-cyan-500/5 rounded-full blur-[160px] pointer-events-none" />
-
-      {/* Navigation Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="mb-8 sm:mb-10 font-mono text-xs text-slate-400 flex flex-wrap items-center gap-2">
-        <Link href="/" className="hover:text-emerald-400 transition-colors">HOME</Link>
-        <span>/</span>
-        <Link href="/work" className="hover:text-emerald-400 transition-colors">SELECTED WORK</Link>
-        <span>/</span>
-        <span className="text-emerald-400 font-bold truncate max-w-xs">{project.title}</span>
-      </nav>
-
-      {/* Back to Work Archive Link */}
-      <div className="mb-8">
+    <header ref={containerRef} className="relative mb-16 sm:mb-24 pt-4 sm:pt-8">
+      {/* Top Breadcrumb & Archive Return */}
+      <div className="flex items-center justify-between gap-4 mb-8 sm:mb-12 pb-6 border-b border-white/10 font-mono text-xs text-slate-400">
         <Link 
           href="/work" 
-          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-slate-400 hover:text-white transition-colors group"
+          className="inline-flex items-center gap-2 hover:text-white transition-colors group text-slate-300 font-semibold"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span>BACK TO ALL CASE STUDIES</span>
+          <span>BACK TO WORK</span>
         </Link>
-      </div>
 
-      {/* Hero Badge Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
-          <FolderGit2 className="w-3.5 h-3.5" />
-          <span>CASE STUDY // PROJECT {project.number}</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-300">
+        <div className="flex items-center gap-3">
+          <span className="text-emerald-400 font-bold uppercase tracking-wider">
+            PROJECT {project.number}
+          </span>
+          <span className="text-white/20">/</span>
+          <span className="text-slate-300 uppercase tracking-widest hidden sm:inline-block">
             {project.industry}
           </span>
-          <span className="hidden sm:inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-300">
-            {project.clientArchetype}
-          </span>
         </div>
       </div>
 
-      {/* Category Subtitle */}
-      <div className="text-xs sm:text-sm font-mono font-bold text-slate-400 tracking-[0.2em] uppercase mb-3">
-        {project.category}
+      {/* Editorial Meta Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8 font-mono text-xs border-b border-white/10 pb-8">
+        <div>
+          <div className="text-slate-500 uppercase tracking-widest mb-1 text-[10px]">INDUSTRY</div>
+          <div className="text-white font-bold">{project.industry}</div>
+        </div>
+        <div>
+          <div className="text-slate-500 uppercase tracking-widest mb-1 text-[10px]">CLIENT TYPE</div>
+          <div className="text-white font-bold">{project.clientArchetype}</div>
+        </div>
+        <div>
+          <div className="text-slate-500 uppercase tracking-widest mb-1 text-[10px]">DOMAIN</div>
+          <div className="text-white font-bold">{project.quickSpecs.domain}</div>
+        </div>
+        <div>
+          <div className="text-slate-500 uppercase tracking-widest mb-1 text-[10px]">ARCHITECTURE</div>
+          <div className="text-emerald-400 font-bold">{project.quickSpecs.deploymentTopology}</div>
+        </div>
       </div>
 
-      {/* Main Headline with Typography Movement */}
-      <div className="overflow-hidden py-1 mb-6">
+      {/* Main Massive Editorial Title */}
+      <div className="mb-10 sm:mb-14">
         <h1 
           ref={headlineRef}
-          className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white tracking-tight leading-[1.06] uppercase will-change-transform"
+          className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white tracking-tight leading-[0.98] uppercase will-change-transform"
         >
           {project.title}
         </h1>
       </div>
 
-      {/* Executive Summary */}
-      <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed max-w-4xl mb-10">
-        {project.summary}
-      </p>
-
-      {/* Hero Image Showcase with Scale Reveal & Parallax */}
+      {/* Full-Bleed Media Frame (Flat 1px Hairline Border) */}
       <div 
         ref={imageWrapperRef}
-        className="relative w-full h-72 sm:h-96 md:h-[440px] lg:h-[500px] rounded-3xl overflow-hidden border border-white/15 bg-black/60 shadow-2xl mb-12 group"
+        className="relative w-full aspect-[16/9] overflow-hidden border border-white/10 bg-[#111216] mb-12 group"
       >
         <div ref={imageInnerRef} className="relative w-full h-full">
           <Image
@@ -185,69 +137,46 @@ export function WorkHero({ project }: WorkHeroProps) {
             alt={project.title}
             fill
             priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1200px"
-            className="object-cover object-center opacity-90 transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1440px) 95vw, 1440px"
+            className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#07080c] via-transparent to-black/30" />
-
-        {/* Floating Spec Watermark Badges */}
-        <div className="absolute top-5 left-5 flex items-center gap-2 font-mono text-[11px] text-white px-3.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/15 shadow-xl">
+        {/* Minimal Hairline Corner Tag */}
+        <div className="absolute top-4 left-4 font-mono text-[10px] text-white px-3 py-1.5 bg-black/80 backdrop-blur-sm border border-white/10">
           <span className="text-emerald-400 font-bold">SYSTEM // 0{project.number}</span>
-          <span className="text-slate-400">•</span>
-          <span className="text-slate-200">{project.subtitle}</span>
+          <span className="mx-2 text-white/30">•</span>
+          <span className="text-slate-300 uppercase tracking-wider">{project.subtitle}</span>
         </div>
 
-        <div className="absolute bottom-5 left-5 right-5 flex flex-wrap items-center justify-between gap-3 font-mono text-xs text-slate-300 px-4 py-2.5 rounded-2xl bg-black/85 backdrop-blur-md border border-white/15 shadow-2xl">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-bold text-white tracking-wider">STATUS: PRODUCTION ARCHITECTURE</span>
-          </div>
-          <div className="text-slate-400 text-[11px]">
-            {project.quickSpecs.deploymentTopology}
-          </div>
+        <div className="absolute bottom-4 right-4 font-mono text-[10px] text-slate-300 px-3 py-1.5 bg-black/80 backdrop-blur-sm border border-white/10 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-bold uppercase tracking-wider">PRODUCTION VERIFIED</span>
         </div>
       </div>
 
-      {/* Quick Specs 4-Column Strip */}
-      <div 
-        ref={specsRef}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 sm:p-6 rounded-3xl bg-[#111216]/90 border border-white/10 shadow-xl font-mono text-xs"
-      >
-        <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5">
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase mb-1">
-            <Layers className="w-3.5 h-3.5 text-emerald-400" />
-            <span>OPERATIONAL DOMAIN</span>
-          </div>
-          <div className="text-white font-bold leading-snug">{project.quickSpecs.domain}</div>
+      {/* Editorial Split Row: Statement & Narrative Lead */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start pt-6 pb-12 border-b border-white/10">
+        <div className="lg:col-span-7">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-snug">
+            {project.summary}
+          </h2>
         </div>
-
-        <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5">
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase mb-1">
-            <Server className="w-3.5 h-3.5 text-cyan-400" />
-            <span>TOPOLOGY &amp; SYNC</span>
+        <div className="lg:col-span-5 space-y-5 text-sm sm:text-base text-slate-300 font-normal leading-relaxed">
+          <p>{project.introduction.overview}</p>
+          <p className="text-slate-400 text-xs sm:text-sm">{project.introduction.context}</p>
+          <div className="pt-3">
+            <a 
+              href="#solution"
+              className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-wider"
+            >
+              <span>EXPLORE ARCHITECTURE BLUEPRINT</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </a>
           </div>
-          <div className="text-white font-bold leading-snug">{project.quickSpecs.deploymentTopology}</div>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5">
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase mb-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
-            <span>SECURITY STANDARDS</span>
-          </div>
-          <div className="text-white font-bold leading-snug">{project.quickSpecs.securityStandard}</div>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5">
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase mb-1">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>TARGET THROUGHPUT</span>
-          </div>
-          <div className="text-emerald-400 font-bold leading-snug">{project.quickSpecs.targetThroughput}</div>
         </div>
       </div>
-
     </header>
   );
 }
+export default WorkHero;
