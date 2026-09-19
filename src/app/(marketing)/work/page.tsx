@@ -45,7 +45,7 @@ export default function WorkPage() {
         <div className="mb-14 sm:mb-16 pb-10 border-b border-white/10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-6">
             <FolderGit2 className="w-3.5 h-3.5" />
-            <span>ENTERPRISE CASE STUDY ARCHIVE // {WORK_PROJECTS.length.toString().padStart(2, '0')}</span>
+            <span>ENTERPRISE CASE STUDY ARCHIVE • {WORK_PROJECTS.length.toString().padStart(2, '0')} VERIFIED DEPLOYMENTS</span>
           </div>
 
           <TextReveal 

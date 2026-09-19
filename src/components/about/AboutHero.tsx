@@ -117,7 +117,7 @@ export function AboutHero() {
       {/* Category Capsule */}
       <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-6">
         <Building2 className="w-3.5 h-3.5" />
-        <span>ABOUT OHO TECH // COMPANY &amp; LEADERSHIP</span>
+        <span>ABOUT OHO TECH • COMPANY &amp; LEADERSHIP</span>
       </div>
 
       {/* Main Headline */}

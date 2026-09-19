@@ -106,7 +106,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
               <Boxes className="w-3.5 h-3.5" />
-              <span>CAPABILITY SPECIFICATION // {service.category.toUpperCase()}</span>
+              <span>CAPABILITY SPECIFICATION • {service.category.toUpperCase()}</span>
             </div>
 
             <div className="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-300">
@@ -183,19 +183,19 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
             <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
               <span className="text-slate-400 text-[10px] block mb-1">CLIENT RUNTIME</span>
-              <span className="text-slate-100 font-bold">Next.js 16 // React 19 // Native Mobile</span>
+              <span className="text-slate-100 font-bold">Next.js 16 • React 19 • Native Mobile</span>
             </div>
             <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
               <span className="text-slate-400 text-[10px] block mb-1">SERVICE LAYER</span>
-              <span className="text-slate-100 font-bold">Go Microservices // gRPC Bus</span>
+              <span className="text-slate-100 font-bold">Go Microservices • gRPC Bus</span>
             </div>
             <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
               <span className="text-slate-400 text-[10px] block mb-1">PERSISTENCE CORE</span>
-              <span className="text-slate-100 font-bold">PostgreSQL // Redis Cluster</span>
+              <span className="text-slate-100 font-bold">PostgreSQL • Redis Cluster</span>
             </div>
             <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
               <span className="text-slate-400 text-[10px] block mb-1">GOVERNANCE</span>
-              <span className="text-slate-100 font-bold">Mutual mTLS // KMS Key Vault</span>
+              <span className="text-slate-100 font-bold">Mutual mTLS • KMS Key Vault</span>
             </div>
           </div>
         </section>

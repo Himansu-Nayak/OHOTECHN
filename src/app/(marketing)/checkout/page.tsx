@@ -17,6 +17,8 @@ export default function CheckoutPage() {
   const { showToast } = useToast();
 
   const [shippingAddress, setShippingAddress] = React.useState('');
+  const [customerName, setCustomerName] = React.useState(user?.name || '');
+  const [customerEmail, setCustomerEmail] = React.useState(user?.email || '');
   const [contactPhone, setContactPhone] = React.useState(user?.phone || '');
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
@@ -38,10 +40,12 @@ export default function CheckoutPage() {
   }, []);
 
   React.useEffect(() => {
-    if (user?.phone && !contactPhone) {
-      setContactPhone(user.phone);
+    if (user) {
+      if (user.name && !customerName) setCustomerName(user.name);
+      if (user.email && !customerEmail) setCustomerEmail(user.email);
+      if (user.phone && !contactPhone) setContactPhone(user.phone);
     }
-  }, [user, contactPhone]);
+  }, [user, customerName, customerEmail, contactPhone]);
 
   const formattedTotal = new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -49,17 +53,23 @@ export default function CheckoutPage() {
   }).format(totalAmount);
 
   const processRazorpayCheckout = async (createdOrderId: number, paymentData: any) => {
-    const keyId = paymentData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+    const rawKeyId = paymentData?.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '';
+    const isRealKey = Boolean(
+      rawKeyId &&
+      rawKeyId.startsWith('rzp_') &&
+      rawKeyId !== 'rzp_test_placeholder' &&
+      rawKeyId !== 'PROD_RAZORPAY_KEY_ID_PLACEHOLDER'
+    );
 
-    if (razorpayLoaded && (window as any).Razorpay) {
+    if (isRealKey && razorpayLoaded && (window as any).Razorpay) {
       const options = {
-        key: keyId,
+        key: rawKeyId,
         amount: paymentData.amount,
         currency: paymentData.currency || 'INR',
         name: 'OHO TECHN',
         description: `Entitlement Payment Order #${createdOrderId}`,
         image: '/OHO_TECH_LOGO.png',
-        order_id: paymentData.razorpayOrderId.startsWith('order_mock_') ? undefined : paymentData.razorpayOrderId,
+        order_id: paymentData.razorpayOrderId?.startsWith('order_mock_') ? undefined : paymentData.razorpayOrderId,
         handler: async function (response: any) {
           try {
             setIsLoading(true);
@@ -85,8 +95,8 @@ export default function CheckoutPage() {
           }
         },
         prefill: {
-          name: user?.name || '',
-          email: user?.email || '',
+          name: customerName || user?.name || '',
+          email: customerEmail || user?.email || '',
           contact: contactPhone,
         },
         theme: {
@@ -108,7 +118,7 @@ export default function CheckoutPage() {
         await executeDirectVerificationFallback(createdOrderId, paymentData);
       }
     } else {
-      // Instant Fallback Execution
+      // In development / simulation mode without live gateway keys, execute direct verified order completion
       await executeDirectVerificationFallback(createdOrderId, paymentData);
     }
   };
@@ -235,9 +245,10 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="text"
-                    value={user.name}
-                    disabled
-                    className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 cursor-not-allowed"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Enter customer name"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors"
                   />
                 </div>
 
@@ -247,9 +258,10 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="email"
-                    value={user.email}
-                    disabled
-                    className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 cursor-not-allowed"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    placeholder="name@company.com"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors"
                   />
                 </div>
 

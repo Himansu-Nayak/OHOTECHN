@@ -101,7 +101,7 @@ Status: DEPLOYED TO CLIENT PRIVATE CLOUD`
         <div>
           <div className="flex items-center gap-2 font-mono text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2">
             <Workflow className="w-3.5 h-3.5" />
-            <span>02 // METHODOLOGY &amp; EXECUTION</span>
+            <span>02 • METHODOLOGY &amp; EXECUTION</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
             How We Build Systems

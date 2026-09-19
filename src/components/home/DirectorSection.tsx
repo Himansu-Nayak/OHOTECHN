@@ -107,19 +107,19 @@ export function DirectorSection() {
                   {/* 3 Core Competencies Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                      <span className="text-[10px] font-mono text-emerald-400 font-bold block mb-1">01 / ARCHITECTURE</span>
+                      <span className="text-[10px] font-mono text-emerald-400 font-bold block mb-1">01 • ARCHITECTURE</span>
                       <span className="text-xs font-bold text-white block">Enterprise Systems</span>
                       <span className="text-[11px] text-slate-400 mt-0.5 block">Scalable multi-tenant databases &amp; APIs</span>
                     </div>
 
                     <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                      <span className="text-[10px] font-mono text-sky-400 font-bold block mb-1">02 / PRODUCTS</span>
+                      <span className="text-[10px] font-mono text-sky-400 font-bold block mb-1">02 • PRODUCTS</span>
                       <span className="text-xs font-bold text-white block">Turnkey Platforms</span>
                       <span className="text-[11px] text-slate-400 mt-0.5 block">ERP, Healthcare EMR, Fintech &amp; Retail</span>
                     </div>
 
                     <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                      <span className="text-[10px] font-mono text-amber-400 font-bold block mb-1">03 / COLLABORATION</span>
+                      <span className="text-[10px] font-mono text-amber-400 font-bold block mb-1">03 • COLLABORATION</span>
                       <span className="text-xs font-bold text-white block">Direct Oversight</span>
                       <span className="text-[11px] text-slate-400 mt-0.5 block">Milestone transparency &amp; full IP transfer</span>
                     </div>
@@ -164,8 +164,8 @@ export function DirectorSection() {
               <div>
                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
                   <span>Developer Control Studio &amp; Engineering Portal</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-bold">
-                    ROLE_DEVELOPER
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-bold">
+                    Developer Portal
                   </span>
                 </h4>
                 <p className="text-xs text-slate-400 mt-0.5">

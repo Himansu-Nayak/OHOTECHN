@@ -35,10 +35,10 @@ public class PaymentService {
     private final LicenseService licenseService;
     private final EmailService emailService;
 
-    @Value("${app.razorpay.key-id:PROD_RAZORPAY_KEY_ID_PLACEHOLDER}")
+    @Value("${app.razorpay.key-id:${razorpay.key-id:PROD_RAZORPAY_KEY_ID_PLACEHOLDER}}")
     private String razorpayKeyId;
 
-    @Value("${app.razorpay.key-secret:PROD_RAZORPAY_KEY_SECRET_PLACEHOLDER}")
+    @Value("${app.razorpay.key-secret:${razorpay.key-secret:PROD_RAZORPAY_KEY_SECRET_PLACEHOLDER}}")
     private String razorpayKeySecret;
 
     @Transactional

@@ -20,6 +20,12 @@ public class StartupConfigValidator implements CommandLineRunner {
     @Value("${spring.mail.host:}")
     private String mailHost;
 
+    @Value("${gemini.api.key:}")
+    private String geminiApiKey;
+
+    @Value("${gemini.api.model:gemini-1.5-flash}")
+    private String geminiModel;
+
     @Override
     public void run(String... args) {
         logger.info("=== OHO TECHN Production Configuration Validation ===");
@@ -40,6 +46,12 @@ public class StartupConfigValidator implements CommandLineRunner {
             logger.info("SMTP Email Gateway: Unconfigured (Running in dev log mode).");
         } else {
             logger.info("SMTP Email Gateway: Configured at host {}", mailHost);
+        }
+
+        if (geminiApiKey == null || geminiApiKey.trim().isEmpty()) {
+            logger.info("Google Gemini AI Platform: Unconfigured (Set GEMINI_API_KEY environment variable to enable live AI capabilities). Active Model: {}", geminiModel);
+        } else {
+            logger.info("Google Gemini AI Platform: Configured & Ready. Active Model: {}", geminiModel);
         }
 
         logger.info("=== OHO TECHN Platform Readiness Check Complete ===");

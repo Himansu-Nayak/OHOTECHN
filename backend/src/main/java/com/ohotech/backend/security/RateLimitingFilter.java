@@ -43,6 +43,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
         // Target sensitive security & checkout endpoints
         if (uri.startsWith("/api/auth/login") ||
+            uri.startsWith("/api/auth/firebase-login") ||
             uri.startsWith("/api/auth/register") ||
             uri.startsWith("/api/auth/send-otp") ||
             uri.startsWith("/api/payments/verify") ||

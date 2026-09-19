@@ -2,8 +2,10 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { UserDto, AuthResponse } from '../api/types';
-import { loginApi, loginOtpApi, registerApi, getCurrentUserApi, LoginParams, RegisterParams } from '../api/auth';
+import { loginApi, loginOtpApi, registerApi, getCurrentUserApi, firebaseLoginApi, LoginParams, RegisterParams } from '../api/auth';
 import { getAccessToken, setTokens, clearTokens } from '../api/client';
+import { auth } from '../lib/firebase';
+import { signOut } from 'firebase/auth';
 
 interface AuthContextType {
   user: UserDto | null;
@@ -11,8 +13,9 @@ interface AuthContextType {
   isLoading: boolean;
   login: (params: LoginParams) => Promise<AuthResponse>;
   loginOtp: (target: string, otpCode: string) => Promise<AuthResponse>;
+  loginWithFirebase: (idToken: string) => Promise<AuthResponse>;
   register: (params: RegisterParams) => Promise<AuthResponse>;
-  logout: () => void;
+  logout: () => void | Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -103,6 +106,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginWithFirebase = async (idToken: string): Promise<AuthResponse> => {
+    const res = await firebaseLoginApi(idToken);
+    if (res.success && res.data) {
+      const authData = res.data;
+      setTokens(authData.accessToken, authData.refreshToken);
+      setAccessToken(authData.accessToken);
+      setUser(authData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(authData.user));
+      }
+      return authData;
+    } else {
+      throw new Error(res.message || 'Firebase login failed');
+    }
+  };
+
   const register = async (params: RegisterParams): Promise<AuthResponse> => {
     const res = await registerApi(params);
     if (res.success && res.data) {
@@ -121,7 +140,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    try {
+      if (auth?.currentUser) {
+        await signOut(auth);
+      }
+    } catch (e) {
+      console.warn('Firebase signOut error:', e);
+    }
     clearTokens();
     setUser(null);
     setAccessToken(null);
@@ -135,6 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         loginOtp,
+        loginWithFirebase,
         register,
         logout,
         refreshUser,

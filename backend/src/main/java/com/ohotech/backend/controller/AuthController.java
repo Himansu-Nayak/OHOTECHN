@@ -38,6 +38,12 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Login via OTP successful", response));
     }
 
+    @PostMapping("/firebase-login")
+    public ResponseEntity<ApiResponse<AuthResponse>> firebaseLogin(@Valid @RequestBody FirebaseLoginRequest request) {
+        AuthResponse response = authService.loginWithFirebase(request.getIdToken());
+        return ResponseEntity.ok(ApiResponse.success("Firebase authentication successful", response));
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         AuthResponse response = authService.refreshToken(request);

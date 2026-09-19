@@ -71,7 +71,7 @@ export function CultureAndPhilosophy() {
         <div>
           <div className="flex items-center gap-2 font-mono text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>03 // VALUES &amp; CULTURE</span>
+            <span>03 • VALUES &amp; CULTURE</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
             Philosophy &amp; Principles
@@ -100,7 +100,7 @@ export function CultureAndPhilosophy() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="font-mono text-xs font-bold text-emerald-400">
-                    PRINCIPLE // {v.num}
+                    PRINCIPLE • {v.num}
                   </span>
                   <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400">
                     <VIcon className="w-4 h-4" />
@@ -121,7 +121,7 @@ export function CultureAndPhilosophy() {
               </div>
 
               <div className="mt-6 pt-4 border-t border-white/5 font-mono text-[10px] text-slate-400 uppercase flex items-center justify-between">
-                <span>COMMITMENT // SLA GUARANTEED</span>
+                <span>COMMITMENT • SLA GUARANTEED</span>
                 <span className="text-emerald-400 font-bold">100% VERIFIED</span>
               </div>
             </div>
@@ -144,7 +144,7 @@ export function CultureAndPhilosophy() {
           {culturePillars.map((cp, idx) => (
             <div key={idx} className="p-5 rounded-2xl bg-black/40 border border-white/5 space-y-2">
               <div className="font-mono text-xs font-bold text-white uppercase flex items-center gap-2">
-                <span className="text-emerald-400">0{idx + 1} //</span>
+                <span className="text-emerald-400">0{idx + 1} •</span>
                 <span>{cp.title}</span>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed font-normal">

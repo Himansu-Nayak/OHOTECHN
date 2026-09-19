@@ -79,6 +79,7 @@ public class SecurityConfig {
                     "/api/auth/register",
                     "/api/auth/login",
                     "/api/auth/login-otp",
+                    "/api/auth/firebase-login",
                     "/api/auth/refresh",
                     "/api/auth/send-otp",
                     "/api/auth/verify-otp",
@@ -87,7 +88,13 @@ public class SecurityConfig {
                     "/api/auth/verify-reset-otp",
                     "/api/auth/reset-password",
                     "/api/contact",
-                    "/api/webhooks/**"
+                    "/api/webhooks/**",
+                    "/api/ai/chat",
+                    "/api/ai/product/**",
+                    "/api/ai/classify",
+                    "/api/ai/search",
+                    "/api/ai/document/analyze",
+                    "/api/ai/image/analyze"
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()

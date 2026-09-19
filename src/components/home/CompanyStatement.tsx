@@ -148,7 +148,7 @@ export function CompanyStatement() {
                   {/* Top Bar */}
                   <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
                     <span className="font-mono text-xs font-bold text-slate-400">
-                      ETHOS // {pillar.number}
+                      ETHOS: {pillar.number}
                     </span>
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400">
                       <Icon className="w-5 h-5" />

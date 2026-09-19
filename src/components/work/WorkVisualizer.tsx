@@ -63,8 +63,8 @@ function HealthcareVisualizer({ project }: { project: WorkProject }) {
   const beds = [
     { id: 101, label: 'BED ICU-01', patient: 'R. Sharma (Age 54)', status: 'Occupied', vitals: 'HR: 76 bpm | SpO2: 98% | BP: 120/80', doc: 'Dr. A. Verma (Cardiology)' },
     { id: 102, label: 'BED ICU-02', patient: 'P. Nair (Age 42)', status: 'Occupied', vitals: 'HR: 88 bpm | SpO2: 96% | BP: 135/85', doc: 'Dr. M. Roy (Pulmonology)' },
-    { id: 103, label: 'BED ICU-03', patient: 'None', status: 'Cleaning', vitals: 'Sanitization in progress // Est 8m', doc: 'Housekeeping Unit 4' },
-    { id: 104, label: 'BED ICU-04', patient: 'None', status: 'Available', vitals: 'Bed Prepared // Ready for Ingress', doc: 'Unassigned' },
+    { id: 103, label: 'BED ICU-03', patient: 'None', status: 'Cleaning', vitals: 'Sanitization in progress • Est 8m', doc: 'Housekeeping Unit 4' },
+    { id: 104, label: 'BED ICU-04', patient: 'None', status: 'Available', vitals: 'Bed Prepared • Ready for Ingress', doc: 'Unassigned' },
   ];
 
   const activeBed = beds.find((b) => b.id === activeBedId) || beds[0];
@@ -76,7 +76,7 @@ function HealthcareVisualizer({ project }: { project: WorkProject }) {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
             <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
-            <span>CLINICAL TELEMETRY BLUEPRINT // HEALTHOS WARD GRID</span>
+            <span>CLINICAL TELEMETRY BLUEPRINT • HEALTHOS WARD GRID</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
             Real-Time Bed Grid &amp; HL7/FHIR Specimen Telemetry
@@ -250,7 +250,7 @@ function EducationVisualizer({ project }: { project: WorkProject }) {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1">
             <Layers className="w-4 h-4 text-cyan-400" />
-            <span>DISTRIBUTED ACADEMIC MATRIX // MULTI-TENANT CAMPUS CORE</span>
+            <span>DISTRIBUTED ACADEMIC MATRIX • MULTI-TENANT CAMPUS CORE</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
             Multi-Campus Hierarchy &amp; Idempotent Fee Webhook Engine
@@ -398,7 +398,7 @@ function RetailVisualizer({ project }: { project: WorkProject }) {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">
             <Database className="w-4 h-4 text-blue-400" />
-            <span>OFFLINE-FIRST RETAIL RUNTIME // LOCAL SQLITE &amp; WEBSOCKET SPOOL</span>
+            <span>OFFLINE-FIRST RETAIL RUNTIME • LOCAL SQLITE &amp; WEBSOCKET SPOOL</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
             Edge Terminal Checkout &amp; Asynchronous Depot Sync
@@ -515,7 +515,7 @@ function HospitalityVisualizer({ project }: { project: WorkProject }) {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">
             <Clock className="w-4 h-4 text-amber-400" />
-            <span>PROPERTYOS ARCHITECTURE // KITCHEN DISPLAY &amp; ROOM FOLIO MATRIX</span>
+            <span>PROPERTYOS ARCHITECTURE • KITCHEN DISPLAY &amp; ROOM FOLIO MATRIX</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
             Touch-Optimized KDS &amp; Multi-Channel OTA Sync
@@ -566,7 +566,7 @@ function HospitalityVisualizer({ project }: { project: WorkProject }) {
                     </div>
 
                     <div className="text-[11px] text-slate-400 mb-3 flex items-center justify-between">
-                      <span>{t.kot} // {t.course}</span>
+                      <span>{t.kot} • {t.course}</span>
                       <span className="text-white font-mono font-bold flex items-center gap-1">
                         <Clock className="w-3 h-3 text-amber-400" />
                         {t.timer}
@@ -642,7 +642,7 @@ function FintechVisualizer({ project }: { project: WorkProject }) {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">
             <ShieldCheck className="w-4 h-4 text-purple-400" />
-            <span>STRICT DOUBLE-ENTRY CORE // CRYPTOGRAPHIC BALANCE VALIDATOR</span>
+            <span>STRICT DOUBLE-ENTRY CORE • CRYPTOGRAPHIC BALANCE VALIDATOR</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
             Immutable Double-Entry Ledger &amp; Sub-45s KYC Pipeline
@@ -699,7 +699,7 @@ function FintechVisualizer({ project }: { project: WorkProject }) {
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <div>
                 <div className="text-white font-bold">Aadhaar / PAN OCR Parsing</div>
-                <div className="text-[10px] text-slate-400">Extracted in 4.2s // Match 99.8%</div>
+                <div className="text-[10px] text-slate-400">Extracted in 4.2s • Match 99.8%</div>
               </div>
             </div>
 
@@ -707,7 +707,7 @@ function FintechVisualizer({ project }: { project: WorkProject }) {
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <div>
                 <div className="text-white font-bold">Credit Bureau Score &amp; Rule Check</div>
-                <div className="text-[10px] text-slate-400">Score 784 // Limit ₹2,50,000 Allocated</div>
+                <div className="text-[10px] text-slate-400">Score 784 • Limit ₹2,50,000 Allocated</div>
               </div>
             </div>
 

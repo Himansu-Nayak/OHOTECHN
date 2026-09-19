@@ -618,7 +618,7 @@ export function TechnologyExperience() {
                   <div className="space-y-2.5 text-slate-300">
                     {currentDomain.topologyBlueprint.map((step, sIdx) => (
                       <div key={sIdx} className="flex items-center gap-2.5">
-                        <span className="text-emerald-400 font-bold">0{sIdx + 1} //</span>
+                        <span className="text-emerald-400 font-bold">0{sIdx + 1} •</span>
                         <span>{step}</span>
                       </div>
                     ))}

@@ -49,7 +49,7 @@ export default function NotFound() {
         {/* Terminal Header Bar */}
         <div className="mb-8 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono text-xs font-bold uppercase tracking-wider">
           <Terminal className="w-3.5 h-3.5" />
-          <span>STATUS 404 // ROUTE_NOT_RESOLVED</span>
+          <span>STATUS 404 • ROUTE NOT FOUND</span>
         </div>
 
         {/* Big Glitch/Display 404 Number */}

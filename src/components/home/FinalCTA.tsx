@@ -15,6 +15,7 @@ import {
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { TextReveal } from '@/components/ui/TextReveal';
+import { siteConfig } from '@/config/site';
 
 interface FinalCTAProps {
   onOpenEstimate?: () => void;
@@ -142,8 +143,8 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
                 </div>
                 <div>
                   <div className="font-mono text-[10px] text-slate-400 uppercase">DIRECT PHONE</div>
-                  <a href="tel:+919937012345" className="font-mono text-xs sm:text-sm font-bold text-white hover:text-emerald-400 transition-colors">
-                    +91 99370 12345
+                  <a href={`tel:${siteConfig.contact.phone}`} className="font-mono text-xs sm:text-sm font-bold text-white hover:text-emerald-400 transition-colors">
+                    {siteConfig.contact.phone}
                   </a>
                 </div>
               </div>
@@ -154,8 +155,8 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
                 </div>
                 <div>
                   <div className="font-mono text-[10px] text-slate-400 uppercase">CONSULTATION INBOX</div>
-                  <a href="mailto:contact@ohotech.com" className="font-mono text-xs sm:text-sm font-bold text-white hover:text-cyan-400 transition-colors">
-                    contact@ohotech.com
+                  <a href={`mailto:${siteConfig.contact.email}`} className="font-mono text-xs sm:text-sm font-bold text-white hover:text-cyan-400 transition-colors">
+                    {siteConfig.contact.email}
                   </a>
                 </div>
               </div>

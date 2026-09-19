@@ -224,7 +224,7 @@ export function TechnologyExplorer() {
               <div className="space-y-3 text-slate-300">
                 {currentLayer.topologyBlueprint.map((step, sIdx) => (
                   <div key={sIdx} className="flex items-start gap-2.5">
-                    <span className="text-emerald-400 font-bold shrink-0">STEP 0{sIdx + 1} //</span>
+                    <span className="text-emerald-400 font-bold shrink-0">STEP 0{sIdx + 1} •</span>
                     <span className="leading-relaxed">{step}</span>
                   </div>
                 ))}

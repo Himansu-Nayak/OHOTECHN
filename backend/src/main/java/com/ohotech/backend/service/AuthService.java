@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,6 +42,7 @@ public class AuthService {
     private final AuditService auditService;
     private final OtpService otpService;
     private final OtpRepository otpRepository;
+    private final FirebaseService firebaseService;
 
     @Value("${app.jwt.refresh-expiration-ms:604800000}")
     private long refreshTokenExpirationMs;
@@ -139,7 +141,13 @@ public class AuthService {
                         "Login attempt blocked due to active account lockout");
                 throw new BadRequestException("Account is temporarily locked due to repeated failed login attempts. Please try again after 15 minutes.");
             }
-            if (!user.isEmailVerified()) {
+            // Admin and Developer accounts bypass email/OTP verification and can log in directly
+            if (user.getRole() == Role.ROLE_ADMIN || user.getRole() == Role.ROLE_DEVELOPER) {
+                if (!user.isEmailVerified()) {
+                    user.setEmailVerified(true);
+                    userRepository.save(user);
+                }
+            } else if (!user.isEmailVerified()) {
                 throw new BadRequestException("Your email address is not verified. Please check your inbox and verify your email first.");
             }
         }
@@ -332,5 +340,160 @@ public class AuthService {
 
         auditService.logUserEvent(user, "USER_PASSWORD_RESET_SUCCESS", "User", String.valueOf(user.getId()),
                 "Password reset successfully via OTP reset authorization");
+    }
+
+    @Transactional
+    public AuthResponse loginWithFirebase(String idToken) {
+        FirebaseVerifiedUser verified = firebaseService.verifyToken(idToken);
+        String uid = verified.getUid();
+        String email = verified.getEmail();
+        boolean emailVerified = verified.isEmailVerified();
+        String phone = verified.getPhone();
+        String name = verified.getName();
+
+        // 1. Check if user with this firebaseUid already exists
+        User user = userRepository.findByFirebaseUid(uid).orElse(null);
+
+        // 2. If not found by firebaseUid, attempt safe account linking using SERVER-VERIFIED identifiers
+        if (user == null) {
+            // Google verified email account linking
+            // Google verified email account linking
+            if (email != null) {
+                Optional<User> existingEmailUser = userRepository.findByEmail(email);
+                if (existingEmailUser.isPresent()) {
+                    if (!emailVerified) {
+                        throw new BadRequestException("The email associated with this Google account is not verified. Cannot link to existing account.");
+                    }
+                    User existing = existingEmailUser.get();
+                    if (existing.getFirebaseUid() != null && !existing.getFirebaseUid().equals(uid)) {
+                        throw new BadRequestException("This email is already associated with another authentication account.");
+                    }
+                    existing.setFirebaseUid(uid);
+                    existing.setEmailVerified(true);
+                    if (phone != null && existing.getPhone() == null && !userRepository.existsByPhone(phone)) {
+                        existing.setPhone(phone);
+                        existing.setPhoneVerified(true);
+                    }
+                    user = userRepository.save(existing);
+                    auditService.logUserEvent(user, "USER_FIREBASE_LINKED_EMAIL", "User", String.valueOf(user.getId()),
+                            "Linked Firebase UID to existing account via verified Google email: " + email);
+                }
+            }
+
+            // Phone verified account linking
+            if (user == null && phone != null) {
+                Optional<User> existingPhoneUser = userRepository.findByPhone(phone);
+                if (existingPhoneUser.isPresent()) {
+                    User existing = existingPhoneUser.get();
+                    if (existing.getFirebaseUid() != null && !existing.getFirebaseUid().equals(uid)) {
+                        throw new BadRequestException("This phone number is already associated with another authentication account.");
+                    }
+                    existing.setFirebaseUid(uid);
+                    existing.setPhoneVerified(true);
+                    if (email != null && emailVerified && existing.getEmail() == null && !userRepository.existsByEmail(email)) {
+                        existing.setEmail(email);
+                        existing.setEmailVerified(true);
+                    }
+                    user = userRepository.save(existing);
+                    auditService.logUserEvent(user, "USER_FIREBASE_LINKED_PHONE", "User", String.valueOf(user.getId()),
+                            "Linked Firebase UID to existing account via verified phone: " + phone);
+                }
+            }
+        }
+
+        // 3. If still no user exists, create a brand-new customer account
+        if (user == null) {
+            String displayName = (name != null && !name.isBlank()) ? name.trim() : null;
+            if (displayName == null) {
+                if (email != null && email.contains("@")) {
+                    displayName = email.substring(0, email.indexOf('@'));
+                } else if (phone != null && phone.length() >= 4) {
+                    displayName = "User " + phone.substring(phone.length() - 4);
+                } else {
+                    displayName = "OHO TECH User";
+                }
+            }
+
+            // Cryptographically random unusable BCrypt password hash to satisfy NOT NULL constraint (must be <= 72 bytes)
+            String unusablePasswordHash = passwordEncoder.encode("FB_" + UUID.randomUUID().toString().replace("-", ""));
+
+            User newUser = User.builder()
+                    .name(displayName)
+                    .email(email)
+                    .phone(phone)
+                    .firebaseUid(uid)
+                    .passwordHash(unusablePasswordHash)
+                    .role(Role.ROLE_CUSTOMER) // Strictly enforce ROLE_CUSTOMER for new federated signups
+                    .enabled(true)
+                    .emailVerified(email != null && emailVerified)
+                    .phoneVerified(phone != null)
+                    .failedLoginAttempts(0)
+                    .build();
+
+            user = userRepository.save(newUser);
+
+            try {
+                notificationService.createNotification(
+                        user.getId(),
+                        "Welcome to OHO TECHN!",
+                        "Your account has been created successfully via Firebase Authentication.",
+                        com.ohotech.backend.entity.NotificationType.SUCCESS,
+                        com.ohotech.backend.entity.NotificationCategory.SYSTEM,
+                        "/products"
+                );
+                if (user.getEmail() != null) {
+                    String htmlBody = emailTemplateService.buildWelcomeEmail(user.getName());
+                    emailService.sendHtmlEmail(user.getEmail(), "Welcome to OHO TECHN", htmlBody);
+                }
+            } catch (Exception e) {
+                // Non-blocking notification
+            }
+
+            auditService.logUserEvent(user, "USER_FIREBASE_REGISTERED", "User", String.valueOf(user.getId()),
+                    "User registered via Firebase federated auth. UID: " + uid);
+        }
+
+        // 4. Update verification status if newly verified by provider
+        boolean needsUpdate = false;
+        if (email != null && emailVerified && !user.isEmailVerified() && email.equalsIgnoreCase(user.getEmail())) {
+            user.setEmailVerified(true);
+            needsUpdate = true;
+        }
+        if (phone != null && !user.isPhoneVerified() && phone.equals(user.getPhone())) {
+            user.setPhoneVerified(true);
+            needsUpdate = true;
+        }
+
+        // 5. Enforce account status and security locks
+        if (!user.isEnabled()) {
+            throw new BadRequestException("Your account is disabled. Please contact support.");
+        }
+
+        if (user.getLockoutUntil() != null && user.getLockoutUntil().isAfter(LocalDateTime.now())) {
+            throw new BadRequestException("Account is temporarily locked due to failed login attempts. Please try again later.");
+        }
+
+        if (user.getFailedLoginAttempts() > 0 || user.getLockoutUntil() != null) {
+            user.setFailedLoginAttempts(0);
+            user.setLockoutUntil(null);
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+            user = userRepository.save(user);
+        }
+
+        auditService.logUserEvent(user, "USER_LOGIN_FIREBASE_SUCCESS", "User", String.valueOf(user.getId()),
+                "Successful Firebase authentication for user: " + (user.getEmail() != null ? user.getEmail() : user.getPhone()));
+
+        // 6. Generate standard OHO TECH Application JWT and Refresh Token
+        String jwt = tokenProvider.generateTokenFromUserId(user.getId());
+        RefreshToken refreshToken = createRefreshToken(user);
+
+        return AuthResponse.builder()
+                .accessToken(jwt)
+                .refreshToken(refreshToken.getToken())
+                .user(mapUserToDto(user))
+                .build();
     }
 }

@@ -115,7 +115,7 @@ export function WorkGallery({ items, projectTitle }: WorkGalleryProps) {
           >
             <div className="flex items-center gap-2">
               <span className="text-emerald-400 font-bold">BLUEPRINT INSPECTOR</span>
-              <span>//</span>
+              <span>•</span>
               <span className="text-white font-bold truncate max-w-sm sm:max-w-md">{projectTitle}</span>
             </div>
 

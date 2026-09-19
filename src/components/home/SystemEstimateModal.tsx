@@ -243,7 +243,7 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
           {/* Step 1: Project Scope Selection */}
           <div>
             <label className="text-xs font-mono uppercase text-slate-400 block mb-2.5 font-bold">
-              01 // SELECT SYSTEM DOMAIN &amp; SCOPE
+              01 • SELECT SYSTEM DOMAIN &amp; SCOPE
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {[
@@ -279,7 +279,7 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
           {/* Step 2: Scale / Concurrency Selector */}
           <div>
             <label className="text-xs font-mono uppercase text-slate-400 block mb-2.5 font-bold">
-              02 // OPERATIONAL SCALE &amp; CONCURRENCY
+              02 • OPERATIONAL SCALE &amp; CONCURRENCY
             </label>
             <div className="grid grid-cols-3 gap-2.5">
               {[
@@ -351,7 +351,7 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
           {!isSubmitted ? (
             <form onSubmit={handleSubmit} className="pt-4 border-t border-white/10 space-y-3">
               <span className="text-xs font-mono uppercase text-slate-400 block font-bold">
-                03 // RECEIVE FORMAL ARCHITECTURE PROPOSAL &amp; PRICING
+                03 • RECEIVE FORMAL ARCHITECTURE PROPOSAL &amp; PRICING
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

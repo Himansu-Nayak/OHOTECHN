@@ -165,7 +165,7 @@ export default function Footer() {
 
         {/* Destination Connector */}
         <div className="inline-flex items-center gap-2 font-mono text-[11px] text-slate-400 tracking-wider">
-          <span>DESTINATION // CORPORATE ECOSYSTEM &amp; SERVICES DIRECTORY</span>
+          <span>DESTINATION • CORPORATE ECOSYSTEM &amp; SERVICES DIRECTORY</span>
           <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400 rotate-90" />
         </div>
       </div>

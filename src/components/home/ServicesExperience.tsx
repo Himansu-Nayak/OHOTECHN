@@ -42,6 +42,7 @@ interface ServiceData {
   specs: { label: string; value: string }[];
   technologies: string[];
   image: string;
+  video: string;
 }
 
 const SERVICES_DATA: ServiceData[] = [
@@ -62,6 +63,7 @@ const SERVICES_DATA: ServiceData[] = [
     ],
     technologies: ['Multi-Region Mesh', 'Terraform', 'Kubernetes', 'Edge DNS'],
     image: '/images/3d-enterprise-node.jpg',
+    video: '/videos/core-architecture.mp4',
   },
   {
     id: 'ai',
@@ -80,6 +82,7 @@ const SERVICES_DATA: ServiceData[] = [
     ],
     technologies: ['Vector DB', 'PyTorch Engine', 'pgvector', 'Real-time Telemetry'],
     image: '/images/3d-software-dev.jpg',
+    video: '/videos/neural-intelligence.mp4',
   },
   {
     id: 'web',
@@ -98,6 +101,7 @@ const SERVICES_DATA: ServiceData[] = [
     ],
     technologies: ['Next.js 16', 'React 19', 'Turbopack', 'Tailwind CSS 4'],
     image: '/hero_workspace_editorial.jpg',
+    video: '/videos/data-mesh.mp4',
   },
   {
     id: 'mobile',
@@ -116,6 +120,7 @@ const SERVICES_DATA: ServiceData[] = [
     ],
     technologies: ['Swift Native', 'Kotlin Multiplatform', 'Offline Sync', 'Biometric Auth'],
     image: '/images/3d-digital-growth.jpg',
+    video: '/videos/core-architecture.mp4',
   },
   {
     id: 'erp',
@@ -134,6 +139,7 @@ const SERVICES_DATA: ServiceData[] = [
     ],
     technologies: ['PostgreSQL', 'Immutable Ledger', 'Role RBAC', 'Automated Sync'],
     image: '/images/3d-enterprise-node.jpg',
+    video: '/videos/data-mesh.mp4',
   },
   {
     id: 'uiux',
@@ -152,6 +158,7 @@ const SERVICES_DATA: ServiceData[] = [
     ],
     technologies: ['Design Tokens', 'Figma Variables', 'A11y Compliant', 'Micro-Interactions'],
     image: '/hero_launch_artwork.png',
+    video: '/videos/neural-intelligence.mp4',
   },
 ];
 
@@ -246,7 +253,7 @@ export function ServicesExperience() {
             <div>
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3">
                 <Boxes className="w-3.5 h-3.5" />
-                <span>CAPABILITY ECOSYSTEM // 04 • SCROLL CONTROLLED STAGE</span>
+                <span>CAPABILITY ECOSYSTEM • PRODUCTION DOMAINS</span>
               </div>
               <TextReveal as="h2" splitType="words" className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight uppercase">
                 Core Engineering Services
@@ -321,7 +328,7 @@ export function ServicesExperience() {
                   {/* Category & Step Header */}
                   <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4 font-mono text-xs">
                     <span className="text-emerald-400 font-bold tracking-wider">
-                      SPECIFICATION // {activeService.number} — {activeService.category}
+                      SPECIFICATION: {activeService.number} — {activeService.category}
                     </span>
                     <span className="text-slate-400 text-[10px] uppercase tracking-wider">
                       ZERO-DOWNTIME ARCHITECTURE
@@ -386,7 +393,7 @@ export function ServicesExperience() {
 
             </div>
 
-            {/* Right Column: Visual Stage / 3D Asset Spatial Window */}
+            {/* Right Column: Visual Stage / Ultra 4K Cinema Spatial Window */}
             <div className="col-span-5 flex flex-col">
               <div 
                 key={`visual-${activeService.id}`}
@@ -401,22 +408,62 @@ export function ServicesExperience() {
                   <span className="text-emerald-400 font-bold">100% PRODUCTION READY</span>
                 </div>
 
-                {/* 3D Visual Asset Canvas */}
-                <div className="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-black/60 shadow-xl group">
-                  <Image
-                    src={activeService.image}
-                    alt={activeService.title}
-                    fill
-                    sizes="(max-width: 1200px) 50vw, 600px"
-                    className="object-cover object-center opacity-85 transition-transform duration-700 hover:scale-105"
-                    priority
+                {/* Ultra 4K Cinema Spatial Canvas with Minimal Smooth Animations */}
+                <div 
+                  className="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-5 border border-white/15 bg-black/90 shadow-2xl group transition-all duration-500"
+                  style={{
+                    boxShadow: `0 20px 45px -15px ${activeService.accent}25`,
+                  }}
+                >
+                  {/* Ultra 4K Smooth Looping Video */}
+                  <video
+                    key={activeService.video}
+                    src={activeService.video}
+                    poster={activeService.image}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-700 ease-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#14151a] via-transparent to-transparent opacity-90" />
-                  
+
+                  {/* Minimal Subtle Ambient Gradient Mask */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#14151a] via-[#14151a]/20 to-transparent opacity-85 pointer-events-none" />
+
+                  {/* Top HUD: 4K Ultra HD Live Telemetry Badge */}
+                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 font-mono text-[9px] text-white/95">
+                      <span className="relative flex h-2 w-2">
+                        <span 
+                          className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                          style={{ backgroundColor: activeService.accent }}
+                        />
+                        <span 
+                          className="relative inline-flex rounded-full h-2 w-2"
+                          style={{ backgroundColor: activeService.accent }}
+                        />
+                      </span>
+                      <span className="font-bold tracking-wider">4K ULTRA HD STREAM</span>
+                    </div>
+
+                    <div className="font-mono text-[9px] px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md border border-white/10 text-slate-300 font-semibold">
+                      60 FPS • &lt; 4ms
+                    </div>
+                  </div>
+
                   {/* Floating Overlay Pill */}
-                  <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-center justify-between font-mono text-[10px] text-white/90 px-3.5 py-2 rounded-xl bg-black/75 backdrop-blur-md border border-white/15">
-                    <span className="text-emerald-400 font-bold">STAGE // 0{activeIndex + 1}</span>
-                    <span className="truncate max-w-[200px]">{activeService.title}</span>
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-white/90 px-3.5 py-2 rounded-xl bg-black/80 backdrop-blur-md border border-white/15 z-10">
+                    <div className="flex items-center gap-2">
+                      <span 
+                        className="font-bold px-1.5 py-0.5 rounded text-[9px]"
+                        style={{ color: activeService.accent, backgroundColor: `${activeService.accent}20` }}
+                      >
+                        STAGE 0{activeIndex + 1}
+                      </span>
+                      <span className="truncate max-w-[190px] font-medium text-slate-200">{activeService.title}</span>
+                    </div>
+                    <span className="text-[9px] text-slate-400 uppercase hidden sm:inline">LIVE RUNTIME</span>
                   </div>
                 </div>
 
@@ -479,6 +526,25 @@ export function ServicesExperience() {
                       <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed">
                         {service.description}
                       </p>
+
+                      {/* Mobile 4K Video Stage Preview */}
+                      <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/10 bg-black">
+                        <video
+                          src={service.video}
+                          poster={service.image}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover opacity-90"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                        <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between font-mono text-[9px] text-white/90">
+                          <span className="font-bold text-emerald-400">STAGE 0{idx + 1}</span>
+                          <span className="text-slate-400">4K ULTRA HD STREAM</span>
+                        </div>
+                      </div>
 
                       {/* Specs */}
                       <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-black/40 border border-white/5">

@@ -149,7 +149,7 @@ export function WorkHero({ project }: WorkHeroProps) {
 
         {/* Minimal Hairline Corner Tag */}
         <div className="absolute top-4 left-4 font-mono text-[10px] text-white px-3 py-1.5 bg-black/80 backdrop-blur-sm border border-white/10">
-          <span className="text-emerald-400 font-bold">SYSTEM // 0{project.number}</span>
+          <span className="text-emerald-400 font-bold">SYSTEM 0{project.number}</span>
           <span className="mx-2 text-white/30">•</span>
           <span className="text-slate-300 uppercase tracking-wider">{project.subtitle}</span>
         </div>

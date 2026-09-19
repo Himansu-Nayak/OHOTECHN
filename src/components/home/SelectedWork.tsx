@@ -123,7 +123,7 @@ export function SelectedWork() {
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
               <FolderGit2 className="w-3.5 h-3.5" />
-              <span>CASE STUDY ARCHIVE // 05</span>
+              <span>CASE STUDY ARCHIVE • FEATURED SYSTEMS</span>
             </div>
             <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase">
               Selected Work

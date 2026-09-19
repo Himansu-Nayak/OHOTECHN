@@ -88,7 +88,7 @@ export function AiInnovationExperience() {
         <div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono text-xs font-bold uppercase tracking-wider mb-3">
             <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-            <span>PRACTICAL ENTERPRISE AI // DETERMINISTIC AUTOMATION</span>
+            <span>PRACTICAL ENTERPRISE AI • DETERMINISTIC AUTOMATION</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
             AI &amp; Intelligent Automation

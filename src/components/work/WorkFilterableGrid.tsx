@@ -142,7 +142,7 @@ export function WorkFilterableGrid({ projects }: WorkFilterableGridProps) {
 
                   {/* Top Floating Badge */}
                   <div className="absolute top-3 left-3 flex items-center gap-2 font-mono text-[10px] text-white px-3 py-1 bg-black/85 backdrop-blur-sm border border-white/10">
-                    <span className="text-emerald-400 font-bold">PROJECT // {project.number}</span>
+                    <span className="text-emerald-400 font-bold">PROJECT • {project.number}</span>
                     <span className="text-slate-400">•</span>
                     <span className="text-slate-300">{project.industry}</span>
                   </div>

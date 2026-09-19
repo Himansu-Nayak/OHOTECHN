@@ -24,7 +24,7 @@ export default function Loading() {
         {/* Status Line */}
         <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-2">
           <span>OHO TECH</span>
-          <span className="text-slate-500">//</span>
+          <span className="text-slate-500">•</span>
           <span>LOADING</span>
         </div>
 

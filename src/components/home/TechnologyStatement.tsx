@@ -114,7 +114,7 @@ export function TechnologyStatement() {
           <ScrollReveal yOffset={14} duration={0.6}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
               <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>OHO STATEMENT // ARCHITECTURAL FORMULA</span>
+              <span>OHO STATEMENT • ARCHITECTURAL FORMULA</span>
             </div>
           </ScrollReveal>
 
@@ -252,7 +252,7 @@ export function TechnologyStatement() {
         <div className="text-center pt-2 flex flex-col items-center justify-center">
           <div className="inline-flex flex-col items-center gap-2 group cursor-pointer">
             <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-slate-400 group-hover:text-emerald-400 transition-colors">
-              SYSTEMS IN PRACTICE // EXPLORE 6 CORE SERVICE VERTICALS
+              SYSTEMS IN PRACTICE • EXPLORE 6 CORE SERVICE VERTICALS
             </span>
             <ChevronDown className="w-4 h-4 text-emerald-400 animate-bounce" />
           </div>

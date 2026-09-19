@@ -3,7 +3,13 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, ShoppingBag, ShieldCheck, DollarSign, Users, FileText, Settings, Bot, RefreshCw, CheckCircle2, ArrowRight, Edit3, Save, Search, Lock, Zap, UserCheck, UserX, ChevronLeft, ChevronRight, Eye, X } from 'lucide-react';
+import { 
+  Sparkles, ShoppingBag, ShieldCheck, DollarSign, Users, FileText, 
+  Settings, Bot, RefreshCw, CheckCircle2, ArrowRight, Edit3, Save, 
+  Search, Lock, Zap, UserCheck, UserX, ChevronLeft, ChevronRight, 
+  Eye, X, Menu, Terminal, Layers, KeyRound, DownloadCloud, Globe, 
+  CreditCard, MessageSquare, Headphones, Calendar, Users2
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
@@ -14,6 +20,20 @@ import { getAdminSubscriptionsApi, updateAdminSubscriptionStatusApi } from '@/ap
 import { getAdminReleasesApi, createAdminReleaseApi, toggleAdminReleaseStatusApi, deleteAdminReleaseApi } from '@/api/releases';
 import { getAdminProductPlansApi, createAdminProductPlanApi, toggleAdminProductPlanStatusApi, deleteAdminProductPlanApi } from '@/api/plans';
 import { getAnalyticsDashboardApi, getAdminEnquiriesApi, updateAdminEnquiryStatusApi } from '@/api/admin';
+
+// Modular Admin Components
+import { AdminHeader } from '@/components/admin/AdminHeader';
+import { AdminSidebar, AdminTabKey } from '@/components/admin/AdminSidebar';
+import { AdminDashboardView } from '@/components/admin/AdminDashboardView';
+import { AdminCrmView } from '@/components/admin/AdminCrmView';
+import { AdminAppointmentsView } from '@/components/admin/AdminAppointmentsView';
+import { AdminWhatsAppView } from '@/components/admin/AdminWhatsAppView';
+import { AdminSupportDeskView } from '@/components/admin/AdminSupportDeskView';
+import { AdminOrdersView } from '@/components/admin/AdminOrdersView';
+import { AdminGatewaysView } from '@/components/admin/AdminGatewaysView';
+import { AdminDnsZoneView } from '@/components/admin/AdminDnsZoneView';
+import { AdminAnalyticsView } from '@/components/admin/AdminAnalyticsView';
+import { AdminAiTab } from '@/components/admin/AdminAiTab';
 
 interface Stats {
   totalProducts: number;
@@ -34,28 +54,9 @@ interface ProductItem {
   serviceType: string;
 }
 
-interface OrderItem {
-  id: number;
-  totalAmount: number;
-  status: string;
-  shippingAddress?: string;
-  contactPhone?: string;
-  createdAt?: string;
-}
-
-interface QuoteItem {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string;
-  subject?: string;
-  message?: string;
-  createdAt?: string;
-}
-
 export default function AdminConsolePage() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const { showToast } = useToast();
 
   React.useEffect(() => {
@@ -70,11 +71,26 @@ export default function AdminConsolePage() {
     }
   }, [user, isLoading, router, showToast]);
 
-  const [activeTab, setActiveTab] = React.useState<'analytics' | 'overview' | 'products' | 'plans' | 'licenses' | 'subscriptions' | 'releases' | 'users' | 'orders' | 'quotes' | 'ai'>('analytics');
-  const [controlMode, setControlMode] = React.useState<'manual' | 'ai'>('manual');
+  const [activeTab, setActiveTab] = React.useState<AdminTabKey>('overview');
+  const [globalSearchQuery, setGlobalSearchQuery] = React.useState('');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+  const [workspaceLayout, setWorkspaceLayout] = React.useState<'contained' | 'fluid'>('fluid');
+  const [contentDensity, setContentDensity] = React.useState<'normal' | 'compact'>('normal');
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        setIsSidebarCollapsed((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Real Analytics State
   const [analyticsData, setAnalyticsData] = React.useState<AnalyticsDashboardDto | null>(null);
-  const [datePreset, setDatePreset] = React.useState<string>('30d');
   const [startDateStr, setStartDateStr] = React.useState<string>('');
   const [endDateStr, setEndDateStr] = React.useState<string>('');
   const [isLoadingAnalytics, setIsLoadingAnalytics] = React.useState<boolean>(false);
@@ -94,7 +110,7 @@ export default function AdminConsolePage() {
   }, []);
 
   React.useEffect(() => {
-    if (activeTab === 'analytics') {
+    if (activeTab === 'analytics' || activeTab === 'overview') {
       fetchAnalytics(startDateStr || undefined, endDateStr || undefined);
     }
   }, [activeTab, startDateStr, endDateStr, fetchAnalytics]);
@@ -115,12 +131,6 @@ export default function AdminConsolePage() {
     { id: 4, name: 'IVF & Fertility Clinic Software', price: 85000, stock: 50, description: 'IVF cycle tracking, embryology lab.', active: true, serviceType: 'Healthcare' },
     { id: 5, name: 'Enterprise HRMS & Payroll', price: 55000, stock: 50, description: 'Biometric sync, leave workflows, salary slips.', active: true, serviceType: 'ERP & HR' },
     { id: 6, name: 'Retail POS & Billing Software', price: 29000, stock: 50, description: 'Fast barcode billing, GST invoices.', active: true, serviceType: 'Retail & POS' },
-  ]);
-
-  const [orders, setOrders] = React.useState<OrderItem[]>([
-    { id: 101, totalAmount: 75000, status: 'COMPLETED', shippingAddress: 'Bhubaneswar, Odisha', contactPhone: '+91 98765 43210' },
-    { id: 102, totalAmount: 35000, status: 'PROCESSING', shippingAddress: 'Cuttack, Odisha', contactPhone: '+91 98765 11111' },
-    { id: 103, totalAmount: 55000, status: 'PENDING', shippingAddress: 'Bangalore, Karnataka', contactPhone: '+91 98765 22222' },
   ]);
 
   // Admin Quote & Demo Request Management State
@@ -163,7 +173,7 @@ export default function AdminConsolePage() {
   };
 
   React.useEffect(() => {
-    if (activeTab === 'quotes') {
+    if (activeTab === 'quotes' || activeTab === 'crm') {
       fetchEnquiries();
     }
   }, [activeTab, fetchEnquiries]);
@@ -173,16 +183,15 @@ export default function AdminConsolePage() {
   const [page, setPage] = React.useState(0);
   const [totalPages, setTotalPages] = React.useState(0);
   const [totalElements, setTotalElements] = React.useState(0);
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [userSearchQuery, setUserSearchQuery] = React.useState('');
   const [filterRole, setFilterRole] = React.useState('');
   const [isLoadingUsers, setIsLoadingUsers] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState<UserDto | null>(null);
 
-  // Fetch Users with Search, Role, and Pagination
   const fetchUsers = React.useCallback(async () => {
     setIsLoadingUsers(true);
     try {
-      const res = await getAdminUsersApi(page, 10, searchQuery, filterRole);
+      const res = await getAdminUsersApi(page, 10, userSearchQuery, filterRole);
       if (res.success && res.data) {
         const data = res.data;
         setUsersList(data.content || []);
@@ -195,7 +204,7 @@ export default function AdminConsolePage() {
     } finally {
       setIsLoadingUsers(false);
     }
-  }, [page, searchQuery, filterRole]);
+  }, [page, userSearchQuery, filterRole]);
 
   // Priority 4 Admin State
   const [adminLicenses, setAdminLicenses] = React.useState<License[]>([]);
@@ -243,10 +252,9 @@ export default function AdminConsolePage() {
     if (!user) return;
     if (activeTab === 'users') fetchUsers();
     if (activeTab === 'licenses') fetchAdminLicenses();
-    if (activeTab === 'subscriptions') fetchAdminSubs();
-    if (activeTab === 'releases') fetchAdminReleases();
     if (activeTab === 'plans') fetchAdminPlans();
-  }, [user, activeTab, fetchUsers, fetchAdminLicenses, fetchAdminSubs, fetchAdminReleases, fetchAdminPlans]);
+    if (activeTab === 'releases') fetchAdminReleases();
+  }, [user, activeTab, fetchUsers, fetchAdminLicenses, fetchAdminPlans, fetchAdminReleases]);
 
   const handleToggleUserStatus = async (targetUser: UserDto) => {
     try {
@@ -273,14 +281,6 @@ export default function AdminConsolePage() {
     }
   };
 
-  // AI Command sandbox state
-  const [aiPrompt, setAiPrompt] = React.useState('');
-  const [aiLogs, setAiLogs] = React.useState<string[]>([
-    'System initialized in AI Automation Mode.',
-    'Ready for natural language administrative execution commands.',
-  ]);
-  const [isExecutingAi, setIsExecutingAi] = React.useState(false);
-
   const handlePriceChange = (id: number, newPrice: number) => {
     setProducts((prev) =>
       prev.map((p) => (p.id === id ? { ...p, price: newPrice } : p))
@@ -288,1187 +288,561 @@ export default function AdminConsolePage() {
     showToast(`Updated product #${id} price to ₹${newPrice.toLocaleString('en-IN')}`, 'success');
   };
 
-  const handleOrderStatus = (id: number, newStatus: string) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o))
-    );
-    showToast(`Order #${id} status updated to ${newStatus}`, 'success');
-  };
-
-  const handleAiSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiPrompt.trim()) return;
-
-    setIsExecutingAi(true);
-    const userPrompt = aiPrompt;
-    setAiPrompt('');
-
-    setTimeout(() => {
-      setAiLogs((prev) => [
-        ...prev,
-        `> USER COMMAND: "${userPrompt}"`,
-        `[AI AGENT]: Analyzing prompt syntax & target database entities...`,
-        `[EXECUTION]: Applied dynamic rule updates. Execution status: 200 OK.`,
-      ]);
-      setIsExecutingAi(false);
-      showToast('AI Task Executed Successfully!', 'success');
-    }, 1000);
+  const handleLogout = () => {
+    logout();
+    showToast('Admin logged out cleanly.', 'info');
+    router.push('/login');
   };
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-[#f7f7f5] flex items-center justify-center font-mono text-xs text-slate-500">
-        Authenticating Admin Console Access...
+      <div className="min-h-screen bg-[#0d0d0e] flex items-center justify-center font-mono text-xs text-slate-400">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <span>Authenticating Enterprise Control Plane...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
-      <main className="max-w-7xl w-full mx-auto" id="admin-main">
-        
-        {/* Header Console Banner */}
-        <section className="mb-8 bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-10 shadow-sm relative overflow-hidden">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white font-mono text-[11px] font-bold uppercase tracking-wider mb-3">
-                <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
-                ENTERPRISE CONTROL PLANE
-              </div>
-              <h1 className="text-2xl sm:text-4xl font-black text-[#0d0d0e] tracking-tight">
-                System Admin &amp; Governance Console
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500 font-mono mt-1 max-w-2xl">
-                Real-time operational dashboard for commercial quotes, user RBAC privileges, product catalog stock, and order pipelines.
-              </p>
-            </div>
+    <div className="bg-[#0a0a0c] text-[#f1f1f3] min-h-screen selection:bg-emerald-500 selection:text-black flex flex-col font-sans">
+      {/* Universal Enterprise Header with Adjustable View Controls */}
+      <AdminHeader
+        user={user}
+        onLogout={handleLogout}
+        searchQuery={globalSearchQuery}
+        onSearchChange={setGlobalSearchQuery}
+        activeTab={activeTab}
+        onSelectTab={(tab) => setActiveTab(tab)}
+        isSidebarCollapsed={isSidebarCollapsed}
+        onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        workspaceLayout={workspaceLayout}
+        onToggleLayout={() => setWorkspaceLayout(workspaceLayout === 'fluid' ? 'contained' : 'fluid')}
+        contentDensity={contentDensity}
+        onToggleDensity={() => setContentDensity(contentDensity === 'normal' ? 'compact' : 'normal')}
+      />
 
-            {/* Admin Badge */}
-            <div className="flex items-center gap-3 bg-[#fafafa] border border-slate-200 p-3 rounded-2xl">
-              <div className="w-10 h-10 rounded-xl bg-[#0d0d0e] text-white flex items-center justify-center font-mono font-bold text-sm">
-                {user.name.charAt(0)}
-              </div>
-              <div className="font-mono text-xs">
-                <div className="font-bold text-[#0d0d0e]">{user.name}</div>
-                <div className="text-[11px] text-sky-600 font-bold">{user.role}</div>
-              </div>
-            </div>
+      {/* Main Layout Shell: Sidebar + Content Area */}
+      <div className={cn(
+        "flex-1 flex w-full relative pb-16 transition-all duration-300",
+        workspaceLayout === 'contained' ? "max-w-7xl mx-auto px-2 sm:px-4" : "max-w-[1920px] mx-auto px-1 sm:px-3"
+      )}>
+        {/* Left Collapsible & Adjustable Sidebar */}
+        <AdminSidebar
+          activeTab={activeTab}
+          onSelectTab={(tab) => setActiveTab(tab)}
+          badgeCounts={{
+            orders: stats.totalOrders,
+            crm: stats.totalQuotes,
+            tickets: 6,
+            appointments: 4,
+            quotes: enquiries.length,
+          }}
+          isMobileOpen={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        />
+
+        {/* Central Viewport */}
+        <main className={cn(
+          "flex-1 overflow-x-hidden transition-all duration-300 min-w-0",
+          contentDensity === 'compact' ? "p-3 sm:p-4 lg:p-5" : "p-4 sm:p-6 lg:p-8"
+        )}>
+          {/* Mobile hamburger row */}
+          <div className="lg:hidden flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="p-2 rounded-xl bg-white/5 border border-white/10 text-white flex items-center gap-2 text-xs font-mono"
+            >
+              <Menu className="w-4 h-4" />
+              <span>Navigation Menu</span>
+            </button>
+            <span className="text-xs font-mono text-slate-400 uppercase">{activeTab}</span>
           </div>
-        </section>
 
-        {/* Tab Navigation */}
-        <section className="bg-white border-2 border-slate-300 rounded-[28px] p-3 mb-8 shadow-sm">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar font-mono text-xs">
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'analytics' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              📈 Real Analytics Dashboard
-            </button>
+          {/* TAB 1: EXECUTIVE DASHBOARD */}
+          {activeTab === 'overview' && (
+            <AdminDashboardView
+              stats={stats}
+              onNavigateTab={(tab) => setActiveTab(tab)}
+              onRefresh={() => {
+                fetchAnalytics();
+                fetchEnquiries();
+                showToast('All operational metrics synchronized.', 'success');
+              }}
+            />
+          )}
 
-            <Link
-              href="/admin/crm"
-              className="px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 flex items-center gap-1.5"
-            >
-              👥 CRM Leads →
-            </Link>
+          {/* TAB 2: CRM & LEADS PIPELINE */}
+          {activeTab === 'crm' && (
+            <AdminCrmView
+              enquiries={enquiries}
+              onStatusChange={handleUpdateEnquiryStatus}
+            />
+          )}
 
-            <Link
-              href="/admin/audit-logs"
-              className="px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap text-slate-600 hover:bg-slate-100 flex items-center gap-1.5"
-            >
-              🛡️ Security Audit Logs →
-            </Link>
+          {/* TAB 3: APPOINTMENTS & DEMOS */}
+          {activeTab === 'appointments' && (
+            <AdminAppointmentsView />
+          )}
 
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'overview' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              📊 Operations Overview
-            </button>
+          {/* TAB 4: WHATSAPP AUTOMATION */}
+          {activeTab === 'whatsapp' && (
+            <AdminWhatsAppView />
+          )}
 
-            <button
-              onClick={() => setActiveTab('products')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'products' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              ⚡ Turnkey Products Catalog ({products.length})
-            </button>
+          {/* TAB 5: SUPPORT DESK & SLA TICKETS */}
+          {activeTab === 'tickets' && (
+            <AdminSupportDeskView />
+          )}
 
-            <button
-              onClick={() => setActiveTab('users')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'users' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              👥 User Accounts ({stats.totalUsers})
-            </button>
+          {/* TAB 6: ORDERS & INVOICING */}
+          {activeTab === 'orders' && (
+            <AdminOrdersView />
+          )}
 
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'orders' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              📦 Customer Orders ({orders.length})
-            </button>
+          {/* TAB 7: PAYMENT GATEWAYS */}
+          {activeTab === 'gateways' && (
+            <AdminGatewaysView />
+          )}
 
-            <button
-              onClick={() => setActiveTab('plans')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'plans' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              🏷️ Product Plans
-            </button>
+          {/* TAB 8: DNS ZONE & CLOUDFLARE */}
+          {activeTab === 'dns' && (
+            <AdminDnsZoneView />
+          )}
 
-            <button
-              onClick={() => setActiveTab('licenses')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'licenses' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              🔑 Software Licenses
-            </button>
+          {/* TAB 9: SITE TRAFFIC & ANALYTICS */}
+          {activeTab === 'analytics' && (
+            <AdminAnalyticsView
+              analyticsData={analyticsData}
+              isLoading={isLoadingAnalytics}
+              startDateStr={startDateStr}
+              endDateStr={endDateStr}
+              onStartDateChange={setStartDateStr}
+              onEndDateChange={setEndDateStr}
+              onApplyFilter={() => fetchAnalytics(startDateStr || undefined, endDateStr || undefined)}
+              onClearFilter={() => {
+                setStartDateStr('');
+                setEndDateStr('');
+                fetchAnalytics();
+              }}
+            />
+          )}
 
-            <button
-              onClick={() => setActiveTab('subscriptions')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'subscriptions' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              🔄 Subscriptions
-            </button>
-
-            <button
-              onClick={() => setActiveTab('releases')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'releases' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              🚀 Software Releases
-            </button>
-
-            <button
-              onClick={() => setActiveTab('quotes')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer",
-                activeTab === 'quotes' ? "bg-[#0d0d0e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              ✉️ Commercial Quotes ({enquiries.length})
-            </button>
-
-            <button
-              onClick={() => setActiveTab('ai')}
-              className={cn(
-                "px-5 py-3 rounded-2xl font-bold transition-all whitespace-nowrap cursor-pointer text-sky-600 border border-sky-200 bg-sky-50 hover:bg-sky-100",
-                activeTab === 'ai' && "bg-sky-600 text-white border-sky-600"
-              )}
-            >
-              🤖 AI Automation Sandbox
-            </button>
-          </div>
-        </section>
-
-        {/* TAB: REAL ANALYTICS DASHBOARD */}
-        {activeTab === 'analytics' && (
-          <section className="space-y-8">
-            
-            {/* Filter Bar */}
-            <div className="bg-white border-2 border-slate-300 rounded-[28px] p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-[#0d0d0e]">Date Range Filter:</span>
-                <input
-                  type="date"
-                  value={startDateStr}
-                  onChange={(e) => setStartDateStr(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-300 font-medium focus:outline-none"
-                />
-                <span>to</span>
-                <input
-                  type="date"
-                  value={endDateStr}
-                  onChange={(e) => setEndDateStr(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-300 font-medium focus:outline-none"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
+          {/* TAB 10: PRODUCTS CATALOG & STOCK */}
+          {activeTab === 'products' && (
+            <div className="space-y-6 animate-in fade-in duration-300 font-mono">
+              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      CATALOG REPOSITORY
+                    </span>
+                    <span className="text-xs font-mono text-emerald-400">PostgreSQL 17 Sync Active</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                    Turnkey Software Catalog &amp; Pricing Editor
+                  </h2>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5">
+                    Modify software licensing prices, check hardware activation allocations, and update descriptions.
+                  </p>
+                </div>
                 <button
-                  onClick={() => { setStartDateStr(''); setEndDateStr(''); }}
-                  className="px-3.5 py-1.5 rounded-full border border-slate-300 hover:bg-slate-100 font-bold cursor-pointer"
+                  onClick={() => showToast('New product creation modal ready.', 'info')}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 text-black font-bold font-mono text-xs transition-all shadow-lg shadow-amber-950/30 cursor-pointer"
                 >
-                  Clear Filter
-                </button>
-                <button
-                  onClick={() => fetchAnalytics(startDateStr || undefined, endDateStr || undefined)}
-                  className="px-4 py-1.5 rounded-full bg-[#0d0d0e] text-white hover:bg-sky-600 font-bold transition-colors cursor-pointer"
-                >
-                  Apply Filter
+                  + Add Software Solution
                 </button>
               </div>
-            </div>
 
-            {isLoadingAnalytics || !analyticsData ? (
-              <div className="p-12 text-center font-mono text-xs text-slate-400 bg-white border-2 border-slate-300 rounded-[32px]">
-                Querying database metrics...
-              </div>
-            ) : (
-              <>
-                {/* 5 KPI Metric Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 font-mono">
-                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase">TOTAL REVENUE</div>
-                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">₹{analyticsData.revenueMetrics.totalRevenue.toLocaleString('en-IN')}</div>
-                    <div className="text-[10px] text-emerald-600 font-bold mt-1">Month: ₹{analyticsData.revenueMetrics.revenueThisMonth.toLocaleString('en-IN')}</div>
-                  </div>
-
-                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase">TOTAL USERS</div>
-                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">{analyticsData.userMetrics.totalUsers}</div>
-                    <div className="text-[10px] text-sky-600 font-bold mt-1">Customers: {analyticsData.userMetrics.totalCustomers}</div>
-                  </div>
-
-                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase">ORDERS</div>
-                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">{analyticsData.orderMetrics.totalOrders}</div>
-                    <div className="text-[10px] text-emerald-600 font-bold mt-1">Confirmed: {analyticsData.orderMetrics.confirmedOrders}</div>
-                  </div>
-
-                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase">ACTIVE SUBS</div>
-                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">{analyticsData.subscriptionMetrics.activeSubscriptions}</div>
-                    <div className="text-[10px] text-amber-600 font-bold mt-1">Trials: {analyticsData.subscriptionMetrics.trialSubscriptions}</div>
-                  </div>
-
-                  <div className="bg-white border-2 border-slate-300 rounded-[24px] p-5 shadow-sm">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase">ACTIVE LICENSES</div>
-                    <div className="text-2xl font-black text-[#0d0d0e] mt-1">{analyticsData.licenseMetrics.activeLicenses}</div>
-                    <div className="text-[10px] text-rose-600 font-bold mt-1">Revoked: {analyticsData.licenseMetrics.revokedLicenses}</div>
-                  </div>
-                </div>
-
-                {/* Breakdown Sections */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Top Products Table */}
-                  <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm font-mono">
-                    <h4 className="text-sm font-black text-[#0d0d0e] mb-4">Top Purchased Products</h4>
-                    {analyticsData.productMetrics.mostPurchasedProducts.length === 0 ? (
-                      <div className="text-xs text-slate-400 py-6 text-center">No product purchase data recorded yet.</div>
-                    ) : (
-                      <div className="divide-y divide-slate-100 text-xs">
-                        {analyticsData.productMetrics.mostPurchasedProducts.map((prod) => (
-                          <div key={prod.id} className="py-3 flex items-center justify-between">
-                            <span className="font-bold text-[#0d0d0e]">{prod.name}</span>
-                            <div className="text-right">
-                              <div className="font-bold text-emerald-600">₹{prod.revenue.toLocaleString('en-IN')}</div>
-                              <div className="text-[10px] text-slate-400">{prod.salesCount} sales</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Operational Status Breakdown */}
-                  <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm font-mono space-y-4">
-                    <h4 className="text-sm font-black text-[#0d0d0e]">System Operational Status</h4>
-                    <div className="space-y-2 text-xs">
-                      <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <span>Verified Gateway Payments:</span>
-                        <span className="font-bold text-emerald-600">{analyticsData.paymentMetrics.successfulPayments} Successful</span>
-                      </div>
-                      <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <span>Failed Payments:</span>
-                        <span className="font-bold text-rose-600">{analyticsData.paymentMetrics.failedPayments} Failed</span>
-                      </div>
-                      <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <span>Subscriptions Expiring Soon (&lt;7 days):</span>
-                        <span className="font-bold text-amber-600">{analyticsData.subscriptionMetrics.expiringSoon} Expiring</span>
-                      </div>
-                      <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <span>Free Trial Starts:</span>
-                        <span className="font-bold text-sky-600">{analyticsData.productMetrics.trialStarts} Active Trials</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
-          </section>
-        )}
-
-        {/* TAB 1: OPERATIONS OVERVIEW */}
-        {activeTab === 'overview' && (
-          <section className="space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
-                <div className="flex items-center justify-between text-slate-500 font-mono text-xs mb-2">
-                  <span>TOTAL REVENUE</span>
-                  <DollarSign className="w-4 h-4 text-emerald-600" />
-                </div>
-                <div className="text-3xl font-black text-[#0d0d0e]">
-                  ₹{stats.totalRevenue.toLocaleString('en-IN')}
-                </div>
-                <span className="text-[11px] font-mono text-emerald-600 font-bold mt-1 block">
-                  +18.4% from last month
-                </span>
-              </div>
-
-              <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
-                <div className="flex items-center justify-between text-slate-500 font-mono text-xs mb-2">
-                  <span>ACTIVE PRODUCTS</span>
-                  <Zap className="w-4 h-4 text-amber-600" />
-                </div>
-                <div className="text-3xl font-black text-[#0d0d0e]">
-                  {stats.totalProducts} Software Modules
-                </div>
-                <span className="text-[11px] font-mono text-slate-500 mt-1 block">
-                  Across 13 Industry Verticals
-                </span>
-              </div>
-
-              <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
-                <div className="flex items-center justify-between text-slate-500 font-mono text-xs mb-2">
-                  <span>REGISTERED USERS</span>
-                  <Users className="w-4 h-4 text-sky-600" />
-                </div>
-                <div className="text-3xl font-black text-[#0d0d0e]">
-                  {stats.totalUsers} Accounts
-                </div>
-                <span className="text-[11px] font-mono text-sky-600 font-bold mt-1 block">
-                  Active Security Policies
-                </span>
-              </div>
-
-              <div className="bg-white border-2 border-slate-300 rounded-[28px] p-6 shadow-sm">
-                <div className="flex items-center justify-between text-slate-500 font-mono text-xs mb-2">
-                  <span>COMMERCIAL QUOTES</span>
-                  <FileText className="w-4 h-4 text-purple-600" />
-                </div>
-                <div className="text-3xl font-black text-[#0d0d0e]">
-                  {stats.totalQuotes} Inquiries
-                </div>
-                <span className="text-[11px] font-mono text-purple-600 font-bold mt-1 block">
-                  Target: kampainfraa@gmail.com
-                </span>
-              </div>
-            </div>
-
-            {/* Quick Actions Panel */}
-            <div className="bg-white border-2 border-slate-300 rounded-[32px] p-8 shadow-sm">
-              <h3 className="text-lg font-black text-[#0d0d0e] mb-4">Admin Quick Action Controls</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs font-bold">
-                <button
-                  onClick={() => setActiveTab('users')}
-                  className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors flex items-center justify-between"
-                >
-                  <span>Manage User Accounts &amp; Roles</span>
-                  <ArrowRight className="w-4 h-4 text-slate-400" />
-                </button>
-
-                <button
-                  onClick={() => setActiveTab('products')}
-                  className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors flex items-center justify-between"
-                >
-                  <span>Edit Product Prices &amp; Stock</span>
-                  <ArrowRight className="w-4 h-4 text-slate-400" />
-                </button>
-
-                <button
-                  onClick={() => setActiveTab('ai')}
-                  className="p-4 rounded-2xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-900 text-left transition-colors flex items-center justify-between"
-                >
-                  <span>Launch AI Automation Assistant</span>
-                  <Bot className="w-4 h-4 text-sky-600" />
-                </button>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* TAB 2: PRODUCTS CATALOG MANAGER */}
-        {activeTab === 'products' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-8 shadow-sm">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
-              <div>
-                <h3 className="text-xl font-black text-[#0d0d0e]">Product Catalog &amp; Price Editor</h3>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">Real-time database updates for turnkey software products</p>
-              </div>
-              <span className="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
-                Live Sync Enabled
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs font-mono">
-                <thead>
-                  <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] tracking-wider">
-                    <th className="py-3 px-4">ID</th>
-                    <th className="py-3 px-4">Product Title</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Price (₹)</th>
-                    <th className="py-3 px-4">Stock SLA</th>
-                    <th className="py-3 px-4">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-[#0d0d0e]">
-                  {products.map((prod) => (
-                    <tr key={prod.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-4 px-4 font-bold text-slate-400">#PROD-0{prod.id}</td>
-                      <td className="py-4 px-4 font-bold">{prod.name}</td>
-                      <td className="py-4 px-4 text-slate-600">{prod.serviceType}</td>
-                      <td className="py-4 px-4">
-                        <input
-                          type="number"
-                          value={prod.price}
-                          onChange={(e) => handlePriceChange(prod.id, Number(e.target.value))}
-                          className="w-28 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-300 font-extrabold focus:outline-none focus:border-sky-500"
-                        />
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 text-[10px]">
-                          In Stock ({prod.stock})
-                        </span>
-                      </td>
-                      <td className="py-4 px-4">
-                        <button
-                          onClick={() => showToast(`Saved changes for ${prod.name}`, 'success')}
-                          className="px-3 py-1.5 rounded-lg bg-[#0d0d0e] hover:bg-emerald-600 text-white font-bold transition-all text-[11px] cursor-pointer"
-                        >
-                          Save
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
-
-        {/* TAB 3: USER ACCOUNTS MANAGER */}
-        {activeTab === 'users' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-8 shadow-sm space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-              <div>
-                <h3 className="text-xl font-black text-[#0d0d0e]">User Accounts &amp; RBAC Governance</h3>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">Manage user privileges, toggle active status, and search accounts</p>
-              </div>
-              <span className="text-xs font-mono font-bold text-sky-700 bg-sky-50 px-3.5 py-1.5 rounded-full border border-sky-200">
-                Total Users: {totalElements}
-              </span>
-            </div>
-
-            {/* Filter & Search Bar */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 font-mono text-xs">
-              <div className="relative flex-1 w-full">
-                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search by name, email, or phone number..."
-                  value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
-                  className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 font-bold focus:outline-none focus:border-sky-500"
-                />
-              </div>
-
-              <select
-                value={filterRole}
-                onChange={(e) => { setFilterRole(e.target.value); setPage(0); }}
-                className="w-full sm:w-48 px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 font-bold focus:outline-none focus:border-sky-500"
-              >
-                <option value="">All Roles</option>
-                <option value="ROLE_CUSTOMER">ROLE_CUSTOMER</option>
-                <option value="ROLE_ADMIN">ROLE_ADMIN</option>
-                <option value="ROLE_DEVELOPER">ROLE_DEVELOPER</option>
-              </select>
-
-              <button
-                onClick={() => fetchUsers()}
-                className="w-full sm:w-auto px-4 py-3 rounded-2xl bg-[#0d0d0e] hover:bg-sky-600 text-white font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <RefreshCw className="w-4 h-4" />
-                <span>Refresh</span>
-              </button>
-            </div>
-
-            {/* Users Table */}
-            {isLoadingUsers ? (
-              <div className="py-12 text-center font-mono text-xs text-slate-500">
-                Loading User Accounts...
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs font-mono">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] tracking-wider">
-                      <th className="py-3 px-4">User ID</th>
-                      <th className="py-3 px-4">Name &amp; Email</th>
-                      <th className="py-3 px-4">Phone</th>
-                      <th className="py-3 px-4">Role</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-[#0d0d0e]">
-                    {usersList.length === 0 ? (
+              <div className="bg-[#141416] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#19191d] text-slate-300 uppercase tracking-wider border-b border-white/10">
                       <tr>
-                        <td colSpan={6} className="py-8 text-center text-slate-500">
-                          No users found matching query criteria.
-                        </td>
+                        <th className="p-3.5">ID</th>
+                        <th className="p-3.5">Product Title</th>
+                        <th className="p-3.5">Category</th>
+                        <th className="p-3.5">Unit Price (₹)</th>
+                        <th className="p-3.5">Inventory SLA</th>
+                        <th className="p-3.5 text-right">Action</th>
                       </tr>
-                    ) : (
-                      usersList.map((u) => (
-                        <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-4 px-4 font-bold text-slate-400">#{u.id}</td>
-                          <td className="py-4 px-4 font-bold">
-                            <div>{u.name}</div>
-                            <div className="text-[11px] text-slate-500 font-normal">{u.email || 'No Email'}</div>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-slate-300">
+                      {products.map((prod) => (
+                        <tr key={prod.id} className="hover:bg-white/5 transition-colors">
+                          <td className="p-3.5 text-slate-400">#PROD-0{prod.id}</td>
+                          <td className="p-3.5 font-bold text-white">{prod.name}</td>
+                          <td className="p-3.5 text-purple-400">{prod.serviceType}</td>
+                          <td className="p-3.5">
+                            <input
+                              type="number"
+                              value={prod.price}
+                              onChange={(e) => handlePriceChange(prod.id, Number(e.target.value))}
+                              className="w-28 px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-emerald-400 font-bold focus:outline-none focus:border-emerald-500"
+                            />
                           </td>
-                          <td className="py-4 px-4 text-slate-600">{u.phone || 'N/A'}</td>
-                          <td className="py-4 px-4">
+                          <td className="p-3.5">
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">
+                              In Stock ({prod.stock})
+                            </span>
+                          </td>
+                          <td className="p-3.5 text-right">
+                            <button
+                              onClick={() => showToast(`Saved changes for ${prod.name}`, 'success')}
+                              className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-black font-bold text-[11px] cursor-pointer"
+                            >
+                              Save
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 11: USER ACCOUNTS & RBAC */}
+          {activeTab === 'users' && (
+            <div className="space-y-6 animate-in fade-in duration-300 font-mono">
+              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      ACCESS &amp; GOVERNANCE
+                    </span>
+                    <span className="text-xs font-mono text-slate-400">Total Users: <strong className="text-white">{totalElements}</strong></span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                    User Accounts &amp; RBAC Privilege Matrix
+                  </h2>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5">
+                    Manage client credentials, assign administrative privileges, and review audit telemetry.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchUsers}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs flex items-center gap-2 cursor-pointer"
+                >
+                  <RefreshCw className={cn("w-3.5 h-3.5", isLoadingUsers && "animate-spin")} />
+                  <span>Refresh Users</span>
+                </button>
+              </div>
+
+              {/* Filter Bar */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 text-xs">
+                <div className="relative flex-1 w-full">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search users by name, email, or phone..."
+                    value={userSearchQuery}
+                    onChange={(e) => { setUserSearchQuery(e.target.value); setPage(0); }}
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#141416] border border-white/10 text-white focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <select
+                  value={filterRole}
+                  onChange={(e) => { setFilterRole(e.target.value); setPage(0); }}
+                  className="w-full sm:w-48 px-3 py-2 rounded-xl bg-[#141416] border border-white/10 text-white focus:outline-none"
+                >
+                  <option value="">All Security Roles</option>
+                  <option value="ROLE_CUSTOMER">ROLE_CUSTOMER</option>
+                  <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+                  <option value="ROLE_DEVELOPER">ROLE_DEVELOPER</option>
+                </select>
+              </div>
+
+              {/* Users Table */}
+              <div className="bg-[#141416] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#19191d] text-slate-300 uppercase tracking-wider border-b border-white/10">
+                      <tr>
+                        <th className="p-3.5">ID</th>
+                        <th className="p-3.5">Name &amp; Email</th>
+                        <th className="p-3.5">Phone</th>
+                        <th className="p-3.5">Security Role</th>
+                        <th className="p-3.5">Status</th>
+                        <th className="p-3.5 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-slate-300">
+                      {usersList.map((u) => (
+                        <tr key={u.id} className="hover:bg-white/5 transition-colors">
+                          <td className="p-3.5 text-slate-400">#{u.id}</td>
+                          <td className="p-3.5">
+                            <p className="font-bold text-white">{u.name}</p>
+                            <p className="text-[11px] text-slate-400">{u.email || 'No email'}</p>
+                          </td>
+                          <td className="p-3.5 text-slate-400">{u.phone || 'N/A'}</td>
+                          <td className="p-3.5">
                             <select
                               value={u.role}
                               onChange={(e) => handleUserRoleChange(u, e.target.value)}
-                              className="px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-300 font-bold text-[11px] focus:outline-none focus:border-sky-500"
+                              className="bg-[#19191e] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-indigo-300 font-bold focus:outline-none"
                             >
                               <option value="ROLE_CUSTOMER">ROLE_CUSTOMER</option>
                               <option value="ROLE_ADMIN">ROLE_ADMIN</option>
                               <option value="ROLE_DEVELOPER">ROLE_DEVELOPER</option>
                             </select>
                           </td>
-                          <td className="py-4 px-4">
+                          <td className="p-3.5">
                             <span className={cn(
-                              "px-2.5 py-1 rounded-full font-bold text-[10px] border",
-                              u.enabled
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                : "bg-rose-50 text-rose-700 border-rose-200"
+                              "px-2 py-0.5 rounded text-[10px] font-bold border",
+                              u.enabled ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : "bg-red-500/20 text-red-300 border-red-500/30"
                             )}>
-                              {u.enabled ? 'Active' : 'Disabled'}
+                              {u.enabled ? 'ACTIVE' : 'DISABLED'}
                             </span>
                           </td>
-                          <td className="py-4 px-4 flex items-center gap-2">
+                          <td className="p-3.5 text-right">
                             <button
                               onClick={() => handleToggleUserStatus(u)}
                               className={cn(
-                                "px-3 py-1.5 rounded-lg font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1",
-                                u.enabled
-                                  ? "bg-rose-100 text-rose-700 hover:bg-rose-200"
-                                  : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                                "px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition-colors",
+                                u.enabled ? "bg-red-500/20 hover:bg-red-500/30 text-red-300" : "bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300"
                               )}
                             >
-                              {u.enabled ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
-                              <span>{u.enabled ? 'Disable' : 'Enable'}</span>
-                            </button>
-
-                            <button
-                              onClick={() => setSelectedUser(u)}
-                              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                              title="View Details"
-                            >
-                              <Eye className="w-4 h-4" />
+                              {u.enabled ? 'Disable' : 'Enable'}
                             </button>
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Pagination controls */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-4 border-t border-slate-200 font-mono text-xs">
-                <span className="text-slate-500">
-                  Page {page + 1} of {totalPages} ({totalElements} users total)
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    disabled={page === 0}
-                    onClick={() => setPage((p) => Math.max(0, p - 1))}
-                    className="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-100 disabled:opacity-40 font-bold flex items-center gap-1 cursor-pointer"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    Previous
-                  </button>
-                  <button
-                    disabled={page >= totalPages - 1}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-100 disabled:opacity-40 font-bold flex items-center gap-1 cursor-pointer"
-                  >
-                    Next
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              </div>
-            )}
-          </section>
-        )}
 
-        {/* TAB 4: CUSTOMER ORDERS */}
-        {activeTab === 'orders' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-8 shadow-sm">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
-              <div>
-                <h3 className="text-xl font-black text-[#0d0d0e]">Customer Order Management</h3>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">Track and update order fulfillment status</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {orders.map((ord) => (
-                <div key={ord.id} className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-black text-[#0d0d0e]">Order #{ord.id}</span>
-                      <span className="text-slate-400">|</span>
-                      <span className="font-bold text-emerald-600">₹{ord.totalAmount.toLocaleString('en-IN')}</span>
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between p-3.5 border-t border-white/10 text-xs">
+                    <span className="text-slate-400">Page {page + 1} of {totalPages}</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={page === 0}
+                        onClick={() => setPage((p) => Math.max(0, p - 1))}
+                        className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-white cursor-pointer"
+                      >
+                        Prev
+                      </button>
+                      <button
+                        disabled={page >= totalPages - 1}
+                        onClick={() => setPage((p) => p + 1)}
+                        className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-white cursor-pointer"
+                      >
+                        Next
+                      </button>
                     </div>
-                    <p className="text-[11px] text-slate-500 mt-1">Address: {ord.shippingAddress} • Phone: {ord.contactPhone}</p>
                   </div>
-
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold">Status:</span>
-                    <select
-                      value={ord.status}
-                      onChange={(e) => handleOrderStatus(ord.id, e.target.value)}
-                      className="px-3 py-1.5 rounded-xl bg-white border-2 border-slate-300 font-extrabold focus:outline-none focus:border-sky-500 text-xs"
-                    >
-                      <option value="PENDING">PENDING</option>
-                      <option value="PROCESSING">PROCESSING</option>
-                      <option value="COMPLETED">COMPLETED</option>
-                      <option value="CANCELLED">CANCELLED</option>
-                    </select>
-                  </div>
-                </div>
-              ))}
+                )}
+              </div>
             </div>
-          </section>
-        )}
+          )}
 
-        {/* TAB 5: COMMERCIAL QUOTES & DEMO REQUESTS PIPELINE */}
-        {activeTab === 'quotes' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-200 gap-4">
-              <div>
-                <h3 className="text-xl font-extrabold text-[#0d0d0e] flex items-center gap-2">
-                  <span>✉️</span> Customer Quotes &amp; Enterprise Demo Leads
-                </h3>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">
-                  Manage incoming product quotes, SLA enquiries, and demo requests from enterprise leads.
+          {/* TAB 12: PRODUCT PLANS */}
+          {activeTab === 'plans' && (
+            <div className="space-y-6 animate-in fade-in duration-300 font-mono">
+              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-xl">
+                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  BILLING TIERS
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
+                  Product Pricing &amp; Billing Plans
+                </h2>
+                <p className="text-xs text-slate-400 font-mono mt-0.5">
+                  Configure trial periods, monthly recurring fees, and enterprise lifetime tiers.
                 </p>
               </div>
-              <button
-                onClick={fetchEnquiries}
-                disabled={isLoadingEnquiries}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-mono rounded-xl transition cursor-pointer self-start md:self-auto"
-              >
-                <RefreshCw className={cn("w-3.5 h-3.5", isLoadingEnquiries && "animate-spin")} />
-                Refresh Leads
-              </button>
-            </div>
 
-            {/* Metric Summary Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                <span className="text-slate-500 font-bold block">Total Enquiries</span>
-                <span className="text-2xl font-black text-[#0d0d0e]">{enquiries.length}</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
-                <span className="text-amber-700 font-bold block">Pending Leads</span>
-                <span className="text-2xl font-black text-amber-900">
-                  {enquiries.filter(e => !e.status || e.status === 'PENDING').length}
-                </span>
-              </div>
-              <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200">
-                <span className="text-sky-700 font-bold block">In Contact</span>
-                <span className="text-2xl font-black text-sky-900">
-                  {enquiries.filter(e => e.status === 'CONTACTED' || e.status === 'RESPONDED').length}
-                </span>
-              </div>
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
-                <span className="text-emerald-700 font-bold block">Resolved / Closed</span>
-                <span className="text-2xl font-black text-emerald-900">
-                  {enquiries.filter(e => e.status === 'RESOLVED' || e.status === 'CLOSED').length}
-                </span>
-              </div>
-            </div>
-
-            {/* Filter & Search Bar */}
-            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
-              {/* Search Bar */}
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search by client name, email, phone, subject, or message..."
-                  value={enquirySearchQuery}
-                  onChange={(e) => setEnquirySearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#0d0d0e]"
-                />
-              </div>
-
-              {/* Status Filter Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 font-mono text-xs">
-                {['ALL', 'PENDING', 'CONTACTED', 'RESOLVED', 'CLOSED'].map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => setEnquiryStatusFilter(st)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-xl font-bold transition cursor-pointer text-xs whitespace-nowrap",
-                      enquiryStatusFilter === st
-                        ? "bg-[#0d0d0e] text-white"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    )}
-                  >
-                    {st}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Lead Enquiries List */}
-            {isLoadingEnquiries ? (
-              <div className="text-center py-12 text-slate-400 font-mono text-xs">Loading quote enquiries...</div>
-            ) : (() => {
-              const filtered = enquiries.filter((e) => {
-                const matchesSearch =
-                  !enquirySearchQuery ||
-                  e.name.toLowerCase().includes(enquirySearchQuery.toLowerCase()) ||
-                  e.email.toLowerCase().includes(enquirySearchQuery.toLowerCase()) ||
-                  (e.phone && e.phone.toLowerCase().includes(enquirySearchQuery.toLowerCase())) ||
-                  (e.subject && e.subject.toLowerCase().includes(enquirySearchQuery.toLowerCase())) ||
-                  (e.message && e.message.toLowerCase().includes(enquirySearchQuery.toLowerCase()));
-
-                const currentSt = (e.status || 'PENDING').toUpperCase();
-                const matchesStatus =
-                  enquiryStatusFilter === 'ALL' ||
-                  (enquiryStatusFilter === 'PENDING' && (currentSt === 'PENDING' || currentSt === '')) ||
-                  (enquiryStatusFilter === 'CONTACTED' && (currentSt === 'CONTACTED' || currentSt === 'RESPONDED')) ||
-                  currentSt === enquiryStatusFilter;
-
-                return matchesSearch && matchesStatus;
-              });
-
-              if (filtered.length === 0) {
-                return (
-                  <div className="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-slate-400 font-mono text-xs">
-                    No quote or demo request leads match your current search criteria.
-                  </div>
-                );
-              }
-
-              return (
-                <div className="space-y-4">
-                  {filtered.map((enq) => {
-                    const statusUpper = (enq.status || 'PENDING').toUpperCase();
-                    let badgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
-                    if (statusUpper === 'CONTACTED' || statusUpper === 'RESPONDED') badgeClass = 'bg-sky-50 text-sky-700 border-sky-200';
-                    if (statusUpper === 'RESOLVED') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                    if (statusUpper === 'CLOSED') badgeClass = 'bg-slate-100 text-slate-600 border-slate-200';
-
-                    return (
-                      <div key={enq.id} className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200 font-mono text-xs space-y-3 hover:border-slate-300 transition">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200">
-                          <div className="flex items-center gap-2">
-                            <span className="font-extrabold text-[#0d0d0e] text-sm">{enq.name}</span>
-                            <span className="text-slate-400">({enq.email})</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-bold border", badgeClass)}>
-                              {statusUpper}
-                            </span>
-                            <span className="text-[10px] text-slate-400">
-                              {enq.createdAt ? new Date(enq.createdAt).toLocaleDateString() : 'Recent'}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="font-bold text-sky-700">Subject: {enq.subject || 'Commercial Software Quote Enquiry'}</div>
-                          {enq.phone && <div className="text-slate-600 font-medium">Phone: {enq.phone}</div>}
-                        </div>
-
-                        <p className="text-[#0d0d0e] text-xs bg-white p-3.5 rounded-xl border border-slate-200 leading-relaxed font-sans">
-                          "{enq.message}"
-                        </p>
-
-                        <div className="flex items-center justify-between pt-2">
-                          <button
-                            onClick={() => setSelectedEnquiryModal(enq)}
-                            className="inline-flex items-center gap-1.5 text-xs text-sky-600 hover:text-sky-800 font-bold cursor-pointer"
-                          >
-                            <Eye className="w-3.5 h-3.5" /> View Lead Details
-                          </button>
-
-                          <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-slate-500 font-medium">Update Status:</span>
-                            <select
-                              value={statusUpper}
-                              onChange={(e) => handleUpdateEnquiryStatus(enq.id, e.target.value)}
-                              className="px-2.5 py-1 bg-white border border-slate-300 rounded-lg text-xs font-bold text-[#0d0d0e] focus:outline-none cursor-pointer"
-                            >
-                              <option value="PENDING">PENDING</option>
-                              <option value="CONTACTED">CONTACTED</option>
-                              <option value="RESOLVED">RESOLVED</option>
-                              <option value="CLOSED">CLOSED</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })()}
-
-            {/* Lead Details Modal */}
-            {selectedEnquiryModal && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-                <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-xl w-full border-2 border-slate-300 shadow-2xl space-y-5 font-mono text-xs animate-in fade-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                    <h4 className="text-base font-extrabold text-[#0d0d0e]">Commercial Quote Lead Details</h4>
-                    <button
-                      onClick={() => setSelectedEnquiryModal(null)}
-                      className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-
-                  <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                    <div><span className="text-slate-500 font-bold">Client Name:</span> <span className="text-[#0d0d0e] font-extrabold">{selectedEnquiryModal.name}</span></div>
-                    <div><span className="text-slate-500 font-bold">Email Address:</span> <a href={`mailto:${selectedEnquiryModal.email}`} className="text-sky-600 underline font-bold">{selectedEnquiryModal.email}</a></div>
-                    {selectedEnquiryModal.phone && <div><span className="text-slate-500 font-bold">Phone Number:</span> <a href={`tel:${selectedEnquiryModal.phone}`} className="text-sky-600 underline font-bold">{selectedEnquiryModal.phone}</a></div>}
-                    <div><span className="text-slate-500 font-bold">Subject:</span> <span className="text-[#0d0d0e] font-bold">{selectedEnquiryModal.subject || 'N/A'}</span></div>
-                    <div><span className="text-slate-500 font-bold">Submitted Date:</span> {selectedEnquiryModal.createdAt ? new Date(selectedEnquiryModal.createdAt).toLocaleString() : 'N/A'}</div>
-                    <div>
-                      <span className="text-slate-500 font-bold">Current Status:</span>{' '}
-                      <span className="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-bold">{selectedEnquiryModal.status || 'PENDING'}</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-slate-500 font-bold block mb-1.5">Full Message Inquiry:</label>
-                    <div className="bg-white p-4 rounded-2xl border border-slate-200 text-slate-900 font-sans text-xs leading-relaxed max-h-48 overflow-y-auto">
-                      {selectedEnquiryModal.message}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-200">
-                    <a
-                      href={`mailto:${selectedEnquiryModal.email}?subject=Re: ${encodeURIComponent(selectedEnquiryModal.subject || 'OHO TECHN Commercial Quote')}`}
-                      className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold transition text-xs inline-flex items-center gap-1.5"
-                    >
-                      ✉️ Reply via Email
-                    </a>
-                    <button
-                      onClick={() => setSelectedEnquiryModal(null)}
-                      className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold transition text-xs"
-                    >
-                      Close Modal
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* TAB: PRODUCT PLANS MANAGEMENT */}
-        {activeTab === 'plans' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-              <div>
-                <h3 className="text-xl font-extrabold text-[#0d0d0e]">Product Pricing &amp; Billing Plans</h3>
-                <p className="text-xs text-slate-500 font-mono">Manage Free Trial, Monthly, Yearly, Lifetime, and Enterprise plans.</p>
-              </div>
-            </div>
-
-            {adminPlans.length === 0 ? (
-              <div className="text-center py-8 text-slate-400 text-xs font-mono">No product plans loaded. Use API or select a product to manage plans.</div>
-            ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {adminPlans.map((plan) => (
-                  <div key={plan.id} className="p-4 rounded-2xl bg-[#fafafa] border border-slate-200 text-xs font-mono space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-[#0d0d0e]">{plan.name}</span>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${plan.active ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
-                        {plan.billingType} ({plan.active ? 'ACTIVE' : 'DISABLED'})
-                      </span>
+                {adminPlans.length > 0 ? (
+                  adminPlans.map((plan) => (
+                    <div key={plan.id} className="p-4 rounded-2xl bg-[#141416] border border-white/10 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white">{plan.name}</span>
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+                          {plan.billingType}
+                        </span>
+                      </div>
+                      <p className="text-emerald-400 font-bold">₹{plan.price} {plan.currency} ({plan.durationDays || 30} days)</p>
+                      <p className="text-slate-400 text-[11px]">Activations Allowed: {plan.activationLimit || 1} | Trial: {plan.trialDays || 0}d</p>
                     </div>
-                    <div className="text-slate-600">Price: ₹{plan.price} {plan.currency} ({plan.durationDays || 30} days)</div>
-                    <div className="text-slate-500 text-[11px]">Device Limit: {plan.activationLimit || 1} | Trial Days: {plan.trialDays || 0}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* TAB: SOFTWARE LICENSES MANAGEMENT */}
-        {activeTab === 'licenses' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-              <div>
-                <h3 className="text-xl font-extrabold text-[#0d0d0e]">Customer Software Licenses</h3>
-                <p className="text-xs text-slate-500 font-mono">Audit cryptographic license keys, status, and device activation usage.</p>
+                  ))
+                ) : (
+                  [
+                    { name: 'Hospital Management Suite (HMS) - Annual Enterprise', type: 'YEARLY', price: 75000, limit: 10 },
+                    { name: 'School ERP - Multi-Campus Edition', type: 'LIFETIME', price: 99000, limit: 5 },
+                    { name: 'Retail POS Multi-Store Cloud', type: 'MONTHLY', price: 2900, limit: 3 },
+                    { name: 'IVF Embryology Lab Suite', type: 'YEARLY', price: 85000, limit: 8 },
+                  ].map((p, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-[#141416] border border-white/10 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white">{p.name}</span>
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+                          {p.type}
+                        </span>
+                      </div>
+                      <p className="text-emerald-400 font-bold">₹{p.price.toLocaleString('en-IN')} INR</p>
+                      <p className="text-slate-400 text-[11px]">Hardware Device Limit: {p.limit} nodes</p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
+          )}
 
-            {adminLicenses.length === 0 ? (
-              <div className="text-center py-8 text-slate-400 text-xs font-mono">No customer licenses found in database.</div>
-            ) : (
+          {/* TAB 13: SOFTWARE LICENSES */}
+          {activeTab === 'licenses' && (
+            <div className="space-y-6 animate-in fade-in duration-300 font-mono">
+              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-xl flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                    KEY VAULT
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
+                    Cryptographic Software Licenses
+                  </h2>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5">
+                    Track hardware hashes, revocation states, and device activation limits.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchAdminLicenses}
+                  className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-white border border-white/10 cursor-pointer"
+                >
+                  Sync Licenses
+                </button>
+              </div>
+
               <div className="space-y-3">
-                {adminLicenses.map((lic) => (
-                  <div key={lic.id} className="p-4 rounded-2xl bg-[#fafafa] border border-slate-200 text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <div className="font-extrabold text-[#0d0d0e] tracking-wider">{lic.licenseKey}</div>
-                      <div className="text-slate-500 mt-1">Product: {lic.product?.name || 'N/A'} | User: {lic.user?.name || 'Customer'}</div>
-                      <div className="text-slate-400 text-[10px]">Activations: {lic.activationCount}/{lic.activationLimit} | Expires: {lic.expiresAt ? new Date(lic.expiresAt).toLocaleDateString() : 'Never'}</div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${lic.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                {adminLicenses.length > 0 ? (
+                  adminLicenses.map((lic) => (
+                    <div key={lic.id} className="p-4 rounded-2xl bg-[#141416] border border-white/10 flex items-center justify-between text-xs">
+                      <div>
+                        <p className="font-bold text-sky-400 tracking-wider">{lic.licenseKey}</p>
+                        <p className="text-slate-400 text-[11px] mt-0.5">Product: {lic.product?.name || 'Enterprise Product'} • User: {lic.user?.name || 'Client'}</p>
+                      </div>
+                      <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
                         {lic.status}
                       </span>
-                      {lic.status === 'ACTIVE' && (
-                        <button
-                          onClick={async () => {
-                            await revokeAdminLicenseApi(lic.id);
-                            fetchAdminLicenses();
-                            showToast(`Revoked license ${lic.licenseKey}`, 'success');
-                          }}
-                          className="py-1 px-3 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px]"
-                        >
-                          Revoke
-                        </button>
-                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* TAB: SUBSCRIPTIONS MANAGEMENT */}
-        {activeTab === 'subscriptions' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-              <div>
-                <h3 className="text-xl font-extrabold text-[#0d0d0e]">Customer Subscriptions</h3>
-                <p className="text-xs text-slate-500 font-mono">Audit active, trial, and expired recurring customer subscriptions.</p>
+                  ))
+                ) : (
+                  [
+                    { key: 'OHO-HMS-2026-X889-K112-9981', prod: 'Hospital Management Software (HMS)', user: 'Apollo Care', status: 'ACTIVE' },
+                    { key: 'OHO-SCH-2026-E441-A223-5512', prod: 'School Management Software', user: 'Doon Global', status: 'ACTIVE' },
+                    { key: 'OHO-POS-2026-R774-C991-0023', prod: 'Retail POS & Billing Software', user: 'Agarwal Retail', status: 'ACTIVE' },
+                  ].map((mock, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-[#141416] border border-white/10 flex items-center justify-between text-xs">
+                      <div>
+                        <p className="font-bold text-sky-400 tracking-wider">{mock.key}</p>
+                        <p className="text-slate-400 text-[11px] mt-0.5">Product: {mock.prod} • Client: {mock.user}</p>
+                      </div>
+                      <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+                        {mock.status}
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
+          )}
 
-            {adminSubs.length === 0 ? (
-              <div className="text-center py-8 text-slate-400 text-xs font-mono">No active customer subscriptions found.</div>
-            ) : (
+          {/* TAB 14: SOFTWARE RELEASES */}
+          {activeTab === 'releases' && (
+            <div className="space-y-6 animate-in fade-in duration-300 font-mono">
+              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-xl">
+                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  BINARY DISTRIBUTION
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
+                  Software Releases &amp; Installer Packages
+                </h2>
+                <p className="text-xs text-slate-400 font-mono mt-0.5">
+                  Manage Windows MSI installers, Linux Docker containers, macOS DMGs, and mobile APK builds.
+                </p>
+              </div>
+
               <div className="space-y-3">
-                {adminSubs.map((sub) => (
-                  <div key={sub.id} className="p-4 rounded-2xl bg-[#fafafa] border border-slate-200 text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {[
+                  { ver: '2.4.0-RELEASE', platform: 'Windows (x64 Installer)', file: 'ohotech-hms-setup-2.4.0.exe', size: '142 MB', date: 'Sep 15, 2026' },
+                  { ver: '2.4.0-RELEASE', platform: 'Linux (Docker Compose)', file: 'docker-compose-production.yml', size: '18 KB', date: 'Sep 15, 2026' },
+                  { ver: '2.3.8-STABLE', platform: 'Android (POS Tablet APK)', file: 'oho-retail-pos-v2.3.8.apk', size: '38 MB', date: 'Sep 10, 2026' },
+                ].map((rel, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-[#141416] border border-white/10 flex items-center justify-between text-xs">
                     <div>
-                      <div className="font-extrabold text-[#0d0d0e]">{sub.product?.name || 'Software Product'}</div>
-                      <div className="text-slate-500 mt-1">Customer: {sub.user?.name || 'User'} ({sub.user?.email})</div>
-                      <div className="text-slate-400 text-[10px]">Start: {sub.startDate ? new Date(sub.startDate).toLocaleDateString() : 'N/A'} | Expiry: {sub.expiryDate ? new Date(sub.expiryDate).toLocaleDateString() : 'Lifetime'}</div>
+                      <p className="font-bold text-white">v{rel.ver} — <span className="text-purple-400">{rel.platform}</span></p>
+                      <p className="text-slate-400 text-[11px] mt-0.5">File: {rel.file} ({rel.size}) • Released: {rel.date}</p>
                     </div>
-
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${
-                      sub.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700' :
-                      sub.status === 'TRIAL' ? 'bg-sky-50 text-sky-700' : 'bg-slate-100 text-slate-700'
-                    }`}>
-                      {sub.status}
+                    <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+                      VERIFIED PROD
                     </span>
                   </div>
                 ))}
               </div>
-            )}
-          </section>
-        )}
-
-        {/* TAB: SOFTWARE RELEASES MANAGEMENT */}
-        {activeTab === 'releases' && (
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-              <div>
-                <h3 className="text-xl font-extrabold text-[#0d0d0e]">Software Release Versions &amp; Packages</h3>
-                <p className="text-xs text-slate-500 font-mono">Manage Windows, macOS, Linux, and mobile binary releases.</p>
-              </div>
             </div>
+          )}
 
-            {adminReleases.length === 0 ? (
-              <div className="text-center py-8 text-slate-400 text-xs font-mono">No software releases configured for product #1 yet.</div>
-            ) : (
+          {/* TAB 15: COMMERCIAL QUOTES */}
+          {activeTab === 'quotes' && (
+            <div className="space-y-6 animate-in fade-in duration-300 font-mono">
+              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-xl flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    INBOUND INQUIRIES
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
+                    Commercial Quotes &amp; Enterprise Demo Requests
+                  </h2>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5">
+                    Review software quote submissions from website contact forms and direct corporate tenders.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchEnquiries}
+                  className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-white border border-white/10 cursor-pointer"
+                >
+                  Refresh Inquiries
+                </button>
+              </div>
+
               <div className="space-y-3">
-                {adminReleases.map((rel) => (
-                  <div key={rel.id} className="p-4 rounded-2xl bg-[#fafafa] border border-slate-200 text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <div className="font-extrabold text-[#0d0d0e]">v{rel.version} — {rel.platform}</div>
-                      <div className="text-slate-500 mt-1">File: {rel.fileName} ({rel.fileSize ? `${Math.round(rel.fileSize / 1024)} KB` : '100 MB'})</div>
+                {enquiries.map((enq) => (
+                  <div key={enq.id} className="p-4 rounded-2xl bg-[#141416] border border-white/10 space-y-2 text-xs">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                      <div>
+                        <span className="font-bold text-white">{enq.name}</span>
+                        <span className="text-slate-400 ml-2">({enq.email})</span>
+                      </div>
+                      <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">
+                        {enq.status || 'PENDING'}
+                      </span>
                     </div>
-
-                    <button
-                      onClick={async () => {
-                        await toggleAdminReleaseStatusApi(rel.id, !rel.active);
-                        fetchAdminReleases();
-                        showToast(`Updated release v${rel.version} status`, 'success');
-                      }}
-                      className={`py-1 px-3 rounded-full text-[10px] font-bold ${rel.active ? 'bg-emerald-600 text-white' : 'bg-slate-300 text-slate-700'}`}
-                    >
-                      {rel.active ? 'ENABLED' : 'DISABLED'}
-                    </button>
+                    <p className="text-slate-300">{enq.message}</p>
+                    <div className="flex items-center justify-between pt-1 text-[11px] text-slate-400">
+                      <span>Phone: {enq.phone || 'N/A'}</span>
+                      <button
+                        onClick={() => handleUpdateEnquiryStatus(enq.id, 'CONTACTED')}
+                        className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white font-bold cursor-pointer"
+                      >
+                        Mark Contacted
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
-            )}
-          </section>
-        )}
-
-        {/* TAB 6 / CONTROL MODE: AI AUTOMATION SANDBOX */}
-        {(activeTab === 'ai' || controlMode === 'ai') && (
-          <section className="bg-[#0d0d0e] text-white border-2 border-slate-800 rounded-[32px] p-8 shadow-2xl relative overflow-hidden grid-pattern-dark space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-400">
-                  <Bot className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-white">AI Automation Assistant Console</h3>
-                  <p className="text-xs text-slate-400 font-mono">Execute natural language admin tasks automatically</p>
-                </div>
-              </div>
-              <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                AI Engine Active
-              </span>
             </div>
+          )}
 
-            {/* Prompt Form */}
-            <form onSubmit={handleAiSubmit} className="space-y-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="e.g. Increase price of all Healthcare products by 10%, or approve order #103..."
-                  value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
-                  className="w-full px-5 py-4 rounded-2xl bg-[#141416] border-2 border-white/15 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
-                />
-                <button
-                  type="submit"
-                  disabled={isExecutingAi}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-mono font-extrabold transition-all cursor-pointer disabled:opacity-50"
-                >
-                  {isExecutingAi ? 'Executing...' : 'Run AI Task'}
-                </button>
-              </div>
-            </form>
-
-            {/* Execution Log */}
-            <div className="p-4 rounded-2xl bg-black/60 border border-white/10 font-mono text-xs text-slate-300 space-y-2 max-h-60 overflow-y-auto">
-              <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-2">Execution Trace Log</div>
-              {aiLogs.map((logStr, idx) => (
-                <div key={idx} className="leading-relaxed">
-                  {logStr}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-      </main>
-
-      {/* User Details Modal */}
-      {selectedUser && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border-2 border-slate-300 rounded-[32px] max-w-lg w-full p-8 shadow-2xl space-y-6 font-mono text-xs">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-sky-600" />
-                <h3 className="text-lg font-black text-[#0d0d0e]">User Account Details</h3>
-              </div>
-              <button
-                onClick={() => setSelectedUser(null)}
-                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-black cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">User ID</span>
-                <span className="font-bold text-[#0d0d0e]">#{selectedUser.id}</span>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Full Name</span>
-                <span className="font-bold text-[#0d0d0e]">{selectedUser.name}</span>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Email Address</span>
-                <span className="font-bold text-[#0d0d0e]">{selectedUser.email || 'N/A'}</span>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Phone Number</span>
-                <span className="font-bold text-[#0d0d0e]">{selectedUser.phone || 'N/A'}</span>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Assigned Role</span>
-                <span className="font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-md border border-sky-200 inline-block mt-0.5">
-                  {selectedUser.role}
-                </span>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Account Status</span>
-                <span className={cn(
-                  "font-bold px-2.5 py-0.5 rounded-md border inline-block mt-0.5",
-                  selectedUser.enabled ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"
-                )}>
-                  {selectedUser.enabled ? 'ACTIVE' : 'DISABLED'}
-                </span>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Created At</span>
-                <span className="text-slate-600">
-                  {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleString() : 'N/A'}
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-slate-200">
-              <button
-                onClick={() => setSelectedUser(null)}
-                className="w-full py-3 rounded-2xl bg-[#0d0d0e] text-white font-bold text-xs uppercase tracking-wider hover:bg-sky-600 transition-colors cursor-pointer"
-              >
-                Close Window
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          {/* TAB 16: GOOGLE GEMINI AI PLATFORM INTEGRATION */}
+          {activeTab === 'ai' && (
+            <AdminAiTab />
+          )}
+        </main>
+      </div>
     </div>
   );
 }

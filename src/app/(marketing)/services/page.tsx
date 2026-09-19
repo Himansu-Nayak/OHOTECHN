@@ -133,7 +133,7 @@ export default function ServicesPage() {
         <header className="mb-16 sm:mb-24 pb-12 border-b border-white/10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-6">
             <Boxes className="w-3.5 h-3.5" />
-            <span>CAPABILITY ECOSYSTEM // 15 PRODUCTION VERTICALS</span>
+            <span>CAPABILITY ECOSYSTEM • 15 PRODUCTION VERTICALS</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.04] uppercase mb-6">

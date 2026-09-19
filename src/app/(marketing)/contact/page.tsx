@@ -228,7 +228,7 @@ export default function ContactPage() {
         <header className="mb-14 sm:mb-20 pb-10 border-b border-white/10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-6">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>DISCOVERY PROTOCOL // DIRECT ARCHITECT ACCESS</span>
+            <span>DISCOVERY PROTOCOL • DIRECT ARCHITECT ACCESS</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.04] uppercase mb-6">
@@ -510,7 +510,7 @@ export default function ContactPage() {
 
                   <div className="flex items-center justify-center gap-2 text-[11px] font-mono text-slate-500 pt-2">
                     <Lock className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Zero Spam Guaranteed // Mutual NDA Executed Prior To Discovery Calls</span>
+                    <span>Zero Spam Guaranteed • Mutual NDA Executed Prior To Discovery Calls</span>
                   </div>
 
                 </form>

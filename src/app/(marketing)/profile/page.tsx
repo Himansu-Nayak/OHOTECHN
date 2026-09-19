@@ -134,7 +134,7 @@ export default function ProfilePage() {
 
             {/* Privilege Badge */}
             <div className="px-3.5 py-1.5 rounded-2xl bg-[#0d0d0e] text-white font-mono text-xs font-bold text-center self-start sm:self-auto">
-              ROLE: {user.role || 'ROLE_CUSTOMER'}
+              {user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER' ? 'Role: Developer' : user.role === 'ROLE_ADMIN' || user.role === 'ADMIN' ? 'Role: Administrator' : 'Role: Customer'}
             </div>
           </div>
 

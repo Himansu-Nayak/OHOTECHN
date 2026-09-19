@@ -17,7 +17,7 @@ export function WorkNextProject({ nextProject }: WorkNextProjectProps) {
     <section className="mt-20 sm:mt-28 pt-12 border-t border-white/10">
       <div className="text-xs font-mono text-slate-400 font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
         <FolderGit2 className="w-3.5 h-3.5 text-emerald-400" />
-        <span>CONTINUE CASE STUDY READING // UP NEXT</span>
+        <span>CONTINUE CASE STUDY READING • UP NEXT</span>
       </div>
 
       <Link
@@ -36,7 +36,7 @@ export function WorkNextProject({ nextProject }: WorkNextProjectProps) {
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center gap-3 text-xs font-mono">
               <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold uppercase tracking-wider">
-                PROJECT // {nextProject.number}
+                PROJECT • {nextProject.number}
               </span>
               <span className="text-slate-400">
                 {nextProject.industry}

@@ -2,11 +2,15 @@ package com.ohotech.backend.config;
 
 import com.ohotech.backend.entity.Category;
 import com.ohotech.backend.entity.Product;
+import com.ohotech.backend.entity.Role;
+import com.ohotech.backend.entity.User;
 import com.ohotech.backend.repository.CategoryRepository;
 import com.ohotech.backend.repository.ProductRepository;
+import com.ohotech.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,8 @@ public class DataInitializer implements CommandLineRunner {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -32,9 +38,111 @@ public class DataInitializer implements CommandLineRunner {
             jdbcTemplate.execute("ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check");
             jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INT DEFAULT 0");
             jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMP");
+            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS firebase_uid VARCHAR(255) UNIQUE");
             jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN description TYPE VARCHAR(2000) USING description::text");
             jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN previous_value TYPE VARCHAR(2000) USING previous_value::text");
             jdbcTemplate.execute("ALTER TABLE audit_logs ALTER COLUMN new_value TYPE VARCHAR(2000) USING new_value::text");
+            // Ensure all admin and developer accounts are email verified so they can log in directly without OTP
+            jdbcTemplate.execute("UPDATE users SET email_verified = true WHERE role IN ('ROLE_ADMIN', 'ROLE_DEVELOPER', 'ADMIN', 'DEVELOPER')");
+
+            // Seed/Synchronize admin & developer passwords for direct development access
+            String standardDevPass = "Admin@12345";
+            String encodedPass = passwordEncoder.encode(standardDevPass);
+
+            userRepository.findByEmail("admin@ohotechn.com").ifPresent(admin -> {
+                admin.setPasswordHash(encodedPass);
+                admin.setEmailVerified(true);
+                admin.setEnabled(true);
+                admin.setFailedLoginAttempts(0);
+                admin.setLockoutUntil(null);
+                userRepository.save(admin);
+                log.info("Synchronized password for admin@ohotechn.com to {}", standardDevPass);
+            });
+
+            userRepository.findByEmail("himansu@ohotechn.com").ifPresent(dev -> {
+                dev.setPasswordHash(encodedPass);
+                dev.setEmailVerified(true);
+                dev.setEnabled(true);
+                dev.setFailedLoginAttempts(0);
+                dev.setLockoutUntil(null);
+                userRepository.save(dev);
+                log.info("Synchronized password for himansu@ohotechn.com to {}", standardDevPass);
+            });
+
+            if (userRepository.findByEmail("admin@ohotech.com").isEmpty()) {
+                User adminAlt = User.builder()
+                        .name("System Admin")
+                        .email("admin@ohotech.com")
+                        .passwordHash(encodedPass)
+                        .role(Role.ROLE_ADMIN)
+                        .emailVerified(true)
+                        .phoneVerified(true)
+                        .enabled(true)
+                        .failedLoginAttempts(0)
+                        .build();
+                userRepository.save(adminAlt);
+                log.info("Created admin@ohotech.com with password {}", standardDevPass);
+            } else {
+                userRepository.findByEmail("admin@ohotech.com").ifPresent(alt -> {
+                    alt.setPasswordHash(encodedPass);
+                    alt.setEmailVerified(true);
+                    alt.setEnabled(true);
+                    alt.setRole(Role.ROLE_ADMIN);
+                    alt.setFailedLoginAttempts(0);
+                    alt.setLockoutUntil(null);
+                    userRepository.save(alt);
+                });
+            }
+
+            // Initialize AI Platform Tables if not exists
+            jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS ai_conversations (
+                    id BIGSERIAL PRIMARY KEY,
+                    user_id BIGINT,
+                    session_id VARCHAR(255),
+                    title VARCHAR(255) NOT NULL,
+                    feature VARCHAR(64) NOT NULL,
+                    created_at TIMESTAMP,
+                    updated_at TIMESTAMP,
+                    CONSTRAINT fk_ai_conv_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+                )
+            """);
+
+            jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS ai_messages (
+                    id BIGSERIAL PRIMARY KEY,
+                    conversation_id BIGINT NOT NULL,
+                    role VARCHAR(32) NOT NULL,
+                    content TEXT NOT NULL,
+                    metadata TEXT,
+                    created_at TIMESTAMP,
+                    CONSTRAINT fk_ai_msg_conv FOREIGN KEY (conversation_id) REFERENCES ai_conversations(id) ON DELETE CASCADE
+                )
+            """);
+
+            jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS ai_usage (
+                    id BIGSERIAL PRIMARY KEY,
+                    user_id BIGINT,
+                    feature VARCHAR(64) NOT NULL,
+                    model VARCHAR(64) NOT NULL,
+                    prompt_tokens INT,
+                    candidate_tokens INT,
+                    total_tokens INT,
+                    timestamp TIMESTAMP
+                )
+            """);
+
+            jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS product_embeddings (
+                    id BIGSERIAL PRIMARY KEY,
+                    product_id BIGINT NOT NULL UNIQUE,
+                    product_name VARCHAR(255) NOT NULL,
+                    content_text TEXT NOT NULL,
+                    embedding_json TEXT NOT NULL,
+                    updated_at TIMESTAMP
+                )
+            """);
         } catch (Exception e) {
             log.warn("Schema initialization warning: {}", e.getMessage());
         }

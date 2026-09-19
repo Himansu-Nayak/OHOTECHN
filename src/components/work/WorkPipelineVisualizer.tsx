@@ -23,7 +23,7 @@ export function WorkPipelineVisualizer({ project }: WorkPipelineVisualizerProps)
   const steps = [
     {
       id: 'step-1',
-      title: '01 // TELEMETRY & INGESTION',
+      title: '01 • TELEMETRY & INGESTION',
       label: 'Intake & Auth',
       metric: '< 12ms',
       description: project.introduction.scope[0] || 'High-throughput edge ingestion with token validation and rate-limiting.',
@@ -31,7 +31,7 @@ export function WorkPipelineVisualizer({ project }: WorkPipelineVisualizerProps)
     },
     {
       id: 'step-2',
-      title: '02 // TRANSACTION ISOLATION',
+      title: '02 • TRANSACTION ISOLATION',
       label: 'Tenant Core',
       metric: '99.999% SLA',
       description: project.introduction.scope[1] || 'Tenant boundary enforcement with encrypted multi-region database replication.',
@@ -39,7 +39,7 @@ export function WorkPipelineVisualizer({ project }: WorkPipelineVisualizerProps)
     },
     {
       id: 'step-3',
-      title: '03 // STATE ENGINE & SYNC',
+      title: '03 • STATE ENGINE & SYNC',
       label: 'Real-Time Sync',
       metric: 'Sub-Second',
       description: project.introduction.scope[2] || 'Bidirectional WebSockets queue distributing real-time state changes to all connected consoles.',
@@ -47,7 +47,7 @@ export function WorkPipelineVisualizer({ project }: WorkPipelineVisualizerProps)
     },
     {
       id: 'step-4',
-      title: '04 // EVENT DISPATCH',
+      title: '04 • EVENT DISPATCH',
       label: 'Audit & Ledgers',
       metric: 'Zero Data Loss',
       description: project.introduction.scope[3] || 'Immutable audit logging, automated reconciliation, and webhook dispatch.',
@@ -60,7 +60,7 @@ export function WorkPipelineVisualizer({ project }: WorkPipelineVisualizerProps)
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
         <div>
           <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">
-            METHODOLOGY // WORKFLOW PIPELINE
+            METHODOLOGY • WORKFLOW PIPELINE
           </div>
           <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight uppercase">
             How The Architecture Operates

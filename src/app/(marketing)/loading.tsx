@@ -21,10 +21,10 @@ export default function MarketingLoading() {
         </div>
 
         {/* Status Line */}
-        <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+        <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-2">
           <span>OHO TECH</span>
-          <span className="text-slate-500">//</span>
-          <span>STREAMING</span>
+          <span className="text-slate-500">•</span>
+          <span>LOADING</span>
         </div>
 
         <p className="text-[11px] font-mono text-slate-400 mb-6 tracking-wide">

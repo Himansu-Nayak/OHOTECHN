@@ -68,7 +68,7 @@ export function InsightsHero() {
       {/* Category Capsule */}
       <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-6">
         <BookOpen className="w-3.5 h-3.5" />
-        <span>TECHNICAL WHITEPAPERS // SYSTEM DESIGN // 08 PUBLICATIONS</span>
+        <span>TECHNICAL WHITEPAPERS • SYSTEM DESIGN • 08 PUBLICATIONS</span>
       </div>
 
       {/* Main Headline */}

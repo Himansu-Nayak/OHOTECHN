@@ -129,7 +129,7 @@ export function DeliveryRoadmap() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3">
             <Workflow className="w-3.5 h-3.5" />
-            <span>DELIVERY METHODOLOGY // 04 PHASES</span>
+            <span>DELIVERY METHODOLOGY • 04 PHASES</span>
           </div>
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight uppercase">
             How We Engineer &amp; Deliver

@@ -433,7 +433,7 @@ export function ScrollFrameSequence({
                 {/* Floating drag rotation hint pill */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-mono text-slate-300 pointer-events-none flex items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>DRAG TO ROTATE 360° // SCROLL TO SCRUB</span>
+                  <span>DRAG TO ROTATE 360° • SCROLL TO SCRUB</span>
                 </div>
               </>
             )}

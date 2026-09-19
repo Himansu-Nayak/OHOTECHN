@@ -33,6 +33,7 @@ yarn-error.log*
 # env files
 .env
 .env.local
+.env*.local
 !.env.example
 
 # logs
@@ -63,3 +64,4 @@ skills-lock.json
 scratch/
 Recording*.mp4
 *.mp4
+!public/videos/**

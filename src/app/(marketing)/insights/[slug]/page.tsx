@@ -131,7 +131,7 @@ export default async function InsightDetailPage({ params }: PageProps) {
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
               <BookOpen className="w-3.5 h-3.5" />
-              <span>WHITEPAPER // {article.number}</span>
+              <span>WHITEPAPER • {article.number}</span>
             </div>
 
             <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
@@ -255,7 +255,7 @@ export default async function InsightDetailPage({ params }: PageProps) {
         {nextArticle && nextArticle.slug !== article.slug && (
           <section className="mb-16 p-6 sm:p-8 rounded-3xl bg-[#111216] border border-white/10 hover:border-emerald-500/40 transition-all duration-300 shadow-xl group">
             <div className="flex items-center justify-between font-mono text-xs text-slate-400 mb-2">
-              <span className="text-emerald-400 font-bold uppercase tracking-wider">NEXT WHITEPAPER // {nextArticle.number}</span>
+              <span className="text-emerald-400 font-bold uppercase tracking-wider">NEXT WHITEPAPER • {nextArticle.number}</span>
               <span>{nextArticle.readTime}</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug mb-3 group-hover:text-emerald-300 transition-colors">

@@ -114,7 +114,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     quickSpecs: {
       domain: 'Multi-Department Clinical EMR & Ward Grid',
       deploymentTopology: 'Isolated On-Premise & Hybrid Cloud Sync',
-      securityStandard: 'HIPAA & NABH Ready // AES-256 GCM',
+      securityStandard: 'HIPAA & NABH Ready • AES-256 GCM',
       targetThroughput: 'Sub-second prescription dispatch & 100% ACID billing'
     },
     introduction: {
@@ -171,11 +171,11 @@ export const WORK_PROJECTS: WorkProject[] = [
       systemDesignStrategy: 'Event-driven pub/sub architecture using Go microservices and Redis in-memory channels to propagate patient state instantly across outpatient, inpatient, pharmacy, and diagnostic nodes.'
     },
     architecture: {
-      frontend: 'Next.js 16 App Router // High-Concurrency Clinical Consoles // Tailwind CSS',
-      services: 'Go (Golang) Microservices // Asynchronous HL7/FHIR Ingestion Queue // gRPC',
-      database: 'PostgreSQL Relational Core // Redis In-Memory Session Cache',
-      infrastructure: 'Isolated Private VPC // Kubernetes Pod Isolation // Encrypted S3 Storage',
-      security: 'HIPAA & NABH Ready // Mutual mTLS // AES-256 Encryption at Rest & In-Transit'
+      frontend: 'Next.js 16 App Router • High-Concurrency Clinical Consoles • Tailwind CSS',
+      services: 'Go (Golang) Microservices • Asynchronous HL7/FHIR Ingestion Queue • gRPC',
+      database: 'PostgreSQL Relational Core • Redis In-Memory Session Cache',
+      infrastructure: 'Isolated Private VPC • Kubernetes Pod Isolation • Encrypted S3 Storage',
+      security: 'HIPAA & NABH Ready • Mutual mTLS • AES-256 Encryption at Rest & In-Transit'
     },
     features: [
       {
@@ -287,7 +287,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     quickSpecs: {
       domain: 'Multi-Campus Academic Governance & Examination Core',
       deploymentTopology: 'Multi-Tenant Partitioning with Global Edge CDN',
-      securityStandard: 'FERPA & Data Privacy Compliant // SSL Pinning',
+      securityStandard: 'FERPA & Data Privacy Compliant • SSL Pinning',
       targetThroughput: '15,000+ Concurrent Students during Exam Publishing'
     },
     introduction: {
@@ -344,11 +344,11 @@ export const WORK_PROJECTS: WorkProject[] = [
       systemDesignStrategy: 'Separation of transactional administrative workloads from public student reading traffic via PostgreSQL read replicas and edge CDN caching for static grade transcripts.'
     },
     architecture: {
-      frontend: 'React 19 Progressive Web App // Mobile Companion Apps // Next.js Admin',
-      services: 'Node.js Microservices // AMQP Task Queue // Dynamic PDF Compiler',
-      database: 'PostgreSQL with Dedicated Read Replicas // Redis Distributed Cache',
-      infrastructure: 'Containerized Cloud Mesh // Global Edge CDN // Automated Autoscaler',
-      security: 'Role-Based RBAC // Student Data Privacy // SSL Pinning on Mobile Apps'
+      frontend: 'React 19 Progressive Web App • Mobile Companion Apps • Next.js Admin',
+      services: 'Node.js Microservices • AMQP Task Queue • Dynamic PDF Compiler',
+      database: 'PostgreSQL with Dedicated Read Replicas • Redis Distributed Cache',
+      infrastructure: 'Containerized Cloud Mesh • Global Edge CDN • Automated Autoscaler',
+      security: 'Role-Based RBAC • Student Data Privacy • SSL Pinning on Mobile Apps'
     },
     features: [
       {
@@ -460,8 +460,8 @@ export const WORK_PROJECTS: WorkProject[] = [
     quickSpecs: {
       domain: 'Offline-First Counter Billing & Warehouse Sync',
       deploymentTopology: 'Local SQLite Edge Nodes + Cloud Master Hub',
-      securityStandard: 'Encrypted Local Spool // Hardware MAC Whitelisting',
-      targetThroughput: '<180ms Counter Checkout // 10,000+ Daily SKUs'
+      securityStandard: 'Encrypted Local Spool • Hardware MAC Whitelisting',
+      targetThroughput: '<180ms Counter Checkout • 10,000+ Daily SKUs'
     },
     introduction: {
       overview: 'High-density retail stores, supermarkets, and multi-outlet brand chains cannot afford point-of-sale slowdowns or transaction failures during broadband connectivity dropouts.',
@@ -517,11 +517,11 @@ export const WORK_PROJECTS: WorkProject[] = [
       systemDesignStrategy: 'Decoupled edge architecture running a local lightweight daemon that writes transactions immediately to encrypted SQLite storage, followed by opportunistic streaming to the cloud.'
     },
     architecture: {
-      frontend: 'High-Speed Desktop Counter Interface // Web Master Admin Console',
-      services: 'High-Throughput REST APIs // WebSocket Sync Daemon // Go Print Spooler',
-      database: 'Central PostgreSQL Master // Local SQLite Edge Cache',
-      infrastructure: 'Dockerized Microservices // Encrypted Local Vault // Private Cloud',
-      security: 'Cryptographic Batch Hashes // Hardware MAC Whitelisting // Zero Data Loss'
+      frontend: 'High-Speed Desktop Counter Interface • Web Master Admin Console',
+      services: 'High-Throughput REST APIs • WebSocket Sync Daemon • Go Print Spooler',
+      database: 'Central PostgreSQL Master • Local SQLite Edge Cache',
+      infrastructure: 'Dockerized Microservices • Encrypted Local Vault • Private Cloud',
+      security: 'Cryptographic Batch Hashes • Hardware MAC Whitelisting • Zero Data Loss'
     },
     features: [
       {
@@ -633,8 +633,8 @@ export const WORK_PROJECTS: WorkProject[] = [
     quickSpecs: {
       domain: 'Property Management & Restaurant Kitchen Display',
       deploymentTopology: 'Edge Serverless Functions + Real-Time WebSocket Bus',
-      securityStandard: 'PCI-DSS Compliant // Tokenized Room Access Keys',
-      targetThroughput: '<150ms Kitchen Display Push // 2-Way OTA Channel Sync'
+      securityStandard: 'PCI-DSS Compliant • Tokenized Room Access Keys',
+      targetThroughput: '<150ms Kitchen Display Push • 2-Way OTA Channel Sync'
     },
     introduction: {
       overview: 'Modern resorts and luxury hotels manage complex interlinked guest touchpoints: online room reservations across OTAs, front-desk check-in, restaurant dining, 24/7 room service, and housekeeping turnover.',
@@ -690,11 +690,11 @@ export const WORK_PROJECTS: WorkProject[] = [
       systemDesignStrategy: 'Event-driven architecture where every reservation or dining event generates a typed state change that cascades instantly to the front-desk room matrix, kitchen screens, and financial ledger.'
     },
     architecture: {
-      frontend: 'Next.js 16 Touch-Optimized KDS // Front-Desk Web Portal // Guest Mobile App',
-      services: 'Event-Driven Node.js Microservices // Redis Pub/Sub // WebSocket Event Bus',
-      database: 'PostgreSQL Relational Core // Multi-Tenant Room Ledger',
-      infrastructure: 'Edge Serverless Functions // Containerized Cloud VPC',
-      security: 'PCI-DSS Compliant Payment Routing // Tokenized Room Access Keys'
+      frontend: 'Next.js 16 Touch-Optimized KDS • Front-Desk Web Portal • Guest Mobile App',
+      services: 'Event-Driven Node.js Microservices • Redis Pub/Sub • WebSocket Event Bus',
+      database: 'PostgreSQL Relational Core • Multi-Tenant Room Ledger',
+      infrastructure: 'Edge Serverless Functions • Containerized Cloud VPC',
+      security: 'PCI-DSS Compliant Payment Routing • Tokenized Room Access Keys'
     },
     features: [
       {
@@ -806,8 +806,8 @@ export const WORK_PROJECTS: WorkProject[] = [
     quickSpecs: {
       domain: 'Immutable Double-Entry Ledger & Loan Disbursal',
       deploymentTopology: 'Private Cloud VPC with Distributed Lock Manager',
-      securityStandard: 'Bank-Grade Compliance // AES-256 GCM Encrypted Vault',
-      targetThroughput: '<45s KYC Verification // Zero Transaction Imbalance'
+      securityStandard: 'Bank-Grade Compliance • AES-256 GCM Encrypted Vault',
+      targetThroughput: '<45s KYC Verification • Zero Transaction Imbalance'
     },
     introduction: {
       overview: 'Digital lending institutions, microfinance companies, and non-banking financial corporations (NBFCs) require bulletproof transaction integrity, automated credit underwriting, and automated EMI collection reconciliation.',
@@ -863,11 +863,11 @@ export const WORK_PROJECTS: WorkProject[] = [
       systemDesignStrategy: 'Strict transactional core where account mutations are executed exclusively through balanced journal entries protected by distributed lock managers and immutable append-only logs.'
     },
     architecture: {
-      frontend: 'Next.js Financial Dashboard // Field Agent Mobile PWA // Executive Analytics',
-      services: 'Go (Golang) High-Throughput Transaction Engine // Kafka Message Bus',
-      database: 'PostgreSQL with Row-Level Security // Redis Distributed Lock Manager',
-      infrastructure: 'Private Cloud VPC // KMS Encrypted Key Storage // Air-Gapped Snapshots',
-      security: 'Strict Financial Compliance // Zero-Knowledge Auditing // AES-256 GCM'
+      frontend: 'Next.js Financial Dashboard • Field Agent Mobile PWA • Executive Analytics',
+      services: 'Go (Golang) High-Throughput Transaction Engine • Kafka Message Bus',
+      database: 'PostgreSQL with Row-Level Security • Redis Distributed Lock Manager',
+      infrastructure: 'Private Cloud VPC • KMS Encrypted Key Storage • Air-Gapped Snapshots',
+      security: 'Strict Financial Compliance • Zero-Knowledge Auditing • AES-256 GCM'
     },
     features: [
       {

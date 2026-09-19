@@ -96,3 +96,10 @@ export async function resetPasswordApi(email: string, resetToken: string, newPas
     body: JSON.stringify({ email, resetToken, newPassword }),
   });
 }
+
+export async function firebaseLoginApi(idToken: string): Promise<ApiResponse<AuthResponse>> {
+  return apiClient<AuthResponse>('/api/auth/firebase-login', {
+    method: 'POST',
+    body: JSON.stringify({ idToken }),
+  });
+}

@@ -48,8 +48,8 @@ export default function HomePage() {
       {/* 03. Services Experience */}
       <ServicesExperience />
 
-      {/* 04. Selected Work */}
-      <SelectedWork />
+      {/* 04. Selected Work (Projects 1 to 5 temporarily hidden per request) */}
+      {/* <SelectedWork /> */}
 
       {/* 05. Technology Experience */}
       <TechnologyExperience />

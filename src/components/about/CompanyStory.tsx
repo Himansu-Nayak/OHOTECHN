@@ -42,7 +42,7 @@ export function CompanyStory() {
         <div>
           <div className="flex items-center gap-2 font-mono text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">
             <History className="w-3.5 h-3.5" />
-            <span>01 // ORIGINS &amp; EVOLUTION</span>
+            <span>01 • ORIGINS &amp; EVOLUTION</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
             The OHO TECH Story
