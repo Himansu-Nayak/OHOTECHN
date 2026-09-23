@@ -48,9 +48,14 @@ public class OrderService {
                 .build();
 
         for (CartItem cartItem : cart.getItems()) {
-            BigDecimal itemPrice = cartItem.getProductPlan() != null && cartItem.getProductPlan().getPrice() != null
-                    ? cartItem.getProductPlan().getPrice()
+            ProductPlan selectedPlan = cartItem.getProductPlan();
+            BigDecimal itemPrice = selectedPlan != null && selectedPlan.getPrice() != null
+                    ? selectedPlan.getPrice()
                     : cartItem.getProduct().getPrice();
+
+            if (itemPrice == null || itemPrice.compareTo(BigDecimal.ZERO) < 0) {
+                throw new BadRequestException("Invalid price configured for product: " + cartItem.getProduct().getName());
+            }
 
             BigDecimal itemTotal = itemPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity()));
             totalAmount = totalAmount.add(itemTotal);
@@ -58,7 +63,7 @@ public class OrderService {
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
                     .product(cartItem.getProduct())
-                    .productPlan(cartItem.getProductPlan())
+                    .productPlan(selectedPlan)
                     .quantity(cartItem.getQuantity())
                     .price(itemPrice)
                     .build();
@@ -66,18 +71,20 @@ public class OrderService {
             orderItems.add(orderItem);
         }
 
+        if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Order total must be greater than ₹0 for online payment.");
+        }
+
         order.setTotalAmount(totalAmount);
         order.setItems(orderItems);
 
         Order savedOrder = orderRepository.save(order);
 
-        // Clear cart after placing order
-        cart.getItems().clear();
-        cartRepository.save(cart);
-
+        // Keep the cart until payment is successfully verified. This prevents an abandoned
+        // Razorpay checkout from losing the customer's selected products.
         if (user.getEmail() != null) {
-            emailService.sendEmail(user.getEmail(), "OHO TECHN - Order Confirmation #" + savedOrder.getId(),
-                    "Thank you for your order #" + savedOrder.getId() + "!\nTotal Amount: ₹" + totalAmount + "\nStatus: PENDING");
+            emailService.sendEmail(user.getEmail(), "OHO TECHN - Order Created #" + savedOrder.getId(),
+                    "Your order #" + savedOrder.getId() + " has been created.\nTotal Amount: ₹" + totalAmount + "\nPayment Status: PENDING");
         }
 
         return savedOrder;
