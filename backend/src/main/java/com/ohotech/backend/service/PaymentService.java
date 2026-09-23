@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,12 +33,21 @@ public class PaymentService {
     private final LicenseRepository licenseRepository;
     private final LicenseService licenseService;
     private final EmailService emailService;
+    private final NotificationService notificationService;
+    private final EmailTemplateService emailTemplateService;
 
-    @Value("${app.razorpay.key-id:${razorpay.key-id:PROD_RAZORPAY_KEY_ID_PLACEHOLDER}}")
+    @Value("${app.razorpay.key-id:${razorpay.key-id:}}")
     private String razorpayKeyId;
 
-    @Value("${app.razorpay.key-secret:${razorpay.key-secret:PROD_RAZORPAY_KEY_SECRET_PLACEHOLDER}}")
+    @Value("${app.razorpay.key-secret:${razorpay.key-secret:}}")
     private String razorpayKeySecret;
+
+    private boolean razorpayConfigured() {
+        return razorpayKeyId != null && razorpayKeyId.startsWith("rzp_")
+                && razorpayKeySecret != null && !razorpayKeySecret.isBlank()
+                && !razorpayKeyId.contains("PLACEHOLDER")
+                && !razorpayKeySecret.contains("PLACEHOLDER");
+    }
 
     @Transactional
     public Map<String, Object> createPaymentOrder(Long userId, Long orderId) {
@@ -50,50 +58,55 @@ public class PaymentService {
             throw new ResourceNotFoundException("Order", "id", orderId);
         }
 
-        long amountInPaise = order.getTotalAmount().multiply(new java.math.BigDecimal(100)).longValue();
-        String razorpayOrderId = "order_mock_" + UUID.randomUUID().toString().replace("-", "").substring(0, 14);
-
-        if (!"PROD_RAZORPAY_KEY_ID_PLACEHOLDER".equals(razorpayKeyId) &&
-            !"PROD_RAZORPAY_KEY_SECRET_PLACEHOLDER".equals(razorpayKeySecret) &&
-            razorpayKeyId.startsWith("rzp_")) {
-            try {
-                com.razorpay.RazorpayClient razorpay = new com.razorpay.RazorpayClient(razorpayKeyId, razorpayKeySecret);
-                org.json.JSONObject orderRequest = new org.json.JSONObject();
-                orderRequest.put("amount", amountInPaise);
-                orderRequest.put("currency", "INR");
-                orderRequest.put("receipt", "receipt_order_" + order.getId());
-
-                com.razorpay.Order rzpOrder = razorpay.orders.create(orderRequest);
-                if (rzpOrder != null && rzpOrder.has("id")) {
-                    razorpayOrderId = rzpOrder.get("id").toString();
-                }
-            } catch (Exception e) {
-                logger.warn("Razorpay SDK Order creation fallback to mock ID: {}", e.getMessage());
-            }
+        if (!razorpayConfigured()) {
+            throw new BadRequestException("Razorpay payment gateway is not configured for live payments. Please contact support.");
         }
 
-        Payment payment = paymentRepository.findByOrderId(orderId)
-                .orElse(Payment.builder()
-                        .order(order)
-                        .amount(order.getTotalAmount())
-                        .status(PaymentStatus.PENDING)
-                        .build());
+        long amountInPaise = order.getTotalAmount().movePointRight(2).longValueExact();
+        if (amountInPaise <= 0) {
+            throw new BadRequestException("Payment amount must be greater than ₹0.");
+        }
 
-        payment.setRazorpayOrderId(razorpayOrderId);
-        paymentRepository.save(payment);
+        try {
+            com.razorpay.RazorpayClient razorpay = new com.razorpay.RazorpayClient(razorpayKeyId, razorpayKeySecret);
+            org.json.JSONObject orderRequest = new org.json.JSONObject();
+            orderRequest.put("amount", amountInPaise);
+            orderRequest.put("currency", "INR");
+            orderRequest.put("receipt", "receipt_order_" + order.getId());
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("orderId", order.getId());
-        response.put("razorpayOrderId", razorpayOrderId);
-        response.put("amount", amountInPaise);
-        response.put("currency", "INR");
-        response.put("keyId", razorpayKeyId);
+            com.razorpay.Order rzpOrder = razorpay.orders.create(orderRequest);
+            if (rzpOrder == null || !rzpOrder.has("id")) {
+                throw new BadRequestException("Razorpay did not return a valid payment order.");
+            }
 
-        return response;
+            String razorpayOrderId = rzpOrder.get("id").toString();
+
+            Payment payment = paymentRepository.findByOrderId(orderId)
+                    .orElse(Payment.builder()
+                            .order(order)
+                            .amount(order.getTotalAmount())
+                            .status(PaymentStatus.PENDING)
+                            .build());
+
+            payment.setAmount(order.getTotalAmount());
+            payment.setRazorpayOrderId(razorpayOrderId);
+            payment.setStatus(PaymentStatus.PENDING);
+            paymentRepository.save(payment);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("orderId", order.getId());
+            response.put("razorpayOrderId", razorpayOrderId);
+            response.put("amount", amountInPaise);
+            response.put("currency", "INR");
+            response.put("keyId", razorpayKeyId);
+            return response;
+        } catch (BadRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Razorpay order creation failed for order {}", orderId, e);
+            throw new BadRequestException("Unable to create Razorpay payment order. Please try again.");
+        }
     }
-
-    private final NotificationService notificationService;
-    private final EmailTemplateService emailTemplateService;
 
     @Transactional
     public PaymentResponseDto verifyPayment(Long userId, PaymentVerificationRequest request) {
@@ -107,20 +120,21 @@ public class PaymentService {
         Payment payment = paymentRepository.findByOrderId(order.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Payment for order", "id", request.getOrderId()));
 
-        // CRITICAL SECURITY HARDENING: Payment signature verification must fail safely.
-        boolean isValidSignature = false;
-        if (request.getRazorpaySignature() != null && !request.getRazorpaySignature().isBlank()) {
-            if (!"PROD_RAZORPAY_KEY_SECRET_PLACEHOLDER".equals(razorpayKeySecret) && razorpayKeySecret != null && !razorpayKeySecret.isBlank()) {
-                isValidSignature = verifyHmacSha256(
-                        request.getRazorpayOrderId() + "|" + request.getRazorpayPaymentId(),
-                        request.getRazorpaySignature(),
-                        razorpayKeySecret
-                );
-            } else {
-                // Safe dev mode fallback: requires valid non-empty mock signature string
-                isValidSignature = request.getRazorpaySignature().length() >= 10;
-            }
+        if (!razorpayConfigured()) {
+            throw new BadRequestException("Razorpay payment gateway is not configured for live payments.");
         }
+
+        if (payment.getRazorpayOrderId() == null || !payment.getRazorpayOrderId().equals(request.getRazorpayOrderId())) {
+            payment.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(payment);
+            throw new BadRequestException("Razorpay order ID does not match the server payment order.");
+        }
+
+        boolean isValidSignature = verifyHmacSha256(
+                request.getRazorpayOrderId() + "|" + request.getRazorpayPaymentId(),
+                request.getRazorpaySignature(),
+                razorpayKeySecret
+        );
 
         if (!isValidSignature) {
             payment.setStatus(PaymentStatus.FAILED);
@@ -138,7 +152,6 @@ public class PaymentService {
         order.setStatus(OrderStatus.CONFIRMED);
         orderRepository.save(order);
 
-        // Process Idempotent Entitlements (Subscriptions & Licenses)
         createEntitlementsForOrder(order);
 
         if (isNewlyVerified) {
@@ -185,7 +198,6 @@ public class PaymentService {
             Product product = item.getProduct();
             ProductPlan plan = item.getProductPlan();
 
-            // Check if subscription already created for this order
             Optional<Subscription> existingSub = subscriptionRepository.findByOrderId(order.getId());
 
             Subscription subscription;
@@ -210,7 +222,6 @@ public class PaymentService {
                 subscription = existingSub.get();
             }
 
-            // Check if license already created for this subscription
             Optional<License> existingLicense = licenseRepository.findBySubscriptionId(subscription.getId());
             if (existingLicense.isEmpty()) {
                 LocalDateTime now = LocalDateTime.now();
@@ -237,6 +248,9 @@ public class PaymentService {
     }
 
     private boolean verifyHmacSha256(String data, String signature, String secret) {
+        if (signature == null || signature.isBlank() || secret == null || secret.isBlank()) {
+            return false;
+        }
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
@@ -248,7 +262,7 @@ public class PaymentService {
                 if (hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
-            return hexString.toString().equals(signature);
+            return hexString.toString().equalsIgnoreCase(signature);
         } catch (Exception e) {
             logger.error("Error calculating HMAC SHA256 signature", e);
             return false;
