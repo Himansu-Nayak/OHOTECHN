@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Cart, ProductDto } from '../api/types';
+import { Cart } from '../api/types';
 import { getCartApi, addToCartApi, updateCartItemQuantityApi, removeFromCartApi, clearCartApi } from '../api/cart';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
@@ -20,6 +20,43 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+type CartItemWithPlan = Cart['items'][number] & {
+  productPlan?: { price?: number | string; name?: string; currency?: string };
+};
+
+function normalizeCart(rawCart: Cart): Cart {
+  const items = (rawCart.items || []).map((rawItem) => {
+    const item = rawItem as CartItemWithPlan;
+    const planPrice = Number(item.productPlan?.price);
+    const productPrice = Number(item.product?.price);
+    const existingPrice = Number((item as any).price);
+    const effectivePrice = Number.isFinite(planPrice) && planPrice > 0
+      ? planPrice
+      : Number.isFinite(existingPrice) && existingPrice > 0
+        ? existingPrice
+        : Number.isFinite(productPrice) && productPrice > 0
+          ? productPrice
+          : 0;
+
+    return {
+      ...item,
+      price: effectivePrice,
+    } as Cart['items'][number];
+  });
+
+  const totalAmount = items.reduce((sum, item) => {
+    const price = Number(item.price) || 0;
+    return sum + price * item.quantity;
+  }, 0);
+
+  return {
+    ...rawCart,
+    items,
+    totalAmount,
+    totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
+  };
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -36,7 +73,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await getCartApi();
       if (res.success && res.data) {
-        setCart(res.data);
+        setCart(normalizeCart(res.data));
       }
     } catch (err: any) {
       console.warn('Failed to load cart from backend:', err?.message);
@@ -59,7 +96,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await addToCartApi(productId, quantity, productPlanId);
       if (res.success && res.data) {
-        setCart(res.data);
+        setCart(normalizeCart(res.data));
         showToast('Item added to cart successfully!', 'success');
       }
     } catch (err: any) {
@@ -79,7 +116,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await updateCartItemQuantityApi(itemId, quantity);
       if (res.success && res.data) {
-        setCart(res.data);
+        setCart(normalizeCart(res.data));
         showToast('Cart updated.', 'success');
       }
     } catch (err: any) {
@@ -96,7 +133,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await removeFromCartApi(itemId);
       if (res.success && res.data) {
-        setCart(res.data);
+        setCart(normalizeCart(res.data));
         showToast('Item removed from cart.', 'info');
       }
     } catch (err: any) {
@@ -122,7 +159,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const itemCount = cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
-  const totalAmount = cart?.totalAmount || cart?.items?.reduce((acc, item) => acc + (item.price * item.quantity), 0) || 0;
+  const totalAmount = cart?.totalAmount || 0;
 
   return (
     <CartContext.Provider
