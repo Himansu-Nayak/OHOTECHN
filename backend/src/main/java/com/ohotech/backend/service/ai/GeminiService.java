@@ -172,6 +172,44 @@ public class GeminiService {
     }
 
     /**
+     * Generate Multimodal structured JSON output mapped to target DTO class
+     */
+    public <T> T generateMultimodalStructured(String prompt, String mimeType, String base64Data, String systemInstruction, Class<T> responseClass) {
+        Map<String, Object> generationConfig = new HashMap<>();
+        generationConfig.put("responseMimeType", "application/json");
+        generationConfig.put("temperature", 0.2);
+
+        List<Map<String, Object>> parts = new ArrayList<>();
+        Map<String, Object> inlineData = new HashMap<>();
+        inlineData.put("mimeType", mimeType);
+        inlineData.put("data", base64Data);
+        parts.add(Map.of("inlineData", inlineData));
+        parts.add(Map.of("text", prompt));
+
+        Map<String, Object> userContent = Map.of("role", "user", "parts", parts);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("contents", List.of(userContent));
+        payload.put("generationConfig", generationConfig);
+
+        if (systemInstruction != null && !systemInstruction.isBlank()) {
+            payload.put("systemInstruction", Map.of("parts", List.of(Map.of("text", systemInstruction))));
+        }
+
+        Map<String, Object> response = generateContent(payload, defaultModel);
+        String rawJson = extractTextFromResponse(response);
+
+        try {
+            String cleaned = cleanJsonString(rawJson);
+            ObjectMapper tolerantMapper = objectMapper.copy()
+                    .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            return tolerantMapper.readValue(cleaned, responseClass);
+        } catch (Exception e) {
+            log.error("Failed to deserialize multimodal structured JSON from Gemini: {}", e.getMessage());
+            throw new AiServiceException("Unable to process structured AI multimodal output. Please retry.");
+        }
+    }
+
+    /**
      * Generate vector embeddings for text
      */
     public float[] generateEmbedding(String text) {

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
 
 interface PageTransitionProps {
   children: React.ReactNode;
@@ -9,13 +8,8 @@ interface PageTransitionProps {
 }
 
 export function PageTransition({ children, className = '' }: PageTransitionProps) {
-  const pathname = usePathname();
-
   return (
-    <div
-      key={pathname}
-      className={`page-enter-animation ${className}`}
-    >
+    <div className={`transition-opacity duration-150 ${className}`}>
       {children}
     </div>
   );

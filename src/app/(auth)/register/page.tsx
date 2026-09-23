@@ -72,12 +72,12 @@ export default function RegisterPage() {
         role: 'CUSTOMER',
       });
 
-      setSuccessMsg('Account created successfully! A 6-digit verification code has been sent to your email.');
-      showToast('Account created! Please verify your email.', 'success');
+      setSuccessMsg('Account created successfully! Welcome to OHO TECH.');
+      showToast('Account created successfully! Welcome to OHO TECH.', 'success');
       
       setTimeout(() => {
-        router.push(`/verify-email?email=${encodeURIComponent(formData.email.trim())}`);
-      }, 1200);
+        router.push('/products');
+      }, 1000);
     } catch (err: any) {
       const msg = err.message || 'An error occurred during registration.';
       setErrorMsg(msg);

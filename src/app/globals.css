@@ -43,7 +43,6 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
     color-scheme: light;
   }
   body {

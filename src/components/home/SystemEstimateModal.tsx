@@ -19,6 +19,7 @@ import {
   Globe
 } from 'lucide-react';
 import { FlippingText } from '@/components/ui/FlippingText';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 
 interface SystemEstimateModalProps {
   isOpen: boolean;
@@ -139,6 +140,7 @@ const ESTIMATE_MATRIX: Record<ProjectType, Record<ScaleLevel, EstimateSpec>> = {
 };
 
 export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProps) {
+  const shouldReduceMotion = useReducedMotion();
   const [projectType, setProjectType] = React.useState<ProjectType>('custom-erp');
   const [scaleLevel, setScaleLevel] = React.useState<ScaleLevel>('growth');
   const [clientName, setClientName] = React.useState<string>('');
@@ -163,8 +165,6 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
 
   const currentSpec = ESTIMATE_MATRIX[projectType][scaleLevel];
 
@@ -198,16 +198,33 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 select-none overflow-y-auto"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="estimate-modal-title"
-    >
-      <div 
-        className="relative w-full max-w-4xl bg-[#0c0d11] text-white border-2 border-slate-700 rounded-[28px] sm:rounded-[40px] shadow-2xl overflow-hidden my-auto p-6 sm:p-10 max-h-[92vh] flex flex-col justify-between overflow-y-auto custom-scroll"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <AnimatePresence>
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 md:p-8 select-none overflow-y-auto"
+        >
+          {/* Backdrop with Motion Fade */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            onClick={onClose}
+          />
+
+          {/* Modal Container with Spring Scale */}
+          <motion.div 
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="estimate-modal-title"
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 12 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+            className="relative w-full max-w-4xl bg-[#0c0d11] text-white border-2 border-slate-700 rounded-[28px] sm:rounded-[40px] shadow-2xl overflow-hidden my-auto p-6 sm:p-10 max-h-[92vh] flex flex-col justify-between overflow-y-auto custom-scroll z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
         {/* Ambient background glows */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
@@ -417,7 +434,10 @@ export function SystemEstimateModal({ isOpen, onClose }: SystemEstimateModalProp
 
         </div>
 
-      </div>
-    </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }
+

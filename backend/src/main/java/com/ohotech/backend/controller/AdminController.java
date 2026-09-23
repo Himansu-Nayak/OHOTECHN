@@ -26,6 +26,7 @@ public class AdminController {
 
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -118,8 +119,15 @@ public class AdminController {
     // 3. View & Update Orders
     @GetMapping("/orders")
     public ResponseEntity<ApiResponse<List<Order>>> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
         return ResponseEntity.ok(ApiResponse.success("Orders retrieved successfully", orders));
+    }
+
+    // 3.5 View Real Payment Transactions
+    @GetMapping("/payments")
+    public ResponseEntity<ApiResponse<List<Payment>>> getAllPayments() {
+        List<Payment> payments = paymentRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(ApiResponse.success("Payments retrieved successfully", payments));
     }
 
     @PutMapping("/orders/{id}/status")

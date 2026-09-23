@@ -207,7 +207,7 @@ export function GlobalCanvas() {
       setHasWebGL(true);
 
       // 5. Optimized Render Loop connected to GSAP ticker
-      let clock = new THREE.Clock();
+      const timer = new THREE.Timer();
       let isVisible = true;
 
       const handleVisibilityChange = () => {
@@ -220,7 +220,8 @@ export function GlobalCanvas() {
           return;
         }
 
-        const elapsedTime = clock.getElapsedTime();
+        timer.update();
+        const elapsedTime = timer.getElapsed();
         if (uniformsRef.current) {
           uniformsRef.current.u_time.value = elapsedTime;
         }
@@ -257,6 +258,7 @@ export function GlobalCanvas() {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
         window.removeEventListener('resize', handleResize);
         gsap.ticker.remove(render);
+        timer.dispose();
 
         geometry.dispose();
         material.dispose();

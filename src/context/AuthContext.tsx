@@ -126,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const res = await registerApi(params);
     if (res.success && res.data) {
       const authData = res.data;
-      if (authData.accessToken && authData.user?.emailVerified) {
+      if (authData.accessToken) {
         setTokens(authData.accessToken, authData.refreshToken);
         setAccessToken(authData.accessToken);
         setUser(authData.user);
@@ -151,6 +151,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     clearTokens();
     setUser(null);
     setAccessToken(null);
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
   }, []);
 
   return (

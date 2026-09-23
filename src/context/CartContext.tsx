@@ -5,6 +5,7 @@ import { Cart } from '../api/types';
 import { getCartApi, addToCartApi, updateCartItemQuantityApi, removeFromCartApi, clearCartApi } from '../api/cart';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
+import { getSafeCartItemUnitPrice } from '@/utils/cartUtils';
 
 interface CartContextType {
   cart: Cart | null;
@@ -158,8 +159,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const itemCount = cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
-  const totalAmount = cart?.totalAmount || 0;
+  const itemCount = cart?.totalItems ?? (cart?.items?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0);
+  const totalAmount = (cart?.totalAmount && typeof cart.totalAmount === 'number' && cart.totalAmount > 0)
+    ? cart.totalAmount
+    : (cart?.items?.reduce((acc, item) => acc + (getSafeCartItemUnitPrice(item) * (item.quantity || 1)), 0) || 0);
 
   return (
     <CartContext.Provider

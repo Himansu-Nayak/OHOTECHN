@@ -1,6 +1,7 @@
 package com.ohotech.backend.service.ai;
 
 import com.ohotech.backend.dto.ai.DocumentAnalysisResponse;
+import com.ohotech.backend.exception.AiServiceException;
 import com.ohotech.backend.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,10 @@ public class AiDocumentService {
             throw new BadRequestException("Invalid document format. Only PDF and Text documents are supported.");
         }
 
+        if (!geminiService.isConfigured()) {
+            throw new AiServiceException("Google Gemini AI platform is not configured. Please set GEMINI_API_KEY to enable document analysis.");
+        }
+
         try {
             byte[] bytes = file.getBytes();
             String base64Data = Base64.getEncoder().encodeToString(bytes);
@@ -55,18 +60,12 @@ public class AiDocumentService {
                     """;
 
             String systemInstruction = "You are an enterprise document intelligence and OCR analysis engine. Always output pure, valid JSON.";
-            return geminiService.generateStructured(prompt + "\nDocument: [Attached PDF]", systemInstruction, DocumentAnalysisResponse.class);
-        } catch (BadRequestException e) {
+            return geminiService.generateMultimodalStructured(prompt, contentType, base64Data, systemInstruction, DocumentAnalysisResponse.class);
+        } catch (BadRequestException | AiServiceException e) {
             throw e;
         } catch (Exception e) {
             log.error("Failed to analyze document {}: {}", file.getOriginalFilename(), e.getMessage());
-            return DocumentAnalysisResponse.builder()
-                    .documentType("DOCUMENT")
-                    .summary("Document processed. Contains technical/business documentation for OHO TECH systems.")
-                    .keyPoints(List.of("File name: " + file.getOriginalFilename(), "Size: " + (file.getSize() / 1024) + " KB"))
-                    .extractedFields(Map.of("filename", file.getOriginalFilename(), "status", "PROCESSED"))
-                    .confidence(0.92)
-                    .build();
+            throw new AiServiceException("Failed to analyze document: " + e.getMessage());
         }
     }
 }

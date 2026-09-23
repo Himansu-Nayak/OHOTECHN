@@ -5,16 +5,22 @@ import com.ohotech.backend.dto.ProductDto;
 import com.ohotech.backend.dto.ai.AnalyticsInsightResponse;
 import com.ohotech.backend.dto.ai.ProductAiGenerationRequest;
 import com.ohotech.backend.dto.ai.ProductAiGenerationResponse;
+import com.ohotech.backend.entity.AIConversation;
+import com.ohotech.backend.entity.AIUsage;
+import com.ohotech.backend.repository.AIConversationRepository;
+import com.ohotech.backend.repository.AIUsageRepository;
 import com.ohotech.backend.service.ai.AiAdminService;
 import com.ohotech.backend.service.ai.AiProductService;
 import com.ohotech.backend.service.ai.AiSemanticSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,6 +33,8 @@ public class AdminAiController {
     private final AiProductService productService;
     private final AiAdminService adminService;
     private final AiSemanticSearchService semanticSearchService;
+    private final AIUsageRepository aiUsageRepository;
+    private final AIConversationRepository conversationRepository;
 
     @PostMapping("/product-description")
     public ResponseEntity<ApiResponse<ProductAiGenerationResponse>> generateProductDescription(
@@ -61,5 +69,19 @@ public class AdminAiController {
     public ResponseEntity<ApiResponse<String>> syncEmbeddings() {
         semanticSearchService.syncAllProductEmbeddings();
         return ResponseEntity.ok(ApiResponse.success("Product embeddings synced successfully", "Sync completed"));
+    }
+
+    @GetMapping("/usage")
+    public ResponseEntity<ApiResponse<List<AIUsage>>> getAiUsage() {
+        List<AIUsage> usage = aiUsageRepository.findAll(Sort.by(Sort.Direction.DESC, "timestamp"));
+        int limit = Math.min(usage.size(), 50);
+        return ResponseEntity.ok(ApiResponse.success("AI usage logs retrieved", usage.subList(0, limit)));
+    }
+
+    @GetMapping("/conversations")
+    public ResponseEntity<ApiResponse<List<AIConversation>>> getAiConversations() {
+        List<AIConversation> conversations = conversationRepository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
+        int limit = Math.min(conversations.size(), 50);
+        return ResponseEntity.ok(ApiResponse.success("AI conversations retrieved", conversations.subList(0, limit)));
     }
 }

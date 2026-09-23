@@ -90,7 +90,7 @@ export default function RootLayout({
   children,
 }: LayoutProps<'/'>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${jetBrainsMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable}`}>
       <head>
         <JsonLd data={getOrganizationJsonLd()} />
         <JsonLd data={getWebSiteJsonLd()} />

@@ -1,6 +1,6 @@
 import { ApiResponse } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
 
 export function getAccessToken(): string | null {
   if (typeof window !== 'undefined') {
@@ -88,7 +88,7 @@ export async function apiClient<T>(
     return data;
   } catch (error: any) {
     if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
-      throw new Error('Backend server (http://localhost:8080) is offline or starting up. Please ensure Spring Boot is running.');
+      throw new Error(`Backend server (${API_BASE_URL}) is offline or starting up. Please ensure Spring Boot is running.`);
     }
     throw new Error(error.message || 'Network error occurred. Please check your connection.');
   }

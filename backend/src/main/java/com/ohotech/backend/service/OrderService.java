@@ -6,6 +6,8 @@ import com.ohotech.backend.exception.BadRequestException;
 import com.ohotech.backend.exception.ResourceNotFoundException;
 import com.ohotech.backend.repository.CartRepository;
 import com.ohotech.backend.repository.OrderRepository;
+import com.ohotech.backend.repository.ProductPlanRepository;
+import com.ohotech.backend.repository.ProductRepository;
 import com.ohotech.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final ProductPlanRepository productPlanRepository;
     private final EmailService emailService;
 
     @Transactional
@@ -48,31 +52,45 @@ public class OrderService {
                 .build();
 
         for (CartItem cartItem : cart.getItems()) {
-            ProductPlan selectedPlan = cartItem.getProductPlan();
-            BigDecimal itemPrice = selectedPlan != null && selectedPlan.getPrice() != null
-                    ? selectedPlan.getPrice()
-                    : cartItem.getProduct().getPrice();
+            Product product = productRepository.findById(cartItem.getProduct().getId())
+                    .orElseThrow(() -> new BadRequestException("Product not found with id: " + cartItem.getProduct().getId()));
 
-            if (itemPrice == null || itemPrice.compareTo(BigDecimal.ZERO) < 0) {
-                throw new BadRequestException("Invalid price configured for product: " + cartItem.getProduct().getName());
+            ProductPlan plan = null;
+            BigDecimal unitPrice;
+
+            if (cartItem.getProductPlan() != null && cartItem.getProductPlan().getId() != null) {
+                plan = productPlanRepository.findById(cartItem.getProductPlan().getId())
+                        .orElseThrow(() -> new BadRequestException("Product plan not found with id: " + cartItem.getProductPlan().getId()));
+
+                if (!plan.getProduct().getId().equals(product.getId())) {
+                    throw new BadRequestException("Plan does not belong to product!");
+                }
+                unitPrice = plan.getPrice();
+            } else {
+                unitPrice = product.getPrice();
             }
 
-            BigDecimal itemTotal = itemPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+            if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new BadRequestException("Product price must be greater than zero!");
+            }
+
+            int quantity = cartItem.getQuantity() != null && cartItem.getQuantity() > 0 ? cartItem.getQuantity() : 1;
+            BigDecimal itemTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
             totalAmount = totalAmount.add(itemTotal);
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
-                    .product(cartItem.getProduct())
-                    .productPlan(selectedPlan)
-                    .quantity(cartItem.getQuantity())
-                    .price(itemPrice)
+                    .product(product)
+                    .productPlan(plan)
+                    .quantity(quantity)
+                    .price(unitPrice)
                     .build();
 
             orderItems.add(orderItem);
         }
 
         if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BadRequestException("Order total must be greater than ₹0 for online payment.");
+            throw new BadRequestException("Total order amount must be greater than zero!");
         }
 
         order.setTotalAmount(totalAmount);
@@ -80,11 +98,15 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Keep the cart until payment is successfully verified. This prevents an abandoned
-        // Razorpay checkout from losing the customer's selected products.
+        // DO NOT clear cart here! The cart is preserved until payment is verified successfully.
+
         if (user.getEmail() != null) {
-            emailService.sendEmail(user.getEmail(), "OHO TECHN - Order Created #" + savedOrder.getId(),
-                    "Your order #" + savedOrder.getId() + " has been created.\nTotal Amount: ₹" + totalAmount + "\nPayment Status: PENDING");
+            try {
+                emailService.sendEmail(user.getEmail(), "OHO TECHN - Order Confirmation #" + savedOrder.getId(),
+                        "Thank you for your order #" + savedOrder.getId() + "!\nTotal Amount: ₹" + totalAmount + "\nStatus: PENDING PAYMENT");
+            } catch (Exception e) {
+                // Email sending shouldn't abort order creation
+            }
         }
 
         return savedOrder;

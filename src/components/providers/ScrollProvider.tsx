@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -33,9 +34,23 @@ interface ScrollProviderProps {
  * Single scroll authority: synchronizes Lenis virtual scroll with GSAP ScrollTrigger ticker.
  */
 export function ScrollProvider({ children }: ScrollProviderProps) {
+  const pathname = usePathname();
   const [lenisInstance, setLenisInstance] = useState<Lenis | null>(null);
   const [isReducedMotion, setIsReducedMotion] = useState<boolean>(false);
   const lenisRef = useRef<Lenis | null>(null);
+
+  // Instant scroll-to-top on route change without lag
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!window.location.hash) {
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(0, { immediate: true });
+      } else {
+        window.scrollTo(0, 0);
+      }
+      ScrollTrigger.refresh();
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -85,17 +100,38 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
         .catch(() => {});
     }
 
-    // 5. In-page smooth anchor routing
+    // 5. In-page instant anchor routing for internal sections
     const handleAnchorClick = (e: MouseEvent) => {
       const anchor = (e.target as HTMLElement).closest('a');
       if (!anchor) return;
       const href = anchor.getAttribute('href');
-      if (href && href.startsWith('#') && href.length > 1) {
+      if (!href) return;
+
+      // Extract target hash selector if it targets the current page
+      let targetSelector = '';
+      if (href.startsWith('#') && href.length > 1) {
+        targetSelector = href;
+      } else if (anchor.hash && anchor.hash.length > 1) {
+        const isSameOrigin = !anchor.origin || anchor.origin === window.location.origin;
+        const isSamePath = !anchor.pathname || anchor.pathname === window.location.pathname;
+        if (isSameOrigin && isSamePath) {
+          targetSelector = anchor.hash;
+        }
+      }
+
+      if (targetSelector) {
         try {
-          const targetEl = document.querySelector(href);
+          const targetEl = document.querySelector(targetSelector);
           if (targetEl) {
             e.preventDefault();
-            lenis.scrollTo(targetEl as HTMLElement, { offset: -80 });
+            lenis.scrollTo(targetEl as HTMLElement, {
+              offset: -80,
+              immediate: true,
+            });
+            if (window.history.pushState) {
+              window.history.pushState(null, '', targetSelector);
+            }
+            ScrollTrigger.update();
           }
         } catch {
           // Ignore invalid selector
@@ -105,9 +141,41 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
 
     document.addEventListener('click', handleAnchorClick);
 
+    // Jump immediately if URL already contains a hash on mount
+    if (typeof window !== 'undefined' && window.location.hash) {
+      try {
+        const initialEl = document.querySelector(window.location.hash);
+        if (initialEl) {
+          requestAnimationFrame(() => {
+            lenis.scrollTo(initialEl as HTMLElement, { offset: -80, immediate: true });
+            ScrollTrigger.update();
+          });
+        }
+      } catch {
+        // Ignore invalid selector
+      }
+    }
+
+    const handleHashChange = () => {
+      if (typeof window !== 'undefined' && window.location.hash) {
+        try {
+          const targetEl = document.querySelector(window.location.hash);
+          if (targetEl) {
+            lenis.scrollTo(targetEl as HTMLElement, { offset: -80, immediate: true });
+            ScrollTrigger.update();
+          }
+        } catch {
+          // Ignore invalid selector
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+
     return () => {
       clearTimeout(refreshTimer);
       document.removeEventListener('click', handleAnchorClick);
+      window.removeEventListener('hashchange', handleHashChange);
       gsap.ticker.remove(updateTicker);
       lenis.destroy();
       lenisRef.current = null;
@@ -120,13 +188,14 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
     if (lenisRef.current) {
       lenisRef.current.scrollTo(target, options);
     } else if (typeof window !== 'undefined') {
+      const behavior = options?.immediate ? 'auto' : 'smooth';
       if (typeof target === 'number') {
-        window.scrollTo({ top: target, behavior: 'smooth' });
+        window.scrollTo({ top: target, behavior });
       } else if (typeof target === 'string') {
         const el = document.querySelector(target);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        if (el) el.scrollIntoView({ behavior });
       } else if (target instanceof HTMLElement) {
-        target.scrollIntoView({ behavior: 'smooth' });
+        target.scrollIntoView({ behavior });
       }
     }
   };

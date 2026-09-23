@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
+import { AdminModal, AdminButton, AdminInput } from './AdminUiPrimitives';
 
 export interface DnsRecord {
   id: number;
@@ -246,103 +247,85 @@ export function AdminDnsZoneView() {
         </div>
       </div>
 
-      {/* Add DNS Record Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <form
-            onSubmit={handleCreateRecord}
-            className="bg-[#141416] border border-white/20 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-xs font-mono"
-          >
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h3 className="text-base font-bold text-white">Add Cloudflare DNS Record</h3>
-              <button
-                type="button"
-                onClick={() => setIsAddModalOpen(false)}
-                className="p-1 rounded-lg bg-white/10 text-slate-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
+      {/* Add DNS Record Modal (with Spring Motion) */}
+      <AdminModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Add Cloudflare DNS Record"
+        subtitle="Route subdomains, edge endpoints, and mail servers"
+        maxWidth="md"
+      >
+        <form onSubmit={handleCreateRecord} className="space-y-3.5 text-xs">
+          <div className="space-y-1.5 w-full">
+            <label className="block text-xs font-semibold text-slate-700">Record Type</label>
+            <select
+              value={newRecordForm.type}
+              onChange={(e) => setNewRecordForm({ ...newRecordForm, type: e.target.value as any })}
+              className="w-full px-3 py-2 text-xs text-slate-900 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:border-slate-900 cursor-pointer shadow-2xs"
+            >
+              <option value="A">A (IPv4 Address)</option>
+              <option value="AAAA">AAAA (IPv6 Address)</option>
+              <option value="CNAME">CNAME (Alias)</option>
+              <option value="MX">MX (Mail Exchange)</option>
+              <option value="TXT">TXT (Text Record)</option>
+            </select>
+          </div>
+
+          <AdminInput
+            label="Name / Subdomain"
+            required
+            placeholder="e.g. portal or @"
+            value={newRecordForm.name}
+            onChange={(e) => setNewRecordForm({ ...newRecordForm, name: e.target.value })}
+          />
+
+          <AdminInput
+            label="Target / IPv4 Content"
+            required
+            placeholder="e.g. 104.21.58.112 or cname.vercel-dns.com"
+            value={newRecordForm.content}
+            onChange={(e) => setNewRecordForm({ ...newRecordForm, content: e.target.value })}
+          />
+
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div>
+              <p className="font-semibold text-slate-900 text-xs">Cloudflare Proxy</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Enables CDN caching, DDoS mitigation, and WAF</p>
             </div>
+            <button
+              type="button"
+              onClick={() => setNewRecordForm({ ...newRecordForm, proxied: !newRecordForm.proxied })}
+              className={cn(
+                "w-11 h-6 rounded-full transition-colors relative cursor-pointer",
+                newRecordForm.proxied ? "bg-orange-500" : "bg-slate-300"
+              )}
+            >
+              <span className={cn(
+                "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform shadow-xs",
+                newRecordForm.proxied ? "right-1" : "left-1"
+              )} />
+            </button>
+          </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Record Type</label>
-                <select
-                  value={newRecordForm.type}
-                  onChange={(e) => setNewRecordForm({ ...newRecordForm, type: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-[#19191d] border border-white/10 rounded-xl text-white focus:outline-none"
-                >
-                  <option value="A">A (IPv4 Address)</option>
-                  <option value="AAAA">AAAA (IPv6 Address)</option>
-                  <option value="CNAME">CNAME (Alias)</option>
-                  <option value="MX">MX (Mail Exchange)</option>
-                  <option value="TXT">TXT (Text Record)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Name / Subdomain *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. portal or @"
-                  value={newRecordForm.name}
-                  onChange={(e) => setNewRecordForm({ ...newRecordForm, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-orange-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Target / IPv4 Content *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. 104.21.58.112 or cname.vercel-dns.com"
-                  value={newRecordForm.content}
-                  onChange={(e) => setNewRecordForm({ ...newRecordForm, content: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-orange-500"
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
-                <div>
-                  <p className="font-bold text-white text-xs">Cloudflare Proxy</p>
-                  <p className="text-[10px] text-slate-400">Enables CDN caching, DDoS mitigation, and WAF</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNewRecordForm({ ...newRecordForm, proxied: !newRecordForm.proxied })}
-                  className={cn(
-                    "w-11 h-6 rounded-full transition-colors relative cursor-pointer",
-                    newRecordForm.proxied ? "bg-orange-500" : "bg-white/20"
-                  )}
-                >
-                  <span className={cn(
-                    "absolute top-1 w-4 h-4 rounded-full bg-black transition-transform",
-                    newRecordForm.proxied ? "right-1" : "left-1"
-                  )} />
-                </button>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsAddModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold"
-              >
-                Save Record
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+            <AdminButton
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsAddModalOpen(false)}
+            >
+              Cancel
+            </AdminButton>
+            <AdminButton
+              type="submit"
+              variant="primary"
+              size="sm"
+            >
+              Save Record
+            </AdminButton>
+          </div>
+        </form>
+      </AdminModal>
     </div>
   );
 }

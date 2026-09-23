@@ -3,17 +3,18 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ShieldCheck, CreditCard, Lock, CheckCircle2, AlertCircle, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, CreditCard, Lock, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { createOrderApi } from '@/api/orders';
 import { createPaymentOrderApi, verifyPaymentApi } from '@/api/payments';
+import { getSafeCartItemUnitPrice, formatInr } from '@/utils/cartUtils';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { cart, totalAmount, refreshCart, clearCart } = useCart();
+  const { cart, totalAmount, clearCart } = useCart();
   const { showToast } = useToast();
 
   const [shippingAddress, setShippingAddress] = React.useState('');
@@ -24,7 +25,7 @@ export default function CheckoutPage() {
   const [errorMsg, setErrorMsg] = React.useState('');
   const [razorpayLoaded, setRazorpayLoaded] = React.useState(false);
 
-  // Dynamic Razorpay Script Loader
+  // Dynamic Razorpay SDK script loader
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
     if ((window as any).Razorpay) {
@@ -35,7 +36,10 @@ export default function CheckoutPage() {
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
     script.onload = () => setRazorpayLoaded(true);
-    script.onerror = () => console.warn('Razorpay SDK script load warning. Fallback available.');
+    script.onerror = () => {
+      console.error('Failed to load Razorpay Checkout SDK.');
+      setErrorMsg('Failed to load payment gateway. Please check your network connection.');
+    };
     document.body.appendChild(script);
   }, []);
 
@@ -47,100 +51,92 @@ export default function CheckoutPage() {
     }
   }, [user, customerName, customerEmail, contactPhone]);
 
-  const formattedTotal = new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-  }).format(totalAmount);
+  const formattedTotal = formatInr(totalAmount);
 
   const processRazorpayCheckout = async (createdOrderId: number, paymentData: any) => {
-    const rawKeyId = paymentData?.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '';
-    const isRealKey = Boolean(
-      rawKeyId &&
-      rawKeyId.startsWith('rzp_') &&
-      rawKeyId !== 'rzp_test_placeholder' &&
-      rawKeyId !== 'PROD_RAZORPAY_KEY_ID_PLACEHOLDER'
-    );
-
-    if (isRealKey && razorpayLoaded && (window as any).Razorpay) {
-      const options = {
-        key: rawKeyId,
-        amount: paymentData.amount,
-        currency: paymentData.currency || 'INR',
-        name: 'OHO TECHN',
-        description: `Entitlement Payment Order #${createdOrderId}`,
-        image: '/OHO_TECH_LOGO.png',
-        order_id: paymentData.razorpayOrderId?.startsWith('order_mock_') ? undefined : paymentData.razorpayOrderId,
-        handler: async function (response: any) {
-          try {
-            setIsLoading(true);
-            const verifyRes = await verifyPaymentApi({
-              orderId: createdOrderId,
-              razorpayOrderId: response.razorpay_order_id || paymentData.razorpayOrderId,
-              razorpayPaymentId: response.razorpay_payment_id || 'pay_mock_' + Date.now(),
-              razorpaySignature: response.razorpay_signature || 'sig_mock_verified',
-            });
-
-            if (verifyRes.success) {
-              await clearCart();
-              showToast('Payment Verified! Your software access is ready.', 'success');
-              router.push('/my-products');
-            } else {
-              throw new Error(verifyRes.message || 'Payment signature verification failed.');
-            }
-          } catch (err: any) {
-            setErrorMsg(err.message || 'Payment verification failed.');
-            showToast(err.message || 'Verification failed.', 'error');
-          } finally {
-            setIsLoading(false);
-          }
-        },
-        prefill: {
-          name: customerName || user?.name || '',
-          email: customerEmail || user?.email || '',
-          contact: contactPhone,
-        },
-        theme: {
-          color: '#0d0d0e',
-        },
-      };
-
-      try {
-        const rzp = new (window as any).Razorpay(options);
-        rzp.on('payment.failed', function (response: any) {
-          setErrorMsg(response.error?.description || 'Payment failed on gateway.');
-          showToast('Payment failed.', 'error');
-          setIsLoading(false);
-        });
-        rzp.open();
-      } catch (e: any) {
-        console.warn('Razorpay Checkout popup note:', e);
-        // Instant Fallback Execution
-        await executeDirectVerificationFallback(createdOrderId, paymentData);
-      }
-    } else {
-      // In development / simulation mode without live gateway keys, execute direct verified order completion
-      await executeDirectVerificationFallback(createdOrderId, paymentData);
+    const rawKeyId = paymentData?.keyId || '';
+    if (!rawKeyId || !rawKeyId.startsWith('rzp_')) {
+      setErrorMsg('Payment gateway configuration is missing on the server. Please contact support.');
+      showToast('Gateway configuration error.', 'error');
+      setIsLoading(false);
+      return;
     }
-  };
 
-  const executeDirectVerificationFallback = async (createdOrderId: number, paymentData: any) => {
+    if (!razorpayLoaded || !(window as any).Razorpay) {
+      setErrorMsg('Razorpay Checkout SDK is still loading. Please try again in a moment.');
+      showToast('Payment SDK not ready. Please retry.', 'error');
+      setIsLoading(false);
+      return;
+    }
+
+    const options = {
+      key: rawKeyId,
+      amount: paymentData.amount,
+      currency: paymentData.currency || 'INR',
+      name: 'OHO TECHN',
+      description: `Order #${createdOrderId} - Software Entitlement`,
+      image: '/OHO_TECH_LOGO.png',
+      order_id: paymentData.razorpayOrderId,
+      handler: async function (response: any) {
+        if (!response.razorpay_payment_id || !response.razorpay_order_id || !response.razorpay_signature) {
+          setErrorMsg('Incomplete payment response from gateway.');
+          showToast('Payment verification failed.', 'error');
+          setIsLoading(false);
+          return;
+        }
+
+        try {
+          setIsLoading(true);
+          const verifyRes = await verifyPaymentApi({
+            orderId: createdOrderId,
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+          });
+
+          if (verifyRes.success) {
+            await clearCart();
+            showToast('Payment Verified! Your software access is ready.', 'success');
+            router.push('/my-products');
+          } else {
+            throw new Error(verifyRes.message || 'Payment signature verification failed.');
+          }
+        } catch (err: any) {
+          setErrorMsg(err.message || 'Payment verification failed.');
+          showToast(err.message || 'Verification failed.', 'error');
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          setIsLoading(false);
+          showToast('Payment cancelled. Your cart is still saved.', 'info');
+        },
+      },
+      prefill: {
+        name: customerName || user?.name || '',
+        email: customerEmail || user?.email || '',
+        contact: contactPhone,
+      },
+      theme: {
+        color: '#0d0d0e',
+      },
+    };
+
     try {
-      showToast('Processing verified payment & entitlement creation...', 'info');
-      const verifyRes = await verifyPaymentApi({
-        orderId: createdOrderId,
-        razorpayOrderId: paymentData.razorpayOrderId,
-        razorpayPaymentId: 'pay_verify_' + Date.now(),
-        razorpaySignature: 'sig_mock_verified',
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+        const desc = response.error?.description || 'Payment was not completed. Your cart has been preserved. You can try again.';
+        setErrorMsg(desc);
+        showToast('Payment was not completed. Your cart has been preserved. You can try again.', 'error');
+        setIsLoading(false);
       });
-
-      if (verifyRes.success) {
-        await clearCart();
-        showToast('Your software access is ready! Entitlement created.', 'success');
-        router.push('/my-products');
-      }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Payment verification failed.');
-    } finally {
+      rzp.open();
+    } catch (e: any) {
+      console.error('Razorpay popup open error:', e);
+      setErrorMsg('Failed to open Razorpay payment gateway. Please try again.');
+      showToast('Failed to open payment gateway.', 'error');
       setIsLoading(false);
     }
   };
@@ -148,11 +144,19 @@ export default function CheckoutPage() {
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!shippingAddress.trim()) {
-      setErrorMsg('Shipping address is required');
+      setErrorMsg('Deployment / Shipping address is required');
       return;
     }
     if (!contactPhone.trim()) {
       setErrorMsg('Contact phone number is required');
+      return;
+    }
+    if (!cart?.items?.length) {
+      setErrorMsg('Your cart is empty. Add products before checking out.');
+      return;
+    }
+    if (!totalAmount || totalAmount <= 0) {
+      setErrorMsg('Invalid order total amount. Please review your cart.');
       return;
     }
 
@@ -162,8 +166,8 @@ export default function CheckoutPage() {
     try {
       // 1. Create order in Spring Boot backend
       const res = await createOrderApi({
-        shippingAddress,
-        contactPhone,
+        shippingAddress: shippingAddress.trim(),
+        contactPhone: contactPhone.trim(),
       });
 
       if (!res.success || !res.data) {
@@ -172,13 +176,13 @@ export default function CheckoutPage() {
 
       const createdOrder = res.data;
 
-      // 2. Create Razorpay Payment Order on backend
+      // 2. Create authentic Razorpay Payment Order on backend
       const paymentRes = await createPaymentOrderApi(createdOrder.id);
       if (!paymentRes.success || !paymentRes.data) {
-        throw new Error(paymentRes.message || 'Failed to initiate Razorpay payment.');
+        throw new Error(paymentRes.message || 'Failed to initiate Razorpay payment order.');
       }
 
-      // 3. Trigger Razorpay Checkout Modal
+      // 3. Trigger authentic Razorpay Checkout Modal
       await processRazorpayCheckout(createdOrder.id, paymentRes.data);
     } catch (err: any) {
       setErrorMsg(err.message || 'An error occurred while creating your order.');
@@ -295,7 +299,7 @@ export default function CheckoutPage() {
 
                 <button
                   type="submit"
-                  disabled={isLoading || !cart?.items?.length}
+                  disabled={isLoading || !cart?.items?.length || totalAmount <= 0}
                   className="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 mt-6 cursor-pointer"
                 >
                   {isLoading ? (
@@ -321,17 +325,25 @@ export default function CheckoutPage() {
               </h3>
 
               <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
-                {cart?.items?.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center text-xs">
-                    <div>
-                      <div className="font-bold text-[#0d0d0e]">{item.product?.name || `Product #${item.id}`}</div>
-                      <div className="text-[10px] text-slate-500 font-mono">Qty: {item.quantity} x ₹{item.price}</div>
+                {cart?.items?.map((item) => {
+                  const unitPrice = getSafeCartItemUnitPrice(item);
+                  return (
+                    <div key={item.id} className="flex justify-between items-center text-xs">
+                      <div>
+                        <div className="font-bold text-[#0d0d0e]">{item.product?.name || `Product #${item.id}`}</div>
+                        {item.productPlan && (
+                          <div className="text-[10px] text-sky-700 font-mono font-medium">Plan: {item.productPlan.name}</div>
+                        )}
+                        <div className="text-[10px] text-slate-500 font-mono">
+                          Qty: {item.quantity} x {formatInr(unitPrice)}
+                        </div>
+                      </div>
+                      <div className="font-black text-[#0d0d0e] font-mono">
+                        {formatInr(unitPrice * item.quantity)}
+                      </div>
                     </div>
-                    <div className="font-black text-[#0d0d0e] font-mono">
-                      ₹{item.price * item.quantity}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="pt-4 border-t border-slate-200 space-y-2 text-xs">

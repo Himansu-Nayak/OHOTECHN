@@ -1,5 +1,11 @@
 import { apiClient } from './client';
-import { ApiResponse, AnalyticsDashboardDto, AuditLogDto, ContactEnquiry, PageResponse } from './types';
+import { ApiResponse, AnalyticsDashboardDto, AuditLogDto, ContactEnquiry, PageResponse, AdminStatsDto } from './types';
+
+export async function getAdminStatsApi(): Promise<ApiResponse<AdminStatsDto>> {
+  return apiClient<AdminStatsDto>('/api/admin/stats', {
+    method: 'GET',
+  });
+}
 
 export async function getAnalyticsDashboardApi(startDate?: string, endDate?: string): Promise<ApiResponse<AnalyticsDashboardDto>> {
   let url = '/api/admin/analytics/dashboard';
@@ -42,3 +48,4 @@ export async function updateAdminEnquiryStatusApi(id: number, status: string): P
     body: JSON.stringify({ status }),
   });
 }
+

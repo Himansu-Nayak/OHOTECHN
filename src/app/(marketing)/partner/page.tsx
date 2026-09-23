@@ -40,7 +40,7 @@ const partnerTypes = [
     tag: 'DEVELOPERS & DEVOPS',
     benefits: [
       'Early access to REST & GraphQL APIs',
-      'API sandbox & test environments',
+      'Live developer APIs & production environments',
       'Technical enablement sessions',
       'Marketplace revenue share',
     ],

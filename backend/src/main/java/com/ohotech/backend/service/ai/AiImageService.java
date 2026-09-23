@@ -1,6 +1,7 @@
 package com.ohotech.backend.service.ai;
 
 import com.ohotech.backend.dto.ai.ImageAnalysisResponse;
+import com.ohotech.backend.exception.AiServiceException;
 import com.ohotech.backend.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,10 @@ public class AiImageService {
             throw new BadRequestException("Invalid image format. Supported formats: JPEG, PNG, WebP.");
         }
 
+        if (!geminiService.isConfigured()) {
+            throw new AiServiceException("Google Gemini AI platform is not configured. Please set GEMINI_API_KEY to enable image analysis.");
+        }
+
         try {
             byte[] bytes = file.getBytes();
             String base64Data = Base64.getEncoder().encodeToString(bytes);
@@ -58,18 +63,12 @@ public class AiImageService {
                 """, context != null ? context : "Software UI / Product Asset");
 
             String systemInstruction = "You are an enterprise computer vision and product catalog AI analyst. Always return pure, valid JSON.";
-            return geminiService.generateStructured(prompt, systemInstruction, ImageAnalysisResponse.class);
-        } catch (BadRequestException e) {
+            return geminiService.generateMultimodalStructured(prompt, contentType, base64Data, systemInstruction, ImageAnalysisResponse.class);
+        } catch (BadRequestException | AiServiceException e) {
             throw e;
         } catch (Exception e) {
             log.error("Failed to analyze image {}: {}", file.getOriginalFilename(), e.getMessage());
-            return ImageAnalysisResponse.builder()
-                    .description("High-resolution enterprise software dashboard screenshot.")
-                    .detectedCategory("Enterprise Dashboard / Analytics")
-                    .attributes(Map.of("theme", "Dark / Futuristic", "density", "High"))
-                    .altText("OHO TECH software dashboard showing interactive analytics and workflows")
-                    .visualQualityRating("EXCELLENT")
-                    .build();
+            throw new AiServiceException("Failed to analyze image: " + e.getMessage());
         }
     }
 }

@@ -169,7 +169,7 @@ export function DirectorSection() {
                   </span>
                 </h4>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Full-stack engineering led by Himansu Nayak (MCA) • API keys, RBAC controls, and telemetry sandbox.
+                  Full-stack engineering led by Himansu Nayak (MCA) • API keys, RBAC controls, and telemetry observability suite.
                 </p>
               </div>
             </div>

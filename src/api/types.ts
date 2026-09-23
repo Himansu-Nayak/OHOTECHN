@@ -52,8 +52,10 @@ export interface Page<T> {
 export interface CartItem {
   id: number;
   product: ProductDto;
+  productPlan?: ProductPlanDto;
   quantity: number;
   price: number;
+  itemTotal?: number;
 }
 
 export interface Cart {
@@ -591,6 +593,11 @@ export interface CrmMarketingAnalyticsDto {
   revenueBySource: Record<string, number>;
 }
 
-
-
-
+export interface AdminStatsDto {
+  totalProducts: number;
+  totalOrders: number;
+  totalUsers: number;
+  totalQuotes: number;
+  totalRevenue: number;
+  systemStatus: string;
+}

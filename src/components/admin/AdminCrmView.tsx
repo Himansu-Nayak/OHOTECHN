@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ContactEnquiry } from '@/api/types';
+import { AdminDrawer, AdminBadge, AdminModal, AdminButton, AdminInput } from './AdminUiPrimitives';
 
 export interface LeadItem {
   id: number;
@@ -431,204 +432,169 @@ export function AdminCrmView({ enquiries = [], onStatusChange }: AdminCrmViewPro
         </div>
       )}
 
-      {/* Lead Detail Modal / Drawer */}
-      {selectedLead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#141416] border border-white/20 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-start justify-between pb-3 border-b border-white/10">
-              <div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold uppercase">
-                  Lead Profile #{selectedLead.id}
-                </span>
-                <h3 className="text-xl font-bold text-white mt-1">{selectedLead.name}</h3>
-                <p className="text-xs font-mono text-slate-400">{selectedLead.company}</p>
-              </div>
-              <button
-                onClick={() => setSelectedLead(null)}
-                className="p-1.5 rounded-xl bg-white/10 text-slate-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 font-mono text-xs">
-              <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-                <div>
-                  <span className="text-slate-400 text-[10px]">Estimated Deal</span>
-                  <p className="text-base font-bold text-emerald-400">₹{selectedLead.value.toLocaleString('en-IN')}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px]">Current Stage</span>
-                  <p className="text-sm font-bold text-white">{selectedLead.status}</p>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-slate-400 text-[10px]">Interest / Required Solution</span>
-                <p className="text-white font-medium">{selectedLead.interest}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <span className="text-slate-400 text-[10px]">Email Address</span>
-                  <p className="text-white truncate">{selectedLead.email}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px]">Phone Number</span>
-                  <p className="text-white truncate">{selectedLead.phone}</p>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <label className="text-[10px] text-slate-400 block mb-1">Move Pipeline Stage:</label>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {stages.map((st) => (
-                    <button
-                      key={st.key}
-                      onClick={() => handleStageChange(selectedLead.id, st.key)}
-                      className={cn(
-                        "py-1.5 px-2 rounded-lg text-[10px] font-mono font-bold transition-all",
-                        selectedLead.status === st.key
-                          ? "bg-purple-600 text-white"
-                          : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
-                      )}
-                    >
-                      {st.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 pt-3 border-t border-white/10">
+      {/* Lead Detail Drawer (with Spring Motion) */}
+      <AdminDrawer
+        isOpen={!!selectedLead}
+        onClose={() => setSelectedLead(null)}
+        title={selectedLead ? selectedLead.name : ''}
+        subtitle={selectedLead ? `${selectedLead.company || 'Direct Prospect'} • Lead #${selectedLead.id}` : ''}
+        width="md"
+        footer={
+          selectedLead && (
+            <>
               <a
                 href={`https://wa.me/${selectedLead.phone.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-black font-mono font-bold text-xs flex items-center justify-center gap-1.5"
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 transition-colors"
               >
                 <MessageSquare className="w-3.5 h-3.5" /> WhatsApp Direct
               </a>
-              <button
+              <AdminButton
+                variant="secondary"
+                size="sm"
                 onClick={() => setSelectedLead(null)}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs"
               >
-                Done
-              </button>
+                Close
+              </AdminButton>
+            </>
+          )
+        }
+      >
+        {selectedLead && (
+          <div className="space-y-4 text-xs">
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div>
+                <span className="text-slate-500 text-[11px] block">Estimated Deal</span>
+                <p className="text-base font-bold text-emerald-600 mt-0.5">₹{selectedLead.value.toLocaleString('en-IN')}</p>
+              </div>
+              <div>
+                <span className="text-slate-500 text-[11px] block">Current Stage</span>
+                <p className="text-xs font-bold text-slate-900 mt-1 uppercase tracking-wide">{selectedLead.status}</p>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <span className="text-slate-500 text-[11px] font-medium block">Interest / Required Solution</span>
+              <p className="text-slate-900 font-medium p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">{selectedLead.interest}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                <span className="text-slate-500 text-[11px] block">Email Address</span>
+                <p className="text-slate-900 font-medium truncate mt-0.5">{selectedLead.email}</p>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                <span className="text-slate-500 text-[11px] block">Phone Number</span>
+                <p className="text-slate-900 font-medium truncate mt-0.5">{selectedLead.phone}</p>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <label className="text-[11px] font-semibold text-slate-700 block mb-1.5">Move Pipeline Stage:</label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {stages.map((st) => (
+                  <button
+                    key={st.key}
+                    onClick={() => handleStageChange(selectedLead.id, st.key)}
+                    className={cn(
+                      "py-2 px-2 rounded-xl text-[11px] font-medium transition-all cursor-pointer",
+                      selectedLead.status === st.key
+                        ? "bg-slate-900 text-white font-semibold shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                    )}
+                  >
+                    {st.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </AdminDrawer>
 
-      {/* Add Lead Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <form
-            onSubmit={handleCreateLead}
-            className="bg-[#141416] border border-white/20 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 font-mono text-xs"
-          >
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h3 className="text-base font-bold text-white">Create Enterprise Prospect</h3>
-              <button
-                type="button"
-                onClick={() => setIsAddModalOpen(false)}
-                className="p-1 rounded-lg bg-white/10 text-slate-400 hover:text-white"
+      {/* Add Lead Modal (with Spring Motion) */}
+      <AdminModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Create Enterprise Prospect"
+        subtitle="Capture new commercial lead into CRM pipeline"
+        maxWidth="md"
+      >
+        <form onSubmit={handleCreateLead} className="space-y-3.5 text-xs">
+          <AdminInput
+            label="Lead / Contact Name"
+            required
+            placeholder="e.g. Dr. Rajesh Mohapatra"
+            value={newLeadForm.name}
+            onChange={(e) => setNewLeadForm({ ...newLeadForm, name: e.target.value })}
+          />
+
+          <AdminInput
+            label="Enterprise / Organization Name"
+            placeholder="e.g. Apollo Hospital Cuttack"
+            value={newLeadForm.company}
+            onChange={(e) => setNewLeadForm({ ...newLeadForm, company: e.target.value })}
+          />
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <AdminInput
+              label="Email"
+              type="email"
+              required
+              placeholder="dr@apollo.com"
+              value={newLeadForm.email}
+              onChange={(e) => setNewLeadForm({ ...newLeadForm, email: e.target.value })}
+            />
+            <AdminInput
+              label="Phone / WhatsApp"
+              type="text"
+              placeholder="+91 98765 43210"
+              value={newLeadForm.phone}
+              onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <AdminInput
+              label="Deal Value (₹)"
+              type="number"
+              value={newLeadForm.value}
+              onChange={(e) => setNewLeadForm({ ...newLeadForm, value: Number(e.target.value) })}
+            />
+            <div className="space-y-1.5 w-full">
+              <label className="block text-xs font-semibold text-slate-700 tracking-tight">Priority</label>
+              <select
+                value={newLeadForm.priority}
+                onChange={(e) => setNewLeadForm({ ...newLeadForm, priority: e.target.value as any })}
+                className="w-full px-3 py-2 text-xs text-slate-900 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:border-slate-900 transition-colors shadow-2xs cursor-pointer"
               >
-                <X className="w-4 h-4" />
-              </button>
+                <option value="HIGH">High Priority</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+              </select>
             </div>
+          </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Lead / Contact Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Dr. Rajesh Mohapatra"
-                  value={newLeadForm.name}
-                  onChange={(e) => setNewLeadForm({ ...newLeadForm, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Enterprise / Organization Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Apollo Hospital Cuttack"
-                  value={newLeadForm.company}
-                  onChange={(e) => setNewLeadForm({ ...newLeadForm, company: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Email *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="dr@apollo.com"
-                    value={newLeadForm.email}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, email: e.target.value })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Phone / WhatsApp</label>
-                  <input
-                    type="text"
-                    placeholder="+91 98765 43210"
-                    value={newLeadForm.phone}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Deal Value (₹)</label>
-                  <input
-                    type="number"
-                    value={newLeadForm.value}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, value: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Priority</label>
-                  <select
-                    value={newLeadForm.priority}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, priority: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-[#19191e] border border-white/10 rounded-xl text-white focus:outline-none"
-                  >
-                    <option value="HIGH">High Priority</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="LOW">Low</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsAddModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold"
-              >
-                Save to CRM
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+            <AdminButton
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={() => setIsAddModalOpen(false)}
+            >
+              Cancel
+            </AdminButton>
+            <AdminButton
+              variant="primary"
+              size="sm"
+              type="submit"
+            >
+              Save to CRM
+            </AdminButton>
+          </div>
+        </form>
+      </AdminModal>
     </div>
   );
 }

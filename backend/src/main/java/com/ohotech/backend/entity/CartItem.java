@@ -32,4 +32,21 @@ public class CartItem {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("price")
+    public java.math.BigDecimal getPrice() {
+        if (productPlan != null && productPlan.getPrice() != null) {
+            return productPlan.getPrice();
+        }
+        if (product != null && product.getPrice() != null) {
+            return product.getPrice();
+        }
+        return java.math.BigDecimal.ZERO;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("itemTotal")
+    public java.math.BigDecimal getItemTotal() {
+        int qty = quantity != null ? quantity : 0;
+        return getPrice().multiply(java.math.BigDecimal.valueOf(qty));
+    }
 }

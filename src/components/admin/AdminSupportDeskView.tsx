@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
+import { AdminDrawer, AdminModal, AdminButton, AdminInput } from './AdminUiPrimitives';
 
 export interface TicketItem {
   id: number;
@@ -309,54 +310,50 @@ export function AdminSupportDeskView() {
         </div>
       </div>
 
-      {/* Ticket Detail Drawer */}
-      {selectedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#141416] border border-white/20 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-start justify-between pb-3 border-b border-white/10">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300">
-                    {selectedTicket.ticketCode}
-                  </span>
-                  <span className="text-xs text-slate-400">{selectedTicket.department}</span>
-                </div>
-                <h3 className="text-base font-bold text-white mt-1">{selectedTicket.subject}</h3>
-                <p className="text-xs text-slate-400">{selectedTicket.clientName} ({selectedTicket.clientEmail})</p>
-              </div>
-              <button
-                onClick={() => setSelectedTicket(null)}
-                className="p-1.5 rounded-xl bg-white/10 text-slate-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
+      {/* Ticket Detail Drawer (with Spring Motion) */}
+      <AdminDrawer
+        isOpen={!!selectedTicket}
+        onClose={() => setSelectedTicket(null)}
+        title={
+          selectedTicket ? (
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200">
+                {selectedTicket.ticketCode}
+              </span>
+              <span>{selectedTicket.subject}</span>
             </div>
-
+          ) : ''
+        }
+        subtitle={selectedTicket ? `${selectedTicket.clientName} (${selectedTicket.clientEmail}) • ${selectedTicket.department}` : ''}
+        width="lg"
+      >
+        {selectedTicket && (
+          <div className="space-y-4 text-xs">
             {/* Description Box */}
-            <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-2">
-              <span className="text-[10px] text-slate-400 uppercase">Customer Issue Description:</span>
-              <p className="text-xs text-slate-200 leading-relaxed">{selectedTicket.description}</p>
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <span className="text-[10px] text-slate-500 uppercase font-semibold">Customer Issue Description:</span>
+              <p className="text-xs text-slate-700 leading-relaxed">{selectedTicket.description}</p>
             </div>
 
             {/* Last Reply */}
-            <div className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-500/20 space-y-1">
-              <span className="text-[10px] text-rose-400 uppercase font-bold">Latest Internal / Client Update:</span>
-              <p className="text-xs text-slate-300">{selectedTicket.lastReply}</p>
+            <div className="p-3.5 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-1">
+              <span className="text-[10px] text-amber-700 uppercase font-bold">Latest Internal / Client Update:</span>
+              <p className="text-xs text-amber-900">{selectedTicket.lastReply}</p>
             </div>
 
             {/* Quick Status Changers */}
             <div className="space-y-1.5">
-              <span className="text-[10px] text-slate-400">Change Ticket Stage:</span>
+              <span className="text-[10px] text-slate-500 font-semibold uppercase">Change Ticket Stage:</span>
               <div className="grid grid-cols-4 gap-1.5 text-[11px]">
                 {(['OPEN', 'IN_PROGRESS', 'ON_HOLD', 'CLOSED'] as TicketItem['status'][]).map((st) => (
                   <button
                     key={st}
                     onClick={() => handleStatusTransition(selectedTicket.id, st)}
                     className={cn(
-                      "py-1 rounded-lg font-bold transition-all cursor-pointer",
+                      "py-1.5 rounded-xl font-medium transition-all cursor-pointer",
                       selectedTicket.status === st
-                        ? "bg-rose-600 text-white"
-                        : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
+                        ? "bg-slate-900 text-white font-semibold shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
                     )}
                   >
                     {st}
@@ -366,144 +363,125 @@ export function AdminSupportDeskView() {
             </div>
 
             {/* Fast Reply Box */}
-            <form onSubmit={handleSendReply} className="space-y-2 pt-2 border-t border-white/10">
+            <form onSubmit={handleSendReply} className="space-y-2 pt-3 border-t border-slate-100">
+              <label className="text-[11px] font-semibold text-slate-700 block">Reply or Engineering Dispatch Note</label>
               <textarea
-                rows={2}
+                rows={3}
                 placeholder="Write customer response or engineering dispatch note..."
                 value={replyMessage}
                 onChange={(e) => setReplyMessage(e.target.value)}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500 resize-none"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 resize-none shadow-2xs"
               />
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-slate-400">Sends instant email &amp; WhatsApp notice</span>
-                <button
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-[10px] text-slate-500">Sends automated notification</span>
+                <AdminButton
                   type="submit"
-                  className="px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+                  variant="primary"
+                  size="sm"
+                  icon={Send}
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send Response</span>
-                </button>
+                  Send Response
+                </AdminButton>
               </div>
             </form>
           </div>
-        </div>
-      )}
+        )}
+      </AdminDrawer>
 
-      {/* Create Ticket Modal */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <form
-            onSubmit={handleCreateTicket}
-            className="bg-[#141416] border border-white/20 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-xs"
-          >
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h3 className="text-base font-bold text-white">Register Support Ticket</h3>
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(false)}
-                className="p-1 rounded-lg bg-white/10 text-slate-400 hover:text-white"
+      {/* Create Ticket Modal (with Spring Motion) */}
+      <AdminModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        title="Register Support Ticket"
+        subtitle="Initiate engineering dispatch or SLA resolution"
+        maxWidth="md"
+      >
+        <form onSubmit={handleCreateTicket} className="space-y-3.5 text-xs">
+          <AdminInput
+            label="Issue Subject"
+            required
+            placeholder="e.g. Database replication delay on Node 2"
+            value={newTicketForm.subject}
+            onChange={(e) => setNewTicketForm({ ...newTicketForm, subject: e.target.value })}
+          />
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <AdminInput
+              label="Client Name"
+              required
+              placeholder="Dr. Rajesh Mohapatra"
+              value={newTicketForm.clientName}
+              onChange={(e) => setNewTicketForm({ ...newTicketForm, clientName: e.target.value })}
+            />
+            <AdminInput
+              label="Client Email"
+              type="email"
+              required
+              placeholder="client@care.org"
+              value={newTicketForm.clientEmail}
+              onChange={(e) => setNewTicketForm({ ...newTicketForm, clientEmail: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="space-y-1.5 w-full">
+              <label className="block text-xs font-semibold text-slate-700">Department</label>
+              <select
+                value={newTicketForm.department}
+                onChange={(e) => setNewTicketForm({ ...newTicketForm, department: e.target.value as any })}
+                className="w-full px-3 py-2 text-xs text-slate-900 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:border-slate-900 cursor-pointer shadow-2xs"
               >
-                <X className="w-4 h-4" />
-              </button>
+                <option value="Technical">Technical</option>
+                <option value="Billing">Billing</option>
+                <option value="Sales">Sales</option>
+                <option value="Licensing">Licensing</option>
+              </select>
             </div>
-
-            <div className="space-y-3">
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Issue Subject *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Database replication delay on Node 2"
-                  value={newTicketForm.subject}
-                  onChange={(e) => setNewTicketForm({ ...newTicketForm, subject: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-rose-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Client Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Dr. Rajesh Mohapatra"
-                    value={newTicketForm.clientName}
-                    onChange={(e) => setNewTicketForm({ ...newTicketForm, clientName: e.target.value })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-rose-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Client Email *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="client@care.org"
-                    value={newTicketForm.clientEmail}
-                    onChange={(e) => setNewTicketForm({ ...newTicketForm, clientEmail: e.target.value })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-rose-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Department</label>
-                  <select
-                    value={newTicketForm.department}
-                    onChange={(e) => setNewTicketForm({ ...newTicketForm, department: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-[#19191d] border border-white/10 rounded-xl text-white focus:outline-none"
-                  >
-                    <option value="Technical">Technical</option>
-                    <option value="Billing">Billing</option>
-                    <option value="Sales">Sales</option>
-                    <option value="Licensing">Licensing</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Priority</label>
-                  <select
-                    value={newTicketForm.priority}
-                    onChange={(e) => setNewTicketForm({ ...newTicketForm, priority: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-[#19191d] border border-white/10 rounded-xl text-white focus:outline-none"
-                  >
-                    <option value="URGENT">Urgent (2h SLA)</option>
-                    <option value="HIGH">High (4h SLA)</option>
-                    <option value="MEDIUM">Medium (12h SLA)</option>
-                    <option value="LOW">Low (24h SLA)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Detailed Description</label>
-                <textarea
-                  rows={3}
-                  placeholder="Paste error stack trace or description..."
-                  value={newTicketForm.description}
-                  onChange={(e) => setNewTicketForm({ ...newTicketForm, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-rose-500 resize-none"
-                />
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white"
+            <div className="space-y-1.5 w-full">
+              <label className="block text-xs font-semibold text-slate-700">Priority</label>
+              <select
+                value={newTicketForm.priority}
+                onChange={(e) => setNewTicketForm({ ...newTicketForm, priority: e.target.value as any })}
+                className="w-full px-3 py-2 text-xs text-slate-900 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:border-slate-900 cursor-pointer shadow-2xs"
               >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold"
-              >
-                Create Support Ticket
-              </button>
+                <option value="URGENT">Urgent (2h SLA)</option>
+                <option value="HIGH">High (4h SLA)</option>
+                <option value="MEDIUM">Medium (12h SLA)</option>
+                <option value="LOW">Low (24h SLA)</option>
+              </select>
             </div>
-          </form>
-        </div>
-      )}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700">Detailed Description</label>
+            <textarea
+              rows={3}
+              placeholder="Paste error stack trace or description..."
+              value={newTicketForm.description}
+              onChange={(e) => setNewTicketForm({ ...newTicketForm, description: e.target.value })}
+              className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 resize-none shadow-2xs"
+            />
+          </div>
+
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+            <AdminButton
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsCreateModalOpen(false)}
+            >
+              Cancel
+            </AdminButton>
+            <AdminButton
+              type="submit"
+              variant="primary"
+              size="sm"
+            >
+              Create Support Ticket
+            </AdminButton>
+          </div>
+        </form>
+      </AdminModal>
     </div>
   );
 }

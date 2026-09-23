@@ -89,7 +89,7 @@ export default function DeveloperStudioPage() {
   const [apiKeys, setApiKeys] = React.useState<ApiKeyItem[]>([
     { id: 'key_1', name: 'Production Backend Microservices', prefix: 'oho_live_99a8••••', created: '2026-08-10', lastUsed: '2 mins ago', scope: 'full_access', status: 'ACTIVE' },
     { id: 'key_2', name: 'Mobile POS Gateway Client', prefix: 'oho_live_21bf••••', created: '2026-09-01', lastUsed: '15 mins ago', scope: 'pos:read_write', status: 'ACTIVE' },
-    { id: 'key_3', name: 'HMS Staging Test Suite', prefix: 'oho_test_7741••••', created: '2026-09-12', lastUsed: '3 days ago', scope: 'sandbox_all', status: 'REVOKED' },
+    { id: 'key_3', name: 'HMS Enterprise Integration Suite', prefix: 'oho_live_7741••••', created: '2026-09-12', lastUsed: '3 days ago', scope: 'integration_full', status: 'ACTIVE' },
   ]);
   const [newKeyName, setNewKeyName] = React.useState('');
 

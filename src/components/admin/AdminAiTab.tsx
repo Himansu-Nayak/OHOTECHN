@@ -8,7 +8,13 @@ import {
   TrendingUp,
   RefreshCw,
   Save,
-  Database
+  Database,
+  Cpu,
+  Activity,
+  MessageSquare,
+  Clock,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
 import {
@@ -17,11 +23,22 @@ import {
   summarizeAdminEnquiries,
   getAdminAnalyticsAiInsight,
   syncAdminProductEmbeddings,
+  getAdminAiUsageApi,
+  getAdminAiConversationsApi,
   ProductAiGenerationResponse,
   AnalyticsInsightResponse
 } from '@/api/ai';
 import { getAdminProductsApi } from '@/api/products';
 import { ProductDto } from '@/api/types';
+import {
+  AdminCard,
+  AdminButton,
+  AdminBadge,
+  AdminInput,
+  AdminSelect,
+  AdminEmptyState,
+  AdminTableSkeleton
+} from './AdminUiPrimitives';
 
 export function AdminAiTab() {
   const { showToast } = useToast();
@@ -51,7 +68,32 @@ export function AdminAiTab() {
   // Embedding sync state
   const [isSyncing, setIsSyncing] = React.useState(false);
 
-  // Load products on mount
+  // Telemetry state
+  const [usageLogs, setUsageLogs] = React.useState<any[]>([]);
+  const [conversations, setConversations] = React.useState<any[]>([]);
+  const [loadingTelemetry, setLoadingTelemetry] = React.useState(false);
+
+  const fetchTelemetry = async () => {
+    setLoadingTelemetry(true);
+    try {
+      const [usageRes, convRes] = await Promise.all([
+        getAdminAiUsageApi().catch(() => ({ success: false, data: [] })),
+        getAdminAiConversationsApi().catch(() => ({ success: false, data: [] })),
+      ]);
+      if (usageRes.success && usageRes.data) {
+        setUsageLogs(usageRes.data);
+      }
+      if (convRes.success && convRes.data) {
+        setConversations(convRes.data);
+      }
+    } catch {
+      // Telemetry fetch non-blocking
+    } finally {
+      setLoadingTelemetry(false);
+    }
+  };
+
+  // Load products & telemetry on mount
   React.useEffect(() => {
     getAdminProductsApi(0, 50).then((res) => {
       if (res.success && res.data?.content) {
@@ -61,6 +103,8 @@ export function AdminAiTab() {
         }
       }
     }).catch(() => {});
+
+    fetchTelemetry();
   }, []);
 
   const handleGenerateCopy = async () => {
@@ -80,11 +124,12 @@ export function AdminAiTab() {
       if (res.success && res.data) {
         setGeneratedCopy(res.data);
         showToast('AI descriptions generated successfully!', 'success');
+        fetchTelemetry();
       } else {
         throw new Error(res.message);
       }
     } catch (e: any) {
-      showToast(e.message || 'Generation failed', 'error');
+      showToast(e?.message || 'Generation failed', 'error');
     } finally {
       setIsGenerating(false);
     }
@@ -101,7 +146,7 @@ export function AdminAiTab() {
         throw new Error(res.message);
       }
     } catch (e: any) {
-      showToast(e.message || 'Failed to apply copy', 'error');
+      showToast(e?.message || 'Failed to apply copy', 'error');
     } finally {
       setIsApplying(false);
     }
@@ -114,9 +159,10 @@ export function AdminAiTab() {
       if (res.success && res.data) {
         setEnquiriesSummary(res.data);
         showToast('Enquiries summarized by Gemini AI', 'success');
+        fetchTelemetry();
       }
     } catch (e: any) {
-      showToast(e.message || 'Summarization failed', 'error');
+      showToast(e?.message || 'Summarization failed', 'error');
     } finally {
       setIsSummarizing(false);
     }
@@ -129,9 +175,10 @@ export function AdminAiTab() {
       if (res.success && res.data) {
         setAnalyticsInsight(res.data);
         showToast('Strategic insights generated', 'success');
+        fetchTelemetry();
       }
     } catch (e: any) {
-      showToast(e.message || 'Insights generation failed', 'error');
+      showToast(e?.message || 'Insights generation failed', 'error');
     } finally {
       setIsInsightsLoading(false);
     }
@@ -143,213 +190,220 @@ export function AdminAiTab() {
       const res = await syncAdminProductEmbeddings();
       if (res.success) {
         showToast('Catalog embeddings synced for semantic vector search', 'success');
+        fetchTelemetry();
       }
     } catch (e: any) {
-      showToast(e.message || 'Embedding sync failed', 'error');
+      showToast(e?.message || 'Embedding sync failed', 'error');
     } finally {
       setIsSyncing(false);
     }
   };
 
+  // Aggregated usage numbers
+  const totalTokens = usageLogs.reduce((acc, u) => acc + (u.totalTokens || 0), 0);
+  const promptTokens = usageLogs.reduce((acc, u) => acc + (u.promptTokens || 0), 0);
+  const completionTokens = usageLogs.reduce((acc, u) => acc + (u.candidateTokens || 0), 0);
+
   return (
-    <div className="space-y-8 font-sans">
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Header Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-white">OHO TECH AI Admin Intelligence Suite</h2>
-            <span className="px-2 py-0.5 rounded text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono">
-              ROLE_ADMIN ONLY
-            </span>
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">AI Operations &amp; Intelligence Suite</h1>
+            <AdminBadge variant="primary">Gemini 2.5 Flash</AdminBadge>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Automated catalog generation, executive enquiry synthesis, RAG vector indexing, and growth analytics.
+          <p className="text-sm text-slate-500">
+            Automated catalog generation, executive inquiry synthesis, RAG vector indexing, and token telemetry.
           </p>
         </div>
 
-        <button
+        <AdminButton
+          variant="secondary"
+          size="sm"
           disabled={isSyncing}
           onClick={handleSyncEmbeddings}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-700 transition-colors shrink-0 disabled:opacity-50"
+          leftIcon={isSyncing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Database className="w-3.5 h-3.5 text-slate-600" />}
         >
-          {isSyncing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Database className="w-3.5 h-3.5 text-indigo-400" />}
-          <span>{isSyncing ? 'Syncing Embeddings...' : 'Sync RAG Vector Catalog'}</span>
-        </button>
+          {isSyncing ? 'Syncing Embeddings...' : 'Sync Vector Catalog'}
+        </AdminButton>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-6 rounded-2xl bg-slate-900/60 border border-slate-800 p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-slate-800">
-            <Bot className="w-5 h-5 text-indigo-400" />
-            <h3 className="font-bold text-white text-sm">AI Product Description & Catalog Generator</h3>
-          </div>
-
-          <div className="space-y-3 text-xs">
-            <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Product Name</label>
-              <input
-                type="text"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-              />
+      {/* Main AI Generation Tools */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Product Copy Generator */}
+        <div className="lg:col-span-6">
+          <AdminCard className="p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+              <Bot className="w-5 h-5 text-slate-700" />
+              <h2 className="font-bold text-slate-900 text-sm">Product Description &amp; Catalog Generator</h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Category</label>
-                <input
-                  type="text"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                <label className="block text-slate-700 font-semibold mb-1">Product Name</label>
+                <AdminInput
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">Category</label>
+                  <AdminInput
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">Target Audience</label>
+                  <AdminInput
+                    value={targetAudience}
+                    onChange={(e) => setTargetAudience(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Target Audience</label>
-                <input
-                  type="text"
-                  value={targetAudience}
-                  onChange={(e) => setTargetAudience(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                <label className="block text-slate-700 font-semibold mb-1">Key Capabilities &amp; Features</label>
+                <textarea
+                  rows={2}
+                  value={keyFeatures}
+                  onChange={(e) => setKeyFeatures(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-400"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Key Capabilities & Features</label>
-              <textarea
-                rows={2}
-                value={keyFeatures}
-                onChange={(e) => setKeyFeatures(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Tech Specs & Architecture</label>
-              <input
-                type="text"
-                value={specifications}
-                onChange={(e) => setSpecifications(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-
-            <button
-              disabled={isGenerating}
-              onClick={handleGenerateCopy}
-              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs transition-all shadow-md shadow-indigo-600/30 flex items-center justify-center gap-2"
-            >
-              {isGenerating ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-              <span>{isGenerating ? 'Generating with Gemini...' : 'Generate Structured Copy & SEO'}</span>
-            </button>
-          </div>
-
-          {generatedCopy && (
-            <div className="pt-4 border-t border-slate-800 space-y-3 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-emerald-400">Generated Preview</span>
-                <div className="flex items-center gap-2">
-                  <select
-                    value={selectedProductId || ''}
-                    onChange={(e) => setSelectedProductId(Number(e.target.value))}
-                    className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-white text-[11px]"
-                  >
-                    {productsList.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        Apply to: #{p.id} - {p.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    disabled={isApplying}
-                    onClick={handleApplyToProduct}
-                    className="flex items-center gap-1 px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold transition-colors disabled:opacity-50"
-                  >
-                    <Save className="w-3 h-3" />
-                    <span>Apply & Save</span>
-                  </button>
-                </div>
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Tech Specs &amp; Architecture</label>
+                <AdminInput
+                  value={specifications}
+                  onChange={(e) => setSpecifications(e.target.value)}
+                />
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2 max-h-60 overflow-y-auto">
-                <div>
-                  <span className="text-slate-500 font-bold uppercase text-[10px]">Short Pitch</span>
-                  <p className="text-slate-200">{generatedCopy.shortDescription}</p>
+              <AdminButton
+                variant="primary"
+                disabled={isGenerating}
+                onClick={handleGenerateCopy}
+                className="w-full justify-center"
+                leftIcon={isGenerating ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+              >
+                {isGenerating ? 'Generating with Gemini...' : 'Generate Structured Copy & SEO'}
+              </AdminButton>
+            </div>
+
+            {generatedCopy && (
+              <div className="pt-4 border-t border-slate-200 space-y-3 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-900">Generated Preview</span>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={selectedProductId || ''}
+                      onChange={(e) => setSelectedProductId(Number(e.target.value))}
+                      className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-800 text-xs focus:outline-none"
+                    >
+                      {productsList.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          Apply to: #{p.id} - {p.name}
+                        </option>
+                      ))}
+                    </select>
+                    <AdminButton
+                      variant="primary"
+                      size="sm"
+                      disabled={isApplying}
+                      onClick={handleApplyToProduct}
+                      leftIcon={<Save className="w-3 h-3" />}
+                    >
+                      Apply &amp; Save
+                    </AdminButton>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-500 font-bold uppercase text-[10px]">Long Description</span>
-                  <p className="text-slate-300 whitespace-pre-wrap">{generatedCopy.longDescription}</p>
-                </div>
-                <div>
-                  <span className="text-slate-500 font-bold uppercase text-[10px]">SEO Meta</span>
-                  <p className="text-indigo-300 font-mono text-[11px]">{generatedCopy.seoTitle}</p>
-                  <p className="text-slate-400 text-[11px] mt-0.5">{generatedCopy.seoDescription}</p>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5 max-h-60 overflow-y-auto">
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[10px]">Short Pitch</span>
+                    <p className="text-slate-800 font-medium">{generatedCopy.shortDescription}</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[10px]">Long Description</span>
+                    <p className="text-slate-600 whitespace-pre-wrap">{generatedCopy.longDescription}</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[10px]">SEO Meta</span>
+                    <p className="text-slate-900 font-mono text-[11px] font-semibold">{generatedCopy.seoTitle}</p>
+                    <p className="text-slate-500 text-[11px] mt-0.5">{generatedCopy.seoDescription}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </AdminCard>
         </div>
 
+        {/* Right Column: Inquiries Summary & Strategic Growth */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <AdminCard className="p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-400" />
-                <h3 className="font-bold text-white text-sm">Customer Enquiries & Lead Synthesis</h3>
+                <FileText className="w-5 h-5 text-slate-700" />
+                <h2 className="font-bold text-slate-900 text-sm">Customer Inquiries &amp; Lead Synthesis</h2>
               </div>
-              <button
+              <AdminButton
+                variant="secondary"
+                size="sm"
                 disabled={isSummarizing}
                 onClick={handleSummarizeEnquiries}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                leftIcon={isSummarizing ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
               >
-                {isSummarizing ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                <span>Summarize</span>
-              </button>
+                Summarize
+              </AdminButton>
             </div>
 
             {enquiriesSummary ? (
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2">
-                <div className="flex justify-between text-slate-400 text-[11px] border-b border-slate-800 pb-2">
-                  <span>Total Enquiries: {enquiriesSummary.totalEnquiries}</span>
-                  <span className="text-emerald-400 font-semibold">Gemini Synthesized</span>
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+                <div className="flex justify-between text-slate-500 text-xs border-b border-slate-200 pb-2">
+                  <span>Total Inquiries: <strong className="text-slate-900">{enquiriesSummary.totalEnquiries}</strong></span>
+                  <AdminBadge variant="success">Gemini Synthesized</AdminBadge>
                 </div>
-                <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{enquiriesSummary.summary}</p>
+                <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{enquiriesSummary.summary}</p>
               </div>
             ) : (
               <p className="text-xs text-slate-500">
                 Click Summarize to analyze customer messages, extract demand patterns, and highlight urgent inquiries.
               </p>
             )}
-          </div>
+          </AdminCard>
 
-          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <AdminCard className="p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
-                <h3 className="font-bold text-white text-sm">Executive AI Growth & Business Intelligence</h3>
+                <TrendingUp className="w-5 h-5 text-emerald-600" />
+                <h2 className="font-bold text-slate-900 text-sm">Executive AI Growth &amp; Intelligence</h2>
               </div>
-              <button
+              <AdminButton
+                variant="primary"
+                size="sm"
                 disabled={isInsightsLoading}
                 onClick={handleGetAnalyticsInsights}
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                leftIcon={isInsightsLoading ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
               >
-                {isInsightsLoading ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                <span>Generate Report</span>
-              </button>
+                Generate Report
+              </AdminButton>
             </div>
 
             {analyticsInsight ? (
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-3">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-3">
                 <div>
-                  <span className="font-bold text-slate-400 uppercase text-[10px]">Executive Summary</span>
-                  <p className="text-slate-200 mt-1 leading-relaxed">{analyticsInsight.executiveSummary}</p>
+                  <span className="font-bold text-slate-500 uppercase text-[10px]">Executive Summary</span>
+                  <p className="text-slate-800 mt-1 leading-relaxed">{analyticsInsight.executiveSummary}</p>
                 </div>
 
                 {analyticsInsight.strategicOpportunities && (
                   <div>
-                    <span className="font-bold text-emerald-400 uppercase text-[10px]">Strategic Opportunities</span>
-                    <ul className="list-disc pl-4 text-slate-300 mt-1 space-y-1">
+                    <span className="font-bold text-emerald-700 uppercase text-[10px]">Strategic Opportunities</span>
+                    <ul className="list-disc pl-4 text-slate-700 mt-1 space-y-1">
                       {analyticsInsight.strategicOpportunities.map((op, i) => (
                         <li key={i}>{op}</li>
                       ))}
@@ -359,8 +413,8 @@ export function AdminAiTab() {
 
                 {analyticsInsight.recommendedNextSteps && (
                   <div>
-                    <span className="font-bold text-indigo-400 uppercase text-[10px]">Recommended Actions</span>
-                    <ul className="list-disc pl-4 text-slate-300 mt-1 space-y-1">
+                    <span className="font-bold text-slate-900 uppercase text-[10px]">Recommended Actions</span>
+                    <ul className="list-disc pl-4 text-slate-700 mt-1 space-y-1">
                       {analyticsInsight.recommendedNextSteps.map((step, i) => (
                         <li key={i}>{step}</li>
                       ))}
@@ -373,9 +427,89 @@ export function AdminAiTab() {
                 Click Generate Report to produce real-time executive insights based on orders, users, and platform revenue.
               </p>
             )}
-          </div>
+          </AdminCard>
         </div>
       </div>
+
+      {/* Real AI Telemetry & Usage Logs */}
+      <AdminCard className="p-5 space-y-5">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-slate-700" />
+            <h2 className="font-bold text-slate-900 text-sm">Real AI Telemetry &amp; Token Accounting</h2>
+          </div>
+          <AdminButton
+            variant="secondary"
+            size="sm"
+            onClick={fetchTelemetry}
+            disabled={loadingTelemetry}
+            leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${loadingTelemetry ? 'animate-spin' : ''}`} />}
+          >
+            Refresh Telemetry
+          </AdminButton>
+        </div>
+
+        {/* Telemetry Metrics */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-[10px] uppercase font-bold text-slate-400">Total Tokens</span>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1">{totalTokens.toLocaleString()}</div>
+          </div>
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-[10px] uppercase font-bold text-slate-400">Prompt Tokens</span>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1">{promptTokens.toLocaleString()}</div>
+          </div>
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-[10px] uppercase font-bold text-slate-400">Completion Tokens</span>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1">{completionTokens.toLocaleString()}</div>
+          </div>
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-[10px] uppercase font-bold text-slate-400">Total Invocations</span>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1">{usageLogs.length}</div>
+          </div>
+        </div>
+
+        {/* Recent Invocations Table */}
+        <div className="space-y-2">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Recent AI Invocations</span>
+          {usageLogs.length === 0 ? (
+            <AdminEmptyState
+              title="No AI requests recorded"
+              description="Generate a product description or executive insights above to initialize telemetry."
+              icon={<Cpu className="w-6 h-6 text-slate-400" />}
+            />
+          ) : (
+            <div className="overflow-x-auto border border-slate-200 rounded-xl">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="px-4 py-2.5">Timestamp</th>
+                    <th className="px-4 py-2.5">Feature</th>
+                    <th className="px-4 py-2.5">Model</th>
+                    <th className="px-4 py-2.5">Prompt Tokens</th>
+                    <th className="px-4 py-2.5">Completion Tokens</th>
+                    <th className="px-4 py-2.5 text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {usageLogs.slice(0, 10).map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50/60">
+                      <td className="px-4 py-2 text-slate-500 font-mono text-[11px]">
+                        {log.timestamp ? new Date(log.timestamp).toLocaleString('en-IN') : '—'}
+                      </td>
+                      <td className="px-4 py-2 font-semibold text-slate-900">{log.feature}</td>
+                      <td className="px-4 py-2 font-mono text-[11px] text-slate-600">{log.model}</td>
+                      <td className="px-4 py-2 font-mono text-slate-600">{log.promptTokens || 0}</td>
+                      <td className="px-4 py-2 font-mono text-slate-600">{log.candidateTokens || 0}</td>
+                      <td className="px-4 py-2 font-mono text-right font-bold text-slate-900">{log.totalTokens || 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </AdminCard>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { apiClient, getAccessToken } from './client';
 import { ApiResponse, ProductDto, SoftwareReleaseDto } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
 
 export async function getMyEntitledProductsApi(): Promise<ApiResponse<ProductDto[]>> {
   return apiClient<ProductDto[]>('/api/products/my', {

@@ -18,25 +18,27 @@ export default function AdminAuditLogsPage() {
   const [totalPages, setTotalPages] = React.useState<number>(1);
   const [totalElements, setTotalElements] = React.useState<number>(0);
 
-  const fetchAuditLogs = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await getAdminAuditLogsApi(page, 20, actionFilter || undefined, undefined, search || undefined);
-      if (res.success && res.data) {
-        setLogs(res.data.content || []);
-        setTotalPages(res.data.totalPages || 1);
-        setTotalElements(res.data.totalElements || 0);
-      }
-    } catch (e) {
-      console.warn('Failed to load audit logs', e);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, actionFilter, search]);
-
   React.useEffect(() => {
-    fetchAuditLogs();
-  }, [fetchAuditLogs]);
+    let isCancelled = false;
+    getAdminAuditLogsApi(page, 20, actionFilter || undefined, undefined, search || undefined)
+      .then((res) => {
+        if (!isCancelled && res.success && res.data) {
+          setLogs(res.data.content || []);
+          setTotalPages(res.data.totalPages || 1);
+          setTotalElements(res.data.totalElements || 0);
+        }
+      })
+      .catch((e) => {
+        if (!isCancelled) console.warn('Failed to load audit logs', e);
+      })
+      .finally(() => {
+        if (!isCancelled) setLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [page, actionFilter, search]);
 
   const isAdmin = user && (user.role === 'ROLE_ADMIN' || user.role === 'ADMIN' || user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER');
 

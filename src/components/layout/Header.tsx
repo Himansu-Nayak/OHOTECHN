@@ -117,6 +117,7 @@ export function Header() {
                     <Link
                       key={item.href}
                       href={item.href}
+                      prefetch={true}
                       onClick={() => setOpenDropdown(null)}
                       className="p-2.5 rounded-xl hover:bg-sky-50 transition-colors group/item block"
                     >
@@ -131,6 +132,7 @@ export function Header() {
                   <div className="pt-2 border-t border-slate-100 mt-1">
                     <Link
                       href="/solutions"
+                      prefetch={true}
                       onClick={() => setOpenDropdown(null)}
                       className="text-xs font-bold text-sky-600 hover:text-sky-700 px-3 py-1 block"
                     >
@@ -155,6 +157,7 @@ export function Header() {
               >
                 <Link
                   href="/services"
+                  prefetch={true}
                   onClick={() => setOpenDropdown(null)}
                   className="hover:text-sky-600 transition-colors"
                 >
@@ -192,6 +195,7 @@ export function Header() {
                         <Link
                           key={item.href}
                           href={item.href}
+                          prefetch={true}
                           onClick={() => setOpenDropdown(null)}
                           className="p-2 rounded-lg hover:bg-sky-50 block transition-colors group/item"
                         >
@@ -214,6 +218,7 @@ export function Header() {
                         <Link
                           key={item.href}
                           href={item.href}
+                          prefetch={true}
                           onClick={() => setOpenDropdown(null)}
                           className="p-2 rounded-lg hover:bg-amber-50 block transition-colors group/item"
                         >
@@ -226,7 +231,7 @@ export function Header() {
                   </div>
 
                   <div className="col-span-2 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
-                    <Link href="/services" onClick={() => setOpenDropdown(null)} className="text-sky-600 hover:text-sky-700">
+                    <Link href="/services" prefetch={true} onClick={() => setOpenDropdown(null)} className="text-sky-600 hover:text-sky-700">
                       Explore All 15 Core Services →
                     </Link>
                   </div>
@@ -345,6 +350,7 @@ export function Header() {
                     <Link
                       key={item.href}
                       href={item.href}
+                      prefetch={true}
                       onClick={() => setOpenDropdown(null)}
                       className="p-2.5 rounded-xl hover:bg-sky-50 transition-colors group/item block"
                     >

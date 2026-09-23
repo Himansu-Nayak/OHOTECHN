@@ -46,12 +46,16 @@ public class CartService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", request.getProductId()));
 
-        ProductPlan plan = null;
-        if (request.getProductPlanId() != null) {
-            plan = productPlanRepository.findById(request.getProductPlanId()).orElse(null);
-        }
+        final ProductPlan plan = request.getProductPlanId() != null
+                ? productPlanRepository.findById(request.getProductPlanId()).orElse(null)
+                : null;
 
-        Optional<CartItem> existingItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
+        // Match both product and specific product plan if present
+        Optional<CartItem> existingItem = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(product.getId()) &&
+                        ((plan == null && item.getProductPlan() == null) ||
+                         (plan != null && item.getProductPlan() != null && item.getProductPlan().getId().equals(plan.getId()))))
+                .findFirst();
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();

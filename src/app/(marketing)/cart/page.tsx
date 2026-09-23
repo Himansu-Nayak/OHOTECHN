@@ -5,15 +5,13 @@ import Link from 'next/link';
 import { ShoppingBag, Trash2, ArrowRight, Plus, Minus, ArrowLeft, ShieldCheck, Lock } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { getSafeCartItemUnitPrice, formatInr } from '@/utils/cartUtils';
 
 export default function CartPage() {
   const { user } = useAuth();
   const { cart, itemCount, totalAmount, loading, updateQuantity, removeItem, clearCart } = useCart();
 
-  const formattedTotal = new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-  }).format(totalAmount);
+  const formattedTotal = formatInr(totalAmount);
 
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8">
@@ -95,10 +93,8 @@ export default function CartPage() {
               </div>
 
               {cart.items.map((item) => {
-                const itemTotal = new Intl.NumberFormat('en-IN', {
-                  style: 'currency',
-                  currency: 'INR',
-                }).format(item.price * item.quantity);
+                const unitPrice = getSafeCartItemUnitPrice(item);
+                const itemTotal = formatInr(unitPrice * item.quantity);
 
                 return (
                   <div
@@ -106,9 +102,16 @@ export default function CartPage() {
                     className="bg-white border-2 border-slate-200 rounded-[28px] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
                   >
                     <div className="flex-1">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 uppercase tracking-wider">
-                        {item.product?.serviceType || 'Product'}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 uppercase tracking-wider">
+                          {item.product?.serviceType || 'Product'}
+                        </span>
+                        {item.productPlan && (
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">
+                            Plan: {item.productPlan.name}
+                          </span>
+                        )}
+                      </div>
                       <h3 className="text-base font-extrabold text-[#0d0d0e] mt-1">
                         {item.product?.name || `Product #${item.id}`}
                       </h3>
@@ -140,10 +143,10 @@ export default function CartPage() {
                       </div>
 
                       {/* Item Total */}
-                      <div className="text-right min-w-[90px]">
+                      <div className="text-right min-w-[100px]">
                         <div className="text-sm font-black text-[#0d0d0e]">{itemTotal}</div>
                         <div className="text-[10px] font-mono text-slate-400">
-                          ₹{item.price} x {item.quantity}
+                          {formatInr(unitPrice)} x {item.quantity}
                         </div>
                       </div>
 

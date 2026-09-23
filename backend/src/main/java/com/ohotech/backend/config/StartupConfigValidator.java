@@ -11,6 +11,9 @@ public class StartupConfigValidator implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(StartupConfigValidator.class);
 
+    @Value("${spring.profiles.active:default}")
+    private String activeProfile;
+
     @Value("${app.jwt.secret:}")
     private String jwtSecret;
 
@@ -29,8 +32,21 @@ public class StartupConfigValidator implements CommandLineRunner {
     @Override
     public void run(String... args) {
         logger.info("=== OHO TECHN Production Configuration Validation ===");
+        logger.info("Active Profile: {}", activeProfile);
 
-        if (jwtSecret == null || jwtSecret.trim().isEmpty() || jwtSecret.length() < 32) {
+        boolean isProduction = "prod".equalsIgnoreCase(activeProfile) || "production".equalsIgnoreCase(activeProfile);
+        boolean isDefaultOrInsecureJwt = jwtSecret == null 
+                || jwtSecret.trim().isEmpty() 
+                || jwtSecret.length() < 32 
+                || jwtSecret.contains("defaultSecretKeyForDevelopmentPhase");
+
+        if (isProduction && isDefaultOrInsecureJwt) {
+            String errorMsg = "FATAL SECURITY CONFIGURATION ERROR: Running in production profile requires an explicit, secure app.jwt.secret of at least 32 characters! Set JWT_SECRET environment variable.";
+            logger.error(errorMsg);
+            throw new IllegalStateException(errorMsg);
+        }
+
+        if (isDefaultOrInsecureJwt) {
             logger.warn("SECURITY WARNING: app.jwt.secret is empty or less than 32 characters! Defaulting to development fallback key.");
         } else {
             logger.info("JWT Secret: OK (Sufficient secret strength)");

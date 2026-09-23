@@ -1,7 +1,7 @@
 import { apiClient, getAccessToken } from './client';
 import { ApiResponse, Order } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
 
 export interface CreateOrderParams {
   shippingAddress: string;
@@ -42,3 +42,17 @@ export async function downloadOrderInvoiceApi(id: number | string): Promise<Blob
 
   return await res.blob();
 }
+
+export async function getAdminOrdersApi(): Promise<ApiResponse<Order[]>> {
+  return apiClient<Order[]>('/api/admin/orders', {
+    method: 'GET',
+  });
+}
+
+export async function updateAdminOrderStatusApi(id: number | string, status: string): Promise<ApiResponse<Order>> {
+  return apiClient<Order>(`/api/admin/orders/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  });
+}
+

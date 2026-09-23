@@ -53,6 +53,9 @@ public class AuthService {
     @Value("${app.security.lockout-duration-minutes:15}")
     private long lockoutDurationMinutes;
 
+    @Value("${app.auth.require-email-verification:false}")
+    private boolean requireEmailVerification;
+
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (request.getEmail() != null && userRepository.existsByEmail(request.getEmail())) {
@@ -75,6 +78,8 @@ public class AuthService {
                 .phone(request.getPhone())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .role(role)
+                .emailVerified(!requireEmailVerification)
+                .phoneVerified(!requireEmailVerification)
                 .enabled(true)
                 .failedLoginAttempts(0)
                 .build();
@@ -141,14 +146,16 @@ public class AuthService {
                         "Login attempt blocked due to active account lockout");
                 throw new BadRequestException("Account is temporarily locked due to repeated failed login attempts. Please try again after 15 minutes.");
             }
-            // Admin and Developer accounts bypass email/OTP verification and can log in directly
-            if (user.getRole() == Role.ROLE_ADMIN || user.getRole() == Role.ROLE_DEVELOPER) {
-                if (!user.isEmailVerified()) {
+            if (requireEmailVerification && !user.isEmailVerified()) {
+                if (user.getRole() == Role.ROLE_ADMIN || user.getRole() == Role.ROLE_DEVELOPER) {
                     user.setEmailVerified(true);
                     userRepository.save(user);
+                } else {
+                    throw new BadRequestException("Your email address is not verified. Please check your inbox and verify your email first.");
                 }
-            } else if (!user.isEmailVerified()) {
-                throw new BadRequestException("Your email address is not verified. Please check your inbox and verify your email first.");
+            } else if (!requireEmailVerification && !user.isEmailVerified()) {
+                user.setEmailVerified(true);
+                userRepository.save(user);
             }
         }
 

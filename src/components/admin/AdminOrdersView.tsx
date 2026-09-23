@@ -2,357 +2,369 @@
 
 import * as React from 'react';
 import { 
-  ShoppingCart, Search, Filter, Printer, Download, MessageSquare, 
-  CheckCircle2, Clock, Truck, PackageCheck, AlertCircle, X, 
-  ExternalLink, ChevronRight, DollarSign, MapPin, Phone
+  ShoppingCart, Search, Eye, Download, CheckCircle2, 
+  Clock, Package, X, RefreshCw, AlertCircle, Phone, MapPin
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
-
-export interface OrderRecord {
-  id: number;
-  orderNumber: string;
-  customerName: string;
-  email: string;
-  phone: string;
-  address: string;
-  items: { name: string; quantity: number; price: number }[];
-  totalAmount: number;
-  status: 'PENDING' | 'ACCEPTED' | 'PACKED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  gateway: 'Razorpay' | 'PhonePe' | 'Stripe' | 'Cashfree' | 'COD';
-  paymentStatus: 'PAID' | 'PENDING' | 'FAILED';
-  createdAt: string;
-}
+import { Order, OrderStatus } from '@/api/types';
+import { getAdminOrdersApi, updateAdminOrderStatusApi, downloadOrderInvoiceApi } from '@/api/orders';
+import { 
+  AdminCard, AdminBadge, StatusBadge, AdminButton, 
+  AdminEmptyState, AdminTableSkeleton, AdminModal 
+} from './AdminUiPrimitives';
 
 export function AdminOrdersView() {
   const { showToast } = useToast();
+  const [orders, setOrders] = React.useState<Order[]>([]);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+
   const [selectedStatus, setSelectedStatus] = React.useState<string>('ALL');
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [selectedOrder, setSelectedOrder] = React.useState<OrderRecord | null>(null);
+  const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(false);
 
-  const [orders, setOrders] = React.useState<OrderRecord[]>([
-    {
-      id: 101,
-      orderNumber: 'ORD-2026-8812',
-      customerName: 'Apollo Care Multispeciality Hospital',
-      email: 'billing@apollocare.org',
-      phone: '+91 98610 12345',
-      address: 'Plot 12, Health City, Chandrasekharpur, Bhubaneswar, Odisha 751024',
-      items: [
-        { name: 'Hospital Management Software (HMS) - Enterprise License', quantity: 1, price: 75000 },
-        { name: 'Pharmacy & OPD Biometric Sync Module', quantity: 1, price: 20000 },
-      ],
-      totalAmount: 95000,
-      status: 'DELIVERED',
-      gateway: 'Razorpay',
-      paymentStatus: 'PAID',
-      createdAt: '2026-09-15 11:30 AM',
-    },
-    {
-      id: 102,
-      orderNumber: 'ORD-2026-8813',
-      customerName: 'Doon Global Public School',
-      email: 'principal@doonglobal.edu.in',
-      phone: '+91 94370 54321',
-      address: 'Sector 5, CDA, Cuttack, Odisha 753014',
-      items: [
-        { name: 'School Management Software - Multi-Campus Edition', quantity: 1, price: 35000 },
-      ],
-      totalAmount: 35000,
-      status: 'SHIPPED',
-      gateway: 'PhonePe',
-      paymentStatus: 'PAID',
-      createdAt: '2026-09-17 02:45 PM',
-    },
-    {
-      id: 103,
-      orderNumber: 'ORD-2026-8814',
-      customerName: 'Agarwal Mega Retail Hub',
-      email: 'manish@agarwalretail.com',
-      phone: '+91 98200 98765',
-      address: 'MG Road, Indiranagar, Bangalore, Karnataka 560038',
-      items: [
-        { name: 'Retail POS & Billing Software (Multi-Store)', quantity: 1, price: 29000 },
-        { name: 'Hardware Barcode Scanner Sync Driver', quantity: 2, price: 5000 },
-      ],
-      totalAmount: 39000,
-      status: 'PACKED',
-      gateway: 'Cashfree',
-      paymentStatus: 'PAID',
-      createdAt: '2026-09-17 08:15 PM',
-    },
-    {
-      id: 104,
-      orderNumber: 'ORD-2026-8815',
-      customerName: 'Bloom Fertility & IVF Center',
-      email: 'dr.sunita@bloomivf.in',
-      phone: '+91 98840 33221',
-      address: 'Anna Nagar, Chennai, Tamil Nadu 600040',
-      items: [
-        { name: 'IVF & Fertility Clinic Software Suite', quantity: 1, price: 85000 },
-      ],
-      totalAmount: 85000,
-      status: 'ACCEPTED',
-      gateway: 'Razorpay',
-      paymentStatus: 'PAID',
-      createdAt: 'Today, 09:20 AM',
-    },
-    {
-      id: 105,
-      orderNumber: 'ORD-2026-8816',
-      customerName: 'Kalinga Logistics Solutions',
-      email: 'ops@kalingalogistics.com',
-      phone: '+91 97780 11223',
-      address: 'Paradeep Port Commercial Zone, Odisha 754142',
-      items: [
-        { name: 'Enterprise HRMS & Payroll System', quantity: 1, price: 55000 },
-      ],
-      totalAmount: 55000,
-      status: 'PENDING',
-      gateway: 'COD',
-      paymentStatus: 'PENDING',
-      createdAt: 'Today, 11:45 AM',
-    },
-  ]);
-
-  const stages = [
-    { key: 'ALL', label: 'All Orders' },
-    { key: 'PENDING', label: 'Pending Verification' },
-    { key: 'ACCEPTED', label: 'Accepted' },
-    { key: 'PACKED', label: 'Packed / Provisioned' },
-    { key: 'SHIPPED', label: 'Shipped / Dispatched' },
-    { key: 'DELIVERED', label: 'Delivered / Active' },
-    { key: 'CANCELLED', label: 'Cancelled' },
-  ];
-
-  const handleUpdateStatus = (orderId: number, nextStatus: OrderRecord['status']) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: nextStatus } : o))
-    );
-    if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder((prev) => (prev ? { ...prev, status: nextStatus } : null));
+  const fetchOrders = React.useCallback(async () => {
+    setIsLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await getAdminOrdersApi();
+      if (res.success && res.data) {
+        setOrders(res.data);
+      } else {
+        setErrorMsg(res.message || 'Unable to retrieve orders.');
+      }
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Failed to connect to order administration service.');
+    } finally {
+      setIsLoading(false);
     }
-    showToast(`Order #${orderId} marked as ${nextStatus}`, 'success');
+  }, []);
+
+  React.useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const handleUpdateStatus = async (orderId: number, newStatus: string) => {
+    setIsUpdatingStatus(true);
+    try {
+      const res = await updateAdminOrderStatusApi(orderId, newStatus);
+      if (res.success && res.data) {
+        const updated = res.data;
+        showToast(`Order #${orderId} status changed to ${newStatus}`, 'success');
+        setOrders((prev) => prev.map((o) => (o.id === orderId ? updated : o)));
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(updated);
+        }
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update order status', 'error');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
   };
 
-  const handleSendWhatsAppUpdate = (order: OrderRecord) => {
-    const text = encodeURIComponent(
-      `Hello ${order.customerName},\nYour OHO TECH software order ${order.orderNumber} is now ${order.status}.\nTrack live status or access your portal at https://ohotech.com/profile`
-    );
-    window.open(`https://wa.me/${order.phone.replace(/[^0-9]/g, '')}?text=${text}`, '_blank');
+  const handleDownloadInvoice = async (orderId: number) => {
+    setIsDownloadingPdf(true);
+    try {
+      const blob = await downloadOrderInvoiceApi(orderId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-order-${orderId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      showToast(`Invoice for order #${orderId} downloaded`, 'success');
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to download PDF invoice', 'error');
+    } finally {
+      setIsDownloadingPdf(false);
+    }
   };
 
-  const filteredOrders = orders.filter((o) => {
-    const matchesStatus = selectedStatus === 'ALL' || o.status === selectedStatus;
-    const matchesQuery =
-      o.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.email.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesQuery;
-  });
+  // Search & Filter
+  const filteredOrders = React.useMemo(() => {
+    return orders.filter((ord) => {
+      const matchesStatus = selectedStatus === 'ALL' || ord.status === selectedStatus;
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        String(ord.id).includes(q) ||
+        ord.user?.name?.toLowerCase().includes(q) ||
+        ord.user?.email?.toLowerCase().includes(q) ||
+        ord.contactPhone?.includes(q);
+
+      return matchesStatus && matchesSearch;
+    });
+  }, [orders, selectedStatus, searchQuery]);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300 font-mono">
-      {/* Header Bar */}
-      <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-6">
+      {/* 1. Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-              COMMERCE ENGINE
-            </span>
-            <span className="text-xs font-mono text-slate-400">
-              Total Fulfillments: <strong className="text-white">{orders.length}</strong>
-            </span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-            Orders &amp; Invoice Billing Hub
-          </h2>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">
-            Manage software delivery lifecycles, print GST tax invoices, and push WhatsApp dispatch notifications.
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Orders &amp; Invoicing
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Customer purchases, fulfillment lifecycle, and automated invoice PDF generation.
           </p>
         </div>
 
-        {/* Notice badge from video */}
-        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 max-w-sm text-[10px] text-amber-300 flex items-start gap-2">
-          <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-400" />
-          <span>Note: Pending, Cancelled, Rejected &amp; Refunded orders are not calculated in statistics.</span>
-        </div>
+        <AdminButton
+          variant="secondary"
+          size="sm"
+          onClick={fetchOrders}
+          icon={RefreshCw}
+        >
+          Refresh Orders
+        </AdminButton>
       </div>
 
-      {/* Pipeline Status Filter Tabs */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-1 overflow-x-auto w-full md:w-auto pb-1">
-          {stages.map((st) => (
-            <button
-              key={st.key}
-              onClick={() => setSelectedStatus(st.key)}
-              className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap",
-                selectedStatus === st.key
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                  : "bg-white/5 text-slate-400 hover:text-white"
-              )}
-            >
-              {st.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="relative w-full md:w-72">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      {/* 2. Filters & Search */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row items-center gap-3">
+        <div className="relative flex-1 w-full">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search order #, customer, email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-[#141416] border border-white/10 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+            placeholder="Search orders by ID, customer name, email, or phone..."
+            className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition-colors"
           />
+        </div>
+
+        <div className="flex items-center gap-2.5 w-full md:w-auto">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="px-3 py-2 text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900 cursor-pointer w-full md:w-44"
+          >
+            <option value="ALL">All Order Statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="CONFIRMED">Confirmed</option>
+            <option value="SHIPPED">Shipped</option>
+            <option value="DELIVERED">Delivered</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
         </div>
       </div>
 
-      {/* Orders Grid of Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredOrders.map((order) => (
-          <div
-            key={order.id}
-            className="p-4 rounded-2xl bg-[#141416] border border-white/10 hover:border-blue-500/40 transition-all flex flex-col justify-between shadow-lg group space-y-3"
-          >
-            {/* Top Row: Order # and Status */}
-            <div>
-              <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-2">
-                <div>
-                  <span className="text-xs font-bold text-white group-hover:text-blue-300 transition-colors">
-                    {order.orderNumber}
-                  </span>
-                  <p className="text-[10px] text-slate-400">{order.createdAt}</p>
-                </div>
-                <span className={cn(
-                  "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
-                  order.status === 'DELIVERED' ? "bg-emerald-500/20 text-emerald-300" :
-                  order.status === 'SHIPPED' ? "bg-cyan-500/20 text-cyan-300" :
-                  order.status === 'PACKED' ? "bg-purple-500/20 text-purple-300" :
-                  order.status === 'ACCEPTED' ? "bg-blue-500/20 text-blue-300" :
-                  order.status === 'CANCELLED' ? "bg-red-500/20 text-red-300" :
-                  "bg-amber-500/20 text-amber-300"
-                )}>
-                  {order.status}
+      {/* 3. Orders Table */}
+      <AdminCard
+        title={
+          <span className="flex items-center gap-2">
+            <span>Orders Ledger</span>
+            <span className="text-xs font-normal text-slate-400">
+              ({filteredOrders.length} records)
+            </span>
+          </span>
+        }
+      >
+        {isLoading ? (
+          <AdminTableSkeleton rows={6} cols={6} />
+        ) : errorMsg ? (
+          <div className="p-8 text-center">
+            <AlertCircle className="w-8 h-8 text-rose-500 mx-auto mb-2" />
+            <p className="text-xs font-semibold text-slate-800">{errorMsg}</p>
+            <AdminButton variant="secondary" size="sm" onClick={fetchOrders} className="mt-3">
+              Retry
+            </AdminButton>
+          </div>
+        ) : filteredOrders.length === 0 ? (
+          <AdminEmptyState
+            title="No orders found"
+            description={
+              searchQuery || selectedStatus !== 'ALL'
+                ? 'No orders match your filter criteria. Try clearing search.'
+                : 'No customer purchases have been recorded yet.'
+            }
+            icon={ShoppingCart}
+          />
+        ) : (
+          <div className="overflow-x-auto -mx-5 -my-5">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="bg-slate-50/70 border-b border-slate-100 text-slate-500 text-[11px] font-semibold">
+                  <th className="px-5 py-3">Order ID</th>
+                  <th className="px-4 py-3">Client Information</th>
+                  <th className="px-4 py-3">Items</th>
+                  <th className="px-4 py-3">Total Amount</th>
+                  <th className="px-4 py-3">Order Status</th>
+                  <th className="px-4 py-3">Date</th>
+                  <th className="px-5 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredOrders.map((ord) => {
+                  const totalFormatted = new Intl.NumberFormat('en-IN', {
+                    style: 'currency',
+                    currency: 'INR',
+                  }).format(Number(ord.totalAmount || 0));
+
+                  return (
+                    <tr key={ord.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-5 py-3.5 font-mono font-bold text-slate-900">
+                        #{ord.id}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span className="font-semibold text-slate-900 block truncate max-w-[180px]">
+                          {ord.user?.name || 'Customer'}
+                        </span>
+                        <span className="text-[11px] text-slate-500 block truncate max-w-[180px]">
+                          {ord.user?.email || '—'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 text-slate-700 whitespace-nowrap">
+                        {ord.items?.length || 0} item{ord.items?.length !== 1 ? 's' : ''}
+                      </td>
+                      <td className="px-4 py-3.5 font-semibold text-slate-900 whitespace-nowrap">
+                        {totalFormatted}
+                      </td>
+                      <td className="px-4 py-3.5 whitespace-nowrap">
+                        <select
+                          value={ord.status}
+                          disabled={isUpdatingStatus}
+                          onChange={(e) => handleUpdateStatus(ord.id, e.target.value)}
+                          className="px-2 py-1 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 focus:outline-none focus:border-slate-900 cursor-pointer shadow-2xs"
+                        >
+                          <option value="PENDING">PENDING</option>
+                          <option value="CONFIRMED">CONFIRMED</option>
+                          <option value="SHIPPED">SHIPPED</option>
+                          <option value="DELIVERED">DELIVERED</option>
+                          <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3.5 text-slate-500 whitespace-nowrap">
+                        {ord.createdAt
+                          ? new Date(ord.createdAt).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            })
+                          : '—'}
+                      </td>
+                      <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setSelectedOrder(ord)}
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                            title="Inspect order details"
+                            aria-label={`View details for order #${ord.id}`}
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDownloadInvoice(ord.id)}
+                            disabled={isDownloadingPdf}
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                            title="Download PDF invoice"
+                            aria-label={`Download invoice for order #${ord.id}`}
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </AdminCard>
+
+      {/* 4. Structured Order Detail Modal (with Spring Exit Motion) */}
+      <AdminModal
+        isOpen={!!selectedOrder}
+        onClose={() => setSelectedOrder(null)}
+        title={selectedOrder ? `Order #${selectedOrder.id}` : 'Order Details'}
+        subtitle={selectedOrder?.createdAt ? `Placed on ${new Date(selectedOrder.createdAt).toLocaleString('en-IN')}` : ''}
+        maxWidth="lg"
+      >
+        {selectedOrder && (
+          <div className="space-y-5 text-xs">
+            {/* Customer & Shipping Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div>
+                <span className="text-[11px] font-semibold text-slate-500 block mb-1">
+                  Customer Information
                 </span>
-              </div>
-
-              {/* Customer Info */}
-              <div className="space-y-1 text-xs">
-                <p className="font-bold text-slate-200 truncate">{order.customerName}</p>
-                <p className="text-[11px] text-slate-400 flex items-center gap-1">
+                <p className="font-semibold text-slate-900">{selectedOrder.user?.name || 'Customer'}</p>
+                <p className="text-slate-600">{selectedOrder.user?.email}</p>
+                <p className="text-slate-600 mt-1 flex items-center gap-1.5">
                   <Phone className="w-3 h-3 text-slate-400" />
-                  <span>{order.phone}</span>
-                </p>
-                <p className="text-[10px] text-slate-400 flex items-start gap-1 leading-snug">
-                  <MapPin className="w-3 h-3 text-slate-400 shrink-0 mt-0.5" />
-                  <span className="line-clamp-2">{order.address}</span>
+                  <span>{selectedOrder.contactPhone || 'No contact phone'}</span>
                 </p>
               </div>
 
-              {/* Items List */}
-              <div className="mt-3 p-2 rounded-xl bg-white/5 border border-white/5 space-y-1">
-                {order.items.map((it, idx) => (
-                  <div key={idx} className="flex justify-between text-[11px] text-slate-300">
-                    <span className="truncate pr-2">{it.quantity}x {it.name}</span>
-                    <span className="shrink-0 font-mono text-emerald-400">₹{it.price.toLocaleString('en-IN')}</span>
+              <div>
+                <span className="text-[11px] font-semibold text-slate-500 block mb-1">
+                  Fulfillment &amp; Address
+                </span>
+                <p className="text-slate-700 flex items-start gap-1.5">
+                  <MapPin className="w-3 h-3 text-slate-400 shrink-0 mt-0.5" />
+                  <span>{selectedOrder.shippingAddress || 'Digital License Delivery'}</span>
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-slate-500">Current Status:</span>
+                  <StatusBadge status={selectedOrder.status} />
+                </div>
+              </div>
+            </div>
+
+            {/* Line Items */}
+            <div>
+              <h4 className="text-xs font-semibold text-slate-900 mb-2">Itemized Products</h4>
+              <div className="border border-slate-200/80 rounded-xl overflow-hidden divide-y divide-slate-100">
+                {selectedOrder.items?.map((item) => (
+                  <div key={item.id} className="p-3 flex items-center justify-between bg-white">
+                    <div>
+                      <p className="font-semibold text-slate-900">{item.product?.name || 'Software Product'}</p>
+                      <p className="text-[11px] text-slate-500">Qty: {item.quantity}</p>
+                    </div>
+                    <span className="font-semibold text-slate-900">
+                      ₹{Number(item.price || 0).toLocaleString('en-IN')}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Total and Action Strip */}
-            <div className="pt-2 border-t border-white/10">
-              <div className="flex items-center justify-between mb-2 text-xs">
-                <span className="text-[10px] text-slate-400">Gateway: <strong className="text-white">{order.gateway}</strong></span>
-                <span className="font-black text-sm text-emerald-400">₹{order.totalAmount.toLocaleString('en-IN')}</span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-1.5">
-                <button
-                  onClick={() => setSelectedOrder(order)}
-                  className="py-1.5 px-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold text-center cursor-pointer"
-                >
-                  Manage
-                </button>
-                <button
-                  onClick={() => showToast(`Generating GST Invoice for ${order.orderNumber}...`, 'info')}
-                  className="py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 text-[10px] font-bold flex items-center justify-center gap-1 cursor-pointer"
-                >
-                  <Printer className="w-3 h-3" /> Invoice
-                </button>
-                <button
-                  onClick={() => handleSendWhatsAppUpdate(order)}
-                  className="py-1.5 px-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-[10px] font-bold flex items-center justify-center gap-1 cursor-pointer"
-                >
-                  <MessageSquare className="w-3 h-3" /> WhatsApp
-                </button>
-              </div>
+            {/* Total Summary */}
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900 text-white font-semibold">
+              <span>Total Paid Amount</span>
+              <span className="text-sm font-bold">
+                ₹{Number(selectedOrder.totalAmount || 0).toLocaleString('en-IN')}
+              </span>
             </div>
-          </div>
-        ))}
-      </div>
 
-      {/* Order Status Transition Modal */}
-      {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#141416] border border-white/20 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-start justify-between pb-3 border-b border-white/10">
-              <div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-bold uppercase">
-                  Order Management
-                </span>
-                <h3 className="text-lg font-bold text-white mt-1">{selectedOrder.orderNumber}</h3>
-                <p className="text-xs text-slate-400">{selectedOrder.customerName}</p>
-              </div>
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="p-1.5 rounded-xl bg-white/10 text-slate-400 hover:text-white"
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <AdminButton
+                variant="outline"
+                size="sm"
+                onClick={() => handleDownloadInvoice(selectedOrder.id)}
+                icon={Download}
+                isLoading={isDownloadingPdf}
               >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-[10px] text-slate-400">Current Stage</span>
-                <p className="text-base font-bold text-white mt-0.5">{selectedOrder.status}</p>
-              </div>
-
-              <div>
-                <label className="text-[10px] text-slate-400 block mb-1">Advance Fulfillment Stage:</label>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {(['PENDING', 'ACCEPTED', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELLED'] as OrderRecord['status'][]).map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => handleUpdateStatus(selectedOrder.id, st)}
-                      className={cn(
-                        "py-2 px-2 rounded-lg text-[10px] font-bold transition-all cursor-pointer",
-                        selectedOrder.status === st
-                          ? "bg-blue-600 text-white"
-                          : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
-                      )}
-                    >
-                      {st}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
-              <button
+                Download PDF Invoice
+              </AdminButton>
+              <AdminButton
+                variant="primary"
+                size="sm"
                 onClick={() => setSelectedOrder(null)}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold"
               >
                 Close
-              </button>
+              </AdminButton>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </AdminModal>
     </div>
   );
 }

@@ -1,25 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 import { isReducedMotion } from '@/lib/motion';
+
+function subscribe(callback: () => void) {
+  if (typeof window === 'undefined') return () => {};
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mediaQuery.addEventListener('change', callback);
+  return () => mediaQuery.removeEventListener('change', callback);
+}
+
+function getSnapshot(): boolean {
+  return isReducedMotion();
+}
+
+function getServerSnapshot(): boolean {
+  return false;
+}
 
 /**
  * React hook to reactively track prefers-reduced-motion media query
+ * Built with useSyncExternalStore for hydration safety and zero-cascading renders.
  */
 export function useReducedMotion(): boolean {
-  const [reducedMotion, setReducedMotion] = useState<boolean>(false);
-
-  useEffect(() => {
-    setReducedMotion(isReducedMotion());
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      setReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  return reducedMotion;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

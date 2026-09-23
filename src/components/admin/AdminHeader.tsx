@@ -3,302 +3,281 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { 
-  Search, Bell, Terminal, Shield, LogOut, CheckCircle2, 
-  AlertCircle, ChevronDown, ExternalLink, Zap, Clock, User,
-  PanelLeftClose, Maximize2, Minimize2, SlidersHorizontal, Sparkles
+  Search, Bell, Shield, LogOut, ChevronDown, User, 
+  ExternalLink, Check, AlertCircle, Clock, X, Menu
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { UserDto } from '@/api/types';
+import { UserDto, NotificationDto } from '@/api/types';
+import { getNotificationsApi } from '@/api/notifications';
+import { AdminBadge, StatusBadge } from './AdminUiPrimitives';
 
 interface AdminHeaderProps {
   user: UserDto | null;
   onLogout: () => void;
-  onOpenSearch?: () => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
   activeTab: string;
   onSelectTab: (tab: any) => void;
-  isSidebarCollapsed?: boolean;
-  onToggleSidebar?: () => void;
-  workspaceLayout?: 'contained' | 'fluid';
-  onToggleLayout?: () => void;
-  contentDensity?: 'normal' | 'compact';
-  onToggleDensity?: () => void;
+  onOpenMobileSidebar?: () => void;
 }
 
 export function AdminHeader({
   user,
   onLogout,
-  onOpenSearch,
   searchQuery,
   onSearchChange,
   activeTab,
   onSelectTab,
-  isSidebarCollapsed = false,
-  onToggleSidebar,
-  workspaceLayout = 'fluid',
-  onToggleLayout,
-  contentDensity = 'normal',
-  onToggleDensity,
+  onOpenMobileSidebar,
 }: AdminHeaderProps) {
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
   const [profileOpen, setProfileOpen] = React.useState(false);
+  const [notifications, setNotifications] = React.useState<NotificationDto[]>([]);
+  const [isLoadingNotifications, setIsLoadingNotifications] = React.useState(false);
 
-  const notifications = [
-    { id: 1, title: 'New Enterprise Order #104', time: '5m ago', type: 'order', unread: true },
-    { id: 2, title: 'Lead converted: Dr. Rajesh (HMS)', time: '18m ago', type: 'crm', unread: true },
-    { id: 3, title: 'Google Meet booked for 3:30 PM', time: '1h ago', type: 'meet', unread: false },
-    { id: 4, title: 'Gemini RAG catalog embeddings synced', time: '2h ago', type: 'ai', unread: false },
-  ];
+  const popoverRef = React.useRef<HTMLDivElement>(null);
+  const profileRef = React.useRef<HTMLDivElement>(null);
 
-  const getTabLabel = (tab: string) => {
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setNotificationsOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const fetchNotifications = React.useCallback(async () => {
+    setIsLoadingNotifications(true);
+    try {
+      const res = await getNotificationsApi(false, 0, 10);
+      if (res.success && res.data) {
+        setNotifications(res.data.content || []);
+      }
+    } catch {
+      // Non-blocking notification fetch
+    } finally {
+      setIsLoadingNotifications(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const getBreadcrumbs = (tab: string) => {
     switch (tab) {
-      case 'overview': return 'Executive Dashboard';
-      case 'analytics': return 'Site Traffic & Analytics';
-      case 'crm': return 'Leads & Pipeline CRM';
-      case 'appointments': return 'Appointments Calendar';
-      case 'whatsapp': return 'WhatsApp Automation';
-      case 'tickets': return 'Support Desk / SLA';
-      case 'orders': return 'Orders & Invoicing';
-      case 'products': return 'Products & Inventory';
-      case 'quotes': return 'Demo & Custom Quotes';
-      case 'plans': return 'Subscription Plans';
-      case 'licenses': return 'License Key Vault';
-      case 'releases': return 'Software Releases';
-      case 'gateways': return 'Payment Gateways';
-      case 'dns': return 'DNS Zone & Cloudflare';
-      case 'users': return 'User Directory & RBAC';
-      case 'ai': return 'Gemini AI Platform';
-      default: return tab;
+      case 'overview': return { section: 'Overview', page: 'Dashboard' };
+      case 'analytics': return { section: 'Overview', page: 'Analytics' };
+      case 'products': return { section: 'Commerce', page: 'Products Catalog' };
+      case 'orders': return { section: 'Commerce', page: 'Orders' };
+      case 'payments': return { section: 'Commerce', page: 'Payments Ledger' };
+      case 'subscriptions': return { section: 'Commerce', page: 'Subscriptions' };
+      case 'licenses': return { section: 'Commerce', page: 'License Keys' };
+      case 'customers': return { section: 'Customers', page: 'Customer Directory' };
+      case 'customer-360': return { section: 'Customers', page: 'Customer 360' };
+      case 'leads': return { section: 'CRM', page: 'Leads & Enquiries' };
+      case 'crm': return { section: 'CRM', page: 'Sales Pipeline' };
+      case 'releases': return { section: 'Operations', page: 'Software Releases' };
+      case 'notifications': return { section: 'Operations', page: 'Notifications' };
+      case 'ai': return { section: 'Operations', page: 'AI Operations' };
+      case 'audit-logs': return { section: 'Security', page: 'Audit Logs' };
+      case 'admin-users': return { section: 'System', page: 'Admin Users' };
+      case 'settings': return { section: 'System', page: 'Platform Settings' };
+      default: return { section: 'Administration', page: tab };
     }
   };
 
+  const breadcrumbs = getBreadcrumbs(activeTab);
+
   return (
-    <header className="sticky top-16 lg:top-[72px] z-30 w-full bg-[#0b0c0e]/95 backdrop-blur-xl border-b border-white/10 shadow-xl">
-      {/* Top micro banner */}
-      <div className="bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-purple-500/10 border-b border-white/5 px-4 lg:px-6 py-1 text-[10px] font-mono text-slate-300 flex items-center justify-between">
-        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-          <span className="text-emerald-400 font-bold uppercase tracking-wider">NODE ONLINE:</span>
-          <span className="text-slate-400">PostgreSQL 17 · Spring Boot 4.0 · Latency: 14ms · Direct Password Auth Active</span>
-        </div>
-        <div className="hidden sm:flex items-center gap-3 shrink-0 text-slate-400">
-          <span>Cluster: <strong className="text-white font-mono">PRIMARY-PROD</strong></span>
-          <span>•</span>
-          <span>Security: <strong className="text-emerald-400 font-mono">ROLE_ADMIN</strong></span>
+    <header className="sticky top-0 z-30 w-full h-[65px] bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between transition-colors">
+      {/* Left: Mobile Toggle + Logo + Breadcrumbs */}
+      <div className="flex items-center gap-3 sm:gap-4">
+        {onOpenMobileSidebar && (
+          <button
+            onClick={onOpenMobileSidebar}
+            className="lg:hidden p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+            aria-label="Open sidebar"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
+
+        <div className="flex items-center gap-2">
+          <Link href="/admin" className="flex items-center gap-2 group">
+            <span className="text-xs font-black text-slate-900 tracking-tight">OHO TECHN</span>
+          </Link>
+          <span className="text-slate-300">/</span>
+          <div className="flex items-center gap-1.5 text-xs">
+            <span className="text-slate-500 hidden sm:inline">{breadcrumbs.section}</span>
+            <span className="text-slate-300 hidden sm:inline">/</span>
+            <span className="font-semibold text-slate-900">{breadcrumbs.page}</span>
+          </div>
         </div>
       </div>
 
-      {/* Main command row */}
-      <div className="px-4 lg:px-6 py-2.5 flex items-center justify-between gap-3">
-        {/* Left: Sidebar Toggle + Breadcrumb */}
-        <div className="flex items-center gap-3 shrink-0">
-          {onToggleSidebar && (
+      {/* Center: Quick Search */}
+      <div className="hidden md:flex items-center max-w-sm w-full mx-4">
+        <div className="relative w-full">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search records across platform..."
+            className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition-colors"
+          />
+          {searchQuery && (
             <button
-              onClick={onToggleSidebar}
-              title={isSidebarCollapsed ? "Expand Sidebar (Ctrl+B)" : "Collapse Sidebar (Ctrl+B)"}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 group"
+              onClick={() => onSearchChange('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
-              <PanelLeftClose className={cn(
-                "w-4 h-4 transition-transform", 
-                isSidebarCollapsed && "rotate-180 text-emerald-400"
-              )} />
-              <span className="hidden md:inline text-[11px] font-mono text-slate-300 group-hover:text-white">
-                {isSidebarCollapsed ? 'Expand' : 'Collapse'}
-              </span>
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
-
-          <div className="hidden sm:flex items-center gap-2 text-xs font-mono">
-            <span className="text-slate-500">Admin</span>
-            <span className="text-slate-600">/</span>
-            <span className="text-emerald-400 font-bold tracking-wide uppercase px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[11px]">
-              {getTabLabel(activeTab)}
-            </span>
-          </div>
         </div>
+      </div>
 
-        {/* Center: Global Search Bar */}
-        <div className="flex-1 max-w-lg hidden sm:block">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-emerald-400 transition-colors" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search Orders, Leads, Tickets, Users, Catalog... [Ctrl + K]"
-              className="w-full pl-9 pr-16 py-1.5 bg-[#141518] hover:bg-[#18191e] focus:bg-[#1a1b22] border border-white/10 focus:border-emerald-500/50 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none transition-all font-mono"
-            />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-white/5 border border-white/10 rounded">
-                ⌘K
-              </kbd>
-            </div>
-          </div>
-        </div>
+      {/* Right: Actions, Notifications, Admin Profile */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Public Storefront Link */}
+        <Link
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+          title="Open live public website in new tab"
+        >
+          <span>Live Site</span>
+          <ExternalLink className="w-3 h-3 text-slate-400" />
+        </Link>
 
-        {/* Right side controls: Adjustable Toggles + Dev Switcher + Notifications + Profile */}
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Adjustable Layout Width Toggle */}
-          {onToggleLayout && (
-            <button
-              onClick={onToggleLayout}
-              title={`Switch to ${workspaceLayout === 'fluid' ? 'Contained' : 'Fluid Full-Width'} Workspace`}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 text-xs font-mono"
-            >
-              {workspaceLayout === 'fluid' ? (
-                <>
-                  <Minimize2 className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="hidden xl:inline text-[11px] text-slate-400">Fluid</span>
-                </>
-              ) : (
-                <>
-                  <Maximize2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="hidden xl:inline text-[11px] text-emerald-300">Contained</span>
-                </>
-              )}
-            </button>
-          )}
-
-          {/* Density Toggle */}
-          {onToggleDensity && (
-            <button
-              onClick={onToggleDensity}
-              title={`Switch Density (${contentDensity === 'compact' ? 'Compact' : 'Comfortable'})`}
-              className="hidden lg:flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer text-xs font-mono"
-            >
-              <SlidersHorizontal className={cn("w-3.5 h-3.5", contentDensity === 'compact' ? "text-amber-400" : "text-slate-400")} />
-              <span className="hidden xl:inline text-[11px] text-slate-400 capitalize">{contentDensity}</span>
-            </button>
-          )}
-
-          {/* Role Switcher to Developer Studio */}
-          <Link
-            href="/developer"
-            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-950/30 hover:bg-purple-900/40 border border-purple-500/30 text-xs font-mono text-purple-200 transition-all group"
-            title="Switch to Developer Control Studio"
+        {/* Notifications Popover */}
+        <div className="relative" ref={popoverRef}>
+          <button
+            onClick={() => setNotificationsOpen(!notificationsOpen)}
+            className="relative p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+            aria-label="View notifications"
           >
-            <Terminal className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-6 transition-transform" />
-            <span className="text-[11px]">Developer Studio</span>
-            <ExternalLink className="w-3 h-3 text-purple-400 ml-0.5" />
-          </Link>
+            <Bell className="w-4 h-4" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-600" />
+            )}
+          </button>
 
-          {/* Notifications Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className="relative p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer"
-              aria-label="Notifications"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500" />
-            </button>
-
-            {notificationsOpen && (
-              <div 
-                className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#141416] border border-white/15 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2"
-                onMouseLeave={() => setNotificationsOpen(false)}
-              >
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 px-2">
-                  <span className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                    <Bell className="w-3.5 h-3.5 text-indigo-400" /> Notifications &amp; Alerts
-                  </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300">
-                    2 unread
-                  </span>
+          {notificationsOpen && (
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-200/90 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-900">Notifications</span>
+                  {unreadCount > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      {unreadCount} new
+                    </span>
+                  )}
                 </div>
-                <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
-                  {notifications.map((n) => (
+                <button
+                  onClick={fetchNotifications}
+                  className="text-[11px] font-medium text-slate-500 hover:text-slate-900 cursor-pointer"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+                {isLoadingNotifications ? (
+                  <div className="p-6 text-center text-xs text-slate-500">Loading notifications...</div>
+                ) : notifications.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-slate-500">No new notifications recorded.</div>
+                ) : (
+                  notifications.map((n) => (
                     <div
                       key={n.id}
                       className={cn(
-                        "p-2.5 rounded-xl border text-xs transition-colors cursor-pointer flex items-start gap-2.5",
-                        n.unread 
-                          ? "bg-white/5 border-indigo-500/30 text-white" 
-                          : "bg-transparent border-white/5 text-slate-400 hover:bg-white/5"
+                        'p-3.5 hover:bg-slate-50/80 transition-colors text-left',
+                        !n.read && 'bg-indigo-50/30'
                       )}
                     >
-                      <div className="w-2 h-2 rounded-full bg-indigo-400 mt-1 shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{n.title}</p>
-                        <span className="text-[10px] text-slate-400 font-mono">{n.time}</span>
-                      </div>
+                      <p className="text-xs font-semibold text-slate-900">{n.title}</p>
+                      <p className="text-xs text-slate-600 mt-0.5 line-clamp-2">{n.message}</p>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        {new Date(n.createdAt).toLocaleString('en-IN', {
+                          dateStyle: 'short',
+                          timeStyle: 'short',
+                        })}
+                      </p>
                     </div>
-                  ))}
-                </div>
-                <div className="pt-2 mt-2 border-t border-white/10 text-center">
-                  <button 
-                    onClick={() => setNotificationsOpen(false)}
-                    className="text-[11px] font-mono text-slate-400 hover:text-white transition-colors"
-                  >
-                    Close Notification Center
-                  </button>
-                </div>
+                  ))
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
-          {/* User Profile & Quick Actions */}
-          <div className="relative">
-            <button
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-2.5 p-1.5 pl-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all cursor-pointer"
-            >
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold font-mono">
-                {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
-              </div>
-              <div className="hidden xl:block">
-                <p className="text-xs font-bold text-white leading-tight truncate max-w-[120px]">
-                  {user?.name || 'Administrator'}
-                </p>
-                <p className="text-[10px] font-mono text-emerald-400">
-                  {user?.role || 'ROLE_ADMIN'}
-                </p>
-              </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-            </button>
+        {/* Administrator Profile Menu */}
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="flex items-center gap-2.5 p-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer text-left"
+          >
+            <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+            </div>
+            <div className="hidden sm:flex flex-col text-left">
+              <span className="text-xs font-semibold text-slate-900 truncate max-w-[120px]">
+                {user?.name || 'Administrator'}
+              </span>
+              <span className="text-[10px] text-slate-500 truncate max-w-[120px]">
+                {user?.email || 'admin@ohotech.com'}
+              </span>
+            </div>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
+          </button>
 
-            {profileOpen && (
-              <div 
-                className="absolute right-0 mt-2 w-56 bg-[#141416] border border-white/15 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2"
-                onMouseLeave={() => setProfileOpen(false)}
-              >
-                <div className="p-2 border-b border-white/10 mb-1">
-                  <p className="text-xs font-bold text-white truncate">{user?.name || 'Administrator'}</p>
-                  <p className="text-[10px] font-mono text-slate-400 truncate">{user?.email || 'admin@ohotech.com'}</p>
-                  <span className="inline-block mt-1.5 px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    {user?.role || 'ROLE_ADMIN'}
-                  </span>
-                </div>
-
-                <div className="space-y-0.5">
-                  <Link
-                    href="/developer"
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
-                  >
-                    <Terminal className="w-3.5 h-3.5 text-purple-400" /> Developer Studio
-                  </Link>
-                  <button
-                    onClick={() => {
-                      onSelectTab('ai');
-                      setProfileOpen(false);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono text-slate-300 hover:text-white hover:bg-white/5 transition-colors text-left"
-                  >
-                    <Zap className="w-3.5 h-3.5 text-amber-400" /> Gemini AI Engine
-                  </button>
-                  <div className="h-px bg-white/10 my-1" />
-                  <button
-                    onClick={onLogout}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors text-left"
-                  >
-                    <LogOut className="w-3.5 h-3.5" /> End Admin Session
-                  </button>
+          {profileOpen && (
+            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200/90 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 divide-y divide-slate-100">
+              <div className="px-3.5 py-2.5">
+                <p className="text-xs font-semibold text-slate-900">{user?.name || 'Administrator'}</p>
+                <p className="text-[11px] text-slate-500 truncate mt-0.5">{user?.email}</p>
+                <div className="mt-2">
+                  <StatusBadge status={user?.role || 'ROLE_ADMIN'} />
                 </div>
               </div>
-            )}
-          </div>
+
+              <div className="py-1">
+                <button
+                  onClick={() => {
+                    onSelectTab('settings');
+                    setProfileOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors text-left cursor-pointer"
+                >
+                  <Shield className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Platform Settings</span>
+                </button>
+              </div>
+
+              <div className="py-1">
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    onLogout();
+                  }}
+                  className="w-full flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>

@@ -2,13 +2,15 @@
 
 import * as React from 'react';
 import { 
-  ShoppingCart, DollarSign, Users2, Calendar, Headphones, Package, 
-  Users, MessageSquare, Globe, TrendingUp, Award, KeyRound, Layers, 
-  Server, Zap, Cpu, HardDrive, ArrowUpRight, ArrowDownRight, Plus, 
-  Send, Sparkles, CheckCircle2, ShieldCheck, RefreshCw, ExternalLink
+  ShoppingCart, DollarSign, Users, Package, KeyRound, Layers, 
+  ArrowRight, RefreshCw, CheckCircle2, ShieldCheck, Clock,
+  ExternalLink, Server, Database, Sparkles, Inbox
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AdminTabKey } from './AdminSidebar';
+import { AnalyticsDashboardDto, Order } from '@/api/types';
+import { getAdminOrdersApi } from '@/api/orders';
+import { AdminCard, AdminBadge, StatusBadge, AdminButton, AdminEmptyState } from './AdminUiPrimitives';
 
 interface AdminDashboardViewProps {
   stats: {
@@ -19,438 +21,334 @@ interface AdminDashboardViewProps {
     totalRevenue: number;
     systemStatus: string;
   };
+  analyticsData?: AnalyticsDashboardDto | null;
   onNavigateTab: (tab: AdminTabKey) => void;
   onRefresh?: () => void;
 }
 
 export function AdminDashboardView({
   stats,
+  analyticsData,
   onNavigateTab,
   onRefresh,
 }: AdminDashboardViewProps) {
-  // 18 Enterprise KPI Metrics
-  const kpis = [
-    {
-      id: 'revenue',
-      label: 'Gross Platform Revenue',
-      value: `₹${(stats.totalRevenue || 645000).toLocaleString('en-IN')}`,
-      change: '+24.5%',
-      isPositive: true,
-      sub: 'vs last month',
-      icon: DollarSign,
-      gradient: 'from-emerald-500/20 via-emerald-500/10 to-transparent',
-      borderColor: 'border-emerald-500/30',
-      textColor: 'text-emerald-400',
-      actionTab: 'orders' as AdminTabKey,
-    },
-    {
-      id: 'orders',
-      label: 'Fulfilled & Active Orders',
-      value: (stats.totalOrders || 14).toString(),
-      change: '+12.8%',
-      isPositive: true,
-      sub: '3 pending dispatch',
-      icon: ShoppingCart,
-      gradient: 'from-blue-500/20 via-blue-500/10 to-transparent',
-      borderColor: 'border-blue-500/30',
-      textColor: 'text-blue-400',
-      actionTab: 'orders' as AdminTabKey,
-    },
-    {
-      id: 'crm',
-      label: 'Enterprise CRM Leads',
-      value: (stats.totalQuotes || 12).toString(),
-      change: '+18.2%',
-      isPositive: true,
-      sub: '5 hot prospects',
-      icon: Users2,
-      gradient: 'from-purple-500/20 via-purple-500/10 to-transparent',
-      borderColor: 'border-purple-500/30',
-      textColor: 'text-purple-400',
-      actionTab: 'crm' as AdminTabKey,
-    },
-    {
-      id: 'appointments',
-      label: 'Google Meet Appointments',
-      value: '8',
-      change: '+3 new',
-      isPositive: true,
-      sub: '2 scheduled today',
-      icon: Calendar,
-      gradient: 'from-cyan-500/20 via-cyan-500/10 to-transparent',
-      borderColor: 'border-cyan-500/30',
-      textColor: 'text-cyan-400',
-      actionTab: 'appointments' as AdminTabKey,
-    },
-    {
-      id: 'tickets',
-      label: 'Support Tickets & SLA',
-      value: '6',
-      change: '100% SLA',
-      isPositive: true,
-      sub: '0 overdue',
-      icon: Headphones,
-      gradient: 'from-rose-500/20 via-rose-500/10 to-transparent',
-      borderColor: 'border-rose-500/30',
-      textColor: 'text-rose-400',
-      actionTab: 'tickets' as AdminTabKey,
-    },
-    {
-      id: 'products',
-      label: 'Turnkey Software Catalog',
-      value: (stats.totalProducts || 28).toString(),
-      change: '100% Active',
-      isPositive: true,
-      sub: 'All ready for deployment',
-      icon: Package,
-      gradient: 'from-amber-500/20 via-amber-500/10 to-transparent',
-      borderColor: 'border-amber-500/30',
-      textColor: 'text-amber-400',
-      actionTab: 'products' as AdminTabKey,
-    },
-    {
-      id: 'users',
-      label: 'Registered Client Accounts',
-      value: (stats.totalUsers || 8).toString(),
-      change: '+15%',
-      isPositive: true,
-      sub: 'Verified enterprises',
-      icon: Users,
-      gradient: 'from-indigo-500/20 via-indigo-500/10 to-transparent',
-      borderColor: 'border-indigo-500/30',
-      textColor: 'text-indigo-400',
-      actionTab: 'users' as AdminTabKey,
-    },
-    {
-      id: 'whatsapp',
-      label: 'WhatsApp Cloud Dispatches',
-      value: '1,420',
-      change: '99.4% Delivery',
-      isPositive: true,
-      sub: 'Meta WABA connected',
-      icon: MessageSquare,
-      gradient: 'from-teal-500/20 via-teal-500/10 to-transparent',
-      borderColor: 'border-teal-500/30',
-      textColor: 'text-teal-400',
-      actionTab: 'whatsapp' as AdminTabKey,
-    },
-    {
-      id: 'traffic',
-      label: 'Cloudflare Edge Requests',
-      value: '84.2K',
-      change: '+31.4%',
-      isPositive: true,
-      sub: '0 threats detected',
-      icon: Globe,
-      gradient: 'from-orange-500/20 via-orange-500/10 to-transparent',
-      borderColor: 'border-orange-500/30',
-      textColor: 'text-orange-400',
-      actionTab: 'dns' as AdminTabKey,
-    },
-    {
-      id: 'conversion',
-      label: 'Lead to Sale Conversion',
-      value: '42.6%',
-      change: '+4.2%',
-      isPositive: true,
-      sub: 'Industry benchmark: 22%',
-      icon: TrendingUp,
-      gradient: 'from-emerald-500/20 via-emerald-500/10 to-transparent',
-      borderColor: 'border-emerald-500/30',
-      textColor: 'text-emerald-400',
-      actionTab: 'crm' as AdminTabKey,
-    },
-    {
-      id: 'aov',
-      label: 'Average Order Value (AOV)',
-      value: '₹62,400',
-      change: '+11.5%',
-      isPositive: true,
-      sub: 'High-ticket ERP solutions',
-      icon: Award,
-      gradient: 'from-violet-500/20 via-violet-500/10 to-transparent',
-      borderColor: 'border-violet-500/30',
-      textColor: 'text-violet-400',
-      actionTab: 'orders' as AdminTabKey,
-    },
-    {
-      id: 'licenses',
-      label: 'Active License Keys Issued',
-      value: '38',
-      change: 'All Valid',
-      isPositive: true,
-      sub: 'Hardware lock synced',
-      icon: KeyRound,
-      gradient: 'from-sky-500/20 via-sky-500/10 to-transparent',
-      borderColor: 'border-sky-500/30',
-      textColor: 'text-sky-400',
-      actionTab: 'licenses' as AdminTabKey,
-    },
-    {
-      id: 'plans',
-      label: 'Recurring Subscriptions',
-      value: '19',
-      change: '+3 this month',
-      isPositive: true,
-      sub: 'SaaS maintenance',
-      icon: Layers,
-      gradient: 'from-fuchsia-500/20 via-fuchsia-500/10 to-transparent',
-      borderColor: 'border-fuchsia-500/30',
-      textColor: 'text-fuchsia-400',
-      actionTab: 'plans' as AdminTabKey,
-    },
-    {
-      id: 'uptime',
-      label: 'Backend Server Uptime',
-      value: '99.98%',
-      change: 'Healthy',
-      isPositive: true,
-      sub: 'Spring Boot 4.0 Cluster',
-      icon: Server,
-      gradient: 'from-lime-500/20 via-lime-500/10 to-transparent',
-      borderColor: 'border-lime-500/30',
-      textColor: 'text-lime-400',
-      actionTab: 'overview' as AdminTabKey,
-    },
-    {
-      id: 'latency',
-      label: 'API Response Latency',
-      value: '16ms',
-      change: '-4ms',
-      isPositive: true,
-      sub: 'Sub-second target: <50ms',
-      icon: Zap,
-      gradient: 'from-amber-500/20 via-amber-500/10 to-transparent',
-      borderColor: 'border-amber-500/30',
-      textColor: 'text-amber-400',
-      actionTab: 'analytics' as AdminTabKey,
-    },
-    {
-      id: 'tokens',
-      label: 'Gemini AI Tokens Used',
-      value: '284.5K',
-      change: 'Within quota',
-      isPositive: true,
-      sub: 'Flash 1.5 + Embeddings',
-      icon: Sparkles,
-      gradient: 'from-purple-500/20 via-purple-500/10 to-transparent',
-      borderColor: 'border-purple-500/30',
-      textColor: 'text-purple-400',
-      actionTab: 'ai' as AdminTabKey,
-    },
-    {
-      id: 'memory',
-      label: 'JVM Heap Allocation',
-      value: '1.42 GB',
-      change: '35% capacity',
-      isPositive: true,
-      sub: 'Total heap: 4.0 GB',
-      icon: Cpu,
-      gradient: 'from-blue-500/20 via-blue-500/10 to-transparent',
-      borderColor: 'border-blue-500/30',
-      textColor: 'text-blue-400',
-      actionTab: 'overview' as AdminTabKey,
-    },
-    {
-      id: 'storage',
-      label: 'NVMe SSD Storage Used',
-      value: '18.4 GB',
-      change: '12% of 250GB',
-      isPositive: true,
-      sub: 'PostgreSQL 17 + Backups',
-      icon: HardDrive,
-      gradient: 'from-emerald-500/20 via-emerald-500/10 to-transparent',
-      borderColor: 'border-emerald-500/30',
-      textColor: 'text-emerald-400',
-      actionTab: 'overview' as AdminTabKey,
-    },
-  ];
+  const [recentOrders, setRecentOrders] = React.useState<Order[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = React.useState<boolean>(true);
+  const [lastRefreshed, setLastRefreshed] = React.useState<string>(new Date().toLocaleTimeString('en-IN'));
 
-  // Quick Action triggers
-  const quickActions = [
-    { label: 'New Order Entry', icon: Plus, tab: 'orders' as AdminTabKey, color: 'text-blue-400' },
-    { label: 'Add Lead / Contact', icon: Users2, tab: 'crm' as AdminTabKey, color: 'text-purple-400' },
-    { label: 'Book Google Meet', icon: Calendar, tab: 'appointments' as AdminTabKey, color: 'text-cyan-400' },
-    { label: 'New Support Ticket', icon: Headphones, tab: 'tickets' as AdminTabKey, color: 'text-rose-400' },
-    { label: 'WhatsApp Broadcast', icon: Send, tab: 'whatsapp' as AdminTabKey, color: 'text-teal-400' },
-    { label: 'Gemini RAG Sync', icon: Sparkles, tab: 'ai' as AdminTabKey, color: 'text-amber-400' },
-  ];
+  const fetchOrders = React.useCallback(async () => {
+    setIsLoadingOrders(true);
+    try {
+      const res = await getAdminOrdersApi();
+      if (res.success && res.data) {
+        setRecentOrders(res.data.slice(0, 6));
+      }
+    } catch (err) {
+      console.warn('Recent orders fetch note:', err);
+    } finally {
+      setIsLoadingOrders(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const handleRefreshAll = () => {
+    fetchOrders();
+    if (onRefresh) onRefresh();
+    setLastRefreshed(new Date().toLocaleTimeString('en-IN'));
+  };
+
+  // Safe KPI calculations strictly from backend
+  const grossRevenue = analyticsData?.revenueMetrics?.totalRevenue != null 
+    ? Number(analyticsData.revenueMetrics.totalRevenue) 
+    : (stats.totalRevenue || 0);
+
+  const formattedRevenue = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(grossRevenue);
+
+  const totalOrders = stats.totalOrders || analyticsData?.orderMetrics?.totalOrders || 0;
+  const totalCustomers = stats.totalUsers || analyticsData?.userMetrics?.totalCustomers || 0;
+  const activeSubs = analyticsData?.subscriptionMetrics?.activeSubscriptions ?? 0;
+  const activeLicenses = analyticsData?.licenseMetrics?.activeLicenses ?? 0;
+  const activeEntitlements = activeSubs + activeLicenses;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Top Banner & Quick Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-xl">
+    <div className="space-y-6">
+      {/* 1. Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              EXECUTIVE COCKPIT
-            </span>
-            <span className="text-xs font-mono text-slate-400">Realtime Enterprise Health</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-            Enterprise Operations &amp; Intelligence Summary
-          </h2>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">
-            Monitor real-time pipeline status, e-commerce orders, infrastructure telemetry, and AI integrations.
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Operational Dashboard
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Real-time business status, order telemetry, and system authority.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
-          {onRefresh && (
-            <button
-              onClick={onRefresh}
-              className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-slate-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Refresh Metrics</span>
-            </button>
-          )}
-          <button
-            onClick={() => onNavigateTab('orders')}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-black font-bold font-mono text-xs transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-1.5 cursor-pointer"
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-slate-400 hidden sm:inline">
+            Updated {lastRefreshed}
+          </span>
+          <AdminButton
+            variant="secondary"
+            size="sm"
+            onClick={handleRefreshAll}
+            icon={RefreshCw}
           >
-            <ShoppingCart className="w-3.5 h-3.5" />
-            <span>Process Orders</span>
-          </button>
+            Sync Data
+          </AdminButton>
         </div>
       </div>
 
-      {/* 18 High-Density KPI Metric Grid */}
-      <div>
-        <div className="flex items-center justify-between mb-3 px-1">
-          <h3 className="text-xs font-mono font-bold uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
-            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Platform Key Performance Indicators (18 Metric Matrix)
-          </h3>
-          <span className="text-[11px] font-mono text-slate-400">Click any card to inspect module</span>
+      {/* 2. Four Focused Operational KPIs */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Gross Revenue */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Gross Platform Revenue</span>
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
+              <DollarSign className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <span className="text-2xl font-bold text-slate-900 tracking-tight">
+              {formattedRevenue}
+            </span>
+            <p className="text-[11px] text-slate-500 mt-1">
+              Verified payment transactions in PostgreSQL
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          {kpis.map((kpi) => {
-            const Icon = kpi.icon;
-            return (
-              <div
-                key={kpi.id}
-                onClick={() => onNavigateTab(kpi.actionTab)}
-                className={cn(
-                  "p-3.5 rounded-2xl bg-[#141416] hover:bg-[#18181c] border transition-all cursor-pointer relative overflow-hidden group shadow-md hover:shadow-xl hover:-translate-y-0.5",
-                  kpi.borderColor
-                )}
-              >
-                {/* Subtle background glow */}
-                <div className={cn("absolute -right-6 -bottom-6 w-20 h-20 rounded-full blur-2xl opacity-20 pointer-events-none bg-gradient-to-br", kpi.gradient)} />
+        {/* Orders Placed */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Orders Processed</span>
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
+              <ShoppingCart className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <span className="text-2xl font-bold text-slate-900 tracking-tight">
+              {totalOrders}
+            </span>
+            <p className="text-[11px] text-slate-500 mt-1">
+              Total commerce orders recorded
+            </p>
+          </div>
+        </div>
 
-                <div className="flex items-center justify-between mb-2">
-                  <div className={cn("p-1.5 rounded-lg bg-white/5 border border-white/10 group-hover:scale-110 transition-transform", kpi.textColor)}>
-                    <Icon className="w-3.5 h-3.5" />
-                  </div>
-                  <span className={cn(
-                    "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded",
-                    kpi.isPositive ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"
-                  )}>
-                    {kpi.change}
-                  </span>
-                </div>
+        {/* Registered Customers */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Registered Clients</span>
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
+              <Users className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <span className="text-2xl font-bold text-slate-900 tracking-tight">
+              {totalCustomers}
+            </span>
+            <p className="text-[11px] text-slate-500 mt-1">
+              Active user accounts in directory
+            </p>
+          </div>
+        </div>
 
-                <p className="text-[11px] font-mono text-slate-400 truncate leading-tight">{kpi.label}</p>
-                <p className="text-lg sm:text-xl font-black text-white tracking-tight mt-0.5">{kpi.value}</p>
-                <p className="text-[10px] font-mono text-slate-400 mt-1 truncate">{kpi.sub}</p>
-              </div>
-            );
-          })}
+        {/* Active Entitlements */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Active Entitlements</span>
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
+              <KeyRound className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <span className="text-2xl font-bold text-slate-900 tracking-tight">
+              {activeEntitlements}
+            </span>
+            <p className="text-[11px] text-slate-500 mt-1">
+              {activeSubs} subscriptions &bull; {activeLicenses} license keys
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Resource Utilization & Quick Action Tiles */}
+      {/* 3. Operational Sections: Recent Orders & System Authority */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* System Resource Utilization */}
-        <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-lg space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-white/10">
-            <span className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Server className="w-3.5 h-3.5 text-indigo-400" /> Resource Telemetry
-            </span>
-            <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" /> OPTIMAL
-            </span>
-          </div>
+        {/* Left 2 Cols: Recent Orders Table */}
+        <div className="lg:col-span-2">
+          <AdminCard
+            title="Recent Customer Orders"
+            subtitle="Most recent transactions needing processing or delivery"
+            actions={
+              <AdminButton
+                variant="ghost"
+                size="sm"
+                onClick={() => onNavigateTab('orders')}
+                icon={ArrowRight}
+              >
+                View All
+              </AdminButton>
+            }
+          >
+            {isLoadingOrders ? (
+              <div className="py-12 text-center text-xs text-slate-500">
+                Loading recent orders...
+              </div>
+            ) : recentOrders.length === 0 ? (
+              <AdminEmptyState
+                title="No orders placed yet"
+                description="When customers checkout and purchase software licenses, orders will appear here."
+                icon={ShoppingCart}
+              />
+            ) : (
+              <div className="overflow-x-auto -mx-5 -my-5">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-slate-50/70 border-b border-slate-100 text-slate-500 text-[11px] font-semibold">
+                      <th className="px-5 py-3">Order ID</th>
+                      <th className="px-4 py-3">Client</th>
+                      <th className="px-4 py-3">Amount</th>
+                      <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3">Date</th>
+                      <th className="px-5 py-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {recentOrders.map((order) => {
+                      const amountFormatted = new Intl.NumberFormat('en-IN', {
+                        style: 'currency',
+                        currency: 'INR',
+                      }).format(Number(order.totalAmount || 0));
 
-          <div className="space-y-3 font-mono text-xs">
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
-                <span>NVMe Storage: 18.4GB / 250GB</span>
-                <span className="text-emerald-400 font-bold">7.3%</span>
+                      return (
+                        <tr key={order.id} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="px-5 py-3.5 font-mono font-medium text-slate-900">
+                            #{order.id}
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <span className="font-medium text-slate-800 block truncate max-w-[150px]">
+                              {order.user?.name || 'Customer'}
+                            </span>
+                            <span className="text-[10px] text-slate-400 block truncate max-w-[150px]">
+                              {order.user?.email}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3.5 font-semibold text-slate-900">
+                            {amountFormatted}
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <StatusBadge status={order.status} />
+                          </td>
+                          <td className="px-4 py-3.5 text-slate-500 whitespace-nowrap">
+                            {order.createdAt
+                              ? new Date(order.createdAt).toLocaleDateString('en-IN', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                })
+                              : '—'}
+                          </td>
+                          <td className="px-5 py-3.5 text-right">
+                            <button
+                              onClick={() => onNavigateTab('orders')}
+                              className="text-xs font-semibold text-slate-700 hover:text-slate-900 cursor-pointer"
+                            >
+                              Manage
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full w-[7.3%]" />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
-                <span>JVM Memory: 1.42GB / 4.0GB</span>
-                <span className="text-indigo-400 font-bold">35.5%</span>
-              </div>
-              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-500 rounded-full w-[35.5%]" />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
-                <span>Bandwidth Egress: 84.2 GB / 1 TB</span>
-                <span className="text-cyan-400 font-bold">8.4%</span>
-              </div>
-              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-cyan-500 rounded-full w-[8.4%]" />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
-                <span>Gemini API Monthly Quota: 284.5K / 1M</span>
-                <span className="text-purple-400 font-bold">28.4%</span>
-              </div>
-              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-purple-500 rounded-full w-[28.4%]" />
-              </div>
-            </div>
-          </div>
+            )}
+          </AdminCard>
         </div>
 
-        {/* Quick Action Grid */}
-        <div className="lg:col-span-2 p-5 rounded-2xl bg-[#141416] border border-white/10 shadow-lg flex flex-col justify-between">
-          <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-3">
-            <span className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-400" /> Operational Fast Actions
-            </span>
-            <span className="text-[10px] font-mono text-slate-400">1-click triggers</span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {quickActions.map((action, idx) => {
-              const Icon = action.icon;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => onNavigateTab(action.tab)}
-                  className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left group cursor-pointer flex flex-col justify-between min-h-[82px]"
-                >
-                  <div className="flex items-center justify-between">
-                    <Icon className={cn("w-4 h-4 transition-transform group-hover:scale-110", action.color)} />
-                    <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-white" />
+        {/* Right 1 Col: Platform Authority & Direct Shortcuts */}
+        <div className="space-y-6">
+          {/* Quick Administrative Actions */}
+          <AdminCard title="Quick Management" subtitle="Frequent administrative operations">
+            <div className="space-y-2">
+              <button
+                onClick={() => onNavigateTab('products')}
+                className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200/80 hover:bg-slate-50 transition-colors text-left group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-slate-100 text-slate-700">
+                    <Package className="w-4 h-4" />
                   </div>
-                  <p className="text-xs font-mono font-semibold text-white group-hover:text-emerald-300 transition-colors">
-                    {action.label}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
+                  <div>
+                    <span className="text-xs font-semibold text-slate-900 block">Catalog Inventory</span>
+                    <span className="text-[11px] text-slate-500">28 Turnkey Solutions</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all" />
+              </button>
 
-          {/* Micro Notice Strip */}
-          <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-slate-400">
-            <span>Automatic database sync &amp; transactional rollbacks enabled</span>
-            <span className="text-emerald-400 font-bold">Zero Data Loss SLA</span>
-          </div>
+              <button
+                onClick={() => onNavigateTab('leads')}
+                className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200/80 hover:bg-slate-50 transition-colors text-left group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-slate-100 text-slate-700">
+                    <Inbox className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold text-slate-900 block">Inquiries &amp; Quotes</span>
+                    <span className="text-[11px] text-slate-500">{stats.totalQuotes} Leads Recorded</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all" />
+              </button>
+
+              <button
+                onClick={() => onNavigateTab('customer-360')}
+                className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200/80 hover:bg-slate-50 transition-colors text-left group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-slate-100 text-slate-700">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold text-slate-900 block">Customer 360</span>
+                    <span className="text-[11px] text-slate-500">Comprehensive CRM View</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all" />
+              </button>
+            </div>
+          </AdminCard>
+
+          {/* System Authority Status */}
+          <AdminCard title="Integration Services" subtitle="Production platform components">
+            <div className="space-y-3 text-xs">
+              <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                <span className="text-slate-600">Database Engine</span>
+                <AdminBadge variant="success">PostgreSQL 17 ACID</AdminBadge>
+              </div>
+              <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                <span className="text-slate-600">Payment Gateway</span>
+                <AdminBadge variant="info">Razorpay India</AdminBadge>
+              </div>
+              <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                <span className="text-slate-600">AI Intelligence</span>
+                <AdminBadge variant="brand">Google Gemini API</AdminBadge>
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-slate-600">Backend Runtime</span>
+                <span className="font-mono text-[11px] text-slate-700">Spring Boot 4.1.0</span>
+              </div>
+            </div>
+          </AdminCard>
         </div>
       </div>
     </div>

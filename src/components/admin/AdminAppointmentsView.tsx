@@ -7,6 +7,7 @@ import {
   Mail, MapPin, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AdminModal, AdminButton, AdminInput } from './AdminUiPrimitives';
 
 export interface AppointmentItem {
   id: number;
@@ -317,116 +318,88 @@ export function AdminAppointmentsView() {
         </div>
       </div>
 
-      {/* Schedule Demo Modal */}
-      {isScheduleModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <form
-            onSubmit={handleScheduleSubmit}
-            className="bg-[#141416] border border-white/20 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 font-mono text-xs"
-          >
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h3 className="text-base font-bold text-white">Book Client Video Demo</h3>
-              <button
-                type="button"
-                onClick={() => setIsScheduleModalOpen(false)}
-                className="p-1 rounded-lg bg-white/10 text-slate-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+      {/* Schedule Demo Modal (with Spring Motion) */}
+      <AdminModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        title="Book Client Video Demo"
+        subtitle="Schedule executive walkthrough and generate meeting coordinates"
+        maxWidth="md"
+      >
+        <form onSubmit={handleScheduleSubmit} className="space-y-3.5 text-xs">
+          <AdminInput
+            label="Session Title"
+            placeholder="e.g. ERP Architecture Walkthrough"
+            value={newApptForm.title}
+            onChange={(e) => setNewApptForm({ ...newApptForm, title: e.target.value })}
+          />
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Session Title</label>
-                <input
-                  type="text"
-                  placeholder="e.g. ERP Architecture Walkthrough"
-                  value={newApptForm.title}
-                  onChange={(e) => setNewApptForm({ ...newApptForm, title: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500"
-                />
-              </div>
+          <AdminInput
+            label="Client Name"
+            required
+            placeholder="e.g. Dr. Rajesh Mohapatra"
+            value={newApptForm.clientName}
+            onChange={(e) => setNewApptForm({ ...newApptForm, clientName: e.target.value })}
+          />
 
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Client Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Dr. Rajesh Mohapatra"
-                  value={newApptForm.clientName}
-                  onChange={(e) => setNewApptForm({ ...newApptForm, clientName: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500"
-                />
-              </div>
+          <div className="grid grid-cols-2 gap-2.5">
+            <AdminInput
+              label="Client Email"
+              type="email"
+              required
+              placeholder="client@enterprise.com"
+              value={newApptForm.clientEmail}
+              onChange={(e) => setNewApptForm({ ...newApptForm, clientEmail: e.target.value })}
+            />
+            <AdminInput
+              label="Phone"
+              type="text"
+              placeholder="+91 98765 43210"
+              value={newApptForm.clientPhone}
+              onChange={(e) => setNewApptForm({ ...newApptForm, clientPhone: e.target.value })}
+            />
+          </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Client Email *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="client@enterprise.com"
-                    value={newApptForm.clientEmail}
-                    onChange={(e) => setNewApptForm({ ...newApptForm, clientEmail: e.target.value })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Phone</label>
-                  <input
-                    type="text"
-                    placeholder="+91 98765 43210"
-                    value={newApptForm.clientPhone}
-                    onChange={(e) => setNewApptForm({ ...newApptForm, clientPhone: e.target.value })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-              </div>
+          <div className="space-y-1.5 w-full">
+            <label className="block text-xs font-semibold text-slate-700">Solution Under Review</label>
+            <select
+              value={newApptForm.product}
+              onChange={(e) => setNewApptForm({ ...newApptForm, product: e.target.value })}
+              className="w-full px-3 py-2 text-xs text-slate-900 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:border-slate-900 cursor-pointer shadow-2xs"
+            >
+              <option value="Hospital Management Software (HMS)">Hospital Management Software (HMS)</option>
+              <option value="School Management Software">School Management Software</option>
+              <option value="Retail POS & Billing">Retail POS & Billing</option>
+              <option value="IVF & Fertility Clinic Software">IVF Clinic Software</option>
+              <option value="Enterprise HRMS & Payroll">Enterprise HRMS & Payroll</option>
+            </select>
+          </div>
 
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Solution Under Review</label>
-                <select
-                  value={newApptForm.product}
-                  onChange={(e) => setNewApptForm({ ...newApptForm, product: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#19191d] border border-white/10 rounded-xl text-white focus:outline-none"
-                >
-                  <option value="Hospital Management Software (HMS)">Hospital Management Software (HMS)</option>
-                  <option value="School Management Software">School Management Software</option>
-                  <option value="Retail POS & Billing">Retail POS & Billing</option>
-                  <option value="IVF & Fertility Clinic Software">IVF Clinic Software</option>
-                  <option value="Enterprise HRMS & Payroll">Enterprise HRMS & Payroll</option>
-                </select>
-              </div>
+          <AdminInput
+            label="Time Slot (IST)"
+            value={newApptForm.timeStr}
+            onChange={(e) => setNewApptForm({ ...newApptForm, timeStr: e.target.value })}
+          />
 
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Time Slot (IST)</label>
-                <input
-                  type="text"
-                  value={newApptForm.timeStr}
-                  onChange={(e) => setNewApptForm({ ...newApptForm, timeStr: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500"
-                />
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsScheduleModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold"
-              >
-                Generate Google Meet &amp; Save
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+            <AdminButton
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsScheduleModalOpen(false)}
+            >
+              Cancel
+            </AdminButton>
+            <AdminButton
+              type="submit"
+              variant="primary"
+              size="sm"
+            >
+              Generate Google Meet &amp; Save
+            </AdminButton>
+          </div>
+        </form>
+      </AdminModal>
     </div>
   );
 }

@@ -41,17 +41,22 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
         String uri = request.getRequestURI();
 
-        // Target sensitive security & checkout endpoints
+        // Target sensitive security, checkout, and AI compute endpoints
         if (uri.startsWith("/api/auth/login") ||
             uri.startsWith("/api/auth/firebase-login") ||
             uri.startsWith("/api/auth/register") ||
             uri.startsWith("/api/auth/send-otp") ||
             uri.startsWith("/api/payments/verify") ||
+            uri.startsWith("/api/ai/") ||
             uri.contains("/activate") ||
             uri.contains("/trial")) {
 
             String clientIp = request.getHeader("X-Forwarded-For");
-            if (clientIp == null || clientIp.isEmpty()) {
+            if (clientIp != null && !clientIp.isBlank()) {
+                if (clientIp.contains(",")) {
+                    clientIp = clientIp.split(",")[0].trim();
+                }
+            } else {
                 clientIp = request.getRemoteAddr();
             }
 

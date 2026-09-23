@@ -25,3 +25,10 @@ export async function verifyPaymentApi(params: VerifyPaymentParams): Promise<Api
     body: JSON.stringify(params),
   });
 }
+
+export async function getAdminPaymentsApi(): Promise<ApiResponse<Payment[]>> {
+  return apiClient<Payment[]>('/api/admin/payments', {
+    method: 'GET',
+  });
+}
+

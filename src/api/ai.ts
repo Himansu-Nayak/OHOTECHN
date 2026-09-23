@@ -147,7 +147,7 @@ export async function analyzeAiDocument(file: File, prompt?: string): Promise<Ap
   formData.append('file', file);
   if (prompt) formData.append('prompt', prompt);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
   const headers: Record<string, string> = {};
@@ -167,7 +167,7 @@ export async function analyzeAiImage(file: File, context?: string): Promise<ApiR
   formData.append('file', file);
   if (context) formData.append('context', context);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
   const headers: Record<string, string> = {};
@@ -228,3 +228,16 @@ export async function syncAdminProductEmbeddings(): Promise<ApiResponse<string>>
     method: 'POST',
   });
 }
+
+export async function getAdminAiUsageApi(): Promise<ApiResponse<any[]>> {
+  return apiClient<any[]>('/api/admin/ai/usage', {
+    method: 'GET',
+  });
+}
+
+export async function getAdminAiConversationsApi(): Promise<ApiResponse<any[]>> {
+  return apiClient<any[]>('/api/admin/ai/conversations', {
+    method: 'GET',
+  });
+}
+
