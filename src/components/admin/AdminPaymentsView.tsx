@@ -128,7 +128,10 @@ export function AdminPaymentsView() {
 
   const filteredPayments = React.useMemo(() => {
     return payments.filter((p) => {
-      const matchesStatus = statusFilter === 'ALL' || p.status === statusFilter;
+      const matchesStatus =
+        statusFilter === 'ALL' ||
+        p.status === statusFilter ||
+        (statusFilter === 'COMPLETED' && p.status === 'SUCCESSFUL');
       const matchesProvider = providerFilter === 'ALL' || p.provider === providerFilter;
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
@@ -148,12 +151,12 @@ export function AdminPaymentsView() {
   // Aggregate stats from real data
   const totalAmount = React.useMemo(() => {
     return payments
-      .filter((p) => p.status === 'COMPLETED')
+      .filter((p) => p.status === 'COMPLETED' || p.status === 'SUCCESSFUL')
       .reduce((sum, p) => sum + Number(p.amount || 0), 0);
   }, [payments]);
 
   const completedCount = React.useMemo(() => {
-    return payments.filter((p) => p.status === 'COMPLETED').length;
+    return payments.filter((p) => p.status === 'COMPLETED' || p.status === 'SUCCESSFUL').length;
   }, [payments]);
 
   const pendingVerificationCount = React.useMemo(() => {
@@ -421,7 +424,7 @@ export function AdminPaymentsView() {
                             <span>Reject</span>
                           </button>
                         </div>
-                      ) : pay.status === 'COMPLETED' ? (
+                      ) : pay.status === 'COMPLETED' || pay.status === 'SUCCESSFUL' ? (
                         <div className="text-[11px] text-emerald-700 font-medium flex items-center justify-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                           <span>{pay.verifiedBy ? `By ${pay.verifiedBy}` : 'Verified'}</span>

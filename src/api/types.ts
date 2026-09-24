@@ -87,7 +87,7 @@ export interface Order {
   payments?: Payment[];
 }
 
-export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'SUCCESSFUL' | 'FAILED' | 'REFUNDED';
 export type PaymentProvider = 'RAZORPAY' | 'UPI_DIRECT' | 'COD';
 export type PaymentMethod = 'UPI_QR' | 'UPI_INTENT' | 'COD' | 'CARD' | 'NETBANKING';
 
