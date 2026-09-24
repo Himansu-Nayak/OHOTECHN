@@ -32,6 +32,7 @@ public class AdminController {
     private final UserService userService;
     private final ProductService productService;
     private final com.ohotech.backend.service.ContactService contactService;
+    private final com.ohotech.backend.service.PaymentService paymentService;
 
     // 1. Dashboard Overview Metrics
     @GetMapping("/stats")
@@ -125,9 +126,36 @@ public class AdminController {
 
     // 3.5 View Real Payment Transactions
     @GetMapping("/payments")
-    public ResponseEntity<ApiResponse<List<Payment>>> getAllPayments() {
+    public ResponseEntity<ApiResponse<List<com.ohotech.backend.dto.PaymentResponseDto>>> getAllPayments() {
         List<Payment> payments = paymentRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
-        return ResponseEntity.ok(ApiResponse.success("Payments retrieved successfully", payments));
+        List<com.ohotech.backend.dto.PaymentResponseDto> dtos = payments.stream()
+                .map(paymentService::mapPaymentToDto)
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success("Payments retrieved successfully", dtos));
+    }
+
+    // 3.6 Admin Manual Payment Approval (UTR Verification)
+    @PutMapping("/payments/{id}/verify")
+    public ResponseEntity<ApiResponse<com.ohotech.backend.dto.PaymentResponseDto>> verifyPayment(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.ohotech.backend.security.UserPrincipal adminUser,
+            @PathVariable Long id,
+            @RequestBody(required = false) com.ohotech.backend.dto.AdminPaymentActionRequest actionRequest) {
+        
+        com.ohotech.backend.dto.PaymentResponseDto response = paymentService.adminVerifyPayment(adminUser.getId(), id, actionRequest);
+        log.info("Admin #{} verified payment #{}", adminUser.getId(), id);
+        return ResponseEntity.ok(ApiResponse.success("Payment verified and approved successfully", response));
+    }
+
+    // 3.7 Admin Payment Rejection
+    @PutMapping("/payments/{id}/reject")
+    public ResponseEntity<ApiResponse<com.ohotech.backend.dto.PaymentResponseDto>> rejectPayment(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.ohotech.backend.security.UserPrincipal adminUser,
+            @PathVariable Long id,
+            @RequestBody(required = false) com.ohotech.backend.dto.AdminPaymentActionRequest actionRequest) {
+        
+        com.ohotech.backend.dto.PaymentResponseDto response = paymentService.adminRejectPayment(adminUser.getId(), id, actionRequest);
+        log.info("Admin #{} rejected payment #{}", adminUser.getId(), id);
+        return ResponseEntity.ok(ApiResponse.success("Payment rejected", response));
     }
 
     @PutMapping("/orders/{id}/status")

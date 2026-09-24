@@ -88,15 +88,62 @@ export interface Order {
 }
 
 export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+export type PaymentProvider = 'RAZORPAY' | 'UPI_DIRECT' | 'COD';
+export type PaymentMethod = 'UPI_QR' | 'UPI_INTENT' | 'COD' | 'CARD' | 'NETBANKING';
 
 export interface Payment {
   id: number;
+  orderId?: number;
+  provider?: PaymentProvider;
+  method?: PaymentMethod;
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   amount: number;
   currency: string;
   status: PaymentStatus;
+  transactionReference?: string;
+  payerUpiId?: string;
+  payerName?: string;
+  failureReason?: string;
+  adminNotes?: string;
+  verifiedBy?: string;
+  verifiedAt?: string;
   createdAt: string;
+  updatedAt?: string;
+}
+
+export interface PaymentConfigDto {
+  upiDirectEnabled: boolean;
+  codEnabled: boolean;
+  razorpayEnabled: boolean;
+  merchantName: string;
+  upiId: string;
+  bankName: string;
+}
+
+export interface UpiInitiateResponse {
+  orderId: number;
+  paymentId: number;
+  amount: number;
+  currency: string;
+  upiId: string;
+  merchantName: string;
+  bankName: string;
+  upiIntentUri: string;
+  transactionRefNote: string;
+}
+
+export interface UtrSubmissionRequest {
+  orderId: number;
+  utr: string;
+  payerUpiId?: string;
+  payerName?: string;
+  notes?: string;
+}
+
+export interface AdminPaymentActionRequest {
+  notes?: string;
+  failureReason?: string;
 }
 
 export interface ContactEnquiry {

@@ -317,6 +317,39 @@ export function AdminOrdersView() {
               </div>
             </div>
 
+            {/* Payment & Settlement Details */}
+            {selectedOrder.payments && selectedOrder.payments.length > 0 && (
+              <div>
+                <h4 className="text-xs font-semibold text-slate-900 mb-2">Payment &amp; Settlement</h4>
+                <div className="border border-slate-200/80 rounded-xl p-3 bg-slate-50/50 space-y-2 text-xs">
+                  {selectedOrder.payments.map((p) => (
+                    <div key={p.id} className="flex flex-col gap-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono font-bold text-slate-900">#PAY-{p.id}</span>
+                        <StatusBadge status={p.status} />
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Provider / Method:</span>
+                        <span className="font-semibold text-slate-800">{p.provider || 'N/A'} ({p.method || 'N/A'})</span>
+                      </div>
+                      {p.transactionReference && (
+                        <div className="flex justify-between text-slate-600">
+                          <span>UTR / Ref:</span>
+                          <span className="font-mono font-bold text-slate-900 select-all">{p.transactionReference}</span>
+                        </div>
+                      )}
+                      {p.payerUpiId && (
+                        <div className="flex justify-between text-slate-600">
+                          <span>Payer UPI:</span>
+                          <span className="font-mono text-slate-800">{p.payerUpiId}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Line Items */}
             <div>
               <h4 className="text-xs font-semibold text-slate-900 mb-2">Itemized Products</h4>

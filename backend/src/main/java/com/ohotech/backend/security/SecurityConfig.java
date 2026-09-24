@@ -103,6 +103,7 @@ public class SecurityConfig {
                     "/api/auth/verify-reset-otp",
                     "/api/auth/reset-password",
                     "/api/contact",
+                    "/api/payments/config",
                     "/api/webhooks/**",
                     "/api/payments/webhook",
                     "/api/ai/chat",

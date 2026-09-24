@@ -1,7 +1,6 @@
 package com.ohotech.backend.service;
 
-import com.ohotech.backend.dto.PaymentResponseDto;
-import com.ohotech.backend.dto.PaymentVerificationRequest;
+import com.ohotech.backend.dto.*;
 import com.ohotech.backend.entity.*;
 import com.ohotech.backend.exception.BadRequestException;
 import com.ohotech.backend.exception.ResourceNotFoundException;
@@ -32,6 +31,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final LicenseRepository licenseRepository;
     private final LicenseService licenseService;
@@ -39,6 +39,7 @@ public class PaymentService {
     private final NotificationService notificationService;
     private final EmailTemplateService emailTemplateService;
     private final CartService cartService;
+    private final AuditService auditService;
 
     @Value("${app.razorpay.key-id:${razorpay.key-id:}}")
     private String razorpayKeyId;
@@ -51,6 +52,24 @@ public class PaymentService {
 
     @Value("${app.razorpay.test-mode:false}")
     private boolean testMode;
+
+    @Value("${app.upi.merchant-name:KAMPA INFRA AND RENEWABLE ENERGY DEVELOPERS PVT L}")
+    private String upiMerchantName;
+
+    @Value("${app.upi.id:9937591330@indianbk}")
+    private String upiId;
+
+    @Value("${app.upi.bank-name:Indian Bank}")
+    private String upiBankName;
+
+    @Value("${app.payment.bank-transfer-enabled:true}")
+    private boolean bankTransferEnabled;
+
+    @Value("${app.payment.cod-enabled:true}")
+    private boolean codEnabled;
+
+    @Value("${app.payment.razorpay-enabled:true}")
+    private boolean razorpayEnabled;
 
     public boolean razorpayConfigured() {
         return razorpayKeyId != null && razorpayKeyId.startsWith("rzp_")
@@ -267,15 +286,316 @@ public class PaymentService {
         return mapPaymentToDto(payment);
     }
 
+    @Transactional(readOnly = true)
+    public PaymentConfigDto getPaymentConfig() {
+        return PaymentConfigDto.builder()
+                .upiId(upiId)
+                .merchantName(upiMerchantName)
+                .bankName(upiBankName)
+                .bankTransferEnabled(bankTransferEnabled)
+                .codEnabled(codEnabled)
+                .razorpayEnabled(razorpayEnabled && razorpayConfigured())
+                .razorpayKeyId(razorpayKeyId)
+                .build();
+    }
+
+    @Transactional
+    public UpiInitiateResponse initiateUpiPayment(Long userId, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Order", "id", orderId);
+        }
+
+        if (order.getStatus() == OrderStatus.PAID || order.getStatus() == OrderStatus.CONFIRMED) {
+            throw new BadRequestException("Order #" + orderId + " is already paid.");
+        }
+
+        if (order.getTotalAmount() == null || order.getTotalAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Order amount must be greater than zero!");
+        }
+
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElse(Payment.builder()
+                        .order(order)
+                        .amount(order.getTotalAmount())
+                        .status(PaymentStatus.PENDING)
+                        .build());
+
+        payment.setAmount(order.getTotalAmount());
+        payment.setProvider("BANK_TRANSFER");
+        payment.setMethod("UPI");
+        payment.setCurrency("INR");
+        payment.setStatus(PaymentStatus.PENDING);
+        payment = paymentRepository.save(payment);
+
+        String encodedMerchant;
+        try {
+            encodedMerchant = java.net.URLEncoder.encode(upiMerchantName, StandardCharsets.UTF_8.toString()).replace("+", "%20");
+        } catch (Exception e) {
+            encodedMerchant = "KAMPA%20INFRA%20AND%20RENEWABLE%20ENERGY%20DEVELOPERS%20PVT%20L";
+        }
+
+        String transactionRef = "ORD" + order.getId() + "_" + (System.currentTimeMillis() % 100000);
+        String upiIntentUri = String.format(
+                "upi://pay?pa=%s&pn=%s&am=%s&cu=INR&tr=%s",
+                upiId.trim(),
+                encodedMerchant,
+                order.getTotalAmount().setScale(2, RoundingMode.HALF_UP).toPlainString(),
+                transactionRef
+        );
+
+        return UpiInitiateResponse.builder()
+                .orderId(order.getId())
+                .paymentId(payment.getId())
+                .amount(order.getTotalAmount())
+                .currency("INR")
+                .upiId(upiId)
+                .merchantName(upiMerchantName)
+                .bankName(upiBankName)
+                .upiIntentUri(upiIntentUri)
+                .transactionRef(transactionRef)
+                .build();
+    }
+
+    @Transactional
+    public PaymentResponseDto submitUtr(Long userId, UtrSubmissionRequest request) {
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", request.getOrderId()));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Order", "id", request.getOrderId());
+        }
+
+        String rawUtr = request.getUtr() != null ? request.getUtr().trim() : "";
+        if (rawUtr.length() < 6) {
+            throw new BadRequestException("Please enter a valid UTR / Transaction Reference number (minimum 6 characters).");
+        }
+
+        Payment payment = paymentRepository.findByOrderId(order.getId())
+                .orElse(Payment.builder()
+                        .order(order)
+                        .amount(order.getTotalAmount())
+                        .build());
+
+        if (payment.getStatus() == PaymentStatus.SUCCESSFUL) {
+            return mapPaymentToDto(payment);
+        }
+
+        payment.setAmount(order.getTotalAmount());
+        payment.setProvider("BANK_TRANSFER");
+        payment.setMethod("UPI");
+        payment.setCurrency("INR");
+        payment.setTransactionReference(rawUtr);
+        payment.setPayerUpiId(request.getPayerUpiId() != null ? request.getPayerUpiId().trim() : null);
+        payment.setPayerName(request.getPayerName() != null ? request.getPayerName().trim() : null);
+        if (request.getNotes() != null && !request.getNotes().isBlank()) {
+            payment.setAdminNotes(request.getNotes().trim());
+        }
+        payment.setStatus(PaymentStatus.PENDING);
+        payment = paymentRepository.save(payment);
+
+        order.setStatus(OrderStatus.PENDING);
+        orderRepository.save(order);
+
+        // Clear user's cart now that UTR proof has been submitted
+        try {
+            cartService.clearCart(userId);
+        } catch (Exception e) {
+            logger.warn("Cart clear warning after UTR submission: {}", e.getMessage());
+        }
+
+        // Notification & email
+        try {
+            notificationService.createNotification(
+                    userId,
+                    "Payment Under Verification",
+                    "We have received your payment reference (UTR: " + rawUtr + ") for Order #" + order.getId() + ". Our finance team will verify and activate your software.",
+                    NotificationType.INFO,
+                    NotificationCategory.PAYMENT,
+                    "/orders"
+            );
+
+            auditService.logUserEvent(order.getUser(), "PAYMENT_UTR_SUBMITTED", "Payment", String.valueOf(payment.getId()),
+                    "Customer submitted UTR: " + rawUtr + " for order #" + order.getId());
+
+            if (order.getUser().getEmail() != null) {
+                emailService.sendEmail(order.getUser().getEmail(),
+                        "OHO TECHN - Payment Received for Order #" + order.getId() + " (Verification Pending)",
+                        "Dear " + order.getUser().getName() + ",\n\nWe have received your payment reference (UTR: " + rawUtr + ") for Order #" + order.getId() + " (Amount: ₹" + order.getTotalAmount() + ").\n\nOur team is currently verifying the transfer with " + upiBankName + ". Once approved, your software licenses and access will be activated immediately.\n\nThank you for choosing OHO TECHN.");
+            }
+        } catch (Exception e) {
+            logger.warn("Email/Notification warning: {}", e.getMessage());
+        }
+
+        return mapPaymentToDto(payment);
+    }
+
+    @Transactional
+    public PaymentResponseDto initiateCod(Long userId, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Order", "id", orderId);
+        }
+
+        if (order.getStatus() == OrderStatus.PAID) {
+            throw new BadRequestException("Order #" + orderId + " is already paid.");
+        }
+
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElse(Payment.builder()
+                        .order(order)
+                        .amount(order.getTotalAmount())
+                        .build());
+
+        payment.setAmount(order.getTotalAmount());
+        payment.setProvider("COD");
+        payment.setMethod("CASH_ON_DELIVERY");
+        payment.setCurrency("INR");
+        payment.setStatus(PaymentStatus.PENDING);
+        payment = paymentRepository.save(payment);
+
+        order.setStatus(OrderStatus.CONFIRMED);
+        orderRepository.save(order);
+
+        try {
+            cartService.clearCart(userId);
+            auditService.logUserEvent(order.getUser(), "ORDER_COD_INITIATED", "Order", String.valueOf(order.getId()),
+                    "Customer placed Cash on Delivery order #" + order.getId());
+        } catch (Exception e) {
+            logger.warn("COD post-processing warning: {}", e.getMessage());
+        }
+
+        return mapPaymentToDto(payment);
+    }
+
+    @Transactional
+    public PaymentResponseDto adminVerifyPayment(Long adminId, Long paymentId, AdminPaymentActionRequest actionRequest) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
+
+        User adminUser = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin User", "id", adminId));
+
+        Order order = payment.getOrder();
+        if (order == null) {
+            throw new BadRequestException("Payment is not attached to an order.");
+        }
+
+        if (payment.getStatus() == PaymentStatus.SUCCESSFUL && order.getStatus() == OrderStatus.PAID) {
+            return mapPaymentToDto(payment);
+        }
+
+        payment.setStatus(PaymentStatus.SUCCESSFUL);
+        payment.setVerifiedBy(adminUser.getEmail() != null ? adminUser.getEmail() : adminUser.getName());
+        payment.setVerifiedAt(LocalDateTime.now());
+        if (actionRequest != null && actionRequest.getNotes() != null && !actionRequest.getNotes().isBlank()) {
+            payment.setAdminNotes(actionRequest.getNotes().trim());
+        }
+        payment = paymentRepository.save(payment);
+
+        order.setStatus(OrderStatus.PAID);
+        orderRepository.save(order);
+
+        // Provision licenses and subscriptions
+        createEntitlementsForOrder(order);
+
+        // Audit Trail
+        auditService.logUserEvent(adminUser, "PAYMENT_MANUAL_VERIFIED", "Payment", String.valueOf(payment.getId()),
+                "Admin manually verified payment #" + payment.getId() + " for order #" + order.getId() +
+                (payment.getTransactionReference() != null ? " with UTR: " + payment.getTransactionReference() : ""));
+
+        // Notifications & confirmation email
+        try {
+            notificationService.createNotification(
+                    order.getUser().getId(),
+                    "Payment Approved & Verified",
+                    "Your payment for Order #" + order.getId() + " (₹" + order.getTotalAmount() + ") has been approved by accounts. Your software access is ready!",
+                    NotificationType.SUCCESS,
+                    NotificationCategory.PAYMENT,
+                    "/my-products"
+            );
+
+            if (order.getUser().getEmail() != null) {
+                String htmlBody = emailTemplateService.buildPaymentSuccessEmail(
+                        order.getUser().getName(),
+                        payment.getTransactionReference() != null ? payment.getTransactionReference() : "OFFLINE_" + payment.getId(),
+                        order.getId(),
+                        order.getTotalAmount()
+                );
+                emailService.sendHtmlEmail(order.getUser().getEmail(), "OHO TECHN - Payment Approved for Order #" + order.getId(), htmlBody);
+            }
+        } catch (Exception e) {
+            logger.warn("Notification/Email trigger warning on admin verify: {}", e.getMessage());
+        }
+
+        return mapPaymentToDto(payment);
+    }
+
+    @Transactional
+    public PaymentResponseDto adminRejectPayment(Long adminId, Long paymentId, AdminPaymentActionRequest actionRequest) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
+
+        User adminUser = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin User", "id", adminId));
+
+        Order order = payment.getOrder();
+        payment.setStatus(PaymentStatus.FAILED);
+        payment.setFailureReason(actionRequest != null && actionRequest.getReason() != null ? actionRequest.getReason().trim() : "Payment rejected by admin / invalid UTR");
+        payment.setVerifiedBy(adminUser.getEmail() != null ? adminUser.getEmail() : adminUser.getName());
+        payment.setVerifiedAt(LocalDateTime.now());
+        payment = paymentRepository.save(payment);
+
+        if (order != null) {
+            order.setStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+        }
+
+        auditService.logUserEvent(adminUser, "PAYMENT_MANUAL_REJECTED", "Payment", String.valueOf(payment.getId()),
+                "Admin rejected payment #" + payment.getId() + " Reason: " + payment.getFailureReason());
+
+        try {
+            if (order != null && order.getUser() != null) {
+                notificationService.createNotification(
+                        order.getUser().getId(),
+                        "Payment Verification Rejected",
+                        "The payment reference for Order #" + order.getId() + " could not be verified. Please contact support or retry payment.",
+                        NotificationType.WARNING,
+                        NotificationCategory.PAYMENT,
+                        "/orders"
+                );
+            }
+        } catch (Exception e) {
+            logger.warn("Reject notification warning: {}", e.getMessage());
+        }
+
+        return mapPaymentToDto(payment);
+    }
+
     public PaymentResponseDto mapPaymentToDto(Payment payment) {
         return PaymentResponseDto.builder()
                 .id(payment.getId())
                 .orderId(payment.getOrder() != null ? payment.getOrder().getId() : null)
                 .amount(payment.getAmount())
                 .status(payment.getStatus())
+                .provider(payment.getProvider())
+                .method(payment.getMethod())
+                .currency(payment.getCurrency())
+                .transactionReference(payment.getTransactionReference())
+                .payerUpiId(payment.getPayerUpiId())
+                .payerName(payment.getPayerName())
+                .failureReason(payment.getFailureReason())
+                .adminNotes(payment.getAdminNotes())
+                .verifiedBy(payment.getVerifiedBy())
+                .verifiedAt(payment.getVerifiedAt())
                 .razorpayOrderId(payment.getRazorpayOrderId())
                 .razorpayPaymentId(payment.getRazorpayPaymentId())
                 .createdAt(payment.getCreatedAt())
+                .updatedAt(payment.getUpdatedAt())
                 .build();
     }
 

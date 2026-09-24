@@ -18,7 +18,18 @@ public class PaymentResponseDto {
     private Long orderId;
     private BigDecimal amount;
     private PaymentStatus status;
+    private String provider;
+    private String method;
+    private String currency;
+    private String transactionReference;
+    private String payerUpiId;
+    private String payerName;
+    private String failureReason;
+    private String adminNotes;
+    private String verifiedBy;
+    private LocalDateTime verifiedAt;
     private String razorpayOrderId;
     private String razorpayPaymentId;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
