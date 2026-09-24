@@ -23,7 +23,7 @@ public class FirebaseService {
     @Value("${app.firebase.mock-enabled:false}")
     private boolean mockEnabled;
 
-    @Value("${app.firebase.api-key:${FIREBASE_API_KEY:}}")
+    @Value("${app.firebase.api-key:${FIREBASE_API_KEY:AIzaSyA89xvAs6X3M06CaBmMh4YC-L7ey0qBn9w}}")
     private String firebaseApiKey;
 
     public FirebaseVerifiedUser verifyToken(String idToken) {

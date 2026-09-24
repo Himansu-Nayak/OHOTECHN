@@ -390,6 +390,15 @@ public class AuthService {
             // Phone verified account linking
             if (user == null && phone != null) {
                 Optional<User> existingPhoneUser = userRepository.findByPhone(phone);
+                if (existingPhoneUser.isEmpty()) {
+                    String cleanPhone = phone.replaceAll("[^0-9]", "");
+                    if (cleanPhone.length() >= 10) {
+                        String tenDigit = cleanPhone.substring(cleanPhone.length() - 10);
+                        existingPhoneUser = userRepository.findByPhone(tenDigit)
+                                .or(() -> userRepository.findByPhone("+91" + tenDigit))
+                                .or(() -> userRepository.findByPhone("+91 " + tenDigit.substring(0, 5) + " " + tenDigit.substring(5)));
+                    }
+                }
                 if (existingPhoneUser.isPresent()) {
                     User existing = existingPhoneUser.get();
                     if (existing.getFirebaseUid() != null && !existing.getFirebaseUid().equals(uid)) {
@@ -466,9 +475,13 @@ public class AuthService {
             user.setEmailVerified(true);
             needsUpdate = true;
         }
-        if (phone != null && !user.isPhoneVerified() && phone.equals(user.getPhone())) {
-            user.setPhoneVerified(true);
-            needsUpdate = true;
+        if (phone != null && !user.isPhoneVerified()) {
+            String cleanPhone = phone.replaceAll("[^0-9]", "");
+            String userPhone = user.getPhone() != null ? user.getPhone().replaceAll("[^0-9]", "") : "";
+            if (phone.equals(user.getPhone()) || (!cleanPhone.isEmpty() && !userPhone.isEmpty() && (cleanPhone.endsWith(userPhone) || userPhone.endsWith(cleanPhone)))) {
+                user.setPhoneVerified(true);
+                needsUpdate = true;
+            }
         }
 
         // 5. Enforce account status and security locks
