@@ -18,14 +18,14 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     @Query("SELECT a FROM AuditLog a WHERE " +
            "(:action IS NULL OR a.action = :action) AND " +
            "(:entityType IS NULL OR a.entityType = :entityType) AND " +
-           "(:search IS NULL OR LOWER(a.description) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(a.actorEmail) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
+           "(:searchPattern IS NULL OR LOWER(COALESCE(a.description, '')) LIKE :searchPattern OR LOWER(COALESCE(a.actorEmail, '')) LIKE :searchPattern) AND " +
            "(:startDate IS NULL OR a.createdAt >= :startDate) AND " +
            "(:endDate IS NULL OR a.createdAt <= :endDate) " +
            "ORDER BY a.createdAt DESC")
     Page<AuditLog> filterAuditLogs(
             @Param("action") String action,
             @Param("entityType") String entityType,
-            @Param("search") String search,
+            @Param("searchPattern") String searchPattern,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);

@@ -121,10 +121,20 @@ public class AuditService {
     public Page<AuditLogDto> getAuditLogs(String action, String entityType, String search,
                                          LocalDate startDate, LocalDate endDate, Pageable pageable) {
 
+        String trimmedAction = (action != null && !action.trim().isEmpty()) ? action.trim() : null;
+        String trimmedEntityType = (entityType != null && !entityType.trim().isEmpty()) ? entityType.trim() : null;
+        String searchPattern = (search != null && !search.trim().isEmpty())
+                ? "%" + search.trim().toLowerCase() + "%"
+                : null;
+
         LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;
         LocalDateTime end = endDate != null ? endDate.atTime(LocalTime.MAX) : null;
 
-        return auditLogRepository.filterAuditLogs(action, entityType, search, start, end, pageable)
+        if (trimmedAction == null && trimmedEntityType == null && searchPattern == null && start == null && end == null) {
+            return auditLogRepository.findByOrderByCreatedAtDesc(pageable).map(this::mapToDto);
+        }
+
+        return auditLogRepository.filterAuditLogs(trimmedAction, trimmedEntityType, searchPattern, start, end, pageable)
                 .map(this::mapToDto);
     }
 
