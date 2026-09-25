@@ -3,6 +3,8 @@ package com.ohotech.backend.repository;
 import com.ohotech.backend.entity.License;
 import com.ohotech.backend.entity.LicenseStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,5 +17,7 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
     Optional<License> findByLicenseKey(String licenseKey);
     List<License> findByUserIdAndProductId(Long userId, Long productId);
     Optional<License> findFirstByUserIdAndProductIdAndStatus(Long userId, Long productId, LicenseStatus status);
-    Optional<License> findBySubscriptionId(Long subscriptionId);
+    
+    @Query("SELECT l FROM License l WHERE l.subscription.id = :subscriptionId")
+    Optional<License> findBySubscriptionId(@Param("subscriptionId") Long subscriptionId);
 }
