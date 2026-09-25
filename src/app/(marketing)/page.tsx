@@ -5,7 +5,6 @@ import { HeroExperience } from '@/components/home/HeroExperience';
 import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
 import { BrandStatement } from '@/components/home/BrandStatement';
 import { ServicesExperience } from '@/components/home/ServicesExperience';
-import { FeaturedProducts } from '@/components/home/FeaturedProducts';
 import { SelectedWork } from '@/components/home/SelectedWork';
 import { TechnologyExperience } from '@/components/home/TechnologyExperience';
 import { ExperienceShowcase } from '@/components/home/ExperienceShowcase';
@@ -48,9 +47,6 @@ export default function HomePage() {
 
       {/* 03. Services Experience */}
       <ServicesExperience />
-
-      {/* 04. Turnkey Software Products Showcase */}
-      <FeaturedProducts />
 
       {/* 05. Selected Work (Projects 1 to 5 temporarily hidden per request) */}
       {/* <SelectedWork /> */}
