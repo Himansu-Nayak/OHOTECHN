@@ -162,37 +162,40 @@ export default function LicensesPage() {
               <div key={license.id} className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm">
                 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4">
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="text-xs font-mono font-bold text-slate-400 uppercase">
                       {license.product?.name || 'Software Product'}
                     </div>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-lg font-black font-mono text-[#0d0d0e] tracking-wider">
+                    <div className="flex items-center gap-2 sm:gap-3 mt-1.5 flex-wrap sm:flex-nowrap">
+                      <span className="text-sm sm:text-base md:text-lg font-black font-mono text-[#0d0d0e] tracking-wider break-all">
                         {license.licenseKey}
                       </span>
                       <button
+                        type="button"
                         onClick={() => handleCopyKey(license.licenseKey)}
-                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+                        className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                         title="Copy Key"
+                        aria-label="Copy license key"
                       >
                         {copiedKey === license.licenseKey ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase border ${
+                  <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-0 border-slate-100">
+                    <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase border shrink-0 ${
                       license.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'
                     }`}>
                       {license.status}
                     </span>
 
                     <button
+                      type="button"
                       onClick={() => handleOpenDevices(license)}
-                      className="py-2 px-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                      className="min-h-[44px] py-2.5 px-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <Laptop className="w-3.5 h-3.5" />
-                      Devices ({license.activationCount}/{license.activationLimit})
+                      <span>Devices ({license.activationCount}/{license.activationLimit})</span>
                     </button>
                   </div>
                 </div>

@@ -155,24 +155,24 @@ export default function MyProductsPage() {
                       <p className="text-xs text-slate-500 mt-1 max-w-xl">{product.description}</p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto pt-2 sm:pt-0">
                       <Link 
                         href={`/products/${product.id}`}
-                        className="py-2.5 px-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xs transition-colors flex items-center gap-1.5"
+                        className="min-h-[40px] py-2 px-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xs transition-colors flex items-center gap-1.5"
                       >
                         <span>Product Page</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
                       <Link 
                         href="/downloads" 
-                        className="py-2.5 px-4 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
+                        className="min-h-[40px] py-2 px-4 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
                       >
                         <Download className="w-3.5 h-3.5" />
                         <span>Download</span>
                       </Link>
                       <Link 
                         href="/licenses" 
-                        className="py-2.5 px-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
+                        className="min-h-[40px] py-2 px-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
                       >
                         <Key className="w-3.5 h-3.5" />
                         <span>Manage Seats</span>
@@ -197,14 +197,14 @@ export default function MyProductsPage() {
                         {matchedLicense ? (
                           <div className="space-y-2">
                             <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-slate-200 font-mono text-xs text-slate-900">
-                              <span className="truncate select-all font-bold">{matchedLicense.licenseKey}</span>
+                              <span className="truncate select-all font-bold break-all">{matchedLicense.licenseKey}</span>
                               <button
                                 type="button"
                                 onClick={() => handleCopyKey(matchedLicense.licenseKey)}
-                                className="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors shrink-0 cursor-pointer"
+                                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors shrink-0 cursor-pointer"
                                 title="Copy Key"
                               >
-                                {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                                {isCopied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                               </button>
                             </div>
                             <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">

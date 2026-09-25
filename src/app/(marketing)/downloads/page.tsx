@@ -176,13 +176,13 @@ export default function DownloadsPage() {
             <div className="lg:col-span-3 space-y-6">
               
               {/* Platform Filter Pills */}
-              <div className="bg-white border-2 border-slate-300 rounded-[28px] p-4 shadow-xs flex items-center gap-2 overflow-x-auto">
-                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mr-2 shrink-0">Platform:</span>
+              <div className="bg-white border-2 border-slate-300 rounded-[28px] p-3 sm:p-4 shadow-xs flex items-center gap-2 overflow-x-auto">
+                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mr-1 sm:mr-2 shrink-0">Platform:</span>
                 {['ALL', 'WINDOWS', 'MACOS', 'LINUX', 'ANDROID', 'IOS', 'WEB'].map((plat) => (
                   <button
                     key={plat}
                     onClick={() => setSelectedPlatform(plat)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all border ${
+                    className={`min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all border shrink-0 ${
                       selectedPlatform === plat
                         ? 'bg-[#0d0d0e] text-white border-[#0d0d0e]'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-400'
@@ -210,8 +210,8 @@ export default function DownloadsPage() {
                   {filteredReleases.map((release) => (
                     <div key={release.id} className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4">
-                        <div>
-                          <div className="flex items-center gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
                             {getPlatformIcon(release.platform)}
                             <span className="text-lg font-black text-[#0d0d0e]">
                               Version {release.version}
@@ -220,15 +220,16 @@ export default function DownloadsPage() {
                               {release.platform}
                             </span>
                           </div>
-                          <div className="text-xs text-slate-500 font-mono mt-1">
+                          <div className="text-xs text-slate-500 font-mono mt-1 break-all">
                             File: {release.fileName || 'release-binary.zip'} ({release.fileSize ? `${Math.round(release.fileSize / 1024)} KB` : '100 MB'})
                           </div>
                         </div>
 
                         <button
+                          type="button"
                           onClick={() => handleDownload(selectedProductId!, release.id, release.fileName)}
                           disabled={downloadingReleaseId === release.id}
-                          className="py-2.5 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-xs transition-colors flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+                          className="w-full sm:w-auto min-h-[44px] py-2.5 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
                         >
                           <Download className="w-4 h-4" />
                           <span>{downloadingReleaseId === release.id ? 'Downloading...' : 'Download Installer'}</span>

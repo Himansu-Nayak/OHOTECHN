@@ -264,8 +264,8 @@ export default function OrdersPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
+                    <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-2 sm:pt-0">
+                      <div className="text-left sm:text-right">
                         <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Total Amount</div>
                         <div className="text-lg font-black text-[#0d0d0e]">{formattedTotal}</div>
                       </div>
@@ -273,11 +273,11 @@ export default function OrdersPage() {
                       <button
                         onClick={() => handleDownloadInvoice(order.id)}
                         disabled={downloadingId === order.id}
-                        className="py-2.5 px-4 rounded-2xl bg-slate-900 hover:bg-sky-600 text-white font-mono font-bold text-xs transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                        className="min-h-[44px] py-2.5 px-4 rounded-2xl bg-slate-900 hover:bg-sky-600 text-white font-mono font-bold text-xs transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
                         title="Download Tax Invoice PDF"
                       >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>{downloadingId === order.id ? 'Generating PDF...' : 'Invoice PDF'}</span>
+                        <Download className="w-4 h-4" />
+                        <span>{downloadingId === order.id ? 'Generating...' : 'Invoice PDF'}</span>
                       </button>
                     </div>
                   </div>
@@ -289,14 +289,14 @@ export default function OrdersPage() {
                       {order.items?.map((item) => (
                         <div
                           key={item.id}
-                          className="bg-[#fafafa] border border-slate-200 rounded-2xl p-3.5 text-xs flex justify-between items-center"
+                          className="bg-[#fafafa] border border-slate-200 rounded-2xl p-3.5 text-xs flex justify-between items-center gap-2"
                         >
-                          <div>
-                            <div className="font-bold text-[#0d0d0e]">{item.product?.name || `Product #${item.id}`}</div>
-                            <div className="text-[10px] text-slate-500">Qty: {item.quantity} x ₹{item.price}</div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-[#0d0d0e] truncate">{item.product?.name || `Product #${item.id}`}</div>
+                            <div className="text-[10px] text-slate-500 font-mono">Qty: {item.quantity} x {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(item.price)}</div>
                           </div>
-                          <div className="font-black text-[#0d0d0e]">
-                            ₹{item.price * item.quantity}
+                          <div className="font-black text-[#0d0d0e] font-mono shrink-0">
+                            {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(item.price * item.quantity)}
                           </div>
                         </div>
                       ))}
@@ -337,7 +337,7 @@ export default function OrdersPage() {
                     {order.status === 'PENDING' && (
                       <button
                         onClick={() => handleOpenPayModal(order)}
-                        className="py-2.5 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-sm cursor-pointer"
+                        className="w-full sm:w-auto min-h-[44px] py-2.5 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-sm cursor-pointer"
                       >
                         <QrCode className="w-4 h-4" />
                         <span>{order.payments?.[0]?.transactionReference ? 'Update Payment / UTR' : 'Complete Payment (UPI)'}</span>
