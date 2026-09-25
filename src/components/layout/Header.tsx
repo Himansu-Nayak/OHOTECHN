@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, ShoppingBag, User, LogOut, Package } from 'lucide-react';
+import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, ShoppingBag, User, LogOut, Package, LayoutDashboard, Key, Download, Headphones } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -17,17 +17,30 @@ export function Header() {
   const [openDropdown, setOpenDropdown] = React.useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const userMenuRef = React.useRef<HTMLDivElement>(null);
 
-  // Close dropdown on Escape key
+  // Close dropdown on Escape key and click outside
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setOpenDropdown(null);
+        setUserMenuOpen(false);
         setIsMobileOpen(false);
       }
     };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const toggleDropdown = (name: string) => {
@@ -388,7 +401,7 @@ export function Header() {
             </Link>
 
             {user ? (
-              <div className="relative">
+              <div ref={userMenuRef} className="relative">
                 <button
                   onClick={() => setUserMenuOpen((prev) => !prev)}
                   className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border border-slate-200 hover:border-sky-500 bg-slate-50 transition-all text-xs font-bold text-[#0d0d0e] cursor-pointer"
@@ -401,68 +414,139 @@ export function Header() {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150 font-mono">
-                    <div className="px-3 py-2 border-b border-slate-100 mb-1">
+                  <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150 font-mono text-xs">
+                    {/* User Identity Card */}
+                    <div className="px-3 py-2.5 border-b border-slate-100 mb-1 bg-slate-50/70 rounded-xl">
                       <div className="text-xs font-extrabold text-[#0d0d0e] truncate">{user.name}</div>
-                      <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
+                      <div className="text-[11px] text-slate-500 truncate mt-0.5">{user.email}</div>
+                      <div className="mt-1.5">
+                        <span className="inline-block text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 uppercase tracking-wider">
+                          {user.role.replace('ROLE_', '')}
+                        </span>
+                      </div>
                     </div>
                     
-                    {(user.role === 'ROLE_ADMIN' || user.role === 'ADMIN' || user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER') && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors my-1"
-                      >
-                        <Sparkles className="w-4 h-4 text-emerald-600" />
-                        Admin Console
-                      </Link>
+                    {/* Staff Portals */}
+                    {(user.role === 'ROLE_ADMIN' || user.role === 'ADMIN' || user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER' || user.role === 'ROLE_SUPPORT' || user.role === 'SUPPORT') && (
+                      <div className="py-1 border-b border-slate-100 mb-1 space-y-1">
+                        {(user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') && (
+                          <Link
+                            href="/admin"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors"
+                          >
+                            <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>Admin Console</span>
+                          </Link>
+                        )}
+
+                        {(user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER') && (
+                          <Link
+                            href="/developer"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors"
+                          >
+                            <Code2 className="w-4 h-4 text-purple-600 shrink-0" />
+                            <span>Developer Studio</span>
+                          </Link>
+                        )}
+
+                        {(user.role === 'ROLE_SUPPORT' || user.role === 'SUPPORT' || user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') && (
+                          <Link
+                            href="/support"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                          >
+                            <Headphones className="w-4 h-4 text-blue-600 shrink-0" />
+                            <span>Support Desk</span>
+                          </Link>
+                        )}
+                      </div>
                     )}
 
-                    {(user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER') && (
-                      <Link
-                        href="/developer"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors mb-1"
-                      >
-                        <Code2 className="w-4 h-4 text-purple-600" />
-                        Developer Studio
-                      </Link>
-                    )}
+                    {/* Customer Portal Hub */}
+                    <div className="py-1 space-y-0.5">
+                      <div className="text-[10px] font-mono font-bold text-slate-400 uppercase px-3 py-1">
+                        Customer Portal
+                      </div>
 
-                    <Link
-                      href="/profile"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                    >
-                      <User className="w-4 h-4 text-sky-600" />
-                      My Profile
-                    </Link>
-                    <Link
-                      href="/orders"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                    >
-                      <Package className="w-4 h-4 text-sky-600" />
-                      My Orders
-                    </Link>
-                    <Link
-                      href="/cart"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                    >
-                      <ShoppingBag className="w-4 h-4 text-sky-600" />
-                      Cart ({itemCount})
-                    </Link>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setUserMenuOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer mt-1 border-t border-slate-100 pt-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </button>
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-sky-600 shrink-0" />
+                        <span>Dashboard</span>
+                      </Link>
+
+                      <Link
+                        href="/my-products"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                      >
+                        <Package className="w-4 h-4 text-sky-600 shrink-0" />
+                        <span>My Products</span>
+                      </Link>
+
+                      <Link
+                        href="/licenses"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                      >
+                        <Key className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Licenses &amp; Devices</span>
+                      </Link>
+
+                      <Link
+                        href="/downloads"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                      >
+                        <Download className="w-4 h-4 text-indigo-600 shrink-0" />
+                        <span>Downloads</span>
+                      </Link>
+
+                      <Link
+                        href="/orders"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                      >
+                        <ShoppingBag className="w-4 h-4 text-amber-600 shrink-0" />
+                        <span>My Orders</span>
+                      </Link>
+
+                      <Link
+                        href="/support"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                      >
+                        <Headphones className="w-4 h-4 text-teal-600 shrink-0" />
+                        <span>Help &amp; Support</span>
+                      </Link>
+
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                      >
+                        <User className="w-4 h-4 text-slate-600 shrink-0" />
+                        <span>Account Profile</span>
+                      </Link>
+                    </div>
+
+                    {/* Logout */}
+                    <div className="pt-1 mt-1 border-t border-slate-100">
+                      <button
+                        onClick={() => {
+                          logout();
+                          setUserMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl font-bold text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4 shrink-0" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -554,19 +638,89 @@ export function Header() {
                 </button>
               </div>
 
-              <nav aria-label="Mobile Navigation" className="py-6 space-y-3.5 flex flex-col text-sm font-bold text-slate-700">
+              <nav aria-label="Mobile Navigation" className="py-6 space-y-3 flex flex-col text-sm font-bold text-slate-700">
                 {user && (
-                  <div className="p-3 bg-sky-50 rounded-2xl mb-2">
-                    <div className="text-xs font-black text-[#0d0d0e]">{user.name}</div>
-                    <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
+                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl mb-2 font-mono">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-black text-[#0d0d0e]">{user.name}</div>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 uppercase">
+                        {user.role.replace('ROLE_', '')}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-slate-500 truncate mt-0.5">{user.email}</div>
+
+                    {/* Mobile Customer Portal Links */}
+                    <div className="pt-3 mt-3 border-t border-slate-200/80 grid grid-cols-2 gap-1.5 text-xs">
+                      {(user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setIsMobileOpen(false)}
+                          className="col-span-2 flex items-center gap-1.5 p-2 rounded-xl bg-emerald-50 text-emerald-800 font-bold"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Admin Console</span>
+                        </Link>
+                      )}
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsMobileOpen(false)}
+                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
+                      >
+                        <LayoutDashboard className="w-3.5 h-3.5 text-sky-600" />
+                        <span>Dashboard</span>
+                      </Link>
+                      <Link
+                        href="/my-products"
+                        onClick={() => setIsMobileOpen(false)}
+                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
+                      >
+                        <Package className="w-3.5 h-3.5 text-sky-600" />
+                        <span>Products</span>
+                      </Link>
+                      <Link
+                        href="/licenses"
+                        onClick={() => setIsMobileOpen(false)}
+                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
+                      >
+                        <Key className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Licenses</span>
+                      </Link>
+                      <Link
+                        href="/downloads"
+                        onClick={() => setIsMobileOpen(false)}
+                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
+                      >
+                        <Download className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Downloads</span>
+                      </Link>
+                      <Link
+                        href="/orders"
+                        onClick={() => setIsMobileOpen(false)}
+                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
+                      >
+                        <ShoppingBag className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Orders</span>
+                      </Link>
+                      <Link
+                        href="/support"
+                        onClick={() => setIsMobileOpen(false)}
+                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
+                      >
+                        <Headphones className="w-3.5 h-3.5 text-teal-600" />
+                        <span>Support</span>
+                      </Link>
+                    </div>
                   </div>
                 )}
                 <Link href="/" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Home</Link>
+                <Link href="/products" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1 flex items-center justify-between">
+                  <span>Products &amp; Modules</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Turnkey</span>
+                </Link>
                 <Link href="/solutions" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Industry Solutions</Link>
                 <Link href="/services" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Core Services</Link>
                 <Link href="/work" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Selected Work &amp; Case Studies</Link>
                 <Link href="/technology" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Technology &amp; AI</Link>
-                <Link href="/products" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Products &amp; Modules</Link>
                 <Link href="/insights" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Engineering Insights</Link>
                 <Link href="/pricing" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">Pricing &amp; Plans</Link>
                 <Link href="/about" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">About Us</Link>
@@ -575,9 +729,6 @@ export function Header() {
                   <span>Shopping Cart</span>
                   <span className="bg-sky-600 text-white text-xs px-2.5 py-0.5 rounded-full font-mono font-bold">{itemCount}</span>
                 </Link>
-                {user && (
-                  <Link href="/orders" onClick={() => setIsMobileOpen(false)} className="hover:text-sky-600 transition-colors py-1">My Orders</Link>
-                )}
               </nav>
             </div>
 
