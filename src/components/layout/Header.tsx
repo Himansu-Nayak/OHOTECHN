@@ -2,8 +2,9 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import NextImage from 'next/image';
-import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, ShoppingBag, User, LogOut, Package, LayoutDashboard, Key, Download, Headphones } from 'lucide-react';
+import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, ShoppingBag, User, LogOut, Package, LayoutDashboard, Key, Download, Headphones, Repeat, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -12,6 +13,7 @@ import { NotificationBell } from '../NotificationBell';
 import { MagneticCTA } from '@/components/ui/MagneticCTA';
 
 export function Header() {
+  const pathname = usePathname();
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
   const [openDropdown, setOpenDropdown] = React.useState<string | null>(null);
@@ -465,73 +467,50 @@ export function Header() {
                     )}
 
                     {/* Customer Portal Hub */}
-                    <div className="py-1 space-y-0.5">
+                    <div className="py-1 space-y-0.5" role="menu" aria-label="Customer Portal Navigation">
                       <div className="text-[10px] font-mono font-bold text-slate-400 uppercase px-3 py-1">
-                        Customer Portal
+                        Customer Portal Hub
                       </div>
 
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                      >
-                        <LayoutDashboard className="w-4 h-4 text-sky-600 shrink-0" />
-                        <span>Dashboard</span>
-                      </Link>
-
-                      <Link
-                        href="/my-products"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                      >
-                        <Package className="w-4 h-4 text-sky-600 shrink-0" />
-                        <span>My Products</span>
-                      </Link>
-
-                      <Link
-                        href="/licenses"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                      >
-                        <Key className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>Licenses &amp; Devices</span>
-                      </Link>
-
-                      <Link
-                        href="/downloads"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                      >
-                        <Download className="w-4 h-4 text-indigo-600 shrink-0" />
-                        <span>Downloads</span>
-                      </Link>
-
-                      <Link
-                        href="/orders"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                      >
-                        <ShoppingBag className="w-4 h-4 text-amber-600 shrink-0" />
-                        <span>My Orders</span>
-                      </Link>
-
-                      <Link
-                        href="/support"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                      >
-                        <Headphones className="w-4 h-4 text-teal-600 shrink-0" />
-                        <span>Help &amp; Support</span>
-                      </Link>
-
-                      <Link
-                        href="/profile"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-                      >
-                        <User className="w-4 h-4 text-slate-600 shrink-0" />
-                        <span>Account Profile</span>
-                      </Link>
+                      {[
+                        { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                        { href: '/my-products', label: 'My Products', icon: Package },
+                        { href: '/orders', label: 'Orders', icon: CreditCard },
+                        { href: '/licenses', label: 'Licenses & Devices', icon: Key },
+                        { href: '/downloads', label: 'Downloads', icon: Download },
+                        { href: '/subscriptions', label: 'Subscriptions', icon: Repeat },
+                        { href: '/support', label: 'Help & Support', icon: Headphones },
+                        { href: '/profile', label: 'Account Profile', icon: User },
+                        { href: '/cart', label: 'Shopping Cart', icon: ShoppingBag, badge: itemCount },
+                      ].map((item) => {
+                        const Icon = item.icon;
+                        const isActive = pathname === item.href;
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            role="menuitem"
+                            aria-current={isActive ? 'page' : undefined}
+                            onClick={() => setUserMenuOpen(false)}
+                            className={cn(
+                              "flex items-center justify-between px-3 py-1.5 rounded-xl font-bold transition-colors text-xs",
+                              isActive 
+                                ? "bg-sky-50 text-sky-700 font-extrabold border border-sky-100" 
+                                : "text-slate-700 hover:bg-slate-100 hover:text-black"
+                            )}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-sky-600" : "text-slate-500")} />
+                              <span>{item.label}</span>
+                            </div>
+                            {item.badge !== undefined && item.badge > 0 && (
+                              <span className="px-1.5 py-0.2 rounded-full bg-sky-600 text-white text-[10px] font-mono font-bold">
+                                {item.badge}
+                              </span>
+                            )}
+                          </Link>
+                        );
+                      })}
                     </div>
 
                     {/* Logout */}
@@ -650,65 +629,70 @@ export function Header() {
                     <div className="text-[11px] text-slate-500 truncate mt-0.5">{user.email}</div>
 
                     {/* Mobile Customer Portal Links */}
-                    <div className="pt-3 mt-3 border-t border-slate-200/80 grid grid-cols-2 gap-1.5 text-xs">
-                      {(user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') && (
-                        <Link
-                          href="/admin"
-                          onClick={() => setIsMobileOpen(false)}
-                          className="col-span-2 flex items-center gap-1.5 p-2 rounded-xl bg-emerald-50 text-emerald-800 font-bold"
-                        >
-                          <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>Admin Console</span>
-                        </Link>
-                      )}
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setIsMobileOpen(false)}
-                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
-                      >
-                        <LayoutDashboard className="w-3.5 h-3.5 text-sky-600" />
-                        <span>Dashboard</span>
-                      </Link>
-                      <Link
-                        href="/my-products"
-                        onClick={() => setIsMobileOpen(false)}
-                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
-                      >
-                        <Package className="w-3.5 h-3.5 text-sky-600" />
-                        <span>Products</span>
-                      </Link>
-                      <Link
-                        href="/licenses"
-                        onClick={() => setIsMobileOpen(false)}
-                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
-                      >
-                        <Key className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Licenses</span>
-                      </Link>
-                      <Link
-                        href="/downloads"
-                        onClick={() => setIsMobileOpen(false)}
-                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
-                      >
-                        <Download className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>Downloads</span>
-                      </Link>
-                      <Link
-                        href="/orders"
-                        onClick={() => setIsMobileOpen(false)}
-                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
-                      >
-                        <ShoppingBag className="w-3.5 h-3.5 text-amber-600" />
-                        <span>Orders</span>
-                      </Link>
-                      <Link
-                        href="/support"
-                        onClick={() => setIsMobileOpen(false)}
-                        className="flex items-center gap-1.5 p-1.5 rounded-lg text-slate-700 hover:text-sky-600"
-                      >
-                        <Headphones className="w-3.5 h-3.5 text-teal-600" />
-                        <span>Support</span>
-                      </Link>
+                    <div className="pt-3 mt-3 border-t border-slate-200/80">
+                      <div className="text-[10px] font-mono font-bold text-slate-400 uppercase mb-2">
+                        Customer Portal Hub
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5 text-xs">
+                        {(user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') && (
+                          <Link
+                            href="/admin"
+                            onClick={() => setIsMobileOpen(false)}
+                            className="col-span-2 flex items-center gap-1.5 p-2 rounded-xl bg-emerald-50 text-emerald-800 font-bold"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Admin Console</span>
+                          </Link>
+                        )}
+                        {(user.role === 'ROLE_DEVELOPER' || user.role === 'DEVELOPER') && (
+                          <Link
+                            href="/developer"
+                            onClick={() => setIsMobileOpen(false)}
+                            className="col-span-2 flex items-center gap-1.5 p-2 rounded-xl bg-purple-50 text-purple-800 font-bold"
+                          >
+                            <Code2 className="w-3.5 h-3.5 text-purple-600" />
+                            <span>Developer Studio</span>
+                          </Link>
+                        )}
+
+                        {[
+                          { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                          { href: '/my-products', label: 'Products', icon: Package },
+                          { href: '/orders', label: 'Orders', icon: CreditCard },
+                          { href: '/licenses', label: 'Licenses', icon: Key },
+                          { href: '/downloads', label: 'Downloads', icon: Download },
+                          { href: '/subscriptions', label: 'Subscriptions', icon: Repeat },
+                          { href: '/support', label: 'Support', icon: Headphones },
+                          { href: '/profile', label: 'Profile', icon: User },
+                          { href: '/cart', label: 'Cart', icon: ShoppingBag, badge: itemCount },
+                        ].map((item) => {
+                          const Icon = item.icon;
+                          const isActive = pathname === item.href;
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setIsMobileOpen(false)}
+                              className={cn(
+                                "flex items-center justify-between p-2 rounded-xl text-xs font-bold transition-colors",
+                                isActive
+                                  ? "bg-sky-50 text-sky-700 font-extrabold border border-sky-200"
+                                  : "bg-white border border-slate-200 text-slate-700 hover:text-sky-600 hover:border-sky-300"
+                              )}
+                            >
+                              <div className="flex items-center gap-1.5 truncate">
+                                <Icon className={cn("w-3.5 h-3.5 shrink-0", isActive ? "text-sky-600" : "text-slate-500")} />
+                                <span className="truncate">{item.label}</span>
+                              </div>
+                              {item.badge !== undefined && item.badge > 0 && (
+                                <span className="px-1.5 py-0.2 rounded-full bg-sky-600 text-white text-[9px] font-mono font-bold shrink-0">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </Link>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 )}
