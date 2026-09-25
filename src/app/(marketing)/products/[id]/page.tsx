@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ShoppingBag, Check, ShieldCheck, Sparkles, AlertCircle, Plus, Minus, CreditCard, ChevronRight, Zap, CheckCircle2, PhoneCall, Key, Repeat } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ShoppingBag, Check, ShieldCheck, Sparkles, AlertCircle, Plus, Minus, CreditCard, ChevronRight, Zap, CheckCircle2, PhoneCall, Key, Repeat } from 'lucide-react';
 import { getProductByIdApi } from '@/api/products';
 import { getProductPlansApi } from '@/api/plans';
 import { startFreeTrialApi } from '@/api/subscriptions';
@@ -284,65 +284,142 @@ export default function ProductDetailPage() {
                 <p className="text-xs text-slate-500 font-mono">Choose a trial, subscription, or perpetual lifetime license.</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {plans.map((plan) => {
-                  const isSelected = selectedPlan?.id === plan.id;
-                  const isTrial = plan.billingType === 'FREE_TRIAL';
-
-                  return (
-                    <div
-                      key={plan.id}
-                      onClick={() => setSelectedPlan(plan)}
-                      className={`p-6 rounded-[28px] border-2 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden ${
-                        isSelected
-                          ? 'bg-[#0d0d0e] text-white border-[#0d0d0e] shadow-lg scale-[1.02]'
-                          : 'bg-[#fafafa] text-[#0d0d0e] border-slate-200 hover:border-slate-400'
-                      }`}
-                    >
-                      {plan.billingType === 'YEARLY' && (
-                        <span className="absolute top-3 right-3 text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500 text-white uppercase tracking-wider">
-                          Recommended
+              {plans.length === 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Standard Commercial Perpetual License */}
+                  <div className="md:col-span-2 p-6 sm:p-8 rounded-[28px] border-2 border-slate-200 bg-[#fafafa] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
+                          Commercial Perpetual License
                         </span>
-                      )}
-
-                      <div>
-                        <div className={`text-xs font-mono font-bold uppercase tracking-wider mb-2 ${isSelected ? 'text-sky-400' : 'text-slate-500'}`}>
-                          {plan.billingType}
-                        </div>
-
-                        <h3 className="text-lg font-black mb-1">{plan.name}</h3>
-                        <p className={`text-xs leading-normal mb-4 ${isSelected ? 'text-slate-300' : 'text-slate-600'}`}>
-                          {plan.description}
-                        </p>
+                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500 text-white uppercase tracking-wider">
+                          Full Package
+                        </span>
                       </div>
+                      <h3 className="text-xl font-black text-[#0d0d0e] mb-2">{product.name} — Full Ownership</h3>
+                      <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                        Complete turnkey software license delivered with production source code access, automated database migration scripts, single-tenant cloud deployment support, and 12-month SLA maintenance.
+                      </p>
 
-                      <div>
-                        <div className="text-2xl font-black mb-2">
-                          {isTrial ? 'FREE' : `₹${plan.price.toLocaleString('en-IN')}`}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-medium text-slate-700 mb-6">
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Lifetime perpetual usage rights</span>
                         </div>
-
-                        <div className={`text-[11px] font-mono mb-4 space-y-1 ${isSelected ? 'text-slate-400' : 'text-slate-500'}`}>
-                          <div>• Duration: {plan.durationDays || 30} Days</div>
-                          <div>• Device Limit: {plan.activationLimit || 1} Device(s)</div>
-                          {isTrial && <div>• Trial Days: {plan.trialDays || 14} Days</div>}
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Complete backend &amp; frontend source code</span>
                         </div>
-
-                        <button
-                          type="button"
-                          className={`w-full py-2.5 rounded-full font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 ${
-                            isSelected
-                              ? 'bg-emerald-500 text-white'
-                              : 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-100'
-                          }`}
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>{isSelected ? 'Selected Plan' : 'Select Plan'}</span>
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Automated Docker &amp; Cloud scripts</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Priority technical support &amp; updates</span>
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">One-time Investment</div>
+                        <div className="text-2xl font-black text-[#0d0d0e]">
+                          {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(product.price || 35000)}
+                        </div>
+                      </div>
+                      <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold font-mono border border-emerald-200">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        Default Catalog Plan Included
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Enterprise Customization & SLA Option */}
+                  <div className="p-6 rounded-[28px] border-2 border-slate-200 bg-white flex flex-col justify-between">
+                    <div>
+                      <div className="text-xs font-mono font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-200 inline-block mb-3">
+                        Enterprise Customization
+                      </div>
+                      <h4 className="text-base font-extrabold text-[#0d0d0e] mb-2">Need Custom Features or Dedicated Hosting?</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                        We provide custom branding, third-party API integrations, dedicated VPS orchestration, and tailored SLA agreements for enterprise teams.
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-100">
+                      <Link
+                        href={`/get-quote?product=${encodeURIComponent(product.name)}`}
+                        className="w-full py-3 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors text-center flex items-center justify-center gap-1.5 shadow-sm block"
+                      >
+                        <span>Request Custom SLA</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {plans.map((plan) => {
+                    const isSelected = selectedPlan?.id === plan.id;
+                    const isTrial = plan.billingType === 'FREE_TRIAL';
+
+                    return (
+                      <div
+                        key={plan.id}
+                        onClick={() => setSelectedPlan(plan)}
+                        className={`p-6 rounded-[28px] border-2 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden ${
+                          isSelected
+                            ? 'bg-[#0d0d0e] text-white border-[#0d0d0e] shadow-lg scale-[1.02]'
+                            : 'bg-[#fafafa] text-[#0d0d0e] border-slate-200 hover:border-slate-400'
+                        }`}
+                      >
+                        {plan.billingType === 'YEARLY' && (
+                          <span className="absolute top-3 right-3 text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500 text-white uppercase tracking-wider">
+                            Recommended
+                          </span>
+                        )}
+
+                        <div>
+                          <div className={`text-xs font-mono font-bold uppercase tracking-wider mb-2 ${isSelected ? 'text-sky-400' : 'text-slate-500'}`}>
+                            {plan.billingType}
+                          </div>
+
+                          <h3 className="text-lg font-black mb-1">{plan.name}</h3>
+                          <p className={`text-xs leading-normal mb-4 ${isSelected ? 'text-slate-300' : 'text-slate-600'}`}>
+                            {plan.description}
+                          </p>
+                        </div>
+
+                        <div>
+                          <div className="text-2xl font-black mb-2">
+                            {isTrial ? 'FREE' : `₹${plan.price.toLocaleString('en-IN')}`}
+                          </div>
+
+                          <div className={`text-[11px] font-mono mb-4 space-y-1 ${isSelected ? 'text-slate-400' : 'text-slate-500'}`}>
+                            <div>• Duration: {plan.durationDays || 30} Days</div>
+                            <div>• Device Limit: {plan.activationLimit || 1} Device(s)</div>
+                            {isTrial && <div>• Trial Days: {plan.trialDays || 14} Days</div>}
+                          </div>
+
+                          <button
+                            type="button"
+                            className={`w-full py-2.5 rounded-full font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 ${
+                              isSelected
+                                ? 'bg-emerald-500 text-white'
+                                : 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-100'
+                            }`}
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>{isSelected ? 'Selected Plan' : 'Select Plan'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
           </div>

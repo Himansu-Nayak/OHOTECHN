@@ -6,18 +6,34 @@ import NextImage from 'next/image';
 import { ArrowRight, Check, Copy, ExternalLink, Key, Search, ShieldCheck, Sparkles, MonitorPlay, ShoppingBag, Loader2, AlertCircle, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { softwareDemos } from '@/config/demos';
 import { cn } from '@/lib/utils';
-import { getProductsApi } from '@/api/products';
+import { getProductsApi, getCategoriesApi } from '@/api/products';
 import { ProductDto } from '@/api/types';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { ProductQuickViewModal, isValidLiveDemoUrl } from '@/components/products/ProductQuickViewModal';
 import { Product } from '@/config/industries';
 
+interface CategoryFilterItem {
+  id: number | 'all';
+  label: string;
+}
+
+const DEFAULT_CATEGORIES: CategoryFilterItem[] = [
+  { id: 'all', label: 'All Categories' },
+  { id: 1, label: 'Education' },
+  { id: 2, label: 'Healthcare' },
+  { id: 3, label: 'ERP & HR' },
+  { id: 4, label: 'Retail & POS' },
+  { id: 5, label: 'E-Commerce' },
+  { id: 6, label: 'Services & Booking' },
+];
+
 export default function ProductsCatalogPage() {
   const { addToCart, loading: cartLoading } = useCart();
   const { showToast } = useToast();
 
   const [products, setProducts] = React.useState<ProductDto[]>([]);
+  const [categories, setCategories] = React.useState<CategoryFilterItem[]>(DEFAULT_CATEGORIES);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
   
@@ -27,11 +43,32 @@ export default function ProductsCatalogPage() {
   const [totalElements, setTotalElements] = React.useState<number>(0);
   const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [debouncedSearch, setDebouncedSearch] = React.useState<string>('');
-  const [selectedCategory, setSelectedCategory] = React.useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = React.useState<number | 'all'>('all');
   
   // Quick View Modal state
   const [activeQuickViewProduct, setActiveQuickViewProduct] = React.useState<Product | null>(null);
   const [activeQuickViewCategory, setActiveQuickViewCategory] = React.useState<string>('software');
+
+  // Load dynamic categories from backend
+  React.useEffect(() => {
+    let isMounted = true;
+    getCategoriesApi()
+      .then((res) => {
+        if (isMounted && res.success && res.data && res.data.length > 0) {
+          const mapped: CategoryFilterItem[] = [
+            { id: 'all', label: 'All Categories' },
+            ...res.data.map((c: any) => ({ id: Number(c.id), label: String(c.name) })),
+          ];
+          setCategories(mapped);
+        }
+      })
+      .catch((err) => {
+        console.warn('Using default category taxonomy:', err?.message);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Debounce search input
   React.useEffect(() => {
@@ -42,45 +79,49 @@ export default function ProductsCatalogPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  // Reset page when category changes
+  const handleCategorySelect = (catId: number | 'all') => {
+    setSelectedCategory(catId);
+    setPage(0);
+  };
+
   // Fetch backend products
   const fetchProducts = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await getProductsApi(page, 9, debouncedSearch);
+      const catParam = selectedCategory !== 'all' ? selectedCategory : undefined;
+      const res = await getProductsApi(page, 9, debouncedSearch, catParam);
       if (res.success && res.data && res.data.content && res.data.content.length > 0) {
         setProducts(res.data.content);
         setTotalPages(res.data.totalPages || 0);
         setTotalElements(res.data.totalElements || 0);
+      } else if (res.success && res.data && res.data.content && res.data.content.length === 0) {
+        // Legitimate empty result from backend for this filter/search query
+        setProducts([]);
+        setTotalPages(0);
+        setTotalElements(0);
       } else {
         // Fallback default products
-        setProducts(getFallbackProducts());
+        const fallback = filterFallbackProducts(selectedCategory, debouncedSearch);
+        setProducts(fallback);
         setTotalPages(1);
-        setTotalElements(28);
+        setTotalElements(fallback.length);
       }
     } catch (err: any) {
       console.warn('Backend products fetch failed, rendering turnkey fallback product catalog:', err?.message);
-      setProducts(getFallbackProducts());
+      const fallback = filterFallbackProducts(selectedCategory, debouncedSearch);
+      setProducts(fallback);
       setTotalPages(1);
-      setTotalElements(28);
+      setTotalElements(fallback.length);
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch]);
+  }, [page, debouncedSearch, selectedCategory]);
 
   React.useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-
-  const categories = [
-    { id: 'all', label: 'All Categories' },
-    { id: 'education', label: 'Education' },
-    { id: 'healthcare', label: 'Healthcare' },
-    { id: 'erp', label: 'ERP & HR' },
-    { id: 'retail', label: 'Retail & POS' },
-    { id: 'ecommerce', label: 'E-Commerce' },
-    { id: 'services', label: 'Services & Booking' },
-  ];
 
   const handleAddToCart = async (productId: number) => {
     await addToCart(productId, 1);
@@ -204,7 +245,7 @@ export default function ProductsCatalogPage() {
               {categories.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => handleCategorySelect(cat.id)}
                   className={cn(
                     "px-4 py-2 rounded-full text-xs font-mono font-bold whitespace-nowrap transition-all border-2",
                     selectedCategory === cat.id
@@ -245,6 +286,27 @@ export default function ProductsCatalogPage() {
               </div>
             ))}
           </div>
+        ) : products.length === 0 ? (
+          /* Empty Search / Filter State */
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-12 sm:p-16 shadow-sm text-center" id="products-empty-section">
+            <div className="w-16 h-16 rounded-3xl bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-400">
+              <Search className="w-8 h-8" />
+            </div>
+            <h3 className="text-2xl font-black text-[#0d0d0e] mb-2 tracking-tight">No Products Found</h3>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-6 leading-relaxed">
+              We couldn't find any software solutions matching your current category filter or search query.
+            </p>
+            <button
+              onClick={() => {
+                setSelectedCategory('all');
+                setSearchQuery('');
+                setPage(0);
+              }}
+              className="px-6 py-3 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
+            >
+              Reset All Filters
+            </button>
+          </section>
         ) : (
           /* Products Grid */
           <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-10 lg:p-14 shadow-sm" id="products-grid-section">
@@ -398,16 +460,41 @@ export default function ProductsCatalogPage() {
   );
 }
 
+function filterFallbackProducts(category: number | 'all', search: string): ProductDto[] {
+  let list = getFallbackProducts();
+  if (category !== 'all') {
+    const categoryMap: Record<number, string> = {
+      1: 'Education',
+      2: 'Healthcare',
+      3: 'ERP & HR',
+      4: 'Retail & POS',
+      5: 'E-Commerce',
+      6: 'Services & Booking',
+    };
+    const targetLabel = categoryMap[category]?.toLowerCase();
+    list = list.filter((p) => p.serviceType?.toLowerCase() === targetLabel);
+  }
+  if (search && search.trim() !== '') {
+    const q = search.trim().toLowerCase();
+    list = list.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        (p.description && p.description.toLowerCase().includes(q))
+    );
+  }
+  return list;
+}
+
 function getFallbackProducts(): ProductDto[] {
   return [
-    { id: 1, name: 'School Management Software', description: 'Complete school administration, attendance, fees, report cards, and parent portal.', price: 35000, serviceType: 'Education', stock: 50, active: true },
-    { id: 2, name: 'University Management System', description: 'Multi-campus university operations, research, course catalog, and accreditation tracking.', price: 99000, serviceType: 'Education', stock: 50, active: true },
-    { id: 3, name: 'Hospital Management Software (HMS)', description: 'OPD/IPD, EMR, Doctor schedules, Pharmacy, Diagnostic Lab, and Billing.', price: 75000, serviceType: 'Healthcare', stock: 50, active: true },
-    { id: 4, name: 'IVF & Fertility Clinic Software', description: 'IVF cycle tracking, embryology lab management, follicle monitoring, and fertility EMR.', price: 85000, serviceType: 'Healthcare', stock: 50, active: true },
-    { id: 5, name: 'Enterprise HRMS & Payroll', description: 'Attendance, biometric sync, leave workflows, salary slips, and tax compliance.', price: 55000, serviceType: 'ERP & HR', stock: 50, active: true },
-    { id: 6, name: 'Retail POS & Billing Software', description: 'Fast barcode billing, inventory management, multi-store stock sync, and GST invoices.', price: 29000, serviceType: 'Retail & POS', stock: 50, active: true },
-    { id: 7, name: 'Multi-Vendor E-Commerce Portal', description: 'Custom marketplace platform, vendor payout engine, product catalog, and payment gateway.', price: 75000, serviceType: 'E-Commerce', stock: 50, active: true },
-    { id: 8, name: 'Real Estate CRM & Booking Engine', description: 'Property listing portal, lead allocation, site visit scheduling, and buyer agreements.', price: 59000, serviceType: 'Services & Booking', stock: 50, active: true },
-    { id: 9, name: 'Gym & Fitness Club Software', description: 'Member attendance, biometric integration, subscription renewal alerts, and trainer schedule.', price: 22000, serviceType: 'Services & Booking', stock: 50, active: true },
+    { id: 1, name: 'School Management Software', description: 'Complete school administration, attendance, fees, report cards, and parent portal.', price: 35000, serviceType: 'Education', categoryId: 1, categoryName: 'Education', stock: 50, active: true },
+    { id: 2, name: 'University Management System', description: 'Multi-campus university operations, research, course catalog, and accreditation tracking.', price: 99000, serviceType: 'Education', categoryId: 1, categoryName: 'Education', stock: 50, active: true },
+    { id: 3, name: 'Hospital Management Software (HMS)', description: 'OPD/IPD, EMR, Doctor schedules, Pharmacy, Diagnostic Lab, and Billing.', price: 75000, serviceType: 'Healthcare', categoryId: 2, categoryName: 'Healthcare', stock: 50, active: true },
+    { id: 4, name: 'IVF & Fertility Clinic Software', description: 'IVF cycle tracking, embryology lab management, follicle monitoring, and fertility EMR.', price: 85000, serviceType: 'Healthcare', categoryId: 2, categoryName: 'Healthcare', stock: 50, active: true },
+    { id: 5, name: 'Enterprise HRMS & Payroll', description: 'Attendance, biometric sync, leave workflows, salary slips, and tax compliance.', price: 55000, serviceType: 'ERP & HR', categoryId: 3, categoryName: 'ERP & HR', stock: 50, active: true },
+    { id: 6, name: 'Retail POS & Billing Software', description: 'Fast barcode billing, inventory management, multi-store stock sync, and GST invoices.', price: 29000, serviceType: 'Retail & POS', categoryId: 4, categoryName: 'Retail & POS', stock: 50, active: true },
+    { id: 7, name: 'Multi-Vendor E-Commerce Portal', description: 'Custom marketplace platform, vendor payout engine, product catalog, and payment gateway.', price: 75000, serviceType: 'E-Commerce', categoryId: 5, categoryName: 'E-Commerce', stock: 50, active: true },
+    { id: 8, name: 'Real Estate CRM & Booking Engine', description: 'Property listing portal, lead allocation, site visit scheduling, and buyer agreements.', price: 59000, serviceType: 'Services & Booking', categoryId: 6, categoryName: 'Services & Booking', stock: 50, active: true },
+    { id: 9, name: 'Gym & Fitness Club Software', description: 'Member attendance, biometric integration, subscription renewal alerts, and trainer schedule.', price: 22000, serviceType: 'Services & Booking', categoryId: 6, categoryName: 'Services & Booking', stock: 50, active: true },
   ];
 }
