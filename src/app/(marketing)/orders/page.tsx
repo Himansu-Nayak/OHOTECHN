@@ -13,6 +13,7 @@ import { getMyOrdersApi, downloadOrderInvoiceApi } from '@/api/orders';
 import { initiateUpiPaymentApi, submitUtrApi } from '@/api/payments';
 import { Order, OrderStatus, UpiInitiateResponse } from '@/api/types';
 import { cn } from '@/lib/utils';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 export default function OrdersPage() {
   const { user } = useAuth();
@@ -143,21 +144,6 @@ export default function OrdersPage() {
     }
   };
 
-  const getStatusBadge = (status: OrderStatus) => {
-    switch (status) {
-      case 'PAID':
-      case 'CONFIRMED':
-      case 'DELIVERED':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-      case 'SHIPPED':
-        return 'bg-sky-50 text-sky-700 border-sky-200';
-      case 'CANCELLED':
-        return 'bg-rose-50 text-rose-700 border-rose-200';
-      case 'PENDING':
-      default:
-        return 'bg-amber-50 text-amber-800 border-amber-200';
-    }
-  };
 
   if (!user) {
     return (
@@ -250,14 +236,7 @@ export default function OrdersPage() {
                         <span className="text-sm font-black text-[#0d0d0e]">
                           Order #{order.id}
                         </span>
-                        <span
-                          className={cn(
-                            'text-[10px] font-mono font-bold px-3 py-0.5 rounded-full border uppercase tracking-wider',
-                            getStatusBadge(order.status)
-                          )}
-                        >
-                          {order.status}
-                        </span>
+                        <StatusBadge status={order.status} showDot size="sm" />
                       </div>
                       <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-mono">
                         <Clock className="w-3.5 h-3.5" /> {formattedDate}
@@ -312,23 +291,12 @@ export default function OrdersPage() {
                       {order.payments && order.payments.length > 0 && (
                         <div className="flex flex-wrap items-center gap-2 pt-1">
                           {order.payments.map((p) => (
-                            <span
+                            <StatusBadge
                               key={p.id}
-                              className={cn(
-                                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold border",
-                                p.status === 'COMPLETED' || p.status === 'SUCCESSFUL'
-                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                  : p.status === 'FAILED'
-                                  ? "bg-rose-50 text-rose-700 border-rose-200"
-                                  : "bg-amber-50 text-amber-800 border-amber-200"
-                              )}
-                            >
-                              <span>{p.provider || 'PAYMENT'}:</span>
-                              <span className="font-bold">{p.status}</span>
-                              {p.transactionReference && (
-                                <span className="text-slate-500">| UTR: {p.transactionReference}</span>
-                              )}
-                            </span>
+                              status={p.status}
+                              label={`${p.provider || 'PAYMENT'}: ${p.status}${p.transactionReference ? ` | UTR: ${p.transactionReference}` : ''}`}
+                              size="sm"
+                            />
                           ))}
                         </div>
                       )}

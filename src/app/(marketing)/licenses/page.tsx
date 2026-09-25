@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { getMyLicensesApi, activateDeviceApi, deactivateDeviceApi, getLicenseDevicesApi } from '@/api/licenses';
 import { License, DeviceActivation } from '@/api/types';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 export default function LicensesPage() {
   const { user } = useAuth();
@@ -183,11 +184,7 @@ export default function LicensesPage() {
                   </div>
 
                   <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-0 border-slate-100">
-                    <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase border shrink-0 ${
-                      license.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'
-                    }`}>
-                      {license.status}
-                    </span>
+                    <StatusBadge status={license.status} showDot size="sm" />
 
                     <button
                       type="button"

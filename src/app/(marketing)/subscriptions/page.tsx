@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { getMySubscriptionsApi, cancelSubscriptionApi } from '@/api/subscriptions';
 import { Subscription } from '@/api/types';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 export default function SubscriptionsPage() {
   const { user } = useAuth();
@@ -119,13 +120,7 @@ export default function SubscriptionsPage() {
                   </div>
 
                   <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-0 border-slate-100">
-                    <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase border shrink-0 ${
-                      sub.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      sub.status === 'TRIAL' ? 'bg-sky-50 text-sky-700 border-sky-200' :
-                      'bg-slate-100 text-slate-700 border-slate-300'
-                    }`}>
-                      {sub.status}
-                    </span>
+                    <StatusBadge status={sub.status} showDot size="sm" />
 
                     {(sub.status === 'ACTIVE' || sub.status === 'TRIAL') && (
                       <button
