@@ -34,7 +34,7 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success("Order created successfully", order));
     }
 
-    @GetMapping
+    @GetMapping({"", "/my-orders"})
     public ResponseEntity<ApiResponse<List<Order>>> getMyOrders(@AuthenticationPrincipal UserPrincipal currentUser) {
         List<Order> orders = orderService.getUserOrders(currentUser.getId());
         return ResponseEntity.ok(ApiResponse.success("Orders fetched successfully", orders));
