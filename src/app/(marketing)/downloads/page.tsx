@@ -78,7 +78,7 @@ export default function DownloadsPage() {
       showToast('Digital package downloaded successfully', 'success');
     } catch (err: any) {
       showToast(err.message || 'Failed to download software package', 'error');
-    } fontFinally: {
+    } finally {
       setDownloadingReleaseId(null);
     }
   };

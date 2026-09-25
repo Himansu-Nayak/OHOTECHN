@@ -373,6 +373,12 @@ public class PaymentService {
             throw new BadRequestException("Please enter a valid UTR / Transaction Reference number (minimum 6 characters).");
         }
 
+        // Prevent reusing an already verified UTR from another order
+        Optional<Payment> duplicatePayment = paymentRepository.findDuplicateVerifiedUtr(rawUtr, order.getId());
+        if (duplicatePayment.isPresent()) {
+            throw new BadRequestException("This UTR / Transaction Reference has already been verified and used for another order.");
+        }
+
         Payment payment = paymentRepository.findByOrderId(order.getId())
                 .orElse(Payment.builder()
                         .order(order)
@@ -487,6 +493,15 @@ public class PaymentService {
 
         if (payment.getStatus() == PaymentStatus.SUCCESSFUL && order.getStatus() == OrderStatus.PAID) {
             return mapPaymentToDto(payment);
+        }
+
+        // Prevent verifying if another payment already successfully used this UTR
+        if (payment.getTransactionReference() != null && !payment.getTransactionReference().isBlank()) {
+            Optional<Payment> existingVerified = paymentRepository.findDuplicateVerifiedUtr(
+                    payment.getTransactionReference().trim(), order.getId());
+            if (existingVerified.isPresent()) {
+                throw new BadRequestException("Cannot approve: UTR " + payment.getTransactionReference() + " is already approved on payment #" + existingVerified.get().getId());
+            }
         }
 
         payment.setStatus(PaymentStatus.SUCCESSFUL);
@@ -607,8 +622,8 @@ public class PaymentService {
             Product product = item.getProduct();
             ProductPlan plan = item.getProductPlan();
 
-            // Check if subscription already created for this order
-            Optional<Subscription> existingSub = subscriptionRepository.findByOrderId(order.getId());
+            // Check if subscription already created for this order & product
+            Optional<Subscription> existingSub = subscriptionRepository.findByOrderIdAndProductId(order.getId(), product.getId());
 
             Subscription subscription;
             if (existingSub.isEmpty()) {

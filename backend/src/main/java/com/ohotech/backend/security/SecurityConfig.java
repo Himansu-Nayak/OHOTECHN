@@ -114,6 +114,7 @@ public class SecurityConfig {
                     "/api/ai/document/analyze",
                     "/api/ai/image/analyze"
                 ).permitAll()
+                .requestMatchers("/api/products/my/**", "/api/products/my").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/support/public/**").permitAll()

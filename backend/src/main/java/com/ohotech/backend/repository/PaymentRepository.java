@@ -14,4 +14,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByOrderId(@Param("orderId") Long orderId);
 
     Optional<Payment> findByRazorpayOrderId(String razorpayOrderId);
+
+    @Query("SELECT p FROM Payment p WHERE LOWER(p.transactionReference) = LOWER(:utr) AND p.order.id <> :orderId AND p.status = com.ohotech.backend.entity.PaymentStatus.SUCCESSFUL")
+    Optional<Payment> findDuplicateVerifiedUtr(@Param("utr") String utr, @Param("orderId") Long orderId);
 }

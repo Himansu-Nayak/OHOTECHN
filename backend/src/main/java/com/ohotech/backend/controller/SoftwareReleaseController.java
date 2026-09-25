@@ -34,6 +34,9 @@ public class SoftwareReleaseController {
     @GetMapping("/products/my")
     public ResponseEntity<ApiResponse<List<Product>>> getMyEntitledProducts(
             @AuthenticationPrincipal UserPrincipal currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Authentication required"));
+        }
         List<Product> products = softwareReleaseService.getEntitledProducts(currentUser.getId());
         return ResponseEntity.ok(ApiResponse.success("Entitled products retrieved", products));
     }
@@ -42,6 +45,9 @@ public class SoftwareReleaseController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> getMyEntitledProductDetails(
             @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable Long productId) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Authentication required"));
+        }
         boolean entitled = softwareReleaseService.isUserEntitledToProduct(currentUser.getId(), productId);
         return ResponseEntity.ok(ApiResponse.success("Entitlement status fetched", Map.of("productId", productId, "entitled", entitled)));
     }
@@ -50,6 +56,9 @@ public class SoftwareReleaseController {
     public ResponseEntity<ApiResponse<List<SoftwareReleaseDto>>> getEntitledReleases(
             @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable Long productId) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Authentication required"));
+        }
         List<SoftwareReleaseDto> releases = softwareReleaseService.getEntitledProductReleases(currentUser.getId(), productId);
         return ResponseEntity.ok(ApiResponse.success("Product releases retrieved", releases));
     }
@@ -59,6 +68,9 @@ public class SoftwareReleaseController {
             @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable Long productId,
             @PathVariable Long releaseId) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         SoftwareRelease release = softwareReleaseService.getSoftwareReleaseForDownload(currentUser.getId(), productId, releaseId);
 
