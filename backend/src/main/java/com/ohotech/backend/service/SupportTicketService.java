@@ -218,6 +218,17 @@ public class SupportTicketService {
     }
 
     @Transactional(readOnly = true)
+    public SupportTicketDto getTicketByCode(String code) {
+        SupportTicket ticket = ticketRepository.findByTicketCode(code)
+                .orElseThrow(() -> new ResourceNotFoundException("SupportTicket", "code", code));
+
+        SupportTicketDto dto = mapTicketToDto(ticket, false);
+        List<SupportTicketMessage> publicMsgs = messageRepository.findByTicketIdAndInternalNoteFalseOrderByCreatedAtAsc(ticket.getId());
+        dto.setMessages(publicMsgs.stream().map(this::mapMessageToDto).collect(Collectors.toList()));
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
     public SupportTicketDto getTicketDetailsForCustomer(Long customerId, Long ticketId) {
         SupportTicket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("SupportTicket", "id", ticketId));

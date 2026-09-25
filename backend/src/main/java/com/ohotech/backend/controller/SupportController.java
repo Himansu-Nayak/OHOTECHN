@@ -143,4 +143,10 @@ public class SupportController {
         SupportTicketDto ticket = supportTicketService.createGuestTicket(request);
         return ResponseEntity.ok(ApiResponse.success("Ticket submitted successfully", ticket));
     }
+
+    @GetMapping("/public/ticket/{code}")
+    public ResponseEntity<ApiResponse<SupportTicketDto>> getPublicTicketByCode(@PathVariable String code) {
+        SupportTicketDto ticket = supportTicketService.getTicketByCode(code);
+        return ResponseEntity.ok(ApiResponse.success("Ticket details retrieved", ticket));
+    }
 }
