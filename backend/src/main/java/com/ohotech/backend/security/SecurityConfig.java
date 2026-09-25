@@ -104,6 +104,7 @@ public class SecurityConfig {
                     "/api/auth/reset-password",
                     "/api/contact",
                     "/api/payments/config",
+                    "/api/support/public/**",
                     "/api/webhooks/**",
                     "/api/payments/webhook",
                     "/api/ai/chat",
@@ -115,6 +116,9 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/api/support/public/**").permitAll()
+                .requestMatchers("/api/support/customer/**").authenticated()
+                .requestMatchers("/api/support/**").hasAnyAuthority("ROLE_SUPPORT", "ROLE_ADMIN", "ROLE_DEVELOPER")
                 .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_DEVELOPER")
                 .requestMatchers("/api/developer/**").hasAuthority("ROLE_DEVELOPER")
                 .anyRequest().authenticated()

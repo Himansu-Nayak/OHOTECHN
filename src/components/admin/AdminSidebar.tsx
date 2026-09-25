@@ -6,7 +6,7 @@ import {
   Layers, KeyRound, Users, UserCheck, Inbox, GitPullRequest, 
   DownloadCloud, Bell, Sparkles, Shield, UserCog, Settings,
   ChevronRight, ChevronDown, Search, X, PanelLeftClose, PanelLeftOpen,
-  Building2, MessageSquare
+  Building2, MessageSquare, Headphones
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
@@ -22,6 +22,7 @@ export type AdminTabKey =
   | 'licenses' 
   | 'customers' 
   | 'customer-360' 
+  | 'support'
   | 'leads' 
   | 'crm' 
   | 'quotes'
@@ -40,6 +41,7 @@ interface AdminSidebarProps {
     orders?: number;
     leads?: number;
     quotes?: number;
+    support?: number;
     products?: number;
     customers?: number;
     notifications?: number;
@@ -105,8 +107,9 @@ export function AdminSidebar({
       ],
     },
     {
-      label: 'CRM',
+      label: 'CRM & SUPPORT',
       items: [
+        { key: 'support', label: 'Support & Help Desk', icon: Headphones, badge: badgeCounts.support },
         { key: 'leads', label: 'Leads & Enquiries', icon: Inbox, badge: badgeCounts.leads },
         { key: 'crm', label: 'Sales Pipeline', icon: GitPullRequest },
         { key: 'quotes', label: 'Commercial Quotes', icon: MessageSquare, badge: badgeCounts.quotes },

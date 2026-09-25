@@ -29,6 +29,7 @@ import { AdminReleasesView } from '@/components/admin/AdminReleasesView';
 import { AdminCustomersView } from '@/components/admin/AdminCustomersView';
 import { AdminLeadsView } from '@/components/admin/AdminLeadsView';
 import { AdminQuotesView } from '@/components/admin/AdminQuotesView';
+import { AdminSupportDeskView } from '@/components/admin/AdminSupportDeskView';
 import { AdminGatewaysView } from '@/components/admin/AdminGatewaysView';
 import { AdminAiTab } from '@/components/admin/AdminAiTab';
 import { AdminSettingsView } from '@/components/admin/AdminSettingsView';
@@ -292,6 +293,10 @@ export default function AdminConsolePage() {
 
           {activeTab === 'quotes' && (
             <AdminQuotesView />
+          )}
+
+          {activeTab === 'support' && (
+            <AdminSupportDeskView />
           )}
 
           {/* PILLAR 4: PLATFORM & OPERATIONS */}

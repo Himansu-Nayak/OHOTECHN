@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Package, Key, Repeat, Download, ArrowRight, ShieldCheck, Clock, CreditCard, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Package, Key, Repeat, Download, ArrowRight, ShieldCheck, Clock, CreditCard, Sparkles, CheckCircle2, Headphones } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { getMyEntitledProductsApi } from '@/api/releases';
 import { getMyLicensesApi } from '@/api/licenses';
@@ -129,14 +129,14 @@ export default function CustomerDashboardPage() {
         </div>
 
         {/* Quick Access Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Link href="/licenses" className="bg-white border-2 border-slate-300 hover:border-emerald-500 rounded-[28px] p-6 shadow-xs transition-all block group">
             <div className="flex items-center justify-between mb-4">
               <Key className="w-6 h-6 text-emerald-600" />
               <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
             </div>
-            <h3 className="text-lg font-black text-[#0d0d0e] mb-1">License Keys &amp; Activations</h3>
-            <p className="text-xs text-slate-600">View cryptographic keys, manage registered PC/Mac devices, and inspect limit counts.</p>
+            <h3 className="text-lg font-black text-[#0d0d0e] mb-1">License Keys</h3>
+            <p className="text-xs text-slate-600">View cryptographic keys, manage registered devices, and inspect activation limits.</p>
           </Link>
 
           <Link href="/subscriptions" className="bg-white border-2 border-slate-300 hover:border-purple-500 rounded-[28px] p-6 shadow-xs transition-all block group">
@@ -144,7 +144,7 @@ export default function CustomerDashboardPage() {
               <Repeat className="w-6 h-6 text-purple-600" />
               <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
             </div>
-            <h3 className="text-lg font-black text-[#0d0d0e] mb-1">Subscriptions &amp; Renewal</h3>
+            <h3 className="text-lg font-black text-[#0d0d0e] mb-1">Subscriptions</h3>
             <p className="text-xs text-slate-600">Track trial periods, monthly/yearly expiry dates, and manage auto-renew options.</p>
           </Link>
 
@@ -153,8 +153,17 @@ export default function CustomerDashboardPage() {
               <Download className="w-6 h-6 text-sky-600" />
               <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
             </div>
-            <h3 className="text-lg font-black text-[#0d0d0e] mb-1">Digital Downloads</h3>
-            <p className="text-xs text-slate-600">Securely download authorized software builds for Windows, macOS, Linux, and Android.</p>
+            <h3 className="text-lg font-black text-[#0d0d0e] mb-1">Downloads</h3>
+            <p className="text-xs text-slate-600">Download authorized software builds for Windows, macOS, Linux, and Android.</p>
+          </Link>
+
+          <Link href="/support" className="bg-white border-2 border-slate-300 hover:border-amber-500 rounded-[28px] p-6 shadow-xs transition-all block group">
+            <div className="flex items-center justify-between mb-4">
+              <Headphones className="w-6 h-6 text-amber-600" />
+              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
+            </div>
+            <h3 className="text-lg font-black text-[#0d0d0e] mb-1">Help Desk &amp; Queries</h3>
+            <p className="text-xs text-slate-600">Submit support tickets, communicate with engineering desk, and track SLAs.</p>
           </Link>
         </div>
 
