@@ -39,6 +39,14 @@ public class Order {
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("order")
+    private Payment payment;
+
+    public List<Payment> getPayments() {
+        return payment != null ? List.of(payment) : List.of();
+    }
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

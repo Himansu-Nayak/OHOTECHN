@@ -132,7 +132,10 @@ export function AdminPaymentsView() {
         statusFilter === 'ALL' ||
         p.status === statusFilter ||
         (statusFilter === 'COMPLETED' && p.status === 'SUCCESSFUL');
-      const matchesProvider = providerFilter === 'ALL' || p.provider === providerFilter;
+      const matchesProvider =
+        providerFilter === 'ALL' ||
+        p.provider === providerFilter ||
+        (providerFilter === 'UPI_DIRECT' && (p.provider === 'BANK_TRANSFER' || p.method === 'UPI'));
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !q ||

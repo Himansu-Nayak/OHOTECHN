@@ -46,9 +46,19 @@ public class CartService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", request.getProductId()));
 
+        if (!product.isActive()) {
+            throw new com.ohotech.backend.exception.BadRequestException("Product is currently unavailable: " + product.getName());
+        }
+
         final ProductPlan plan = request.getProductPlanId() != null
                 ? productPlanRepository.findById(request.getProductPlanId()).orElse(null)
                 : null;
+
+        if (plan != null && !plan.isActive()) {
+            throw new com.ohotech.backend.exception.BadRequestException("Selected plan is currently unavailable: " + plan.getName());
+        }
+
+        int addQty = (request.getQuantity() != null && request.getQuantity() > 0) ? request.getQuantity() : 1;
 
         // Match both product and specific product plan if present
         Optional<CartItem> existingItem = cart.getItems().stream()
@@ -59,7 +69,7 @@ public class CartService {
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + request.getQuantity());
+            item.setQuantity(item.getQuantity() + addQty);
             if (plan != null) {
                 item.setProductPlan(plan);
             }
@@ -69,7 +79,7 @@ public class CartService {
                     .cart(cart)
                     .product(product)
                     .productPlan(plan)
-                    .quantity(request.getQuantity())
+                    .quantity(addQty)
                     .build();
             cart.getItems().add(newItem);
             cartItemRepository.save(newItem);

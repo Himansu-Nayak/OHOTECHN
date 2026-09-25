@@ -57,19 +57,17 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Order order = orderService.getOrderById(currentUser.getId(), id);
-        if (order == null) {
-            // Admin override check if user is admin/developer
-            boolean isAdmin = currentUser.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_DEVELOPER"));
-            if (isAdmin) {
-                order = orderService.getAllOrdersForAdmin(null).stream()
-                        .filter(o -> o.getId().equals(id))
-                        .findFirst()
-                        .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_DEVELOPER"));
+
+        Order order;
+        if (isAdmin) {
+            order = orderService.getAllOrdersForAdmin(null).stream()
+                    .filter(o -> o.getId().equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+        } else {
+            order = orderService.getOrderById(currentUser.getId(), id);
         }
 
         byte[] pdfBytes = pdfInvoiceService.generateInvoicePdf(order);

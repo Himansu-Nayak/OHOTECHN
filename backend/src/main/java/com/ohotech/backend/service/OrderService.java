@@ -55,6 +55,10 @@ public class OrderService {
             Product product = productRepository.findById(cartItem.getProduct().getId())
                     .orElseThrow(() -> new BadRequestException("Product not found with id: " + cartItem.getProduct().getId()));
 
+            if (!product.isActive()) {
+                throw new BadRequestException("Product is no longer available: " + product.getName());
+            }
+
             ProductPlan plan = null;
             BigDecimal unitPrice;
 
@@ -64,6 +68,9 @@ public class OrderService {
 
                 if (!plan.getProduct().getId().equals(product.getId())) {
                     throw new BadRequestException("Plan does not belong to product!");
+                }
+                if (!plan.isActive()) {
+                    throw new BadRequestException("Selected plan is no longer available: " + plan.getName());
                 }
                 unitPrice = plan.getPrice();
             } else {

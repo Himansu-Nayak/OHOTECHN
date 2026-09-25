@@ -88,8 +88,8 @@ export interface Order {
 }
 
 export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'SUCCESSFUL' | 'FAILED' | 'REFUNDED';
-export type PaymentProvider = 'RAZORPAY' | 'UPI_DIRECT' | 'COD';
-export type PaymentMethod = 'UPI_QR' | 'UPI_INTENT' | 'COD' | 'CARD' | 'NETBANKING';
+export type PaymentProvider = 'RAZORPAY' | 'UPI_DIRECT' | 'BANK_TRANSFER' | 'COD' | string;
+export type PaymentMethod = 'UPI_QR' | 'UPI_INTENT' | 'UPI' | 'COD' | 'CARD' | 'NETBANKING' | string;
 
 export interface Payment {
   id: number;
