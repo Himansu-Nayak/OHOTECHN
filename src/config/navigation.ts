@@ -55,7 +55,7 @@ export const resourcesNav: NavLink[] = [
 
 export const companyNav: NavLink[] = [
   { name: 'About Us', href: '/about', description: 'Our mission, leadership, and engineering principles.' },
-  { name: 'Selected Work', href: '/work', description: 'Representative enterprise deployments and architectures.' },
+  { name: 'Executive Leadership', href: '/about#director', description: 'Founder governance & technical directorship.' },
   { name: 'Technology Architecture', href: '/technology', description: 'Foundational engineering pillars and runtimes.' },
   { name: 'Engineering Insights', href: '/insights', description: 'Deep-dive technical whitepapers and system designs.' },
   { name: 'Careers', href: '/careers', description: 'Join our technology & growth engineering team.' },

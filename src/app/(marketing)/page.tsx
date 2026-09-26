@@ -5,6 +5,8 @@ import { HeroExperience } from '@/components/home/HeroExperience';
 import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
 import { BrandStatement } from '@/components/home/BrandStatement';
 import { ServicesExperience } from '@/components/home/ServicesExperience';
+import { MobileAppShowcase } from '@/components/home/MobileAppShowcase';
+import { ProductDiscoveryBanner } from '@/components/home/ProductDiscoveryBanner';
 import { SelectedWork } from '@/components/home/SelectedWork';
 import { TechnologyExperience } from '@/components/home/TechnologyExperience';
 import { ExperienceShowcase } from '@/components/home/ExperienceShowcase';
@@ -15,20 +17,24 @@ import { FinalCTA } from '@/components/home/FinalCTA';
 import { SystemEstimateModal } from '@/components/home/SystemEstimateModal';
 
 /**
- * Modular OHO TECH Homepage Architecture:
+ * Authoritative OHO TECH Homepage Architecture:
  * 
  * Home
- * ├── ExistingHeader          (rendered in layout.tsx - Header.tsx untouched)
+ * ├── Header                  (rendered in layout.tsx - Header.tsx)
  * ├── HeroExperience          (WE BUILD DIGITAL EXPERIENCES.)
+ * ├── InteractiveMarquee      (Real-time ecosystem & technology ticker)
  * ├── BrandStatement          (Strategy × Design × Technology)
  * ├── ServicesExperience      (Core Engineering Services Grid)
- * ├── SelectedWork            (Flagship Architecture Projects 01 - 04)
+ * ├── MobileAppShowcase       (Native iOS, Android & Field Mobility)
+ * ├── ProductDiscoveryBanner  (Turnkey Commercial Software Catalog Teaser)
+ * ├── SelectedWork            (Verified Flagship Case Studies 01 - 05)
  * ├── TechnologyExperience    (5-Tier Enterprise Topology & Live Inspector)
  * ├── ExperienceShowcase      (Hardware 3D Motion Sequence Container)
- * ├── ExistingDirectorSection (Japabandhu Kampa & Himansu Nayak MCA - Unchanged)
+ * ├── ProcessSection          (5-Phase Engineering Roadmap)
+ * ├── DirectorSection         (Japabandhu Kampa & Himansu Nayak MCA Leadership)
  * ├── CompanyStatement        (Who We Are / What We Believe / What We Build)
  * ├── FinalCTA                (LET'S BUILD SOMETHING GREAT.)
- * └── UnifiedFooter           (rendered in layout.tsx - OHO TECH Reveal & Directory)
+ * └── Footer                  (rendered in layout.tsx - OHO TECH Directory)
  */
 export default function HomePage() {
   const [isEstimateOpen, setIsEstimateOpen] = React.useState(false);
@@ -48,25 +54,31 @@ export default function HomePage() {
       {/* 03. Services Experience */}
       <ServicesExperience />
 
-      {/* 05. Selected Work (Projects 1 to 5 temporarily hidden per request) */}
-      {/* <SelectedWork /> */}
+      {/* 04. Mobile Application Engineering Showcase */}
+      <MobileAppShowcase />
 
-      {/* 06. Technology Experience */}
+      {/* 05. Commercial Turnkey Product Discovery */}
+      <ProductDiscoveryBanner />
+
+      {/* 06. Selected Work & Verified Enterprise Case Studies */}
+      <SelectedWork />
+
+      {/* 07. Technology Experience & 5-Tier Topology */}
       <TechnologyExperience />
 
-      {/* 06. Experience Showcase */}
+      {/* 08. Experience Showcase */}
       <ExperienceShowcase />
 
-      {/* 07. 5-Phase Engineering Roadmap */}
+      {/* 09. 5-Phase Engineering Delivery Engine */}
       <ProcessSection />
 
-      {/* 08. Existing Director Section (100% Preserved) */}
+      {/* 10. Executive & Technical Director Leadership */}
       <DirectorSection />
 
-      {/* 08. Company Statement */}
+      {/* 11. Company Statement */}
       <CompanyStatement />
 
-      {/* 09. Final CTA */}
+      {/* 12. Final Call-to-Action */}
       <FinalCTA onOpenEstimate={() => setIsEstimateOpen(true)} />
 
       {/* Interactive Architecture System Estimate Modal */}
