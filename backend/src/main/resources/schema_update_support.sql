@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS support_tickets (
     status VARCHAR(50) NOT NULL DEFAULT 'OPEN',
     customer_user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
     client_name VARCHAR(255) NOT NULL,
-    client_email VARCHAR(255) NOT NULL,
+    client_email VARCHAR(255),
     client_phone VARCHAR(255),
     assigned_to_user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
     order_id BIGINT,

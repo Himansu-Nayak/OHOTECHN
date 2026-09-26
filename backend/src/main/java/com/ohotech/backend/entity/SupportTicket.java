@@ -56,10 +56,10 @@ public class SupportTicket {
     @Column(name = "client_name", nullable = false)
     private String clientName;
 
-    @Column(name = "client_email", nullable = false)
+    @Column(name = "client_email", length = 255)
     private String clientEmail;
 
-    @Column(name = "client_phone")
+    @Column(name = "client_phone", length = 50)
     private String clientPhone;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -43,6 +43,30 @@ public class SupportTicketService {
         String priority = request.getPriority() != null ? request.getPriority().toUpperCase() : "MEDIUM";
         String department = request.getDepartment() != null ? request.getDepartment().toUpperCase() : "TECHNICAL";
 
+        // Determine reliable contact identity from customer record with fallback to request
+        String clientName = customer.getName();
+        if ((clientName == null || clientName.isBlank()) && request.getClientName() != null && !request.getClientName().isBlank()) {
+            clientName = request.getClientName().trim();
+        }
+        if (clientName == null || clientName.isBlank()) {
+            clientName = "OHO TECH Customer";
+        }
+
+        String clientEmail = customer.getEmail();
+        if ((clientEmail == null || clientEmail.isBlank()) && request.getClientEmail() != null && !request.getClientEmail().isBlank()) {
+            clientEmail = request.getClientEmail().trim().toLowerCase();
+        }
+
+        String clientPhone = customer.getPhone();
+        if ((clientPhone == null || clientPhone.isBlank()) && request.getClientPhone() != null && !request.getClientPhone().isBlank()) {
+            clientPhone = request.getClientPhone().trim();
+        }
+
+        // A ticket must always have a reliable identity and at least one usable contact channel
+        if ((clientEmail == null || clientEmail.isBlank()) && (clientPhone == null || clientPhone.isBlank())) {
+            throw new BadRequestException("Please provide a valid contact email or phone number to register your support ticket.");
+        }
+
         SupportTicket ticket = SupportTicket.builder()
                 .ticketCode(ticketCode)
                 .subject(request.getSubject().trim())
@@ -51,9 +75,9 @@ public class SupportTicketService {
                 .priority(priority)
                 .status("OPEN")
                 .customer(customer)
-                .clientName(customer.getName())
-                .clientEmail(customer.getEmail())
-                .clientPhone(customer.getPhone())
+                .clientName(clientName)
+                .clientEmail(clientEmail)
+                .clientPhone(clientPhone)
                 .orderId(request.getOrderId())
                 .build();
 
@@ -102,8 +126,18 @@ public class SupportTicketService {
         String priority = request.getPriority() != null ? request.getPriority().toUpperCase() : "MEDIUM";
         String department = request.getDepartment() != null ? request.getDepartment().toUpperCase() : "GENERAL";
 
-        if (request.getClientName() == null || request.getClientEmail() == null) {
-            throw new BadRequestException("Name and email are required for public support requests.");
+        String clientName = request.getClientName() != null ? request.getClientName().trim() : null;
+        if (clientName == null || clientName.isBlank()) {
+            throw new BadRequestException("Your name is required for public support requests.");
+        }
+
+        String clientEmail = request.getClientEmail() != null && !request.getClientEmail().isBlank()
+                ? request.getClientEmail().trim().toLowerCase() : null;
+        String clientPhone = request.getClientPhone() != null && !request.getClientPhone().isBlank()
+                ? request.getClientPhone().trim() : null;
+
+        if ((clientEmail == null || clientEmail.isBlank()) && (clientPhone == null || clientPhone.isBlank())) {
+            throw new BadRequestException("Please provide at least one contact channel (email or phone number).");
         }
 
         SupportTicket ticket = SupportTicket.builder()
@@ -113,9 +147,9 @@ public class SupportTicketService {
                 .department(department)
                 .priority(priority)
                 .status("OPEN")
-                .clientName(request.getClientName().trim())
-                .clientEmail(request.getClientEmail().trim().toLowerCase())
-                .clientPhone(request.getClientPhone() != null ? request.getClientPhone().trim() : null)
+                .clientName(clientName)
+                .clientEmail(clientEmail)
+                .clientPhone(clientPhone)
                 .orderId(request.getOrderId())
                 .build();
 
@@ -123,19 +157,21 @@ public class SupportTicketService {
 
         SupportTicketMessage initialMsg = SupportTicketMessage.builder()
                 .ticket(ticket)
-                .senderName(request.getClientName().trim())
+                .senderName(clientName)
                 .senderRole("CUSTOMER")
                 .message(request.getDescription().trim())
                 .internalNote(false)
                 .build();
         messageRepository.save(initialMsg);
 
-        try {
-            emailService.sendEmail(ticket.getClientEmail(),
-                    "OHO TECHN - Query Ticket #" + ticketCode + " Created",
-                    "Hello " + ticket.getClientName() + ",\n\nYour query has been logged under ticket reference #" + ticketCode + ".\n\nSubject: " + ticket.getSubject() + "\n\nOur team is working on resolving it.\n\nBest regards,\nOHO TECHN Support Desk");
-        } catch (Exception e) {
-            logger.warn("Guest ticket email warning: {}", e.getMessage());
+        if (ticket.getClientEmail() != null && !ticket.getClientEmail().isBlank()) {
+            try {
+                emailService.sendEmail(ticket.getClientEmail(),
+                        "OHO TECHN - Query Ticket #" + ticketCode + " Created",
+                        "Hello " + ticket.getClientName() + ",\n\nYour query has been logged under ticket reference #" + ticketCode + ".\n\nSubject: " + ticket.getSubject() + "\n\nOur team is working on resolving it.\n\nBest regards,\nOHO TECHN Support Desk");
+            } catch (Exception e) {
+                logger.warn("Guest ticket email warning: {}", e.getMessage());
+            }
         }
 
         return mapTicketToDto(ticket, true);
@@ -194,10 +230,10 @@ public class SupportTicketService {
                 .filter(t -> {
                     if (search == null || search.isBlank()) return true;
                     String q = search.trim().toLowerCase();
-                    return t.getTicketCode().toLowerCase().contains(q) ||
-                            t.getSubject().toLowerCase().contains(q) ||
-                            t.getClientName().toLowerCase().contains(q) ||
-                            t.getClientEmail().toLowerCase().contains(q) ||
+                    return (t.getTicketCode() != null && t.getTicketCode().toLowerCase().contains(q)) ||
+                            (t.getSubject() != null && t.getSubject().toLowerCase().contains(q)) ||
+                            (t.getClientName() != null && t.getClientName().toLowerCase().contains(q)) ||
+                            (t.getClientEmail() != null && t.getClientEmail().toLowerCase().contains(q)) ||
                             (t.getClientPhone() != null && t.getClientPhone().contains(q));
                 })
                 .map(t -> mapTicketToDto(t, false))

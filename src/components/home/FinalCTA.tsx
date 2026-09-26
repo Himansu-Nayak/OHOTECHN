@@ -74,10 +74,10 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
           <span>START YOUR TECHNICAL TRANSFORMATION</span>
         </div>
 
-        {/* Display Headline */}
+        {/* Massive Cinematic Display Headline */}
         <div className="mb-6 sm:mb-8 select-none">
-          <TextReveal as="h2" splitType="lines" className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-[-0.035em] text-white leading-[1.05]">
-            Ready to build or deploy?
+          <TextReveal as="h2" splitType="lines" className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.92] uppercase">
+            READY TO BUILD OR DEPLOY?
           </TextReveal>
         </div>
 
@@ -91,28 +91,28 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
           <Link
             id="cta-start-project"
             href="/contact"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 shadow-lg"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(16,185,129,0.3)]"
           >
-            <span>Start a project</span>
+            <span>Start a Project</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
 
           <Link
             id="cta-explore-software"
             href="/products"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center"
           >
-            Explore software
+            Explore Software
           </Link>
 
           {onOpenEstimate && (
             <button
               id="cta-calculate-estimate"
               onClick={onOpenEstimate}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-transparent hover:bg-white/5 border border-white/15 text-slate-300 hover:text-white font-medium text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-6 py-4 rounded-full bg-transparent hover:bg-white/5 border border-white/15 text-slate-300 hover:text-white font-mono font-bold text-xs uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 cursor-pointer"
             >
               <Calculator className="w-4 h-4 text-emerald-400" />
-              <span>Cost calculator</span>
+              <span>Cost Calculator</span>
             </button>
           )}
         </div>

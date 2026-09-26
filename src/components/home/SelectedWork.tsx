@@ -125,7 +125,7 @@ export function SelectedWork() {
               <FolderGit2 className="w-3.5 h-3.5" />
               <span>CASE STUDY ARCHIVE • FEATURED SYSTEMS</span>
             </div>
-            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.035em] leading-[1.1]">
+            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-[-0.04em] leading-[1.02] uppercase">
               Selected Work
             </TextReveal>
           </div>

@@ -31,10 +31,10 @@ const PRODUCT_CATEGORIES = [
 ];
 
 const DEPLOYMENT_CYCLE = [
-  { step: '01', title: 'Discover', desc: 'Browse 28+ pre-engineered enterprise applications.' },
-  { step: '02', title: 'Evaluate', desc: 'Test interactive live demos and inspect technical specs.' },
-  { step: '03', title: 'Buy', desc: 'Instant checkout with perpetual or subscription licenses.' },
-  { step: '04', title: 'Deploy', desc: 'Turnkey installation on your private cloud or on-premise VPS.' },
+  { step: '01', title: 'DISCOVER', desc: 'Browse 28+ pre-engineered enterprise applications.' },
+  { step: '02', title: 'EVALUATE', desc: 'Test interactive live demos and inspect technical specs.' },
+  { step: '03', title: 'BUY', desc: 'Instant checkout with perpetual or subscription licenses.' },
+  { step: '04', title: 'DEPLOY', desc: 'Turnkey installation on your private cloud or on-premise VPS.' },
 ];
 
 export function ProductDiscoveryBanner() {
@@ -59,8 +59,8 @@ export function ProductDiscoveryBanner() {
               </div>
             </ScrollReveal>
 
-            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.035em] leading-[1.1]">
-              Software, ready to deploy.
+            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-[-0.04em] leading-[1.02] uppercase">
+              Software, Ready to Deploy.
             </TextReveal>
           </div>
           

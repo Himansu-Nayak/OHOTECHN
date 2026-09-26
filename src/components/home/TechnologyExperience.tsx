@@ -369,7 +369,7 @@ export function TechnologyExperience() {
 
           {/* Editorial Display Headline */}
           <div className="max-w-5xl mb-8 sm:mb-10">
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-[-0.035em] text-white leading-[1.08] mb-6">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-[-0.04em] text-white leading-[1.02] uppercase mb-6">
               <span>Technology is the foundation.</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
                 We engineer what powerful experiences rest upon.
@@ -435,7 +435,7 @@ export function TechnologyExperience() {
               <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">
                 ENTERPRISE STACK MATRIX
               </div>
-              <h3 className="text-2xl sm:text-4xl font-bold text-white tracking-[-0.03em]">
+              <h3 className="text-2xl sm:text-4xl font-black text-white tracking-[-0.03em] uppercase">
                 Explore The Technology Mesh
               </h3>
             </div>

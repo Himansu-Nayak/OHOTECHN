@@ -35,8 +35,8 @@ export function DirectorSection() {
         </ScrollReveal>
 
         <ScrollReveal yOffset={20} duration={0.7} delay={0.1}>
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-[-0.03em] leading-tight sm:leading-[1.1] mb-4">
-            Built by Founder Leadership &amp; Technical Precision
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-[-0.04em] leading-tight sm:leading-[1.08] uppercase mb-4">
+            Built by Founder Leadership &amp; Technical Precision.
           </h2>
           <p className="text-xs sm:text-base text-slate-300 font-normal max-w-2xl mx-auto leading-relaxed">
             Direct founder oversight powering custom software architecture, high-availability digital platforms, and commercial growth.
@@ -96,7 +96,7 @@ export function DirectorSection() {
                     <span>Executive Statement</span>
                   </div>
 
-                  <h4 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-[-0.025em] leading-snug">
+                  <h4 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-[-0.03em] leading-snug">
                     {"\"We don't build software to add friction. We engineer systems that eliminate operational bottlenecks and scale reliably.\""}
                   </h4>
 

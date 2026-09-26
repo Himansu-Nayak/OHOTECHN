@@ -109,7 +109,7 @@ export function CompanyStatement() {
               <Building className="w-3.5 h-3.5" />
               <span>ORGANIZATIONAL IDENTITY &amp; VALUES</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.035em] leading-[1.1]">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-[-0.04em] leading-[1.02] uppercase">
               About OHO TECH
             </h2>
           </div>

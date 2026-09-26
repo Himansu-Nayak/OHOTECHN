@@ -45,6 +45,18 @@ export function Header() {
     };
   }, []);
 
+  // Prevent background scroll when mobile drawer is open
+  React.useEffect(() => {
+    if (isMobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileOpen]);
+
   const toggleDropdown = (name: string) => {
     setOpenDropdown(prev => (prev === name ? null : name));
   };
