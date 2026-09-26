@@ -247,7 +247,7 @@ export function Header() {
 
                   <div className="col-span-2 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
                     <Link href="/services" prefetch={true} onClick={() => setOpenDropdown(null)} className="text-sky-600 hover:text-sky-700">
-                      Explore All 15 Core Services →
+                      Explore All Core Engineering Services →
                     </Link>
                   </div>
                 </div>

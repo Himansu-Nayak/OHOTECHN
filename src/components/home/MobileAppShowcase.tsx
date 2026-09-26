@@ -161,32 +161,32 @@ export function MobileAppShowcase() {
               <div className="flex flex-wrap items-center gap-6 pt-2 text-xs font-mono text-slate-400">
                 <div className="flex items-center gap-2">
                   <Fingerprint className="w-4 h-4 text-purple-400" />
-                  <span>Hardware Node-Locking</span>
+                  <span>Biometric Enclave Auth</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>Encrypted Local Vault</span>
+                  <span>Encrypted Offline SQLite</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-sky-400" />
-                  <span>Instant Background Sync</span>
+                  <span>Play Store &amp; App Store Deployment</span>
                 </div>
               </div>
             </div>
 
             <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-center">
               <Link
-                href="/services/mobile-apps"
+                href="/services/mobile-app-development"
                 className="w-full py-4 px-6 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
               >
                 <span>EXPLORE MOBILE SERVICES</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/downloads"
+                href="/contact"
                 className="w-full py-4 px-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
               >
-                <span>DOWNLOAD APP BUILDS</span>
+                <span>START MOBILE PROJECT</span>
               </Link>
             </div>
 

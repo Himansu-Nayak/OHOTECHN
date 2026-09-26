@@ -153,27 +153,27 @@ export function HeroExperience() {
         <div className="max-w-3xl">
           <div ref={editorialTextRef} className="mb-8 sm:mb-10">
             <p className="text-base sm:text-lg lg:text-xl text-slate-300 font-normal leading-relaxed">
-              We are a multidisciplinary digital engineering and design studio. We architect and build resilient enterprise software, high-concurrency cloud systems, and automated growth platforms for high-growth organizations.
+              We build enterprise software products and engineer custom digital systems. Buy ready-to-deploy commercial software directly through our catalog, or partner with us to design and develop bespoke web, Android, and iOS platforms.
             </p>
           </div>
 
-          {/* Action Button Pair */}
+          {/* Action Button Pair: Buy Software vs Build With Us */}
           <div ref={ctaGroupRef} className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
             <Link
-              id="hero-get-quote"
-              href="/get-quote"
+              id="hero-explore-software"
+              href="/products"
               className="w-full sm:w-auto px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-[0_0_25px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 group"
             >
-              <span>Get a Quote</span>
+              <span>Explore Software</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
 
             <Link
-              id="hero-book-demo"
-              href="/book-demo"
+              id="hero-build-with-us"
+              href="/contact"
               className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center backdrop-blur-md"
             >
-              Book a Demo
+              Build With Us
             </Link>
           </div>
         </div>

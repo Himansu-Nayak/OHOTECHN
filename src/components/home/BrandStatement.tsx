@@ -3,17 +3,17 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { 
-  Layers, 
-  Cpu, 
-  ShieldCheck, 
-  Database, 
+  Package, 
+  Code2, 
   ArrowRight, 
   CheckCircle2, 
   Sparkles,
-  Zap,
-  Lock,
-  GitBranch,
-  LucideIcon
+  ShieldCheck,
+  Smartphone,
+  Server,
+  Layers,
+  Key,
+  ExternalLink
 } from 'lucide-react';
 
 import gsap from 'gsap';
@@ -23,86 +23,10 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface ArchPillar {
-  id: string;
-  number: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  icon: LucideIcon;
-  tag: string;
-  metric: string;
-}
-
-const ARCH_PILLARS: ArchPillar[] = [
-  {
-    id: 'decoupled',
-    number: '01',
-    title: 'Decoupled Service Boundaries',
-    subtitle: 'MODULAR ARCHITECTURE',
-    description: 'We isolate domain logic into autonomous microservices to eliminate cascading failures, ensure zero single-point-of-failure, and allow rapid feature iteration.',
-    icon: Layers,
-    tag: 'FAULT ISOLATION',
-    metric: 'ZERO DOWNTIME RELEASES',
-  },
-  {
-    id: 'realtime',
-    number: '02',
-    title: 'Real-Time Stream Processing',
-    subtitle: 'HIGH-THROUGHPUT PIPELINES',
-    description: 'Sub-millisecond event-driven pipelines powered by asynchronous message queues and in-memory caches for instantaneous enterprise state synchronization.',
-    icon: Cpu,
-    tag: 'LOW LATENCY',
-    metric: '< 18ms DATA PROPAGATION',
-  },
-  {
-    id: 'cloud-mesh',
-    number: '03',
-    title: 'Distributed Cloud Mesh',
-    subtitle: 'EDGE & MULTI-REGION',
-    description: 'Global infrastructure topologies deployed across containerized clusters with automated horizontal autoscaling and intelligent edge request routing.',
-    icon: Database,
-    tag: 'ELASTIC SCALE',
-    metric: '99.99% GUARANTEED SLA',
-  },
-  {
-    id: 'security',
-    number: '04',
-    title: 'Zero-Trust Security & Audit',
-    subtitle: 'ENTERPRISE GOVERNANCE',
-    description: 'Every endpoint, database query, and user session is validated with strict cryptographic tokens, role-based authorization, and immutable audit logs.',
-    icon: ShieldCheck,
-    tag: 'CRYPTOGRAPHIC AUDIT',
-    metric: 'SOC-2 COMPLIANT POSTURE',
-  },
-];
-
-const COMMERCIAL_OUTCOMES = [
-  {
-    icon: GitBranch,
-    label: '100% CODE OWNERSHIP',
-    desc: 'You receive complete source code, deployment scripts, and intellectual property rights with zero proprietary lock-in.',
-  },
-  {
-    icon: Zap,
-    label: 'ZERO-FRICTION SCALE',
-    desc: 'Modular architectures designed to scale from initial rollout to hundreds of thousands of concurrent users effortlessly.',
-  },
-  {
-    icon: Lock,
-    label: 'DIRECT DATA CONTROL',
-    desc: 'Your business intelligence stays on your dedicated infrastructure with full sovereign data governance.',
-  },
-];
-
 export function BrandStatement() {
-  const [activePillar, setActivePillar] = React.useState<number>(0);
   const sectionRef = React.useRef<HTMLElement>(null);
-  const title1Ref = React.useRef<HTMLSpanElement>(null);
-  const title2Ref = React.useRef<HTMLSpanElement>(null);
-  const title3Ref = React.useRef<HTMLSpanElement>(null);
-  const pillarsGridRef = React.useRef<HTMLDivElement>(null);
-  const outcomesRef = React.useRef<HTMLDivElement>(null);
+  const cardLeftRef = React.useRef<HTMLDivElement>(null);
+  const cardRightRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -110,121 +34,21 @@ export function BrandStatement() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion || !sectionRef.current) return;
 
-    const isMobile = window.innerWidth < 768;
-
     const ctx = gsap.context(() => {
-      // 1. Progressive Typography Stagger & Masked Scale Entrance
-      gsap.fromTo(
-        [title1Ref.current, title2Ref.current, title3Ref.current],
-        { yPercent: 110, opacity: 0 },
-        {
-          yPercent: 0,
-          opacity: 1,
-          duration: 1.0,
-          stagger: 0.18,
-          ease: 'power4.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 78%',
-            toggleActions: 'play none none none',
-            once: true,
-          },
-        }
-      );
-
-      // 2. Bold horizontal counter-parallax on title lines (desktop)
-      if (!isMobile) {
-        if (title1Ref.current) {
-          gsap.to(title1Ref.current, {
-            x: -110,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 0.7,
-            },
-          });
-        }
-        if (title2Ref.current) {
-          gsap.to(title2Ref.current, {
-            scale: 1.04,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 0.7,
-            },
-          });
-        }
-        if (title3Ref.current) {
-          gsap.to(title3Ref.current, {
-            x: 110,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 0.7,
-            },
-          });
-        }
-      }
-
-      // 3. 4 Architectural Pillars Staggered Entrance & Differential Depth
-      if (pillarsGridRef.current) {
+      // Coordinated entrance for the dual business engine cards
+      if (cardLeftRef.current && cardRightRef.current) {
         gsap.fromTo(
-          pillarsGridRef.current.children,
+          [cardLeftRef.current, cardRightRef.current],
           { opacity: 0, y: 35 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.75,
-            stagger: 0.12,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: pillarsGridRef.current,
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-              once: true,
-            },
-          }
-        );
-
-        if (!isMobile) {
-          // Even pillars drift slightly downward, odd pillars upward for 3D cascading feel
-          const pillars = Array.from(pillarsGridRef.current.children);
-          pillars.forEach((pillar, idx) => {
-            const yOffset = idx % 2 === 0 ? -18 : 18;
-            gsap.to(pillar, {
-              y: yOffset,
-              ease: 'none',
-              scrollTrigger: {
-                trigger: pillarsGridRef.current,
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: 0.9,
-              },
-            });
-          });
-        }
-      }
-
-      // 4. Commercial Outcomes Card Entrance & Scroll Exit Blend
-      if (outcomesRef.current) {
-        gsap.fromTo(
-          outcomesRef.current,
-          { opacity: 0, y: 30, scale: 0.96 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
             duration: 0.8,
+            stagger: 0.15,
             ease: 'power3.out',
             scrollTrigger: {
-              trigger: outcomesRef.current,
-              start: 'top 88%',
+              trigger: sectionRef.current,
+              start: 'top 75%',
               toggleActions: 'play none none none',
               once: true,
             },
@@ -240,119 +64,203 @@ export function BrandStatement() {
     <section 
       ref={sectionRef}
       id="brand-statement"
-      className="w-full bg-[#0c0d11] text-white py-16 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      aria-label="OHO TECH Business Model Overview"
+      className="w-full bg-[#0a0a0d] text-white py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-b border-white/5"
     >
-      {/* Top transition blend from Hero */}
-      <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#0a0a0b] to-transparent pointer-events-none z-0" />
-
-      {/* Background Subtle Lighting */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.08),transparent_75%)] pointer-events-none" />
-
-      {/* Bottom transition blend into ServicesExperience */}
-      <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#0a0a0b] to-transparent pointer-events-none z-0" />
+      {/* Background Subtle Radial Lighting */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[450px] bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.06),transparent_70%)] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         
         {/* Section Header */}
-        <div className="text-center max-w-4xl mx-auto mb-12 sm:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>CORE METHODOLOGY &amp; PHILOSOPHY</span>
+            <span>TWO WAYS TO WORK WITH OHO TECH</span>
           </div>
 
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase mb-4 sm:mb-6">
-            <div className="overflow-hidden py-1">
-              <span ref={title1Ref} className="inline-block will-change-transform">Strategy</span>
-            </div>
-            <span className="text-emerald-400 font-mono text-2xl sm:text-4xl my-1 sm:my-2 block">×</span>
-            <div className="overflow-hidden py-1">
-              <span ref={title2Ref} className="inline-block will-change-transform">Design</span>
-            </div>
-            <span className="text-cyan-400 font-mono text-2xl sm:text-4xl my-1 sm:my-2 block">×</span>
-            <div className="overflow-hidden py-1">
-              <span ref={title3Ref} className="inline-block will-change-transform">Technology</span>
-            </div>
+            Software Products
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+              &amp; Custom Engineering.
+            </span>
           </h2>
 
           <p className="text-sm sm:text-base lg:text-lg text-slate-300 font-normal max-w-2xl mx-auto leading-relaxed">
-            We bridge the chasm between commercial ambition and technical execution through rigorous engineering principles, enterprise resilience, and modern software architecture.
+            Whether you need ready-to-deploy commercial software platforms or bespoke digital product development, OHO TECH delivers production-grade systems engineered for enterprise scale.
           </p>
         </div>
 
-        {/* 4 Architectural Pillars Grid: 1 col on mobile, 2 cols on tablet, 4 cols on desktop */}
-        <div ref={pillarsGridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
-          {ARCH_PILLARS.map((pillar, idx) => {
-            const Icon = pillar.icon;
-            const isSelected = activePillar === idx;
-            return (
-              <div
-                key={pillar.id}
-                onClick={() => setActivePillar(idx)}
-                className={`p-6 sm:p-7 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between group/pillar ${
-                  isSelected
-                    ? 'bg-[#16171d] border-emerald-500/50'
-                    : 'bg-[#121318] border-white/10 hover:border-white/25 hover:bg-[#14151b]'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono text-xs font-bold text-slate-400">
-                      {pillar.number}
-                    </span>
-                    <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400">
-                      <Icon className="w-4 h-4" />
-                    </div>
-                  </div>
+        {/* Dual Business Engines Grid: 2 Distinct Paths */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          
+          {/* Engine A: Software Products (Buy Software) */}
+          <div 
+            ref={cardLeftRef}
+            className="rounded-3xl bg-[#111216] border border-white/10 hover:border-sky-500/40 p-8 sm:p-10 transition-all duration-300 flex flex-col justify-between shadow-2xl relative overflow-hidden group"
+          >
+            {/* Ambient Corner Glow */}
+            <div className="absolute -top-24 -right-24 w-56 h-56 bg-sky-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-sky-500/20 transition-all" />
 
-                  <div className="font-mono text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-2">
-                    {pillar.subtitle}
-                  </div>
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6 font-mono text-xs">
+                <span className="text-sky-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <Package className="w-4 h-4" /> ENGINE 01 // READY TO DEPLOY
+                </span>
+                <span className="text-slate-400 text-[10px] uppercase">
+                  DIRECT LICENSING
+                </span>
+              </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-white mb-3">
-                    {pillar.title}
-                  </h3>
+              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug mb-3 group-hover:text-sky-300 transition-colors">
+                Commercial Software Products
+              </h3>
 
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal mb-6">
-                    {pillar.description}
-                  </p>
+              <p className="text-sm text-slate-300 font-normal leading-relaxed mb-6">
+                Purchase pre-engineered, battle-tested software systems directly through our website. Deploy on your own cloud VPS or on-premises with single-tenant data isolation and perpetual or subscription licensing.
+              </p>
+
+              {/* 4 Real Product Categories */}
+              <div className="space-y-2.5 mb-8 text-xs font-mono text-slate-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
+                  <span>Hospital EMR &amp; Clinical Management Systems</span>
                 </div>
-
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                  <span className="font-mono text-[10px] sm:text-[11px] text-slate-400 uppercase">
-                    {pillar.tag}
-                  </span>
-                  <span className="font-mono text-[10px] sm:text-[11px] font-bold text-emerald-400">
-                    {pillar.metric}
-                  </span>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
+                  <span>Multi-Campus University &amp; School ERP Platforms</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
+                  <span>Retail POS &amp; Omnichannel Inventory Suites</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
+                  <span>Double-Entry Financial Accounting &amp; GST Ledgers</span>
                 </div>
               </div>
-            );
-          })}
-        </div>
 
-        {/* 3 Commercial Outcomes Grid: 1 col on mobile, 3 cols on tablet/desktop */}
-        <div ref={outcomesRef} className="rounded-2xl bg-[#14151a] border border-white/10 p-6 sm:p-8 lg:p-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {COMMERCIAL_OUTCOMES.map((item, idx) => {
-              const ItemIcon = item.icon;
-              return (
-                <div key={idx} className="flex flex-col items-start text-left">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4 shrink-0">
-                    <ItemIcon className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-sm sm:text-base font-mono font-bold text-white tracking-wider uppercase mb-2">
-                    {item.label}
-                  </h4>
-                  <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed">
-                    {item.desc}
-                  </p>
+              {/* Trust Badge Specs Strip */}
+              <div className="grid grid-cols-3 gap-2 p-3.5 rounded-2xl bg-black/40 border border-white/5 font-mono mb-8 text-center text-xs">
+                <div>
+                  <div className="text-xs font-bold text-white">100%</div>
+                  <div className="text-[9px] text-slate-400 uppercase mt-0.5">Isolated Tenant</div>
                 </div>
-              );
-            })}
+                <div>
+                  <div className="text-xs font-bold text-sky-400">Node-Locked</div>
+                  <div className="text-[9px] text-slate-400 uppercase mt-0.5">Key Licensing</div>
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white">Free Setup</div>
+                  <div className="text-[9px] text-slate-400 uppercase mt-0.5">Cloud Deploy</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-3">
+              <Link
+                href="/products"
+                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-sky-500 hover:bg-sky-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                <span>EXPLORE ALL SOFTWARE</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all text-center"
+              >
+                View Licensing &amp; Plans
+              </Link>
+            </div>
           </div>
+
+          {/* Engine B: Custom Software Engineering (Build With Us) */}
+          <div 
+            ref={cardRightRef}
+            className="rounded-3xl bg-[#111216] border border-white/10 hover:border-emerald-500/40 p-8 sm:p-10 transition-all duration-300 flex flex-col justify-between shadow-2xl relative overflow-hidden group"
+          >
+            {/* Ambient Corner Glow */}
+            <div className="absolute -top-24 -right-24 w-56 h-56 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
+
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6 font-mono text-xs">
+                <span className="text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <Code2 className="w-4 h-4" /> ENGINE 02 // CUSTOM SYSTEMS
+                </span>
+                <span className="text-slate-400 text-[10px] uppercase">
+                  BESPOKE STUDIO
+                </span>
+              </div>
+
+              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug mb-3 group-hover:text-emerald-300 transition-colors">
+                Software &amp; Digital Engineering
+              </h3>
+
+              <p className="text-sm text-slate-300 font-normal leading-relaxed mb-6">
+                Commission OHO TECH to architect, design, and develop bespoke digital systems from scratch. We build high-throughput web applications, native Android/iOS mobile ecosystems, APIs, and AI workflow automations.
+              </p>
+
+              {/* 4 Core Service Deliverables */}
+              <div className="space-y-2.5 mb-8 text-xs font-mono text-slate-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Custom Enterprise Platforms &amp; Operational Dashboards</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Native Android (Kotlin) &amp; iOS (Swift) Mobile Engineering</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>High-Performance Web Applications (React 19 &amp; Next.js 16)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Cloud DevOps, Automated CI/CD &amp; 24/7 Enterprise SLAs</span>
+                </div>
+              </div>
+
+              {/* Trust Badge Specs Strip */}
+              <div className="grid grid-cols-3 gap-2 p-3.5 rounded-2xl bg-black/40 border border-white/5 font-mono mb-8 text-center text-xs">
+                <div>
+                  <div className="text-xs font-bold text-white">100%</div>
+                  <div className="text-[9px] text-slate-400 uppercase mt-0.5">Code Ownership</div>
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-emerald-400">Zero Lock-In</div>
+                  <div className="text-[9px] text-slate-400 uppercase mt-0.5">Open Standards</div>
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white">99.99%</div>
+                  <div className="text-[9px] text-slate-400 uppercase mt-0.5">Enterprise SLA</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-3">
+              <Link
+                href="/contact"
+                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                <span>START A PROJECT</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/services"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all text-center"
+              >
+                Explore 7 Core Services
+              </Link>
+            </div>
+          </div>
+
         </div>
 
       </div>
     </section>
   );
 }
+
+export default BrandStatement;

@@ -23,14 +23,13 @@ export const solutionsNav: NavLink[] = [
 ];
 
 export const techServicesNav: NavLink[] = [
-  { name: 'Software Development', href: '/services/software-development', description: 'Bespoke software engineered for business operations.' },
-  { name: 'Website Development', href: '/services/website-development', description: 'High-performance corporate sites & web applications.' },
-  { name: 'Android App Development', href: '/services/android-app-development', description: 'Native Kotlin mobile applications.' },
-  { name: 'iOS App Development', href: '/services/ios-app-development', description: 'Native iOS applications for Apple ecosystem.' },
-  { name: 'Custom Software', href: '/services/custom-software-development', description: 'Tailored software tools built for your workflows.' },
-  { name: 'ERP Solutions', href: '/services/erp-solutions', description: 'Centralized enterprise operations platforms.' },
-  { name: 'UI/UX Design', href: '/services/ui-ux-design', description: 'User-centered interface design & design systems.' },
-  { name: 'API Integration', href: '/services/api-integration', description: 'Connecting software tools & payment gateways.' },
+  { name: 'Custom Software Development', href: '/services/custom-software-development', description: 'Bespoke business platforms, admin systems & custom workflows.' },
+  { name: 'Web Development', href: '/services/web-development', description: 'High-performance web applications, customer portals & Next.js engines.' },
+  { name: 'Mobile App Development', href: '/services/mobile-app-development', description: 'Native iOS & Android apps with offline SQLite sync & store deployment.' },
+  { name: 'UI/UX Design', href: '/services/ui-ux-design', description: 'User-centered spatial interfaces, semantic design tokens & WCAG AAA.' },
+  { name: 'AI & Automation', href: '/services/ai-automation', description: 'Enterprise RAG assistants, vector databases & automated workflow bots.' },
+  { name: 'Cloud & DevOps', href: '/services/cloud-devops', description: 'Multi-region cloud topologies, Docker containers & automated CI/CD.' },
+  { name: 'Maintenance & Support', href: '/services/maintenance-support', description: 'SLA-backed systems support, continuous patching & 24/7 telemetry.' },
 ];
 
 export const growthServicesNav: NavLink[] = [

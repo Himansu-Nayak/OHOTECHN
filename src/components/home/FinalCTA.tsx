@@ -93,44 +93,44 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
         {/* 3-Line Massive Headline with Masked Word/Line Reveal */}
         <div className="mb-6 sm:mb-8 select-none">
           <TextReveal as="h2" splitType="lines" className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter text-white leading-[0.92] uppercase">
-            LET&apos;S BUILD SOMETHING GREAT.
+            READY TO BUILD OR DEPLOY?
           </TextReveal>
         </div>
 
         {/* Value Proposition Description */}
         <p ref={subcopyRef} className="text-sm sm:text-lg lg:text-xl text-slate-300 font-normal max-w-2xl mx-auto mb-10 sm:mb-14 leading-relaxed">
-          From distributed enterprise architectures to custom platform modernizations, partner with OHO TECH to architect software that scales effortlessly and performs without compromise.
+          Have a bespoke digital platform to engineer? Or looking for proven enterprise software that&apos;s already pre-built and ready to deploy? Partner directly with OHO TECH.
         </p>
 
-        {/* Responsive Action Buttons Row */}
+        {/* Responsive Action Buttons Row: Start a Project vs Explore Software */}
         <div ref={actionsRef} className="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 mb-12 sm:mb-16 w-full max-w-md sm:max-w-none mx-auto">
           <Link
-            id="cta-get-quote"
-            href="/get-quote"
+            id="cta-start-project"
+            href="/contact"
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 font-mono"
           >
-            <span>Get a Quote</span>
+            <span>Start a Project</span>
             <ArrowRight className="w-4 h-4" />
+          </Link>
+
+          <Link
+            id="cta-explore-software"
+            href="/products"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center font-mono"
+          >
+            Explore Software
           </Link>
 
           {onOpenEstimate && (
             <button
               id="cta-calculate-estimate"
               onClick={onOpenEstimate}
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 font-mono cursor-pointer"
+              className="w-full sm:w-auto px-6 py-4 rounded-full bg-transparent hover:bg-white/5 border border-white/15 text-slate-300 hover:text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center flex items-center justify-center gap-2 font-mono cursor-pointer"
             >
               <Calculator className="w-4 h-4 text-emerald-400" />
-              <span>Instant Cost Estimate</span>
+              <span>Cost Calculator</span>
             </button>
           )}
-
-          <Link
-            id="cta-book-demo"
-            href="/book-demo"
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-transparent hover:bg-white/5 border border-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-center font-mono"
-          >
-            Book a Demo
-          </Link>
         </div>
 
         {/* Direct Contact & Triage Hub */}
