@@ -1,0 +1,298 @@
+'use client';
+
+import * as React from 'react';
+import Link from 'next/link';
+import { 
+  Building2, 
+  Rocket, 
+  Landmark, 
+  Store, 
+  Check, 
+  ArrowRight, 
+  ShieldCheck, 
+  ChevronRight,
+  Sparkles
+} from 'lucide-react';
+
+interface Segment {
+  id: string;
+  badge: string;
+  title: string;
+  tagline: string;
+  summary: string;
+  deliverables: string[];
+  specs: { label: string; value: string }[];
+  ctaText: string;
+  ctaHref: string;
+  accentColor: string;
+}
+
+const SEGMENTS: Segment[] = [
+  {
+    id: 'enterprise',
+    badge: 'MISSION CRITICAL',
+    title: 'ENTERPRISE & HEALTHCARE',
+    tagline: 'Multi-tenant high-availability systems with strict regulatory compliance.',
+    summary: 'Tailored for hospitals, multi-branch corporations, and large-scale enterprises that require custom ERPs, EMRs, and microservice meshes with 24/7 dedicated engineering support.',
+    deliverables: [
+      'Multi-tenant database schema with dedicated tenant data isolation',
+      'HIPAA, ISO 27001, and SOC2 compliant architecture & audit logs',
+      'Dedicated VPC deployment with zero-trust networking',
+      'Guaranteed 99.99% uptime SLA with 15-minute emergency response',
+      'Full source code transfer with 100% intellectual property rights'
+    ],
+    specs: [
+      { label: 'DEPLOYMENT', value: 'Dedicated AWS / GCP / On-Prem' },
+      { label: 'SLA TIER', value: 'Tier 1 Enterprise (24/7)' },
+      { label: 'CONCURRENCY', value: '100,000+ Concurrent Users' }
+    ],
+    ctaText: 'REQUEST ENTERPRISE BRIEFING',
+    ctaHref: '/contact?segment=enterprise',
+    accentColor: 'from-emerald-500/20 to-teal-500/10'
+  },
+  {
+    id: 'startups',
+    badge: 'RAPID SCALE',
+    title: 'HIGH-GROWTH TECH STARTUPS',
+    tagline: 'From day-zero architecture to series-A scale without technical debt.',
+    summary: 'Engineered for venture-backed founders and technology companies needing high-velocity development, modern UI/UX, and robust API foundations that scale from 1 to 1M users.',
+    deliverables: [
+      'Next.js 16 + Spring Boot microservice foundation',
+      'Automated CI/CD pipelines with preview environments',
+      'Scalable PostgreSQL + Redis caching layer',
+      'Integrated payment gateways (Stripe, Razorpay, Escrow)',
+      'Clean modular architecture ready for investor code audits'
+    ],
+    specs: [
+      { label: 'TIME TO MARKET', value: '4 to 8 Weeks MVP' },
+      { label: 'INFRASTRUCTURE', value: 'Elastic Auto-Scaling' },
+      { label: 'TECH STACK', value: 'Next.js, Spring Boot, PostgreSQL' }
+    ],
+    ctaText: 'ACCELERATE YOUR PRODUCT',
+    ctaHref: '/contact?segment=startup',
+    accentColor: 'from-cyan-500/20 to-blue-500/10'
+  },
+  {
+    id: 'public-sector',
+    badge: 'GOVERNANCE & SOVEREIGNTY',
+    title: 'PUBLIC SECTOR & INSTITUTIONS',
+    tagline: 'Sovereign data hosting, high accessibility, and rock-solid reliability.',
+    summary: 'Built for universities, government agencies, and institutional bodies requiring air-gapped or localized deployments, multi-lingual support, and accessible citizen portals.',
+    deliverables: [
+      'In-country sovereign data localization compliance',
+      'Granular multi-level role-based access control (RBAC)',
+      'Immutable audit logging for regulatory scrutiny',
+      'WCAG 2.1 AAA accessibility and responsive design',
+      'Offline-first and low-bandwidth sync capabilities'
+    ],
+    specs: [
+      { label: 'COMPLIANCE', value: 'GovTech & Data Sovereignty' },
+      { label: 'ACCESSIBILITY', value: 'WCAG 2.1 AAA Compliant' },
+      { label: 'AUDIT LOGGING', value: 'Cryptographically Verifiable' }
+    ],
+    ctaText: 'INITIATE INSTITUTIONAL DIALOGUE',
+    ctaHref: '/contact?segment=institutional',
+    accentColor: 'from-amber-500/20 to-orange-500/10'
+  },
+  {
+    id: 'smes',
+    badge: 'COMMERCIAL ADOPTION',
+    title: 'COMMERCIAL SMES & BUSINESSES',
+    tagline: 'Pre-built, production-tested software ready for instant activation.',
+    summary: 'For growing businesses seeking ready-to-deploy business software without million-dollar upfront costs—from POS and billing to inventory management and customer portals.',
+    deliverables: [
+      'Instant access to 28+ tested commercial software products',
+      'Pre-configured accounting, billing, and tax integrations',
+      'Comprehensive onboarding with staff training sessions',
+      'Managed cloud hosting with automated daily backups',
+      'Lifetime or recurring flexible licensing options'
+    ],
+    specs: [
+      { label: 'DEPLOYMENT TIME', value: 'Under 24 Hours' },
+      { label: 'PRICING', value: 'Fixed Price / Transparent' },
+      { label: 'SUPPORT', value: 'Standard Business SLA' }
+    ],
+    ctaText: 'EXPLORE READY PRODUCTS',
+    ctaHref: '/products',
+    accentColor: 'from-violet-500/20 to-indigo-500/10'
+  }
+];
+
+export function AudienceSolutions() {
+  const [activeSegmentId, setActiveSegmentId] = React.useState<string>('enterprise');
+
+  const activeSegment = SEGMENTS.find((s) => s.id === activeSegmentId) || SEGMENTS[0];
+
+  return (
+    <section className="relative py-24 sm:py-32 bg-[#08090b] border-t border-white/10 overflow-hidden">
+      
+      {/* Background glow accents */}
+      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          
+          {/* Left Column: Heading & Context */}
+          <div className="lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-widest mb-6">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>OPERATING SCALE MATCH</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-[0.95] mb-6">
+                BUILT FOR YOUR <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+                  EXACT OPERATING SCALE.
+                </span>
+              </h2>
+
+              <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-8">
+                Whether deploying a fault-tolerant multi-hospital healthcare platform, launching a high-growth SaaS startup, or automating commercial business operations, OHO TECH delivers architecture tailored to your tier.
+              </p>
+
+              {/* Guarantees Box */}
+              <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3.5 mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3" />
+                  </div>
+                  <span className="text-xs font-mono text-slate-200">100% Code Ownership & Zero Vendor Lock-in</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3" />
+                  </div>
+                  <span className="text-xs font-mono text-slate-200">Direct Founder & Senior Architect Governance</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3" />
+                  </div>
+                  <span className="text-xs font-mono text-slate-200">Enterprise SLA Runtimes with Guaranteed Uptime</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-lg shadow-emerald-500/20 hover:scale-[1.02]"
+              >
+                <span>CONSULT AN ARCHITECT</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Column: Expanding Segment Drawer (Ploy-inspired pattern) */}
+          <div className="lg:col-span-7 space-y-4">
+            
+            {SEGMENTS.map((seg) => {
+              const isSelected = seg.id === activeSegmentId;
+
+              return (
+                <div
+                  key={seg.id}
+                  onClick={() => setActiveSegmentId(seg.id)}
+                  className={`rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden ${
+                    isSelected
+                      ? 'bg-[#101319] border-emerald-500/60 shadow-xl shadow-emerald-500/5'
+                      : 'bg-[#0d0f12]/80 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  {/* Header Row */}
+                  <div className="p-5 sm:p-6 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3.5">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                        isSelected 
+                          ? 'bg-emerald-500 text-black font-bold' 
+                          : 'bg-white/5 text-slate-400 border border-white/10'
+                      }`}>
+                        {seg.id === 'enterprise' && <Building2 className="w-5 h-5" />}
+                        {seg.id === 'startups' && <Rocket className="w-5 h-5" />}
+                        {seg.id === 'public-sector' && <Landmark className="w-5 h-5" />}
+                        {seg.id === 'smes' && <Store className="w-5 h-5" />}
+                      </div>
+
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[10px] font-bold text-emerald-400 tracking-wider uppercase">
+                            {seg.badge}
+                          </span>
+                        </div>
+                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight text-white">
+                          {seg.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform duration-300 ${
+                        isSelected ? 'rotate-90 bg-emerald-500/20 text-emerald-400' : 'text-slate-500'
+                      }`}>
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expanded Body Content */}
+                  {isSelected && (
+                    <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-white/10 bg-black/20">
+                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-5">
+                        {seg.summary}
+                      </p>
+
+                      {/* Technical Specs Strip */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/5 mb-5 font-mono">
+                        {seg.specs.map((sp, idx) => (
+                          <div key={idx} className="p-2">
+                            <div className="text-[10px] text-slate-400 font-semibold uppercase">{sp.label}</div>
+                            <div className="text-xs font-bold text-white mt-0.5">{sp.value}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Deliverable Checkmarks */}
+                      <div className="space-y-2 mb-6">
+                        <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">
+                          KEY DELIVERABLES & GUARANTEES:
+                        </div>
+                        {seg.deliverables.map((item, idx) => (
+                          <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                            <span>{item}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Action CTA */}
+                      <div className="pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
+                        <span className="text-xs text-slate-400 font-mono">
+                          Ready for review in current sprint
+                        </span>
+                        <Link
+                          href={seg.ctaHref}
+                          className="px-5 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5"
+                        >
+                          <span>{seg.ctaText}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+
+                    </div>
+                  )}
+
+                </div>
+              );
+            })}
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  );
+}
