@@ -145,29 +145,16 @@ export function HeroExperience() {
       aria-label="OHO TECH Hero Statement"
       className="relative w-full min-h-[94vh] sm:min-h-screen flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden border-b border-white/5"
     >
-      {/* Background Visual Layer: Surreal Creative Office with Floating Sculptures (Clearly Visible, exactly as in play 1) */}
+      {/* Background Visual Layer: Surreal Creative Office with Floating Sculptures (100% Clearly Visible) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* High-res cinematic scene with slow organic breathing motion */}
+        {/* High-res cinematic scene with gentle organic breathing motion */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[floatSlow_14s_ease-in-out_infinite] scale-105"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[floatSlow_16s_ease-in-out_infinite] scale-105 transition-transform duration-1000"
           style={{ backgroundImage: `url('/images/hero-surreal-office.jpg')` }}
         />
 
-        {/* HTML5 Video Layer */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster="/images/hero-surreal-office.jpg"
-          className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen pointer-events-none"
-        >
-          <source src="/videos/core-architecture.mp4" type="video/mp4" />
-        </video>
-
-        {/* Cinematic Film-Grade Contrast Filter (Keeps background vividly visible while anchoring readability) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#08090b]/40 via-black/20 to-[#08090b] pointer-events-none" />
-        <div className="absolute inset-0 bg-radial-gradient-vignette pointer-events-none" style={{ background: 'radial-gradient(circle at center, rgba(8,9,11,0.2) 0%, rgba(8,9,11,0.6) 80%)' }} />
+        {/* Minimal ambient gradient at the very bottom to blend into the next section smoothly */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#08090b]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col justify-center">
