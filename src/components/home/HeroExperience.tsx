@@ -145,52 +145,49 @@ export function HeroExperience() {
       aria-label="OHO TECH Hero Statement"
       className="relative w-full min-h-[94vh] sm:min-h-screen flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden border-b border-white/5"
     >
-      {/* HTML5 Autoplay Motion Video Layer */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        poster="/images/hero-surreal-office.jpg"
-        className="absolute inset-0 w-full h-full object-cover opacity-25 sm:opacity-30 mix-blend-screen pointer-events-none scale-105 transition-opacity duration-1000"
-      >
-        <source src="/videos/core-architecture.mp4" type="video/mp4" />
-      </video>
+      {/* Background Visual Layer: Surreal Creative Office with Floating Sculptures (Clearly Visible, exactly as in play 1) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* High-res cinematic scene with slow organic breathing motion */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[floatSlow_14s_ease-in-out_infinite] scale-105"
+          style={{ backgroundImage: `url('/images/hero-surreal-office.jpg')` }}
+        />
 
-      {/* Central Legibility Shield & Edge Vignette (Keeps headline area calm & dark, detailed motion to perimeter) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(8,9,11,0.88)_0%,rgba(8,9,11,0.35)_55%,rgba(8,9,11,0.85)_100%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-[#08090b]/80 pointer-events-none" />
+        {/* HTML5 Video Layer */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/images/hero-surreal-office.jpg"
+          className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen pointer-events-none"
+        >
+          <source src="/videos/core-architecture.mp4" type="video/mp4" />
+        </video>
 
-      {/* Atmospheric Ambient Depth Lighting with Pulse Motion Flow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.15),transparent_75%)] pointer-events-none animate-[pulseGlow_5s_ease-in-out_infinite]" />
-      
-      {/* Floating Kinetic Ambient Spheres */}
-      <div className="absolute top-1/4 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none animate-[floatSlow_8s_ease-in-out_infinite]" />
-      <div className="absolute bottom-10 left-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-[floatSlow_7s_ease-in-out_infinite_reverse]" />
-
-      {/* Precision Structural Lines Grid */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" 
-      />
+        {/* Cinematic Film-Grade Contrast Filter (Keeps background vividly visible while anchoring readability) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#08090b]/40 via-black/20 to-[#08090b] pointer-events-none" />
+        <div className="absolute inset-0 bg-radial-gradient-vignette pointer-events-none" style={{ background: 'radial-gradient(circle at center, rgba(8,9,11,0.2) 0%, rgba(8,9,11,0.6) 80%)' }} />
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col justify-center">
         
         {/* Step 1: Technical Pill Badge */}
         <div ref={badgeRef} className="mb-5 sm:mb-7">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-lg shadow-emerald-500/10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-emerald-500/40 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-xl shadow-black/50">
             <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
             <span>SOFTWARE PRODUCTS &amp; BESPOKE DIGITAL ENGINEERING</span>
           </div>
         </div>
 
-        {/* Step 2: Cinematic Kinetic Headline Display */}
+        {/* Step 2: Cinematic Kinetic Headline Display with Razor-Sharp Drop Shadows */}
         <div className="space-y-1 sm:space-y-2 mb-7 sm:mb-10 select-none">
           
           {/* Line 01 */}
           <div className="overflow-hidden py-0.5 sm:py-1">
             <div 
               ref={headlineLine1Ref}
-              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.88] uppercase"
+              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.88] uppercase drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]"
             >
               DIGITAL TECHNOLOGY
             </div>
@@ -200,10 +197,10 @@ export function HeroExperience() {
           <div className="overflow-hidden py-0.5 sm:py-1">
             <div 
               ref={headlineLine2Ref}
-              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 leading-[0.88] uppercase flex flex-wrap items-center gap-x-3 sm:gap-x-6"
+              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 leading-[0.88] uppercase flex flex-wrap items-center gap-x-3 sm:gap-x-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
             >
               <span>DESIGN</span>
-              <span className="text-white/30 font-mono text-2xl sm:text-5xl lg:text-7xl font-light">×</span>
+              <span className="text-white/40 font-mono text-2xl sm:text-5xl lg:text-7xl font-light">×</span>
               <span>ENGINEERING</span>
             </div>
           </div>
@@ -212,7 +209,7 @@ export function HeroExperience() {
           <div className="overflow-hidden py-0.5 sm:py-1">
             <div 
               ref={headlineLine3Ref}
-              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.88] uppercase"
+              className="will-change-transform text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] text-white leading-[0.88] uppercase drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]"
             >
               INNOVATION.
             </div>
