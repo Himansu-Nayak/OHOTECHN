@@ -145,7 +145,7 @@ export function HeroExperience() {
       aria-label="OHO TECH Hero Statement"
       className="relative w-full min-h-[94vh] sm:min-h-screen flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden border-b border-white/5"
     >
-      {/* HTML5 Autoplay Motion Video Layer (Inspired by play 1 screen recording) */}
+      {/* HTML5 Autoplay Motion Video Layer */}
       <video
         autoPlay
         loop
@@ -157,8 +157,12 @@ export function HeroExperience() {
         <source src="/videos/core-architecture.mp4" type="video/mp4" />
       </video>
 
+      {/* Central Legibility Shield & Edge Vignette (Keeps headline area calm & dark, detailed motion to perimeter) */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(8,9,11,0.88)_0%,rgba(8,9,11,0.35)_55%,rgba(8,9,11,0.85)_100%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-[#08090b]/80 pointer-events-none" />
+
       {/* Atmospheric Ambient Depth Lighting with Pulse Motion Flow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.18),transparent_75%)] pointer-events-none animate-[pulseGlow_5s_ease-in-out_infinite]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.15),transparent_75%)] pointer-events-none animate-[pulseGlow_5s_ease-in-out_infinite]" />
       
       {/* Floating Kinetic Ambient Spheres */}
       <div className="absolute top-1/4 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none animate-[floatSlow_8s_ease-in-out_infinite]" />
@@ -166,7 +170,7 @@ export function HeroExperience() {
 
       {/* Precision Structural Lines Grid */}
       <div 
-        className="absolute inset-0 opacity-[0.035] pointer-events-none bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" 
+        className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" 
       />
 
       <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col justify-center">
