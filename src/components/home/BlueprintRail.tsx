@@ -2,18 +2,13 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-  Cpu, 
-  ShieldCheck, 
-  Layers, 
-  Activity, 
-  Smartphone, 
-  Server, 
+  Code2, 
   ArrowLeft, 
   ArrowRight, 
   ArrowUpRight,
-  Code2
+  Sparkles
 } from 'lucide-react';
 
 interface Blueprint {
@@ -94,17 +89,13 @@ export function BlueprintRail() {
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
-  const [scrollProgress, setScrollProgress] = React.useState(0);
+  const [isAutoScrolling, setIsAutoScrolling] = React.useState(true);
 
   const checkScroll = () => {
     if (!scrollRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
     setCanScrollLeft(scrollLeft > 10);
     setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
-    const maxScroll = scrollWidth - clientWidth;
-    if (maxScroll > 0) {
-      setScrollProgress(scrollLeft / maxScroll);
-    }
   };
 
   React.useEffect(() => {
@@ -113,13 +104,34 @@ export function BlueprintRail() {
     return () => window.removeEventListener('resize', checkScroll);
   }, []);
 
-  const handleScroll = (direction: 'left' | 'right') => {
+  // Continuous subtle auto-scroll that pauses on user hover/interaction
+  React.useEffect(() => {
+    if (!isAutoScrolling) return;
+
+    const interval = setInterval(() => {
+      if (!scrollRef.current) return;
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      if (scrollLeft + clientWidth >= scrollWidth - 5) {
+        scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        scrollRef.current.scrollBy({ left: 1.5, behavior: 'auto' });
+      }
+      checkScroll();
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [isAutoScrolling]);
+
+  const handleManualScroll = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
-    const scrollAmount = 390;
+    setIsAutoScrolling(false);
+    const scrollAmount = 400;
     scrollRef.current.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth'
     });
+    // Resume auto scroll after 5s of inactivity
+    setTimeout(() => setIsAutoScrolling(true), 5000);
   };
 
   return (
@@ -152,20 +164,16 @@ export function BlueprintRail() {
             </h2>
           </div>
 
-          {/* Navigation Controls & Progress Bar */}
+          {/* Navigation Controls with Active Ticker Indicator */}
           <div className="flex items-center gap-4">
-            {/* Visual Progress Bar */}
-            <div className="hidden sm:block w-32 h-1 bg-white/10 rounded-full overflow-hidden">
-              <motion.div 
-                className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400"
-                style={{ width: `${Math.max(15, scrollProgress * 100)}%` }}
-                transition={{ ease: 'easeOut' }}
-              />
-            </div>
+            <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 font-mono text-[10px] text-slate-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <span>{isAutoScrolling ? 'FLOWING ACTIVE' : 'MANUAL SCROLL'}</span>
+            </span>
 
             <div className="flex items-center gap-2">
               <button
-                onClick={() => handleScroll('left')}
+                onClick={() => handleManualScroll('left')}
                 disabled={!canScrollLeft}
                 className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all ${
                   canScrollLeft 
@@ -177,7 +185,7 @@ export function BlueprintRail() {
                 <ArrowLeft className="w-4 h-4" />
               </button>
               <button
-                onClick={() => handleScroll('right')}
+                onClick={() => handleManualScroll('right')}
                 disabled={!canScrollRight}
                 className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all ${
                   canScrollRight 
@@ -192,20 +200,21 @@ export function BlueprintRail() {
           </div>
         </motion.div>
 
-        {/* Horizontal Scrolling Carousel with Framer Motion cards */}
+        {/* Horizontal Infinite Flowing Carousel with Auto-Scroll & Hover Pause */}
         <div
           ref={scrollRef}
+          onMouseEnter={() => setIsAutoScrolling(false)}
+          onMouseLeave={() => setIsAutoScrolling(true)}
+          onTouchStart={() => setIsAutoScrolling(false)}
+          onTouchEnd={() => setTimeout(() => setIsAutoScrolling(true), 3000)}
           onScroll={checkScroll}
           className="flex gap-5 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory cursor-grab active:cursor-grabbing"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {BLUEPRINTS.map((bp, index) => (
+          {/* Double blueprint list for smooth infinite looping rail */}
+          {[...BLUEPRINTS, ...BLUEPRINTS].map((bp, index) => (
             <motion.div
-              key={bp.id}
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              key={`${bp.id}-${index}`}
               whileHover={{ y: -8, scale: 1.015 }}
               className="w-[320px] sm:w-[380px] shrink-0 p-6 sm:p-7 rounded-2xl bg-[#0f1116] border border-white/10 hover:border-emerald-500/50 hover:bg-[#13161c] hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 group flex flex-col justify-between snap-start"
             >

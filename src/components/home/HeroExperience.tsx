@@ -143,22 +143,38 @@ export function HeroExperience() {
       ref={containerRef}
       id="hero" 
       aria-label="OHO TECH Hero Statement"
-      className="relative w-full min-h-[92vh] sm:min-h-screen flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden border-b border-white/5"
+      className="relative w-full min-h-[94vh] sm:min-h-screen flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden border-b border-white/5"
     >
-      {/* 1. Atmospheric Ambient Depth Lighting (Phase 4: Background establishes atmosphere) */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.12),transparent_75%)] pointer-events-none" />
+      {/* HTML5 Autoplay Motion Video Layer (Inspired by play 1 screen recording) */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="/images/3d-software-dev.jpg"
+        className="absolute inset-0 w-full h-full object-cover opacity-20 sm:opacity-25 mix-blend-screen pointer-events-none scale-105 transition-opacity duration-1000"
+      >
+        <source src="/videos/core-architecture.mp4" type="video/mp4" />
+      </video>
+
+      {/* Atmospheric Ambient Depth Lighting with Pulse Motion Flow */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.18),transparent_75%)] pointer-events-none animate-[pulseGlow_5s_ease-in-out_infinite]" />
       
+      {/* Floating Kinetic Ambient Spheres */}
+      <div className="absolute top-1/4 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none animate-[floatSlow_8s_ease-in-out_infinite]" />
+      <div className="absolute bottom-10 left-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-[floatSlow_7s_ease-in-out_infinite_reverse]" />
+
       {/* Precision Structural Lines Grid */}
       <div 
-        className="absolute inset-0 opacity-[0.025] pointer-events-none bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" 
+        className="absolute inset-0 opacity-[0.035] pointer-events-none bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" 
       />
 
       <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col justify-center">
         
         {/* Step 1: Technical Pill Badge */}
         <div ref={badgeRef} className="mb-5 sm:mb-7">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-lg shadow-emerald-500/10">
+            <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
             <span>SOFTWARE PRODUCTS &amp; BESPOKE DIGITAL ENGINEERING</span>
           </div>
         </div>

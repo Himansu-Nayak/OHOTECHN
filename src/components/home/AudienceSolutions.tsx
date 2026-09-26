@@ -25,13 +25,16 @@ interface Segment {
   specs: { label: string; value: string }[];
   ctaText: string;
   ctaHref: string;
-  accentColor: string;
+  activeBg: string;
+  activeText: string;
+  activeSubtext: string;
+  activeBorder: string;
 }
 
 const SEGMENTS: Segment[] = [
   {
     id: 'enterprise',
-    badge: 'MISSION CRITICAL',
+    badge: 'MISSION CRITICAL // TIER 1',
     title: 'ENTERPRISE & HEALTHCARE',
     tagline: 'Multi-tenant high-availability systems with strict regulatory compliance.',
     summary: 'Tailored for hospitals, multi-branch corporations, and large-scale enterprises that require custom ERPs, EMRs, and microservice meshes with 24/7 dedicated engineering support.',
@@ -49,11 +52,14 @@ const SEGMENTS: Segment[] = [
     ],
     ctaText: 'REQUEST ENTERPRISE BRIEFING',
     ctaHref: '/contact?segment=enterprise',
-    accentColor: 'from-emerald-500/20 to-teal-500/10'
+    activeBg: 'bg-emerald-400',
+    activeText: 'text-black',
+    activeSubtext: 'text-neutral-800',
+    activeBorder: 'border-emerald-300'
   },
   {
     id: 'startups',
-    badge: 'RAPID SCALE',
+    badge: 'RAPID SCALE // VELOCITY',
     title: 'HIGH-GROWTH TECH STARTUPS',
     tagline: 'From day-zero architecture to series-A scale without technical debt.',
     summary: 'Engineered for venture-backed founders and technology companies needing high-velocity development, modern UI/UX, and robust API foundations that scale from 1 to 1M users.',
@@ -71,7 +77,10 @@ const SEGMENTS: Segment[] = [
     ],
     ctaText: 'ACCELERATE YOUR PRODUCT',
     ctaHref: '/contact?segment=startup',
-    accentColor: 'from-cyan-500/20 to-blue-500/10'
+    activeBg: 'bg-cyan-400',
+    activeText: 'text-black',
+    activeSubtext: 'text-neutral-800',
+    activeBorder: 'border-cyan-300'
   },
   {
     id: 'public-sector',
@@ -93,7 +102,10 @@ const SEGMENTS: Segment[] = [
     ],
     ctaText: 'INITIATE INSTITUTIONAL DIALOGUE',
     ctaHref: '/contact?segment=institutional',
-    accentColor: 'from-amber-500/20 to-orange-500/10'
+    activeBg: 'bg-amber-400',
+    activeText: 'text-black',
+    activeSubtext: 'text-neutral-800',
+    activeBorder: 'border-amber-300'
   },
   {
     id: 'smes',
@@ -115,7 +127,10 @@ const SEGMENTS: Segment[] = [
     ],
     ctaText: 'EXPLORE READY PRODUCTS',
     ctaHref: '/products',
-    accentColor: 'from-violet-500/20 to-indigo-500/10'
+    activeBg: 'bg-purple-400',
+    activeText: 'text-black',
+    activeSubtext: 'text-neutral-800',
+    activeBorder: 'border-purple-300'
   }
 ];
 
@@ -132,7 +147,7 @@ export function AudienceSolutions() {
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Left Column: Heading & Context with Framer Motion */}
+          {/* Left Column: Heading & Context */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -147,14 +162,15 @@ export function AudienceSolutions() {
               </div>
 
               <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-[0.95] mb-6">
-                BUILT FOR YOUR <br />
+                BUILT FOR TEAMS <br />
+                THAT SHIP, MEASURE, <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-                  EXACT OPERATING SCALE.
+                  AND WIN.
                 </span>
               </h2>
 
               <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-8">
-                Whether deploying a fault-tolerant multi-hospital healthcare platform, launching a high-growth SaaS startup, or automating commercial business operations, OHO TECH delivers architecture tailored to your tier.
+                Whether deploying a fault-tolerant multi-hospital healthcare platform, launching a high-growth SaaS startup, or automating commercial business operations, OHO TECH delivers architecture tailored to your operating scale.
               </p>
 
               {/* Guarantees Box */}
@@ -191,7 +207,7 @@ export function AudienceSolutions() {
             </div>
           </motion.div>
 
-          {/* Right Column: Fluid Accordion with Framer Motion layout and height spring */}
+          {/* Right Column: Iconic High-Contrast Accordion (Inspired by play 1 screen recording 00:36 - 00:46) */}
           <motion.div 
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -208,18 +224,18 @@ export function AudienceSolutions() {
                   layout
                   transition={{ layout: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } }}
                   onClick={() => setActiveSegmentId(seg.id)}
-                  className={`rounded-2xl border transition-colors duration-300 cursor-pointer overflow-hidden ${
+                  className={`rounded-3xl border transition-all duration-300 cursor-pointer overflow-hidden ${
                     isSelected
-                      ? 'bg-[#101319] border-emerald-500/60 shadow-xl shadow-emerald-500/10'
-                      : 'bg-[#0d0f12]/80 border-white/10 hover:border-white/25 hover:bg-[#111317]'
+                      ? `${seg.activeBg} ${seg.activeBorder} shadow-2xl scale-[1.01]`
+                      : 'bg-[#0d0f12]/90 border-white/10 hover:border-white/25 hover:bg-[#121419]'
                   }`}
                 >
                   {/* Header Row */}
                   <div className="p-5 sm:p-6 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3.5">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                         isSelected 
-                          ? 'bg-emerald-500 text-black font-bold scale-105 shadow-md shadow-emerald-500/30' 
+                          ? 'bg-black text-white shadow-md' 
                           : 'bg-white/5 text-slate-400 border border-white/10'
                       }`}>
                         {seg.id === 'enterprise' && <Building2 className="w-5 h-5" />}
@@ -230,11 +246,15 @@ export function AudienceSolutions() {
 
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-[10px] font-bold text-emerald-400 tracking-wider uppercase">
+                          <span className={`font-mono text-[10px] font-bold tracking-wider uppercase ${
+                            isSelected ? 'text-black/80' : 'text-emerald-400'
+                          }`}>
                             {seg.badge}
                           </span>
                         </div>
-                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight text-white">
+                        <h3 className={`text-base sm:text-xl font-black uppercase tracking-tight ${
+                          isSelected ? 'text-black' : 'text-white'
+                        }`}>
                           {seg.title}
                         </h3>
                       </div>
@@ -244,16 +264,16 @@ export function AudienceSolutions() {
                       <motion.div 
                         animate={{ rotate: isSelected ? 90 : 0 }}
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
-                        className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                          isSelected ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-500'
+                        className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          isSelected ? 'bg-black/15 text-black' : 'text-slate-500'
                         }`}
                       >
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="w-5 h-5" />
                       </motion.div>
                     </div>
                   </div>
 
-                  {/* Expanded Body Content with Fluid AnimatePresence */}
+                  {/* Expanded Body Content with Smooth Spring Height */}
                   <AnimatePresence initial={false}>
                     {isSelected && (
                       <motion.div
@@ -261,27 +281,27 @@ export function AudienceSolutions() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-white/10 bg-black/30">
-                          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-5">
+                        <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-black/10">
+                          <p className={`text-xs sm:text-sm leading-relaxed mb-5 font-medium ${seg.activeSubtext}`}>
                             {seg.summary}
                           </p>
 
                           {/* Technical Specs Strip */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 rounded-xl bg-white/[0.03] border border-white/10 mb-5 font-mono">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 rounded-2xl bg-black/10 border border-black/10 mb-5 font-mono">
                             {seg.specs.map((sp, idx) => (
                               <div key={idx} className="p-2">
-                                <div className="text-[10px] text-slate-400 font-semibold uppercase">{sp.label}</div>
-                                <div className="text-xs font-bold text-white mt-0.5">{sp.value}</div>
+                                <div className="text-[10px] text-black/70 font-semibold uppercase">{sp.label}</div>
+                                <div className="text-xs font-bold text-black mt-0.5">{sp.value}</div>
                               </div>
                             ))}
                           </div>
 
                           {/* Deliverable Checkmarks */}
                           <div className="space-y-2 mb-6">
-                            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">
+                            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-black/80 mb-2">
                               KEY DELIVERABLES & GUARANTEES:
                             </div>
                             {seg.deliverables.map((item, idx) => (
@@ -290,22 +310,22 @@ export function AudienceSolutions() {
                                 initial={{ opacity: 0, x: -8 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.3, delay: idx * 0.05 }}
-                                className="flex items-start gap-2.5 text-xs text-slate-300"
+                                className="flex items-start gap-2.5 text-xs text-black/90 font-medium"
                               >
-                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                                <ShieldCheck className="w-4 h-4 text-black mt-0.5 shrink-0" />
                                 <span>{item}</span>
                               </motion.div>
                             ))}
                           </div>
 
-                          {/* Action CTA */}
-                          <div className="pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
-                            <span className="text-xs text-slate-400 font-mono">
-                              Direct founder-level consultation available
+                          {/* Action CTA with High Contrast Inversion */}
+                          <div className="pt-4 border-t border-black/10 flex flex-wrap items-center justify-between gap-4">
+                            <span className="text-xs text-black/80 font-mono font-medium">
+                              Direct founder-level architecture consultation
                             </span>
                             <Link
                               href={seg.ctaHref}
-                              className="px-5 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 shadow-md shadow-emerald-500/20 hover:scale-[1.02]"
+                              className="px-6 py-3 rounded-xl bg-black hover:bg-neutral-900 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-lg shadow-black/20 hover:scale-[1.02]"
                             >
                               <span>{seg.ctaText}</span>
                               <ArrowRight className="w-3.5 h-3.5" />
