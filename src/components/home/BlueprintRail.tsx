@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { motion, useInView } from 'framer-motion';
 import { 
   Cpu, 
   ShieldCheck, 
@@ -93,12 +94,17 @@ export function BlueprintRail() {
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
+  const [scrollProgress, setScrollProgress] = React.useState(0);
 
   const checkScroll = () => {
     if (!scrollRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
     setCanScrollLeft(scrollLeft > 10);
     setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
+    const maxScroll = scrollWidth - clientWidth;
+    if (maxScroll > 0) {
+      setScrollProgress(scrollLeft / maxScroll);
+    }
   };
 
   React.useEffect(() => {
@@ -109,7 +115,7 @@ export function BlueprintRail() {
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
-    const scrollAmount = 380;
+    const scrollAmount = 390;
     scrollRef.current.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth'
@@ -120,12 +126,18 @@ export function BlueprintRail() {
     <section className="relative py-24 sm:py-32 bg-[#090a0d] border-t border-white/10 overflow-hidden">
       
       {/* Background radial accent */}
-      <div className="absolute top-1/2 right-1/4 w-[600px] h-[350px] bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 right-1/4 w-[650px] h-[380px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header with Navigation Arrows (Ploy-inspired pattern) */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16">
+        {/* Animated Section Header with Navigation Arrows */}
+        <motion.div 
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16"
+        >
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 font-mono text-[11px] font-bold uppercase tracking-widest mb-4">
               <Code2 className="w-3.5 h-3.5" />
@@ -140,46 +152,62 @@ export function BlueprintRail() {
             </h2>
           </div>
 
-          {/* Navigation Arrows */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => handleScroll('left')}
-              disabled={!canScrollLeft}
-              className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all ${
-                canScrollLeft 
-                  ? 'border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-emerald-500/50' 
-                  : 'border-white/5 bg-transparent text-slate-600 cursor-not-allowed'
-              }`}
-              aria-label="Scroll left"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleScroll('right')}
-              disabled={!canScrollRight}
-              className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all ${
-                canScrollRight 
-                  ? 'border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-emerald-500/50' 
-                  : 'border-white/5 bg-transparent text-slate-600 cursor-not-allowed'
-              }`}
-              aria-label="Scroll right"
-            >
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+          {/* Navigation Controls & Progress Bar */}
+          <div className="flex items-center gap-4">
+            {/* Visual Progress Bar */}
+            <div className="hidden sm:block w-32 h-1 bg-white/10 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400"
+                style={{ width: `${Math.max(15, scrollProgress * 100)}%` }}
+                transition={{ ease: 'easeOut' }}
+              />
+            </div>
 
-        {/* Horizontal Scrolling Carousel (Ploy-inspired rail) */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleScroll('left')}
+                disabled={!canScrollLeft}
+                className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all ${
+                  canScrollLeft 
+                    ? 'border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-emerald-500/50 hover:scale-105 active:scale-95' 
+                    : 'border-white/5 bg-transparent text-slate-600 cursor-not-allowed'
+                }`}
+                aria-label="Scroll left"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleScroll('right')}
+                disabled={!canScrollRight}
+                className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all ${
+                  canScrollRight 
+                    ? 'border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-emerald-500/50 hover:scale-105 active:scale-95' 
+                    : 'border-white/5 bg-transparent text-slate-600 cursor-not-allowed'
+                }`}
+                aria-label="Scroll right"
+              >
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Horizontal Scrolling Carousel with Framer Motion cards */}
         <div
           ref={scrollRef}
           onScroll={checkScroll}
           className="flex gap-5 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory cursor-grab active:cursor-grabbing"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {BLUEPRINTS.map((bp) => (
-            <div
+          {BLUEPRINTS.map((bp, index) => (
+            <motion.div
               key={bp.id}
-              className="w-[320px] sm:w-[380px] shrink-0 p-6 sm:p-7 rounded-2xl bg-[#0f1116] border border-white/10 hover:border-emerald-500/50 hover:bg-[#13161c] transition-all duration-300 group flex flex-col justify-between snap-start"
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ y: -8, scale: 1.015 }}
+              className="w-[320px] sm:w-[380px] shrink-0 p-6 sm:p-7 rounded-2xl bg-[#0f1116] border border-white/10 hover:border-emerald-500/50 hover:bg-[#13161c] hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 group flex flex-col justify-between snap-start"
             >
               <div>
                 {/* Card Header */}
@@ -207,7 +235,7 @@ export function BlueprintRail() {
                   {bp.techStack.map((tech, i) => (
                     <span
                       key={i}
-                      className="px-2 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[10px] text-slate-300"
+                      className="px-2 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[10px] text-slate-300 group-hover:border-white/20 transition-colors"
                     >
                       {tech}
                     </span>
@@ -229,7 +257,7 @@ export function BlueprintRail() {
                 </Link>
               </div>
 
-            </div>
+            </motion.div>
           ))}
         </div>
 

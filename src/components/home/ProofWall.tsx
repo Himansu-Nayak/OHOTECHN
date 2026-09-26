@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Quote, 
   CheckCircle2, 
@@ -101,6 +102,12 @@ const PROOF_CARDS: ProofCard[] = [
 ];
 
 export function ProofWall() {
+  const [activeFilter, setActiveFilter] = React.useState<string>('ALL');
+
+  const filteredCards = PROOF_CARDS.filter((c) =>
+    activeFilter === 'ALL' ? true : c.category === activeFilter
+  );
+
   return (
     <section className="relative py-24 sm:py-32 bg-[#08090b] border-t border-white/10 overflow-hidden">
       
@@ -109,8 +116,14 @@ export function ProofWall() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+        {/* Animated Section Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
+        >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-widest mb-6">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>VERIFIED PRODUCTION ENDORSEMENTS</span>
@@ -126,59 +139,92 @@ export function ProofWall() {
           <p className="mt-6 text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
             Direct operational reviews from Medical Directors, CTOs, and Managing Directors who rely on OHO TECH software and custom digital architecture.
           </p>
-        </div>
 
-        {/* 3-Column Proof Matrix (Ploy-inspired wall of evidence) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {PROOF_CARDS.map((card) => (
-            <div
-              key={card.id}
-              className={`p-6 sm:p-7 rounded-2xl ${card.tint} border border-white/10 ${card.borderTint} transition-all duration-300 flex flex-col justify-between group hover:scale-[1.01]`}
-            >
-              <div>
-                {/* Card Top: Category & Rating */}
-                <div className="flex items-center justify-between gap-3 mb-5">
-                  <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10 font-mono text-[10px] font-bold text-slate-300 uppercase tracking-wider">
-                    {card.category}
-                  </span>
-                  <div className="flex items-center gap-0.5 text-amber-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-amber-400" />
-                    ))}
+          {/* Interactive Category Filter with Sliding Pill */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            {['ALL', 'HEALTHCARE', 'ERP', 'FINTECH', 'ENTERPRISE', 'EDTECH'].map((cat) => {
+              const isActive = activeFilter === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveFilter(cat)}
+                  className={`relative px-3.5 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider transition-colors z-10 ${
+                    isActive ? 'text-black' : 'text-slate-400 hover:text-white bg-white/5 border border-white/10'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeProofTab"
+                      className="absolute inset-0 rounded-full bg-emerald-400 shadow-md shadow-emerald-400/20"
+                      transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                    />
+                  )}
+                  <span className="relative z-10">{cat}</span>
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* 3-Column Proof Matrix with AnimatePresence & layout spring */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <AnimatePresence>
+            {filteredCards.map((card) => (
+              <motion.div
+                key={card.id}
+                layout
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ y: -6, scale: 1.015 }}
+                className={`p-6 sm:p-7 rounded-2xl ${card.tint} border border-white/10 ${card.borderTint} transition-all duration-300 flex flex-col justify-between group shadow-xl`}
+              >
+                <div>
+                  {/* Card Top: Category & Rating */}
+                  <div className="flex items-center justify-between gap-3 mb-5">
+                    <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10 font-mono text-[10px] font-bold text-slate-300 uppercase tracking-wider">
+                      {card.category}
+                    </span>
+                    <div className="flex items-center gap-0.5 text-amber-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-3 h-3 fill-amber-400" />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quote Text */}
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed italic mb-6">
+                    &ldquo;{card.quote}&rdquo;
+                  </p>
+                </div>
+
+                {/* Author Info */}
+                <div className="pt-4 border-t border-white/10">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center font-mono text-xs font-bold text-emerald-400 shrink-0 group-hover:scale-105 transition-transform">
+                      {card.avatarText}
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+                        <span>{card.author}</span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      </h4>
+                      <p className="text-[11px] text-slate-400">
+                        {card.role}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] font-mono text-emerald-400 font-semibold mt-2">
+                    {card.organization} • <span className="text-slate-400">{card.metric}</span>
                   </div>
                 </div>
 
-                {/* Quote Text */}
-                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed italic mb-6">
-                  &ldquo;{card.quote}&rdquo;
-                </p>
-              </div>
-
-              {/* Author Info */}
-              <div className="pt-4 border-t border-white/10">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center font-mono text-xs font-bold text-emerald-400 shrink-0">
-                    {card.avatarText}
-                  </div>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
-                      <span>{card.author}</span>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    </h4>
-                    <p className="text-[11px] text-slate-400">
-                      {card.role}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-[11px] font-mono text-emerald-400 font-semibold mt-2">
-                  {card.organization} • <span className="text-slate-400">{card.metric}</span>
-                </div>
-              </div>
-
-            </div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
 
       </div>
     </section>

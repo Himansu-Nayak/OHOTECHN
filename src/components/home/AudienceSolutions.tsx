@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Building2, 
   Rocket, 
@@ -121,20 +122,24 @@ const SEGMENTS: Segment[] = [
 export function AudienceSolutions() {
   const [activeSegmentId, setActiveSegmentId] = React.useState<string>('enterprise');
 
-  const activeSegment = SEGMENTS.find((s) => s.id === activeSegmentId) || SEGMENTS[0];
-
   return (
     <section className="relative py-24 sm:py-32 bg-[#08090b] border-t border-white/10 overflow-hidden">
       
       {/* Background glow accents */}
-      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/2 left-0 w-[550px] h-[550px] bg-emerald-500/5 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Left Column: Heading & Context */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
+          {/* Left Column: Heading & Context with Framer Motion */}
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-5 flex flex-col justify-between"
+          >
             <div>
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-widest mb-6">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -184,30 +189,37 @@ export function AudienceSolutions() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right Column: Expanding Segment Drawer (Ploy-inspired pattern) */}
-          <div className="lg:col-span-7 space-y-4">
-            
+          {/* Right Column: Fluid Accordion with Framer Motion layout and height spring */}
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-7 space-y-4"
+          >
             {SEGMENTS.map((seg) => {
               const isSelected = seg.id === activeSegmentId;
 
               return (
-                <div
+                <motion.div
                   key={seg.id}
+                  layout
+                  transition={{ layout: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } }}
                   onClick={() => setActiveSegmentId(seg.id)}
-                  className={`rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden ${
+                  className={`rounded-2xl border transition-colors duration-300 cursor-pointer overflow-hidden ${
                     isSelected
-                      ? 'bg-[#101319] border-emerald-500/60 shadow-xl shadow-emerald-500/5'
-                      : 'bg-[#0d0f12]/80 border-white/10 hover:border-white/20'
+                      ? 'bg-[#101319] border-emerald-500/60 shadow-xl shadow-emerald-500/10'
+                      : 'bg-[#0d0f12]/80 border-white/10 hover:border-white/25 hover:bg-[#111317]'
                   }`}
                 >
                   {/* Header Row */}
                   <div className="p-5 sm:p-6 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3.5">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
                         isSelected 
-                          ? 'bg-emerald-500 text-black font-bold' 
+                          ? 'bg-emerald-500 text-black font-bold scale-105 shadow-md shadow-emerald-500/30' 
                           : 'bg-white/5 text-slate-400 border border-white/10'
                       }`}>
                         {seg.id === 'enterprise' && <Building2 className="w-5 h-5" />}
@@ -229,66 +241,86 @@ export function AudienceSolutions() {
                     </div>
 
                     <div className="shrink-0">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform duration-300 ${
-                        isSelected ? 'rotate-90 bg-emerald-500/20 text-emerald-400' : 'text-slate-500'
-                      }`}>
+                      <motion.div 
+                        animate={{ rotate: isSelected ? 90 : 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center ${
+                          isSelected ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-500'
+                        }`}
+                      >
                         <ChevronRight className="w-4 h-4" />
-                      </div>
+                      </motion.div>
                     </div>
                   </div>
 
-                  {/* Expanded Body Content */}
-                  {isSelected && (
-                    <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-white/10 bg-black/20">
-                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-5">
-                        {seg.summary}
-                      </p>
+                  {/* Expanded Body Content with Fluid AnimatePresence */}
+                  <AnimatePresence initial={false}>
+                    {isSelected && (
+                      <motion.div
+                        key="content"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-white/10 bg-black/30">
+                          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-5">
+                            {seg.summary}
+                          </p>
 
-                      {/* Technical Specs Strip */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/5 mb-5 font-mono">
-                        {seg.specs.map((sp, idx) => (
-                          <div key={idx} className="p-2">
-                            <div className="text-[10px] text-slate-400 font-semibold uppercase">{sp.label}</div>
-                            <div className="text-xs font-bold text-white mt-0.5">{sp.value}</div>
+                          {/* Technical Specs Strip */}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 rounded-xl bg-white/[0.03] border border-white/10 mb-5 font-mono">
+                            {seg.specs.map((sp, idx) => (
+                              <div key={idx} className="p-2">
+                                <div className="text-[10px] text-slate-400 font-semibold uppercase">{sp.label}</div>
+                                <div className="text-xs font-bold text-white mt-0.5">{sp.value}</div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
 
-                      {/* Deliverable Checkmarks */}
-                      <div className="space-y-2 mb-6">
-                        <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">
-                          KEY DELIVERABLES & GUARANTEES:
+                          {/* Deliverable Checkmarks */}
+                          <div className="space-y-2 mb-6">
+                            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">
+                              KEY DELIVERABLES & GUARANTEES:
+                            </div>
+                            {seg.deliverables.map((item, idx) => (
+                              <motion.div 
+                                key={idx} 
+                                initial={{ opacity: 0, x: -8 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: idx * 0.05 }}
+                                className="flex items-start gap-2.5 text-xs text-slate-300"
+                              >
+                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                                <span>{item}</span>
+                              </motion.div>
+                            ))}
+                          </div>
+
+                          {/* Action CTA */}
+                          <div className="pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
+                            <span className="text-xs text-slate-400 font-mono">
+                              Direct founder-level consultation available
+                            </span>
+                            <Link
+                              href={seg.ctaHref}
+                              className="px-5 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 shadow-md shadow-emerald-500/20 hover:scale-[1.02]"
+                            >
+                              <span>{seg.ctaText}</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
+
                         </div>
-                        {seg.deliverables.map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                            <span>{item}</span>
-                          </div>
-                        ))}
-                      </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                      {/* Action CTA */}
-                      <div className="pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
-                        <span className="text-xs text-slate-400 font-mono">
-                          Ready for review in current sprint
-                        </span>
-                        <Link
-                          href={seg.ctaHref}
-                          className="px-5 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5"
-                        >
-                          <span>{seg.ctaText}</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
-
-                    </div>
-                  )}
-
-                </div>
+                </motion.div>
               );
             })}
-
-          </div>
+          </motion.div>
 
         </div>
 
