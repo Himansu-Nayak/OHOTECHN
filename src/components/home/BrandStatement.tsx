@@ -79,10 +79,10 @@ export function BrandStatement() {
             <span>TWO WAYS TO WORK WITH OHO TECH</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase mb-4 sm:mb-6">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.035em] leading-[1.1] mb-4 sm:mb-6">
             Software Products
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-              &amp; Custom Engineering.
+              &amp; Custom Engineering
             </span>
           </h2>
 
@@ -112,7 +112,7 @@ export function BrandStatement() {
                 </span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug mb-3 group-hover:text-sky-300 transition-colors">
+              <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-[-0.025em] leading-snug mb-3 group-hover:text-sky-300 transition-colors">
                 Commercial Software Products
               </h3>
 
@@ -161,16 +161,16 @@ export function BrandStatement() {
             <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-3">
               <Link
                 href="/products"
-                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-sky-500 hover:bg-sky-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 rounded-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2"
               >
-                <span>EXPLORE ALL SOFTWARE</span>
+                <span>Explore all software</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/pricing"
-                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all text-center"
+                className="w-full sm:w-auto px-5 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-medium text-xs transition-all text-center"
               >
-                View Licensing &amp; Plans
+                View licensing &amp; plans
               </Link>
             </div>
           </div>
@@ -193,7 +193,7 @@ export function BrandStatement() {
                 </span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug mb-3 group-hover:text-emerald-300 transition-colors">
+              <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-[-0.025em] leading-snug mb-3 group-hover:text-emerald-300 transition-colors">
                 Software &amp; Digital Engineering
               </h3>
 
@@ -242,16 +242,16 @@ export function BrandStatement() {
             <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-3">
               <Link
                 href="/contact"
-                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2"
               >
-                <span>START A PROJECT</span>
+                <span>Start a project</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/services"
-                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all text-center"
+                className="w-full sm:w-auto px-5 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-medium text-xs transition-all text-center"
               >
-                Explore 7 Core Services
+                Explore 7 core services
               </Link>
             </div>
           </div>

@@ -31,10 +31,10 @@ const PRODUCT_CATEGORIES = [
 ];
 
 const DEPLOYMENT_CYCLE = [
-  { step: '01', title: 'DISCOVER', desc: 'Browse 28+ pre-engineered enterprise applications.' },
-  { step: '02', title: 'EVALUATE', desc: 'Test interactive live demos and inspect technical specs.' },
-  { step: '03', title: 'BUY', desc: 'Instant checkout with perpetual or subscription licenses.' },
-  { step: '04', title: 'DEPLOY', desc: 'Turnkey installation on your private cloud or on-premise VPS.' },
+  { step: '01', title: 'Discover', desc: 'Browse 28+ pre-engineered enterprise applications.' },
+  { step: '02', title: 'Evaluate', desc: 'Test interactive live demos and inspect technical specs.' },
+  { step: '03', title: 'Buy', desc: 'Instant checkout with perpetual or subscription licenses.' },
+  { step: '04', title: 'Deploy', desc: 'Turnkey installation on your private cloud or on-premise VPS.' },
 ];
 
 export function ProductDiscoveryBanner() {
@@ -59,8 +59,8 @@ export function ProductDiscoveryBanner() {
               </div>
             </ScrollReveal>
 
-            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase">
-              Software, Ready to Deploy.
+            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.035em] leading-[1.1]">
+              Software, ready to deploy.
             </TextReveal>
           </div>
           
@@ -126,8 +126,10 @@ export function ProductDiscoveryBanner() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {DEPLOYMENT_CYCLE.map((cycle, idx) => (
               <div key={idx} className="relative">
-                <div className="text-2xl font-black text-sky-400 font-mono mb-2">
-                  {cycle.step} // {cycle.title}
+                <div className="text-lg font-bold text-sky-400 font-mono mb-1.5 flex items-center gap-2">
+                  <span>{cycle.step}</span>
+                  <span className="text-white/20">/</span>
+                  <span className="text-white">{cycle.title}</span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed font-normal">
                   {cycle.desc}

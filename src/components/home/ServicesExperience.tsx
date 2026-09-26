@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -10,24 +10,11 @@ import {
   Smartphone, 
   Database, 
   Palette, 
-  ArrowUpRight, 
   ArrowRight,
   Boxes,
-  Activity,
   CheckCircle2,
-  ChevronRight,
-  Sparkles,
   LucideIcon
 } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-import { useMotion } from '@/components/experience/MotionContext';
-import { TextReveal } from '@/components/ui/TextReveal';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 interface ServiceData {
   id: string;
@@ -42,556 +29,273 @@ interface ServiceData {
   specs: { label: string; value: string }[];
   technologies: string[];
   image: string;
-  video: string;
 }
 
 const SERVICES_DATA: ServiceData[] = [
   {
     id: 'software',
     number: '01',
-    category: 'CUSTOM SOFTWARE',
+    category: 'Custom Software',
     title: 'Custom Software & Enterprise Platforms',
-    subtitle: 'BESPOKE BUSINESS WORKFLOWS & APIS',
+    subtitle: 'Bespoke Business Workflows & APIs',
     description: 'Bespoke business platforms, operational admin dashboards, role-based workflows, and scalable backends tailored to eliminate company friction.',
     href: '/services/custom-software-development',
     accent: '#10b981',
     icon: Database,
     specs: [
-      { label: 'CODE OWNERSHIP', value: '100% IP' },
-      { label: 'ARCHITECTURE', value: 'Microservices' },
-      { label: 'SLA STANDARD', value: '99.99%' },
+      { label: 'Code Ownership', value: '100% IP' },
+      { label: 'Architecture', value: 'Microservices' },
+      { label: 'SLA Standard', value: '99.99%' },
     ],
     technologies: ['Java 21', 'Spring Boot 4', 'PostgreSQL', 'Redis', 'Docker'],
     image: '/images/3d-software-dev.jpg',
-    video: '/videos/core-architecture.mp4',
   },
   {
     id: 'web',
     number: '02',
-    category: 'WEB PLATFORMS',
+    category: 'Web Platforms',
     title: 'Enterprise Web Platforms',
-    subtitle: 'HIGH-CONCURRENCY REACT 19 ENGINES',
+    subtitle: 'High-Concurrency React 19 Engines',
     description: 'Next-generation high-concurrency web engines built on React 19, Next.js 16 App Router, and edge functions for global scale.',
     href: '/services/web-development',
     accent: '#06b6d4',
     icon: Layers,
     specs: [
-      { label: 'LIGHTHOUSE', value: '100 / 100' },
-      { label: 'FIRST PAINT', value: '< 0.4s FCP' },
-      { label: 'SSR CACHE HIT', value: '98.2%' },
+      { label: 'Lighthouse', value: '100 / 100' },
+      { label: 'First Paint', value: '< 0.4s FCP' },
+      { label: 'SSR Cache Hit', value: '98.2%' },
     ],
     technologies: ['Next.js 16', 'React 19', 'Turbopack', 'Tailwind CSS 4'],
     image: '/hero_workspace_editorial.jpg',
-    video: '/videos/data-mesh.mp4',
   },
   {
     id: 'mobile',
     number: '03',
-    category: 'MOBILE ECOSYSTEMS',
+    category: 'Mobile Apps',
     title: 'Native Mobile Engineering',
-    subtitle: '120 FPS IOS & ANDROID APPS',
+    subtitle: '120 FPS iOS & Android Apps',
     description: 'Fluid 120 FPS iOS and Android ecosystems engineered with native Swift, Kotlin, offline SQLite sync, and full App Store & Play Store deployment.',
     href: '/services/mobile-app-development',
     accent: '#8b5cf6',
     icon: Smartphone,
     specs: [
-      { label: 'FRAME RATE', value: '120 FPS Fluid' },
-      { label: 'OFFLINE SYNC', value: 'SQLite / Room' },
-      { label: 'DEPLOYMENT', value: 'Stores Ready' },
+      { label: 'Frame Rate', value: '120 FPS Fluid' },
+      { label: 'Offline Sync', value: 'SQLite / Room' },
+      { label: 'Deployment', value: 'Stores Ready' },
     ],
     technologies: ['Kotlin', 'Swift & SwiftUI', 'SQLite Sync', 'Play Store & APNs'],
     image: '/hero_ipad_mockup_ohotech.jpg',
-    video: '/videos/core-architecture.mp4',
   },
   {
     id: 'uiux',
     number: '04',
-    category: 'SPATIAL & UI/UX',
+    category: 'UI/UX Design',
     title: 'Spatial UI/UX & Design Systems',
-    subtitle: 'PRECISION INTERFACE ARCHITECTURE',
+    subtitle: 'Precision Interface Architecture',
     description: 'Precision human-computer interface design systems, high-density telemetry dashboards, and interactive multi-brand design tokens.',
     href: '/services/ui-ux-design',
     accent: '#ec4899',
     icon: Palette,
     specs: [
-      { label: 'ACCESSIBILITY', value: 'WCAG AAA' },
-      { label: 'SYSTEM TOKENS', value: '800+' },
-      { label: 'USABILITY', value: 'Frictionless' },
+      { label: 'Accessibility', value: 'WCAG AAA' },
+      { label: 'Design Tokens', value: '800+' },
+      { label: 'Usability', value: 'Frictionless' },
     ],
     technologies: ['Design Tokens', 'Figma Prototyping', 'WCAG AAA', 'Tailwind CSS'],
     image: '/hero_launch_artwork.png',
-    video: '/videos/neural-intelligence.mp4',
   },
   {
     id: 'ai',
     number: '05',
-    category: 'AI & AUTOMATION',
+    category: 'AI & Automation',
     title: 'Neural AI & Tensor Systems',
-    subtitle: 'ENTERPRISE RAG & VECTOR PIPELINES',
+    subtitle: 'Enterprise RAG & Vector Pipelines',
     description: 'Custom fine-tuned large language models, enterprise vector databases (pgvector), automated document OCR, and background trigger bots.',
     href: '/services/ai-automation',
     accent: '#3b82f6',
     icon: Cpu,
     specs: [
-      { label: 'DATA PRIVACY', value: 'Zero Public Training' },
-      { label: 'RETRIEVAL', value: 'Sub-50ms HNSW' },
-      { label: 'AUTOMATION', value: 'Deterministic' },
+      { label: 'Data Privacy', value: 'Private Isolated' },
+      { label: 'Retrieval', value: 'Sub-50ms HNSW' },
+      { label: 'Automation', value: 'Deterministic' },
     ],
     technologies: ['Python', 'pgvector', 'PostgreSQL', 'LangChain', 'FastAPI'],
     image: '/images/3d-enterprise-node.jpg',
-    video: '/videos/neural-intelligence.mp4',
   },
   {
     id: 'cloud',
     number: '06',
-    category: 'CLOUD & DEVOPS',
+    category: 'Cloud & DevOps',
     title: 'Distributed Cloud Architecture',
-    subtitle: 'MULTI-REGION TOPOLOGY & AUTOMATED CI/CD',
+    subtitle: 'Multi-Region Topology & CI/CD',
     description: 'High-availability multi-region cloud topologies with zero single-point-of-failure, automated GitHub Actions pipelines, and 24/7 SLA telemetry.',
     href: '/services/cloud-devops',
     accent: '#f59e0b',
     icon: Server,
     specs: [
-      { label: 'AVAILABILITY', value: '99.999% SLA' },
-      { label: 'DEPLOYMENT', value: 'Zero-Downtime' },
-      { label: 'FAILOVER', value: '< 1 Minute' },
+      { label: 'Availability', value: '99.999% SLA' },
+      { label: 'Deployment', value: 'Zero-Downtime' },
+      { label: 'Failover', value: '< 1 Minute' },
     ],
     technologies: ['Docker', 'Kubernetes', 'GitHub Actions', 'Terraform', 'Nginx'],
     image: '/images/3d-enterprise-node.jpg',
-    video: '/videos/data-mesh.mp4',
   },
 ];
 
 export function ServicesExperience() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const pinTrackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [scrollProgress, setScrollProgress] = useState<number>(0);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
-
-  const { setActiveScene, setActiveServiceIndex, setActiveServiceAccent } = useMotion();
-
   const activeService = SERVICES_DATA[activeIndex] || SERVICES_DATA[0];
   const ActiveIcon = activeService.icon;
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // GSAP ScrollTrigger True Pinned Cinematic Scene
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!sectionRef.current || !pinTrackRef.current) return;
-
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobile = window.innerWidth < 1024;
-    if (prefersReduced || isMobile) return;
-
-    const totalSteps = SERVICES_DATA.length;
-
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: 'top top',
-        end: () => `+=${window.innerHeight * 4.5}`,
-        pin: pinTrackRef.current,
-        scrub: 0.5,
-        anticipatePin: 1,
-        onEnter: () => setActiveScene('services'),
-        onEnterBack: () => setActiveScene('services'),
-        onUpdate: (self) => {
-          const progress = self.progress;
-          setScrollProgress(progress);
-          // Calculate step index smoothly
-          const calculatedIndex = Math.min(
-            totalSteps - 1,
-            Math.max(0, Math.floor(progress * totalSteps * 0.999))
-          );
-          setActiveIndex(calculatedIndex);
-          setActiveServiceIndex(calculatedIndex);
-          if (SERVICES_DATA[calculatedIndex]) {
-            setActiveServiceAccent(SERVICES_DATA[calculatedIndex].accent);
-          }
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [isMounted, setActiveScene, setActiveServiceIndex, setActiveServiceAccent]);
-
-  const handleSelectService = useCallback((index: number) => {
-    setActiveIndex(index);
-    setActiveServiceIndex(index);
-    if (SERVICES_DATA[index]) {
-      setActiveServiceAccent(SERVICES_DATA[index].accent);
-    }
-  }, [setActiveServiceIndex, setActiveServiceAccent]);
-
   return (
     <section 
-      ref={sectionRef}
       id="services" 
       aria-label="OHO TECH Core Engineering Services"
-      className="w-full bg-[#0a0a0b] text-white relative overflow-hidden"
+      className="w-full bg-[#0a0a0d] text-white py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-b border-white/5"
     >
-      {/* Background Dynamic Ambient Glows matching Active Accent */}
+      {/* Background Subtle Accent */}
       <div 
-        className="absolute top-1/4 right-10 w-96 sm:w-[600px] h-96 sm:h-[600px] rounded-full blur-[170px] pointer-events-none transition-colors duration-700 opacity-20"
+        className="absolute top-1/3 right-10 w-[500px] h-[500px] rounded-full blur-[160px] pointer-events-none opacity-15 transition-colors duration-500"
         style={{ backgroundColor: activeService.accent }}
       />
-      <div className="absolute bottom-10 left-10 w-96 sm:w-[500px] h-96 sm:h-[500px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
 
-      {/* Main Pinned Stage Container (Holds the Viewport on Desktop) */}
-      <div 
-        ref={pinTrackRef}
-        className="w-full lg:h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-12 py-16 sm:py-20 lg:py-0 relative z-10"
-      >
-        <div className="max-w-7xl mx-auto w-full">
+      <div className="relative z-10 max-w-7xl mx-auto w-full">
+        
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 pb-8 border-b border-white/10">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-semibold tracking-wide mb-4">
+              <Boxes className="w-3.5 h-3.5" />
+              <span>Bespoke Engineering Services</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+              Custom software &amp; digital engineering
+            </h2>
+          </div>
           
-          {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-white/10">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3">
-                <Boxes className="w-3.5 h-3.5" />
-                <span>BESPOKE DIGITAL PRODUCT ENGINEERING</span>
+          <div className="max-w-md text-left md:text-right">
+            <p className="text-sm sm:text-base text-slate-300 font-normal leading-relaxed mb-3">
+              If OHO TECH doesn&apos;t already have what you need, OHO TECH can build it.
+            </p>
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-1.5 font-mono text-xs text-emerald-400 hover:text-emerald-300 font-bold uppercase tracking-wider group"
+            >
+              <span>Explore All 7 Services</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Interactive Tab Navigation Rail (Instant Click & Hover Switch) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
+          {SERVICES_DATA.map((service, idx) => {
+            const isActive = activeIndex === idx;
+            const Icon = service.icon;
+            return (
+              <button
+                key={service.id}
+                type="button"
+                onClick={() => setActiveIndex(idx)}
+                className={`px-4 py-2.5 rounded-full border text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 shrink-0 ${
+                  isActive
+                    ? 'bg-white text-black border-white shadow-md'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-black' : 'text-slate-400'}`} />
+                <span>{service.category}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active Service Showcase Card (Split Stage - Instant Responsive Layout) */}
+        <div className="rounded-3xl bg-[#111216] border border-white/10 p-6 sm:p-10 lg:p-12 shadow-2xl transition-all duration-300">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
+                <span className="font-bold text-emerald-400">{activeService.number}</span>
+                <span>•</span>
+                <span className="uppercase tracking-wider">{activeService.subtitle}</span>
               </div>
-              <TextReveal as="h2" splitType="words" className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight uppercase">
-                Custom Software &amp; Digital Services
-              </TextReveal>
-              <p className="text-xs sm:text-sm text-slate-300 font-normal mt-1.5 max-w-xl">
-                If OHO TECH doesn&apos;t already have what you need, OHO TECH can build it.
+
+              <h3 className="text-2xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
+                {activeService.title}
+              </h3>
+
+              <p className="text-sm sm:text-base text-slate-300 font-normal leading-relaxed">
+                {activeService.description}
               </p>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:flex items-center gap-2 font-mono text-xs text-slate-400">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>CONTINUE SCROLLING TO ADVANCE SCENE</span>
-              </div>
-              <div className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1.5 rounded-full">
-                0{activeIndex + 1} / 0{SERVICES_DATA.length}
-              </div>
-            </div>
-          </div>
 
-          {/* Pinned Storytelling Scroll Progress Scrubber */}
-          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-8 hidden lg:block relative">
-            <div 
-              className="h-full transition-all duration-300 ease-out rounded-full shadow-[0_0_15px_rgba(16,185,129,0.8)]"
-              style={{ 
-                width: `${((activeIndex + 1) / SERVICES_DATA.length) * 100}%`,
-                background: `linear-gradient(to right, #10b981, ${activeService.accent})`
-              }}
-            />
-          </div>
-
-          {/* Desktop: Pinned Multi-State Interactive Split Stage */}
-          <div className="hidden lg:grid grid-cols-12 gap-8 lg:gap-10 items-stretch">
-            
-            {/* Left Column: Sequential Service Selector Tabs & Details */}
-            <div className="col-span-7 flex flex-col justify-between space-y-2.5">
-              
-              {/* Navigation Rail of 6 Services */}
-              <div className="grid grid-cols-3 gap-2 mb-2">
-                {SERVICES_DATA.map((service, idx) => {
-                  const isActive = activeIndex === idx;
-                  const Icon = service.icon;
-
-                  return (
-                    <button
-                      key={service.id}
-                      type="button"
-                      onClick={() => handleSelectService(idx)}
-                      className={`p-3 rounded-xl border text-left transition-all duration-300 cursor-pointer flex items-center justify-between group ${
-                        isActive
-                          ? 'bg-[#181920] border-emerald-500/50 shadow-lg ring-1 ring-emerald-500/30'
-                          : 'bg-[#101115]/70 border-white/5 hover:border-white/20 hover:bg-[#14151a]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className={`font-mono text-xs font-bold ${isActive ? 'text-emerald-400' : 'text-slate-400'}`}>
-                          {service.number}
-                        </span>
-                        <span className={`font-mono text-[11px] font-bold uppercase truncate ${isActive ? 'text-white' : 'text-slate-300'}`}>
-                          {service.category}
-                        </span>
-                      </div>
-                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Active Service Deep Dive Card with Spatial Kinetic Transitions */}
-              <div 
-                key={activeService.id}
-                className="flex-1 rounded-2xl bg-[#121318]/95 border border-white/15 p-6 sm:p-7 shadow-2xl flex flex-col justify-between relative overflow-hidden animate-in fade-in slide-in-from-left-4 duration-300"
-              >
-                <div>
-                  {/* Category & Step Header */}
-                  <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4 font-mono text-xs">
-                    <span className="text-emerald-400 font-bold tracking-wider">
-                      SPECIFICATION: {activeService.number} — {activeService.category}
-                    </span>
-                    <span className="text-slate-400 text-[10px] uppercase tracking-wider">
-                      ZERO-DOWNTIME ARCHITECTURE
-                    </span>
-                  </div>
-
-                  {/* Subtitle & Title */}
-                  <div className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                    {activeService.subtitle}
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase leading-tight mb-3">
-                    {activeService.title}
-                  </h3>
-
-                  {/* Narrative Description */}
-                  <p className="text-sm text-slate-300 leading-relaxed font-normal mb-5">
-                    {activeService.description}
-                  </p>
-
-                  {/* 3 Benchmarks Specs */}
-                  <div className="grid grid-cols-3 gap-3 p-3.5 rounded-xl bg-black/50 border border-white/5 mb-5">
-                    {activeService.specs.map((spec, sIdx) => (
-                      <div key={sIdx} className="text-left">
-                        <div className="font-mono text-[9px] text-slate-400 uppercase tracking-wider truncate">
-                          {spec.label}
-                        </div>
-                        <div className="font-mono text-xs sm:text-sm font-bold text-white truncate mt-0.5">
-                          {spec.value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Technology Badges */}
-                  <div className="flex flex-wrap gap-1.5 mb-2">
-                    {activeService.technologies.map((tech, tIdx) => (
-                      <span 
-                        key={tIdx}
-                        className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 font-mono text-[10px] text-slate-300 font-medium"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Card Action Link */}
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between mt-4">
-                  <span className="font-mono text-xs text-slate-400">
-                    Production Architecture Ready
-                  </span>
-                  <Link
-                    href={activeService.href}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-lg group/link"
+              {/* Technologies Tag Cloud */}
+              <div className="flex flex-wrap gap-2 pt-2">
+                {activeService.technologies.map((tech, tIdx) => (
+                  <span
+                    key={tIdx}
+                    className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-300"
                   >
-                    <span>EXPLORE CAPABILITY</span>
-                    <ArrowUpRight className="w-4 h-4 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                  </Link>
-                </div>
-
+                    {tech}
+                  </span>
+                ))}
               </div>
 
-            </div>
-
-            {/* Right Column: Visual Stage / Ultra 4K Cinema Spatial Window */}
-            <div className="col-span-5 flex flex-col">
-              <div 
-                key={`visual-${activeService.id}`}
-                className="w-full h-full rounded-2xl sm:rounded-3xl bg-[#14151a] border border-white/15 p-6 shadow-2xl backdrop-blur-xl flex flex-col justify-between relative overflow-hidden animate-in fade-in zoom-in-95 duration-400"
-              >
-                {/* Visual Stage Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4 font-mono text-xs">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <ActiveIcon className="w-4 h-4" style={{ color: activeService.accent }} />
-                    <span className="font-bold">{activeService.category} RUNTIME</span>
+              {/* Specs Metric Row */}
+              <div className="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-black/40 border border-white/5 font-mono text-center">
+                {activeService.specs.map((spec, sIdx) => (
+                  <div key={sIdx}>
+                    <div className="text-sm sm:text-base font-bold text-white">{spec.value}</div>
+                    <div className="text-[10px] text-slate-400 uppercase mt-0.5">{spec.label}</div>
                   </div>
-                  <span className="text-emerald-400 font-bold">100% PRODUCTION READY</span>
-                </div>
+                ))}
+              </div>
 
-                {/* Ultra 4K Cinema Spatial Canvas with Minimal Smooth Animations */}
-                <div 
-                  className="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-5 border border-white/15 bg-black/90 shadow-2xl group transition-all duration-500"
-                  style={{
-                    boxShadow: `0 20px 45px -15px ${activeService.accent}25`,
-                  }}
-                >
-                  {/* Ultra 4K Smooth Looping Video */}
-                  <video
-                    key={activeService.video}
-                    src={activeService.video}
-                    poster={activeService.image}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                    className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-
-                  {/* Minimal Subtle Ambient Gradient Mask */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#14151a] via-[#14151a]/20 to-transparent opacity-85 pointer-events-none" />
-
-                  {/* Top HUD: 4K Ultra HD Live Telemetry Badge */}
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 font-mono text-[9px] text-white/95">
-                      <span className="relative flex h-2 w-2">
-                        <span 
-                          className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                          style={{ backgroundColor: activeService.accent }}
-                        />
-                        <span 
-                          className="relative inline-flex rounded-full h-2 w-2"
-                          style={{ backgroundColor: activeService.accent }}
-                        />
-                      </span>
-                      <span className="font-bold tracking-wider">4K ULTRA HD STREAM</span>
-                    </div>
-
-                    <div className="font-mono text-[9px] px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md border border-white/10 text-slate-300 font-semibold">
-                      60 FPS • &lt; 4ms
-                    </div>
-                  </div>
-
-                  {/* Floating Overlay Pill */}
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-white/90 px-3.5 py-2 rounded-xl bg-black/80 backdrop-blur-md border border-white/15 z-10">
-                    <div className="flex items-center gap-2">
-                      <span 
-                        className="font-bold px-1.5 py-0.5 rounded text-[9px]"
-                        style={{ color: activeService.accent, backgroundColor: `${activeService.accent}20` }}
-                      >
-                        STAGE 0{activeIndex + 1}
-                      </span>
-                      <span className="truncate max-w-[190px] font-medium text-slate-200">{activeService.title}</span>
-                    </div>
-                    <span className="text-[9px] text-slate-400 uppercase hidden sm:inline">LIVE RUNTIME</span>
-                  </div>
-                </div>
-
-                {/* Direct Capability Link */}
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
                 <Link
-                  href={activeService.href}
-                  className="w-full py-3.5 px-5 rounded-xl bg-white/5 hover:bg-emerald-500 hover:text-black border border-white/10 hover:border-emerald-500 font-mono text-xs font-bold text-slate-300 transition-all duration-200 flex items-center justify-between group/btn shadow-md"
+                  href={`/contact?service=${activeService.href.replace('/services/', '')}`}
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
                 >
-                  <span>VIEW ARCHITECTURAL SPECIFICATION</span>
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  <span>Start a Project</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
 
+                <Link
+                  href={activeService.href}
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-semibold text-xs uppercase tracking-wider transition-all text-center"
+                >
+                  View Specifications
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Visual Image Column */}
+            <div className="lg:col-span-5">
+              <div className="relative h-64 sm:h-80 lg:h-96 w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl group">
+                <Image
+                  src={activeService.image}
+                  alt={activeService.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#111216]/80 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-between text-xs font-mono">
+                  <span className="text-white font-bold">{activeService.category}</span>
+                  <span className="text-emerald-400 font-semibold">Production Ready</span>
+                </div>
               </div>
             </div>
 
           </div>
-
-          {/* Mobile & Small Tablet: Responsive Vertical Sequence */}
-          <div className="lg:hidden flex flex-col gap-4">
-            {SERVICES_DATA.map((service, idx) => {
-              const isOpen = activeIndex === idx;
-
-              return (
-                <div
-                  key={service.id}
-                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                    isOpen 
-                      ? 'bg-[#14151a] border-emerald-500/40 shadow-xl ring-1 ring-emerald-500/30' 
-                      : 'bg-[#0f1013] border-white/10'
-                  }`}
-                >
-                  {/* Card Header Trigger */}
-                  <button
-                    type="button"
-                    onClick={() => setActiveIndex(isOpen ? -1 : idx)}
-                    className="w-full text-left p-5 flex items-center justify-between gap-4 cursor-pointer focus:outline-none"
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <span className="font-mono text-sm font-bold text-emerald-400">
-                        {service.number}
-                      </span>
-                      <h3 className="text-base sm:text-lg font-bold text-white uppercase tracking-tight">
-                        {service.title}
-                      </h3>
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="px-2 py-0.5 rounded-full bg-white/5 font-mono text-[9px] text-slate-300 font-bold uppercase">
-                        {service.category}
-                      </span>
-                      <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${
-                        isOpen ? 'rotate-90 text-emerald-400' : 'text-slate-500'
-                      }`} />
-                    </div>
-                  </button>
-
-                  {/* Expanded Content Drawer */}
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1 border-t border-white/10 space-y-4 animate-in fade-in duration-200">
-                      <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed">
-                        {service.description}
-                      </p>
-
-                      {/* Mobile 4K Video Stage Preview */}
-                      <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/10 bg-black">
-                        <video
-                          src={service.video}
-                          poster={service.image}
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          preload="metadata"
-                          className="w-full h-full object-cover opacity-90"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                        <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between font-mono text-[9px] text-white/90">
-                          <span className="font-bold text-emerald-400">STAGE 0{idx + 1}</span>
-                          <span className="text-slate-400">4K ULTRA HD STREAM</span>
-                        </div>
-                      </div>
-
-                      {/* Specs */}
-                      <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-black/40 border border-white/5">
-                        {service.specs.map((spec, sIdx) => (
-                          <div key={sIdx} className="text-center">
-                            <div className="font-mono text-[8px] text-slate-400 uppercase truncate">
-                              {spec.label}
-                            </div>
-                            <div className="font-mono text-[11px] font-bold text-white truncate mt-0.5">
-                              {spec.value}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Tech Stack */}
-                      <div className="flex flex-wrap gap-1.5">
-                        {service.technologies.map((tech, tIdx) => (
-                          <span 
-                            key={tIdx}
-                            className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 font-mono text-[9px] text-slate-300"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Link */}
-                      <Link
-                        href={service.href}
-                        className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 text-black font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-between"
-                      >
-                        <span>EXPLORE CAPABILITY</span>
-                        <ArrowUpRight className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
         </div>
+
       </div>
     </section>
   );
 }
+
+export default ServicesExperience;

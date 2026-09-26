@@ -173,7 +173,7 @@ export function ProcessSection() {
             <span>ENGINEERING ROADMAP • 5 PHASES</span>
           </div>
 
-          <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase mb-4">
+          <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.035em] leading-[1.1] mb-4">
             5-Phase Software Engineering Roadmap
           </TextReveal>
 

@@ -290,7 +290,7 @@ export function TechnologyExperience() {
         );
       }
 
-      // 2. Foundation pillars stagger & differential depth
+      // 2. Foundation pillars entrance
       if (pillarsRef.current) {
         gsap.fromTo(
           pillarsRef.current.children,
@@ -309,27 +309,9 @@ export function TechnologyExperience() {
             },
           }
         );
-
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (!prefersReduced && window.innerWidth >= 768) {
-          const pillars = Array.from(pillarsRef.current.children);
-          pillars.forEach((p, idx) => {
-            const offset = idx === 1 ? -16 : 16;
-            gsap.to(p, {
-              y: offset,
-              ease: 'none',
-              scrollTrigger: {
-                trigger: pillarsRef.current,
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: 0.8,
-              },
-            });
-          });
-        }
       }
 
-      // 3. Explorer container reveal & scroll-driven domain progression
+      // 3. Explorer container entrance
       if (explorerRef.current) {
         gsap.fromTo(
           explorerRef.current,
@@ -348,21 +330,6 @@ export function TechnologyExperience() {
             },
           }
         );
-
-        // Scroll progress drives domain sequence smoothly
-        if (window.innerWidth >= 1024) {
-          ScrollTrigger.create({
-            trigger: explorerRef.current,
-            start: 'top 70%',
-            end: 'bottom 40%',
-            scrub: 0.8,
-            onUpdate: (self) => {
-              const total = TECH_DOMAINS.length;
-              const idx = Math.min(total - 1, Math.max(0, Math.floor(self.progress * total * 0.999)));
-              setSelectedDomainIndex(idx);
-            },
-          });
-        }
       }
     }, sectionRef);
 
@@ -402,7 +369,7 @@ export function TechnologyExperience() {
 
           {/* Editorial Display Headline */}
           <div className="max-w-5xl mb-8 sm:mb-10">
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight text-white leading-[1.02] uppercase mb-6">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-[-0.035em] text-white leading-[1.08] mb-6">
               <span>Technology is the foundation.</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
                 We engineer what powerful experiences rest upon.
@@ -468,7 +435,7 @@ export function TechnologyExperience() {
               <div className="font-mono text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">
                 ENTERPRISE STACK MATRIX
               </div>
-              <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tight uppercase">
+              <h3 className="text-2xl sm:text-4xl font-bold text-white tracking-[-0.03em]">
                 Explore The Technology Mesh
               </h3>
             </div>

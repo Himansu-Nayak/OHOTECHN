@@ -82,23 +82,6 @@ export function CompanyStatement() {
             },
           }
         );
-
-        if (!prefersReducedMotion && window.innerWidth >= 1024) {
-          const cards = Array.from(gridRef.current.children);
-          cards.forEach((card, idx) => {
-            const offset = (idx - 1) * 20;
-            gsap.to(card, {
-              y: offset,
-              ease: 'none',
-              scrollTrigger: {
-                trigger: gridRef.current,
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: 0.9,
-              },
-            });
-          });
-        }
       }
     }, sectionRef);
 
@@ -126,7 +109,7 @@ export function CompanyStatement() {
               <Building className="w-3.5 h-3.5" />
               <span>ORGANIZATIONAL IDENTITY &amp; VALUES</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.035em] leading-[1.1]">
               About OHO TECH
             </h2>
           </div>

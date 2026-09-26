@@ -125,7 +125,7 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
               <span>{project.category}</span>
             </div>
 
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight uppercase group-hover:text-emerald-400 transition-colors duration-300 mb-4">
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-[-0.03em] leading-snug group-hover:text-emerald-400 transition-colors duration-300 mb-4">
               {project.title}
             </h3>
 
@@ -134,8 +134,8 @@ export function ProjectShowcase({ project, index, priorityImage = false }: Proje
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-2 font-mono text-xs font-bold text-white uppercase tracking-wider group-hover:text-emerald-400 transition-colors pt-4 border-t border-white/10">
-            <span>VIEW CASE STUDY</span>
+          <div className="inline-flex items-center gap-2 font-mono text-xs font-semibold text-white tracking-wider group-hover:text-emerald-400 transition-colors pt-4 border-t border-white/10">
+            <span>View Case Study</span>
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
           </div>
         </div>

@@ -82,7 +82,7 @@ export function MobileAppShowcase() {
               </div>
             </ScrollReveal>
 
-            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight uppercase">
+            <TextReveal as="h2" splitType="words" className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-[-0.035em] leading-[1.1]">
               Mission-Critical Mobile Apps
             </TextReveal>
           </div>
@@ -150,7 +150,7 @@ export function MobileAppShowcase() {
                 <span>TURNKEY MOBILE SOLUTIONS</span>
               </div>
               
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-[-0.03em] leading-snug">
                 Enterprise Mobile Suites: Field Sales, Inventory &amp; Executive Telemetry
               </h3>
 
