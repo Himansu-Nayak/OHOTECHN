@@ -151,8 +151,8 @@ export function HeroExperience() {
         loop
         muted
         playsInline
-        poster="/images/3d-software-dev.jpg"
-        className="absolute inset-0 w-full h-full object-cover opacity-20 sm:opacity-25 mix-blend-screen pointer-events-none scale-105 transition-opacity duration-1000"
+        poster="/images/hero-surreal-office.jpg"
+        className="absolute inset-0 w-full h-full object-cover opacity-25 sm:opacity-30 mix-blend-screen pointer-events-none scale-105 transition-opacity duration-1000"
       >
         <source src="/videos/core-architecture.mp4" type="video/mp4" />
       </video>
