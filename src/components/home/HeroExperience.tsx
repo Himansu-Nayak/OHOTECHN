@@ -6,7 +6,6 @@ import { ArrowRight, Sparkles, ShieldCheck, Layers, Package, Terminal } from 'lu
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useMotion } from '@/components/experience/MotionContext';
-import { HeroWalking3D } from './HeroWalking3D';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -146,12 +145,13 @@ export function HeroExperience() {
       aria-label="OHO TECH Hero Statement"
       className="relative w-full min-h-[94vh] sm:min-h-screen flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden border-b border-white/5"
     >
-      {/* 4K/8K Real-Time 3D Walking Camera Experience */}
+      {/* Exact Photorealistic Tech Creative Studio Background Layer (100% Crisp & Visible) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <HeroWalking3D />
-
-        {/* Central Legibility Radial Vignette to keep typography crisp without obscuring the 3D scene */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_65%_at_50%_45%,rgba(8,9,11,0.55)_0%,rgba(8,9,11,0.15)_65%,transparent_100%)] pointer-events-none" />
+        {/* Photorealistic 35mm film scene with gentle organic breathing motion */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[floatSlow_18s_ease-in-out_infinite] scale-105 transition-transform duration-1000"
+          style={{ backgroundImage: `url('/images/hero-surreal-office.jpg')` }}
+        />
 
         {/* Minimal ambient gradient at the very bottom to blend into the next section smoothly */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-[#08090b] pointer-events-none" />
