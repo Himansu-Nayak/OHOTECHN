@@ -145,13 +145,18 @@ export function HeroExperience() {
       aria-label="OHO TECH Hero Statement"
       className="relative w-full min-h-[94vh] sm:min-h-screen flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden border-b border-white/5"
     >
-      {/* Exact Photorealistic Tech Creative Studio Background Layer (100% Crisp & Visible) */}
+      {/* Exact Photorealistic Tech Creative Studio Background Video & Poster Layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Photorealistic 35mm film scene with gentle organic breathing motion */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[floatSlow_18s_ease-in-out_infinite] scale-105 transition-transform duration-1000"
-          style={{ backgroundImage: `url('/images/hero-surreal-office.jpg')` }}
-        />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/images/hero-surreal-office.jpg"
+          className="absolute inset-0 w-full h-full object-cover scale-105 transition-opacity duration-1000"
+        >
+          <source src="/videos/hero-surreal-office.mp4" type="video/mp4" />
+        </video>
 
         {/* Minimal ambient gradient at the very bottom to blend into the next section smoothly */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-[#08090b] pointer-events-none" />
