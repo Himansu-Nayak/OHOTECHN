@@ -84,6 +84,9 @@ export const metadata: Metadata = {
     shortcut: '/OHO_TECH_LOGO.png',
     apple: '/OHO_TECH_LOGO.png',
   },
+  verification: {
+    google: 'uChuwEDNJLPsKfoJvp9l0S1DBV-3-vVkeR3ZshXzPsE',
+  },
 };
 
 export default function RootLayout({
