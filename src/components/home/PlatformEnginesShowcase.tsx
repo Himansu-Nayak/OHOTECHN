@@ -95,35 +95,37 @@ export function PlatformEnginesShowcase() {
           </motion.div>
 
           {/* Big Split Kinetic Typography with Floating Kinetic Centerpiece */}
-          <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 select-none my-4">
+          <div className="relative flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-10 select-none my-4">
             
             {/* Left Big Text */}
-            <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black uppercase tracking-[-0.04em] text-white leading-none">
-              ONE <br className="hidden md:inline" /> PLATFORM
+            <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-[-0.03em] text-white leading-none text-center md:text-right shrink-0">
+              <span className="block">ONE</span>
+              <span className="block">PLATFORM</span>
             </h2>
 
             {/* Central Floating Kinetic 3D-Style Orb / Balloon Cluster */}
-            <div className="relative w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 shrink-0 flex items-center justify-center my-4 md:my-0">
+            <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 shrink-0 flex items-center justify-center my-4 md:my-0">
               
               {/* Outer Pulsing Glow */}
               <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/25 via-teal-400/20 to-cyan-500/25 rounded-full blur-2xl animate-[pulseGlow_4s_ease-in-out_infinite]" />
               
               {/* Central Floating Sphere Mesh */}
-              <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-br from-emerald-400/30 via-teal-400/20 to-cyan-400/10 border border-white/20 backdrop-blur-xl shadow-2xl flex items-center justify-center animate-[floatSlow_6s_ease-in-out_infinite]">
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-emerald-400/30 via-teal-400/20 to-cyan-400/10 border border-white/20 backdrop-blur-xl shadow-2xl flex items-center justify-center animate-[floatSlow_6s_ease-in-out_infinite]">
                 
                 {/* Inner Concentric Kinetic Ring */}
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border border-emerald-400/40 border-dashed animate-spin" style={{ animationDuration: '16s' }} />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-emerald-400/40 border-dashed animate-spin" style={{ animationDuration: '16s' }} />
                 
                 {/* Center Core Pulse */}
-                <div className="absolute w-8 h-8 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 blur-sm animate-ping" style={{ animationDuration: '3s' }} />
-                <div className="absolute w-6 h-6 rounded-full bg-white shadow-lg shadow-emerald-400/50" />
+                <div className="absolute w-7 h-7 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 blur-sm animate-ping" style={{ animationDuration: '3s' }} />
+                <div className="absolute w-5 h-5 rounded-full bg-white shadow-lg shadow-emerald-400/50" />
               </div>
 
             </div>
 
             {/* Right Big Text */}
-            <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black uppercase tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 leading-none">
-              THREE <br className="hidden md:inline" /> ENGINES
+            <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-[-0.03em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 leading-none text-center md:text-left shrink-0">
+              <span className="block">THREE</span>
+              <span className="block">ENGINES</span>
             </h2>
 
           </div>
