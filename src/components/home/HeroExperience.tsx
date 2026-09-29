@@ -27,7 +27,6 @@ export function HeroExperience() {
   const headlineLine3Ref = useRef<HTMLDivElement>(null);
   const editorialTextRef = useRef<HTMLDivElement>(null);
   const ctaGroupRef = useRef<HTMLDivElement>(null);
-  const metadataStripRef = useRef<HTMLDivElement>(null);
 
   const { setActiveScene } = useMotion();
 
@@ -48,7 +47,6 @@ export function HeroExperience() {
           headlineLine3Ref.current,
           editorialTextRef.current,
           ctaGroupRef.current,
-          metadataStripRef.current,
         ], { opacity: 1, y: 0, yPercent: 0 });
         return;
       }
@@ -94,14 +92,6 @@ export function HeroExperience() {
         '-=0.35'
       );
 
-      // 6. Supporting platform metadata strip
-      entranceTl.fromTo(
-        metadataStripRef.current,
-        { opacity: 0, y: isMobile ? 8 : 12 },
-        { opacity: 1, y: 0, duration: isMobile ? 0.4 : 0.55 },
-        '-=0.25'
-      );
-
       // Subtle Parallax exit on desktop scroll down (strictly non-blocking, zero scroll-jacking)
       if (containerRef.current && !isMobile) {
         gsap.to(
@@ -120,7 +110,7 @@ export function HeroExperience() {
         );
 
         if (editorialTextRef.current && ctaGroupRef.current) {
-          gsap.to([editorialTextRef.current, ctaGroupRef.current, metadataStripRef.current], {
+          gsap.to([editorialTextRef.current, ctaGroupRef.current], {
             y: -20,
             opacity: 0.7,
             ease: 'none',
@@ -143,7 +133,7 @@ export function HeroExperience() {
       ref={containerRef}
       id="hero" 
       aria-label="OHO TECH Hero Statement"
-      className="relative w-full min-h-[94vh] sm:min-h-screen flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden border-b border-white/5"
+      className="relative w-full min-h-[80vh] sm:min-h-[84vh] lg:min-h-[88vh] flex flex-col justify-center bg-transparent text-white px-4 sm:px-8 lg:px-16 pt-24 sm:pt-32 pb-12 sm:pb-16 overflow-hidden border-b border-white/5"
     >
       {/* Exact Photorealistic Tech Creative Studio Background (Completely Stable, Zero Vibration) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
@@ -159,7 +149,7 @@ export function HeroExperience() {
       <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col justify-center">
         
         {/* Step 1: Technical Pill Badge */}
-        <div ref={badgeRef} className="mb-5 sm:mb-7">
+        <div ref={badgeRef} className="mb-4 sm:mb-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-emerald-500/40 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-xl shadow-black/50">
             <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
             <span>SOFTWARE PRODUCTS &amp; BESPOKE DIGITAL ENGINEERING</span>
@@ -167,7 +157,7 @@ export function HeroExperience() {
         </div>
 
         {/* Step 2: Cinematic Kinetic Headline Display with Razor-Sharp Drop Shadows */}
-        <div className="space-y-1 sm:space-y-2 mb-7 sm:mb-10 select-none">
+        <div className="space-y-1 sm:space-y-2 mb-6 sm:mb-8 select-none">
           
           {/* Line 01 */}
           <div className="overflow-hidden py-0.5 sm:py-1">
@@ -207,12 +197,12 @@ export function HeroExperience() {
         <div className="max-w-3xl">
           <div ref={editorialTextRef} className="mb-8 sm:mb-10">
             <p className="text-sm sm:text-base lg:text-lg text-slate-300 font-normal leading-relaxed">
-              We engineer enterprise commercial software and build bespoke digital systems. Purchase ready-to-deploy platforms directly from our verified catalog, or commission our studio to architect high-throughput web, Android, and iOS systems.
+              Enterprise commercial platforms, bespoke software systems, and mobile applications engineered with 100% IP ownership.
             </p>
           </div>
 
           {/* Step 4 & 5: Action Button Pair (Dual Conversion Paths) */}
-          <div ref={ctaGroupRef} className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 w-full sm:w-auto mb-10 sm:mb-14">
+          <div ref={ctaGroupRef} className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
             <Link
               id="hero-explore-software"
               href="/products"
@@ -229,25 +219,6 @@ export function HeroExperience() {
             >
               Build With Us
             </Link>
-          </div>
-
-          {/* Step 6: Platform Capability Specs Strip */}
-          <div 
-            ref={metadataStripRef}
-            className="pt-6 border-t border-white/10 grid grid-cols-3 gap-3 sm:gap-6 font-mono text-[10px] sm:text-xs text-slate-400"
-          >
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <Package className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-              <span className="truncate">28 Ready Systems</span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <Layers className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span className="truncate">7 Core Services</span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-teal-300 shrink-0" />
-              <span className="truncate">100% Code Ownership</span>
-            </div>
           </div>
         </div>
 

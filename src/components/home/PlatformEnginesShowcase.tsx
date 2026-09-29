@@ -73,7 +73,7 @@ const ENGINES = [
 
 export function PlatformEnginesShowcase() {
   return (
-    <section className="relative py-28 sm:py-36 bg-[#08090b] border-t border-white/10 overflow-hidden">
+    <section className="relative py-20 sm:py-28 bg-[#08090b] border-t border-white/10 overflow-hidden">
       
       {/* Background radial atmosphere */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-emerald-500/5 rounded-full blur-[170px] pointer-events-none" />
@@ -81,7 +81,7 @@ export function PlatformEnginesShowcase() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* The Central Visual Showcase (Inspired by play 1 screen recording 00:30 - 00:35) */}
-        <div className="text-center mb-20 sm:mb-28">
+        <div className="text-center mb-14 sm:mb-20">
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -19,7 +19,7 @@ export function DirectorSection() {
   return (
     <section 
       id="director" 
-      className="w-full py-20 sm:py-28 px-6 sm:px-10 lg:px-16 bg-[#0d0d0e] text-white relative overflow-hidden grid-pattern-dark"
+      className="w-full py-16 sm:py-24 px-4 sm:px-8 lg:px-12 bg-[#0d0d0e] text-white relative overflow-hidden grid-pattern-dark border-t border-white/5"
     >
       <div className="max-w-7xl mx-auto relative">
       {/* Ambient Subtle Radial */}

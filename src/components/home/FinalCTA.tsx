@@ -61,7 +61,7 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
     <section 
       ref={sectionRef}
       id="cta" 
-      className="w-full bg-[#0a0a0b]/75 backdrop-blur-[2px] text-white py-24 sm:py-32 lg:py-40 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
+      className="w-full bg-[#0a0a0b]/75 backdrop-blur-[2px] text-white py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-white/5"
     >
       {/* Ambient subtle background radial */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(16,185,129,0.06),transparent_70%)] pointer-events-none" />
