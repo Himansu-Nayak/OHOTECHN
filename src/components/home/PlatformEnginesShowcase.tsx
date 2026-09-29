@@ -98,15 +98,9 @@ export function PlatformEnginesShowcase() {
           <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 select-none my-4">
             
             {/* Left Big Text */}
-            <motion.h2 
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black uppercase tracking-[-0.04em] text-white leading-none"
-            >
+            <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black uppercase tracking-[-0.04em] text-white leading-none">
               ONE <br className="hidden md:inline" /> PLATFORM
-            </motion.h2>
+            </h2>
 
             {/* Central Floating Kinetic 3D-Style Orb / Balloon Cluster */}
             <div className="relative w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 shrink-0 flex items-center justify-center my-4 md:my-0">
@@ -128,15 +122,9 @@ export function PlatformEnginesShowcase() {
             </div>
 
             {/* Right Big Text */}
-            <motion.h2 
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black uppercase tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 leading-none"
-            >
+            <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black uppercase tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 leading-none">
               THREE <br className="hidden md:inline" /> ENGINES
-            </motion.h2>
+            </h2>
 
           </div>
 
@@ -148,15 +136,10 @@ export function PlatformEnginesShowcase() {
 
         {/* 3 Capability Engine Cards with Staggered Entrance and Hover Lifts */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          {ENGINES.map((eng, idx) => (
-            <motion.div
+          {ENGINES.map((eng) => (
+            <div
               key={eng.id}
-              initial={{ opacity: 0, y: 35 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ y: -8, scale: 1.015 }}
-              className="relative p-7 sm:p-8 rounded-3xl bg-[#0f1116] border border-white/10 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 flex flex-col justify-between group overflow-hidden"
+              className="relative p-7 sm:p-8 rounded-3xl bg-[#0f1116] border border-white/10 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between group overflow-hidden"
             >
               {/* Card Accent Top Ambient */}
               <div className={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl ${eng.gradient} rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-500`} />
@@ -207,7 +190,7 @@ export function PlatformEnginesShowcase() {
                 </Link>
               </div>
 
-            </motion.div>
+            </div>
           ))}
         </div>
 
