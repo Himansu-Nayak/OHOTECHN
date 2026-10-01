@@ -1,6 +1,16 @@
 import { ApiResponse } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
+export function getApiBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL !== undefined && process.env.NEXT_PUBLIC_API_URL !== '') {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    return '';
+  }
+  return 'http://127.0.0.1:8080';
+}
+
+export const API_BASE_URL = getApiBaseUrl();
 
 export function getAccessToken(): string | null {
   if (typeof window !== 'undefined') {
@@ -42,7 +52,9 @@ export async function apiClient<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  const baseUrl = getApiBaseUrl();
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${cleanEndpoint}`;
 
   try {
     const response = await fetch(url, {

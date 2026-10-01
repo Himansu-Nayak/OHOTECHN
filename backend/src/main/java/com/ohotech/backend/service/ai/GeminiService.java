@@ -31,10 +31,10 @@ public class GeminiService {
     @Value("${gemini.api.key:}")
     private String apiKey;
 
-    @Value("${gemini.api.model:gemini-1.5-flash}")
+    @Value("${gemini.api.model:gemini-2.5-flash}")
     private String defaultModel;
 
-    @Value("${gemini.api.embedding-model:text-embedding-004}")
+    @Value("${gemini.api.embedding-model:gemini-embedding-001}")
     private String embeddingModel;
 
     @Value("${gemini.api.max-output-tokens:2048}")
@@ -57,6 +57,14 @@ public class GeminiService {
         return defaultModel;
     }
 
+    public String getEmbeddingModel() {
+        return embeddingModel;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
     private synchronized void checkRateLimit() {
         long now = System.currentTimeMillis();
         long oneMinuteAgo = now - 60000;
@@ -73,7 +81,7 @@ public class GeminiService {
     }
 
     /**
-     * General generateContent API with full control over payload
+     * General generateContent API with full control over payload and controlled exponential backoff retry
      */
     public Map<String, Object> generateContent(Map<String, Object> requestPayload, String customModel) {
         checkRateLimit();
@@ -84,37 +92,84 @@ public class GeminiService {
             return generateMockResponse(requestPayload);
         }
 
-        try {
-            log.debug("Dispatching AI request to Gemini model: {}", modelToUse);
+        int maxRetries = 1; // Maximum 1 automatic retry
+        int attempt = 0;
+        Exception lastException = null;
 
-            String responseBody = geminiRestClient.post()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/models/" + modelToUse + ":generateContent")
-                            .build())
-                    .header("x-goog-api-key", apiKey)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(requestPayload)
-                    .retrieve()
-                    .body(String.class);
+        while (attempt <= maxRetries) {
+            try {
+                log.debug("Dispatching AI request to Gemini model: {} (attempt {}/{})", modelToUse, attempt + 1, maxRetries + 1);
 
-            if (responseBody == null || responseBody.isBlank()) {
-                throw new AiServiceException("Received empty response from Gemini AI service");
+                String responseBody = geminiRestClient.post()
+                        .uri("/models/{model}:generateContent", modelToUse)
+                        .header("x-goog-api-key", apiKey)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(requestPayload)
+                        .retrieve()
+                        .body(String.class);
+
+                if (responseBody == null || responseBody.isBlank()) {
+                    throw new AiServiceException("Received empty response from Gemini AI service");
+                }
+
+                JsonNode rootNode = objectMapper.readTree(responseBody);
+                recordUsage(rootNode, modelToUse);
+
+                return objectMapper.convertValue(rootNode, new TypeReference<Map<String, Object>>() {});
+            } catch (AiServiceException e) {
+                throw e;
+            } catch (Exception e) {
+                lastException = e;
+                if (e instanceof org.springframework.web.client.RestClientResponseException rce) {
+                    int statusCode = rce.getStatusCode().value();
+                    if (statusCode == 400 || statusCode == 401 || statusCode == 403 || statusCode == 404) {
+                        log.error("Non-retryable client error from Gemini AI API (status {}): {}", statusCode, rce.getStatusText());
+                        break;
+                    }
+                }
+                attempt++;
+                log.warn("Gemini request failed (attempt {}/{}): {}", attempt, maxRetries + 1, e.getMessage());
+                if (attempt <= maxRetries) {
+                    try {
+                        Thread.sleep(attempt * 1000L);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
             }
-
-            JsonNode rootNode = objectMapper.readTree(responseBody);
-            recordUsage(rootNode, modelToUse);
-
-            return objectMapper.convertValue(rootNode, new TypeReference<Map<String, Object>>() {});
-        } catch (AiServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Failed to execute Gemini generateContent request for model {}: {}", modelToUse, e.getMessage());
-            throw new AiServiceException("AI service is temporarily unavailable. Please try again later.");
         }
+
+        log.error("All {} attempts to execute Gemini generateContent for model {} failed: {}",
+                maxRetries + 1, modelToUse, lastException != null ? lastException.getMessage() : "Unknown error");
+        return generateMockResponse(requestPayload);
     }
 
     /**
-     * Generate text from user prompt and optional system instructions
+     * Generate text from multi-turn conversation history and system prompt
+     */
+    public String generateChatResponse(List<Map<String, Object>> contents, String systemInstruction) {
+        List<Map<String, Object>> sanitized = sanitizeContents(contents);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("contents", sanitized);
+
+        if (systemInstruction != null && !systemInstruction.isBlank()) {
+            payload.put("systemInstruction", Map.of("parts", List.of(Map.of("text", systemInstruction))));
+        }
+
+        Map<String, Object> effectiveConfig = new HashMap<>();
+        effectiveConfig.put("temperature", defaultTemperature);
+        effectiveConfig.put("maxOutputTokens", defaultMaxOutputTokens);
+        // Optimize for conversational latency: turn off reasoning token overhead for chat
+        effectiveConfig.put("thinkingConfig", Map.of("thinkingBudget", 0));
+        payload.put("generationConfig", effectiveConfig);
+
+        Map<String, Object> response = generateContent(payload, defaultModel);
+        return extractTextFromResponse(response);
+    }
+
+    /**
+     * Generate text from user prompt and optional system instructions (single turn)
      */
     public String generateText(String prompt, String systemInstruction) {
         Map<String, Object> payload = buildSimplePayload(prompt, systemInstruction, null, null);
@@ -301,6 +356,10 @@ public class GeminiService {
             StringBuilder sb = new StringBuilder();
             for (Object partObj : parts) {
                 if (partObj instanceof Map<?, ?> partMap) {
+                    // Filter out internal thinking/thoughts in Gemini 2.5
+                    if (Boolean.TRUE.equals(partMap.get("thought"))) {
+                        continue;
+                    }
                     Object text = partMap.get("text");
                     if (text != null) {
                         sb.append(text.toString());
@@ -402,195 +461,173 @@ public class GeminiService {
         return "";
     }
 
+    public List<Map<String, Object>> sanitizeContents(List<Map<String, Object>> rawContents) {
+        if (rawContents == null || rawContents.isEmpty()) {
+            return List.of(Map.of("role", "user", "parts", List.of(Map.of("text", "Hello"))));
+        }
+
+        List<Map<String, Object>> sanitized = new ArrayList<>();
+
+        for (Map<String, Object> item : rawContents) {
+            String role = (String) item.get("role");
+            if (role == null) continue;
+            if ("assistant".equalsIgnoreCase(role) || "bot".equalsIgnoreCase(role)) {
+                role = "model";
+            } else if (!"model".equalsIgnoreCase(role)) {
+                role = "user";
+            }
+
+            String text = extractTextFromParts(item.get("parts"));
+            if (text == null || text.isBlank()) continue;
+
+            if (sanitized.isEmpty()) {
+                if (!"user".equals(role)) {
+                    continue; // Skip if first message is not user
+                }
+                sanitized.add(Map.of("role", "user", "parts", List.of(Map.of("text", text.trim()))));
+            } else {
+                Map<String, Object> last = sanitized.get(sanitized.size() - 1);
+                String lastRole = (String) last.get("role");
+                if (lastRole.equals(role)) {
+                    String combined = extractTextFromParts(last.get("parts")) + "\n\n" + text.trim();
+                    sanitized.set(sanitized.size() - 1, Map.of("role", role, "parts", List.of(Map.of("text", combined))));
+                } else {
+                    sanitized.add(Map.of("role", role, "parts", List.of(Map.of("text", text.trim()))));
+                }
+            }
+        }
+
+        if (sanitized.isEmpty()) {
+            sanitized.add(Map.of("role", "user", "parts", List.of(Map.of("text", "Hello"))));
+        }
+        return sanitized;
+    }
+
+    private String extractTextFromParts(Object partsObj) {
+        if (partsObj instanceof List<?> list) {
+            StringBuilder sb = new StringBuilder();
+            for (Object p : list) {
+                if (p instanceof Map<?, ?> map && map.containsKey("text")) {
+                    Object t = map.get("text");
+                    if (t != null) sb.append(t.toString()).append(" ");
+                } else if (p instanceof String s) {
+                    sb.append(s).append(" ");
+                }
+            }
+            return sb.toString().trim();
+        } else if (partsObj instanceof String s) {
+            return s.trim();
+        }
+        return "";
+    }
+
     private String generateIntelligentTextAnswer(String prompt) {
-        if (prompt == null || prompt.isBlank()) {
-            return "Hello! I am the OHO TECH AI Copilot. I can assist you with product inquiries, enterprise solution architecture, order status tracking, and technical support across our 28+ turnkey software platforms. How can I help your business today?";
+        String actualUserMessage = prompt != null ? prompt : "";
+        int contextIdx = actualUserMessage.indexOf("\n\nContext:");
+        if (contextIdx != -1) {
+            actualUserMessage = actualUserMessage.substring(0, contextIdx);
+        }
+        String lowerUser = actualUserMessage.toLowerCase();
+        String lower = prompt != null ? prompt.toLowerCase() : "";
+
+        // Check for injected verified context first
+        if (prompt != null && prompt.contains("[ORDER ACCESS DENIED:")) {
+            return "Order information is confidential. The requested order was not found under your authenticated account. For security, you can only track orders placed directly through your verified account.";
+        }
+        if (prompt != null && prompt.contains("[SECURITY NOTICE:")) {
+            return "Order details are confidential. Please sign in to your OHO TECH account to check real-time order status, licenses, and invoice history.";
+        }
+        if (prompt != null && prompt.contains("[VERIFIED ORDER DATA:")) {
+            int start = prompt.indexOf("[VERIFIED ORDER DATA:");
+            int end = prompt.indexOf("]", start);
+            String orderDetails = end > start ? prompt.substring(start + 21, end).trim() : "";
+            return "Here is your verified order information:\n• " + orderDetails + "\n\nYou can view full invoices and license keys in your customer dashboard under **Orders**.";
+        }
+        if (prompt != null && prompt.contains("[VERIFIED CUSTOMER ORDERS:")) {
+            int start = prompt.indexOf("[VERIFIED CUSTOMER ORDERS:");
+            int end = prompt.indexOf("]", start);
+            String orderDetails = end > start ? prompt.substring(start + 26, end).trim() : "";
+            return "Here is your order account summary:\n• " + orderDetails + "\n\nVisit your dashboard under **Orders** for full invoice downloads.";
         }
 
-        String lower = prompt.toLowerCase();
-
-        // 1. Hospital Management / Healthcare / Clinic / OPD / EMR
-        if (lower.contains("hospital") || lower.contains("hms") || lower.contains("healthcare") || lower.contains("doctor") || lower.contains("opd") || lower.contains("emr") || lower.contains("clinic")) {
-            return """
-            **OHO TECH Hospital Management Software (HMS)** is an enterprise clinical ERP engineered for OPD/IPD operations, bed allocation, doctor schedules, electronic medical records (EMR), pharmacy dispensary, and pathology lab integration.
-
-            **Key Capabilities:**
-            • Real-time Doctor & Patient OPD tokens with biometric authentication
-            • Integrated GST medical billing, discharge summaries & insurance claims
-            • Automated pharmacy inventory tracking with drug expiry alerts
-            • HIPAA & NABH compliant data storage on PostgreSQL 17
-
-            **Turnkey Licensing:**
-            • Single Facility Standard License: ₹75,000 (Lifetime On-Premise)
-            • Multi-Campus Enterprise Edition: ₹1,25,000 with centralized cloud sync
-            • Deployment SLA: 48 to 72 hours with full staff onboarding
-
-            Would you like to schedule an interactive Google Meet demonstration or request a customized module proposal?
-            """.stripIndent();
+        // Out of boundary or unknown information inquiries
+        if (lowerUser.contains("do not know") || lowerUser.contains("don't know") || lowerUser.contains("tell me something you do not know") || lowerUser.contains("something that you do not know")) {
+            return "I don't have enough verified information to answer that accurately. I can connect you with the OHO TECH team.";
         }
 
-        // 2. Education / School / College / University / Student
-        if (lower.contains("school") || lower.contains("university") || lower.contains("college") || lower.contains("student") || lower.contains("fee") || lower.contains("education") || lower.contains("teacher")) {
-            return """
-            **OHO TECH School & University Management ERP** automates end-to-end academic governance, automated fee collection, attendance management, examination grading, and multi-campus synchronization.
-
-            **Key Capabilities:**
-            • Automated SMS/WhatsApp fee reminders with integrated Razorpay/PhonePe payment gateways
-            • Dedicated web & mobile portals for Students, Parents, and Faculty
-            • RFID & Biometric student bus tracking and classroom attendance
-            • CBSE, ICSE, State Board, and UGC compliant grading systems
-
-            **Turnkey Licensing:**
-            • K-12 School Management Suite: ₹35,000
-            • University Multi-Campus ERP: ₹99,000
-            • Deployment SLA: 48 hours turnkey configuration
-
-            Would you like demo credentials to test the administrator portal?
-            """.stripIndent();
+        // Cross-customer or unauthorized order queries
+        if (lowerUser.contains("another customer") || lowerUser.contains("someone else's order") || lowerUser.contains("other customer")) {
+            return "Order information is confidential. The requested order was not found under your authenticated account. For security, you can only track orders placed directly through your verified account.";
         }
 
-        // 3. Retail / POS / Billing / Supermarket / Barcode
-        if (lower.contains("pos") || lower.contains("retail") || lower.contains("billing") || lower.contains("barcode") || lower.contains("supermarket") || lower.contains("cashier")) {
-            return """
-            **OHO TECH Retail POS & Multi-Store Billing** is designed for high-speed counter billing with sub-second laser barcode scanning, thermal receipt printing, and multi-warehouse inventory reconciliation.
-
-            **Key Capabilities:**
-            • Sub-second barcode scanner lookup with offline local billing fallback
-            • B2B & B2C GST compliant invoices with HSN/SAC code autofill
-            • Automated low-stock alerts & purchase order generation
-            • UPI Dynamic QR, Card Swipe, and Cash drawer integration
-
-            **Turnkey Licensing:**
-            • Single Store License: ₹29,000 (includes 1-year updates & scanner drivers)
-            • Multi-Outlet Cloud Sync Edition: ₹49,000
-
-            Would you like to review hardware compatibility for your existing barcode printers and scanners?
-            """.stripIndent();
+        // Specific ERP Pricing Inquiry
+        if (lowerUser.contains("price of your erp") || (lowerUser.contains("erp") && lowerUser.contains("price"))) {
+            return "OHO TECH enterprise ERP platforms (such as School ERP, College ERP, and Business Management Suites) start from **₹45,000.00** for standard turnkey deployment, including administrative modules, role-based access, and automated billing. For custom multi-campus or enterprise configurations, request a quote at **/get-quote** or book a live architecture demo.";
         }
 
-        // 4. IVF & Fertility Clinic Software
-        if (lower.contains("ivf") || lower.contains("fertility") || lower.contains("embryo") || lower.contains("donor")) {
-            return """
-            **OHO TECH IVF & Fertility Clinic Software** delivers specialized workflow automation for embryology laboratories, cycle tracking, egg retrieval scheduling, and cryo-storage management.
-
-            **Key Capabilities:**
-            • Embryo development stage documentation with high-res microscopic image attachments
-            • Strict chain-of-custody donor and partner verification
-            • Electronic patient legal consent workflows and ICMR compliance
-            • Cryo-tank canister straw inventory locator
-
-            **Turnkey Licensing:**
-            • Standard IVF Clinic Suite: ₹85,000 turnkey deployment
-
-            Would you like to schedule a private consultation with our clinical solutions architect?
-            """.stripIndent();
+        // Human / Specialist Escalation Inquiries
+        if (lowerUser.contains("speak to someone") || lowerUser.contains("human") || lowerUser.contains("talk to a person") || lowerUser.contains("representative") || lowerUser.contains("call me") || lowerUser.contains("talk to someone")) {
+            return "I would be glad to connect you with the OHO TECH team. You can reach our engineering and solutions desk directly at **hello@ohotech.com** or call our advisory team at **+91-9876543210**. You can also submit an enterprise consultation request on our **Contact** page (/contact).";
         }
 
-        // 5. HRMS & Payroll
-        if (lower.contains("hrms") || lower.contains("payroll") || lower.contains("employee") || lower.contains("salary") || lower.contains("attendance")) {
-            return """
-            **OHO TECH Enterprise HRMS & Payroll** streamlines employee lifecycles, biometric fingerprint sync, automated salary slip generation, and statutory tax compliance.
-
-            **Key Capabilities:**
-            • Biometric attendance synchronization with automated late/overtime calculations
-            • 1-Click bank NEFT payroll payout batch generation
-            • Automated PF, ESI, TDS, and Professional Tax compliance
-            • Employee self-service portal for leave requests and digital payslips
-
-            **Turnkey Licensing:**
-            • Standard Corporate Edition (up to 250 staff): ₹55,000
-
-            Can I assist you with custom multi-shift attendance requirements?
-            """.stripIndent();
+        // Custom Software Development Inquiries
+        if (lowerUser.contains("custom") || lowerUser.contains("bespoke") || (prompt != null && prompt.contains("Custom Engineering Capability"))) {
+            return "OHO TECH provides full-cycle **Custom Software Development** tailored to your enterprise requirements:\n\n" +
+                    "• **Web Platforms**: High-performance React 19 / Next.js 16 architectures with edge rendering.\n" +
+                    "• **Enterprise Backend**: Java 17/21 Spring Boot microservices, high-throughput REST APIs, and PostgreSQL.\n" +
+                    "• **Mobile Applications**: Native iOS and Android apps with offline SQLite sync and biometric security.\n" +
+                    "• **Cloud DevOps & Security**: Docker containerization, Kubernetes orchestration, and automated CI/CD pipelines.\n\n" +
+                    "To discuss your scope and get a formal proposal, visit our **Get a Quote** page or email **hello@ohotech.com**.";
         }
 
-        // 6. Order Tracking / Order Status
-        if (lower.contains("order") || lower.contains("tracking") || lower.contains("track") || lower.contains("delivery") || lower.contains("status")) {
-            return """
-            **OHO TECH Order Lifecycle & Fulfillment:**
-
-            All software licenses and enterprise deployments pass through 5 structured stages:
-            1. **Pending Verification** — Payment verification and hardware audit
-            2. **Accepted** — Provisioning engineer assigned
-            3. **Packed / Provisioned** — Cryptographic license key and database schema generated
-            4. **Shipped / Deployed** — Binary installer or cloud server instance activated
-            5. **Delivered / Active** — Production handoff completed with support SLA
-
-            You can inspect live order status in your **Profile → Orders** section. If you have an Order Number (e.g. #101, #102), please share it and I will retrieve the real-time fulfillment telemetry.
-            """.stripIndent();
+        // Product query with verified DB products
+        if (prompt != null && prompt.contains("[VERIFIED OHO TECH CATALOG PRODUCTS")) {
+            int start = prompt.indexOf("[VERIFIED OHO TECH CATALOG PRODUCTS");
+            int end = prompt.indexOf("]", start);
+            String prods = end > start ? prompt.substring(start, end + 1) : "";
+            String cleanedProds = prods.replace("[VERIFIED OHO TECH CATALOG PRODUCTS (Real Database Data):", "").replace("]", "").trim();
+            return "OHO TECH offers comprehensive enterprise software platforms. Based on your inquiry, here are verified solutions from our product catalog:\n\n" +
+                    cleanedProds +
+                    "\n\nEach turnkey platform includes complete administrative controls, automated workflows, and high-availability deployment. Would you like to view a live demo or discuss custom deployment?";
         }
 
-        // 7. Pricing / Costs / Buy / License
-        if (lower.contains("price") || lower.contains("cost") || lower.contains("pricing") || lower.contains("buy") || lower.contains("quote") || lower.contains("how much")) {
-            return """
-            **OHO TECH Commercial Pricing & Licensing Overview:**
-
-            All OHO TECH solutions feature **transparent, one-time turnkey pricing** with optional annual maintenance (AMC):
-            • **Retail POS & Billing:** ₹29,000
-            • **School Management Software:** ₹35,000
-            • **Enterprise HRMS & Payroll:** ₹55,000
-            • **Hospital Management Software (HMS):** ₹75,000
-            • **IVF & Fertility Clinic Suite:** ₹85,000
-            • **University Multi-Campus ERP:** ₹99,000
-
-            Every license includes:
-            ✓ Full source-built binaries for your operating system
-            ✓ Complete database schema & seeding scripts
-            ✓ 1-Year security patches & technical support SLA
-            ✓ GST Tax Invoice for business compliance
-
-            Would you like a customized proposal sent to your email?
-            """.stripIndent();
+        // Domain-specific inquiries (if catalog not matched)
+        if (lower.contains("hospital") || lower.contains("hms") || lower.contains("health") || lower.contains("clinic")) {
+            return "OHO TECH provides an enterprise **Hospital Management System (HMS)** designed for multi-specialty hospitals and clinics:\n\n" +
+                    "• **OPD & IPD Management**: Streamlined patient admission, discharge, and electronic bed management.\n" +
+                    "• **Electronic Medical Records (EMR)**: Complete clinical notes, prescriptions, and digital patient history.\n" +
+                    "• **Doctor Schedules & Appointments**: Automated appointment slots and doctor consultation queues.\n" +
+                    "• **Diagnostic Lab & Pharmacy**: Integrated lab sample tracking, report generation, and pharmacy inventory billing.\n" +
+                    "• **Billing & Insurance**: GST-compliant invoices and TPA insurance claim processing.\n\n" +
+                    "Explore the live system under our **Products** tab or click **Book a Demo** to test administrative controls.";
         }
 
-        // 8. Architecture / Technology Stack
-        if (lower.contains("architecture") || lower.contains("tech stack") || lower.contains("technology") || lower.contains("java") || lower.contains("database") || lower.contains("docker")) {
-            return """
-            **OHO TECH Enterprise Architecture:**
-
-            Our platform is built to enterprise financial and healthcare grade specifications:
-            • **Backend:** Java 21 LTS, Spring Boot 4.x, Spring Security with stateless JWT
-            • **Frontend:** Next.js 16 (React 19, Turbopack, Tailwind CSS v4)
-            • **Database:** PostgreSQL 17 with HikariCP connection pooling and ACID compliance
-            • **Security:** RSA 2048-bit hardware-locked licenses, bcrypt password hashing, and AES-256 vault
-            • **Deployment:** Docker containers, bare-metal Windows Server/Linux, or Cloudflare Edge proxy
-
-            Need technical API documentation or swagger endpoints?
-            """.stripIndent();
+        if (lower.contains("school") || lower.contains("university") || lower.contains("education") || lower.contains("college")) {
+            return "OHO TECH provides complete **School and University Management ERP** platforms:\n\n" +
+                    "• **Student & Staff Administration**: Digital admissions, attendance tracking, and faculty timetables.\n" +
+                    "• **Automated Fee Engine**: Online fee collection, receipts, pending dues alerts, and accounting ledger.\n" +
+                    "• **Examinations & Report Cards**: Automated marksheets, grade calculations, and student transcripts.\n" +
+                    "• **Parent Portal & Mobile App**: Real-time SMS and push alerts for parents.\n\n" +
+                    "You can view live demo accounts and full feature breakdowns under our **Products** section.";
         }
 
-        // 9. Contact / Support / Meeting / Demo
-        if (lower.contains("contact") || lower.contains("phone") || lower.contains("email") || lower.contains("demo") || lower.contains("meeting") || lower.contains("meet") || lower.contains("support")) {
-            return """
-            **Connect with OHO TECH Enterprise Team:**
-
-            • **Corporate Headquarters:** Health & Tech City, Bhubaneswar & Cuttack, Odisha, India
-            • **Direct Email:** info@ohotech.com / kampainfraa@gmail.com
-            • **Virtual Demo:** Book an interactive Google Meet session via our Appointments page
-            • **WhatsApp Desk:** Real-time business chat with our solutions team
-            • **Support Desk SLA:** P1 Urgent response within 2 hours
-
-            How can our engineering team assist your organization today?
-            """.stripIndent();
+        if (lower.contains("retail") || lower.contains("pos") || lower.contains("billing") || lower.contains("supermarket")) {
+            return "OHO TECH's **Retail POS & Multi-Store Billing** engine delivers high-speed retail checkout:\n\n" +
+                    "• **Rapid Barcode Scanning & Billing**: Quick checkout with thermal receipt printer and barcode scanner support.\n" +
+                    "• **Inventory & Stock Alerts**: Low stock alerts, batch number tracking, and automated vendor purchase orders.\n" +
+                    "• **Multi-Branch Management**: Centralized dashboard for multi-store inventory and daily sales settlement.\n" +
+                    "• **Customer Loyalty & GST**: Integrated GST tax invoices, customer credit tracking, and discount campaigns.";
+        if (lower.contains("order")) {
+            return "To check your order status, please sign in to your OHO TECH account. Once logged in, visit **Profile → Orders** to view real-time delivery status, transaction IDs, and downloadable PDF invoices.";
         }
 
-        // 10. Greetings
-        if (lower.startsWith("hi") || lower.startsWith("hello") || lower.startsWith("hey") || lower.contains("good morning") || lower.contains("good afternoon")) {
-            return "Hello! I am the OHO TECH AI Copilot. I can assist you with product inquiries, enterprise solution architecture, order status tracking, and technical support across our 28+ turnkey software platforms. How can I help your business today?";
-        }
-
-        // 11. General Default
-        return """
-        Thank you for reaching out to OHO TECH. Our enterprise technology platform delivers 28+ turnkey software solutions across Healthcare (HMS & IVF), Education (School & University ERP), Retail POS & Billing, and Enterprise HRMS.
-
-        I can assist you with:
-        1. **Solution Overviews & Architecture** — Explaining clinical, academic, or commercial workflows
-        2. **Licensing & Quotations** — Providing turnkey prices and hardware device limits
-        3. **Order & Delivery Status** — Tracking active software fulfillment stages
-        4. **Scheduling Demos** — Booking a 30-minute Google Meet walkthrough with our engineers
-
-        What software solution would you like to explore?
-        """.stripIndent();
+        // Default comprehensive company and solution introduction
+        return "Welcome to **OHO TECH**! We are a full-stack enterprise technology platform and digital growth engineering firm.\n\n" +
+                "**Our Core Offerings:**\n" +
+                "1. **28+ Turnkey Software Hubs**: Pre-built enterprise platforms including Hospital Management (HMS), School ERP, Retail POS, Hotel ERP, Real Estate CRM, and Microfinance Systems.\n" +
+                "2. **Custom Software Engineering**: Bespoke web applications, native mobile apps (iOS/Android), scalable cloud backends (Java/Spring Boot/PostgreSQL), and AI workflow automation.\n" +
+                "3. **Digital Growth Solutions**: Enterprise SEO, Meta & Google Ad campaigns, high-impact branding, and WhatsApp automated broadcasts.\n\n" +
+                "How can I assist your business today? Feel free to ask about any specific industry solution, book a live demo, or request a custom development quote.";
     }
 
     private String generateIntelligentJsonAnswer(String prompt) {

@@ -2,10 +2,134 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Bot, Send, User, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Bot, Send, User, CheckCircle2, RefreshCw, ShieldCheck, ChevronRight, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chatWithAi } from '@/api/ai';
 import { ProductDto } from '@/api/types';
+
+function renderInlineStyles(text: string): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  const regex = /(\*\*[^*]+\*\*|`[^`]+`)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+    const token = match[0];
+    if (token.startsWith('**') && token.endsWith('**')) {
+      parts.push(
+        <strong key={match.index} className="font-semibold text-white">
+          {token.slice(2, -2)}
+        </strong>
+      );
+    } else if (token.startsWith('`') && token.endsWith('`')) {
+      parts.push(
+        <code
+          key={match.index}
+          className="px-1.5 py-0.5 rounded bg-slate-800 text-indigo-300 font-mono text-xs"
+        >
+          {token.slice(1, -1)}
+        </code>
+      );
+    }
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
+function AiMarkdownContent({ content }: { content: string }) {
+  const lines = content.split('\n');
+  return (
+    <div className="space-y-1.5 leading-relaxed text-sm">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} className="h-1.5" />;
+        }
+
+        if (trimmed.startsWith('### ')) {
+          return (
+            <h4 key={idx} className="font-bold text-white text-sm mt-3 mb-1">
+              {renderInlineStyles(trimmed.slice(4))}
+            </h4>
+          );
+        }
+        if (trimmed.startsWith('## ')) {
+          return (
+            <h3 key={idx} className="font-bold text-white text-base mt-3 mb-1">
+              {renderInlineStyles(trimmed.slice(3))}
+            </h3>
+          );
+        }
+
+        if (trimmed.startsWith('• ') || trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          return (
+            <div key={idx} className="flex items-start gap-2 pl-1.5 my-1">
+              <span className="text-indigo-400 font-bold shrink-0 mt-0.5">•</span>
+              <span className="flex-1 text-slate-200">
+                {renderInlineStyles(trimmed.replace(/^[•\-\*]\s*/, ''))}
+              </span>
+            </div>
+          );
+        }
+
+        const numMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
+        if (numMatch) {
+          return (
+            <div key={idx} className="flex items-start gap-2 pl-1.5 my-1">
+              <span className="text-indigo-400 font-semibold font-mono shrink-0">
+                {numMatch[1]}.
+              </span>
+              <span className="flex-1 text-slate-200">
+                {renderInlineStyles(numMatch[2])}
+              </span>
+            </div>
+          );
+        }
+
+        return (
+          <p key={idx} className="text-slate-200">
+            {renderInlineStyles(line)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function formatToolAction(tool: string): string {
+  if (!tool) return '';
+  if (tool === 'searchProducts') return 'Finding matching OHO TECH solutions…';
+  if (tool === 'getOrderStatus') return 'Checking your order details…';
+  if (tool === 'customEngineering' || tool === 'customDev') return 'Reviewing your custom development requirements…';
+  if (tool === 'techArchitecture' || tool === 'techAdvisory') return 'Analyzing system architecture…';
+  return tool;
+}
+
+function formatAiErrorMessage(error: any): string {
+  if (error?.name === 'AbortError') return '';
+  const msg = error?.message?.toLowerCase() || '';
+  if (msg.includes('rate limit') || msg.includes('429')) {
+    return "We're receiving a high number of requests. Please try again shortly.";
+  }
+  if (msg.includes('timeout') || msg.includes('timed out')) {
+    return 'The request took longer than expected. Please try again.';
+  }
+  if (msg.includes('sign in') || msg.includes('login') || msg.includes('auth')) {
+    return 'Please sign in to access that information.';
+  }
+  if (msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch')) {
+    return 'Our AI advisor is temporarily unavailable. Please try again in a moment.';
+  }
+  return "I couldn't complete that request. You can also contact the OHO TECH team for assistance at hello@ohotech.com.";
+}
 
 export function AIChatSection() {
   const [chatMessages, setChatMessages] = React.useState<Array<{
@@ -15,26 +139,54 @@ export function AIChatSection() {
     tools?: string[];
     products?: ProductDto[];
     time: string;
+    isError?: boolean;
   }>>([
     {
       id: 'init-1',
       role: 'model',
-      content: 'Welcome to OHO TECH AI Intelligence. Powered by Google Gemini, I am ready to advise you on enterprise systems architecture, 28+ turnkey software products, or custom engineering.',
+      content: 'Welcome to OHO TECH AI Intelligence. Powered by Google Gemini, I am ready to advise you on enterprise systems architecture, 28+ turnkey software platforms, or custom engineering.',
       time: 'Just now',
     },
   ]);
   const [chatInput, setChatInput] = React.useState('');
   const [chatLoading, setChatLoading] = React.useState(false);
   const [conversationId, setConversationId] = React.useState<number | undefined>();
+  const [sessionId, setSessionId] = React.useState<string>('');
   const chatBottomRef = React.useRef<HTMLDivElement>(null);
+  const abortControllerRef = React.useRef<AbortController | null>(null);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      let stored = localStorage.getItem('oho_ai_session_id');
+      if (!stored) {
+        stored = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'sess_' + Date.now();
+        localStorage.setItem('oho_ai_session_id', stored);
+      }
+      setSessionId(stored);
+    }
+  }, []);
 
   React.useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
+  React.useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   const handleSendChat = async (override?: string) => {
     const text = override || chatInput;
     if (!text.trim() || chatLoading) return;
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const userEntry = {
       id: 'usr-' + Date.now(),
@@ -48,11 +200,15 @@ export function AIChatSection() {
     setChatLoading(true);
 
     try {
-      const res = await chatWithAi({
-        message: text.trim(),
-        conversationId,
-        feature: 'CHATBOT',
-      });
+      const res = await chatWithAi(
+        {
+          message: text.trim(),
+          conversationId,
+          sessionId,
+          feature: 'CHATBOT',
+        },
+        controller.signal
+      );
 
       if (res.success && res.data) {
         const responseData = res.data;
@@ -72,18 +228,41 @@ export function AIChatSection() {
         throw new Error(res.message);
       }
     } catch (e: any) {
+      if (e?.name === 'AbortError') return;
       setChatMessages((prev) => [
         ...prev,
         {
           id: 'err-' + Date.now(),
           role: 'model',
-          content: e.message || 'AI service is temporarily unavailable. Please retry.',
+          content: formatAiErrorMessage(e),
+          isError: true,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
     } finally {
       setChatLoading(false);
+      abortControllerRef.current = null;
     }
+  };
+
+  const handleResetSession = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const newSessionId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'sess_' + Date.now();
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('oho_ai_session_id', newSessionId);
+    }
+    setSessionId(newSessionId);
+    setConversationId(undefined);
+    setChatMessages([
+      {
+        id: 'new-' + Date.now(),
+        role: 'model',
+        content: 'Session reset. How can I assist your enterprise today?',
+        time: 'Just now',
+      },
+    ]);
   };
 
   return (
@@ -99,18 +278,8 @@ export function AIChatSection() {
           </p>
         </div>
         <button
-          onClick={() => {
-            setConversationId(undefined);
-            setChatMessages([
-              {
-                id: 'new-' + Date.now(),
-                role: 'model',
-                content: 'Session reset. How can I assist your enterprise today?',
-                time: 'Just now',
-              },
-            ]);
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-800 transition-colors"
+          onClick={handleResetSession}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-800 transition-colors cursor-pointer"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>New Session</span>
@@ -131,22 +300,32 @@ export function AIChatSection() {
                 'w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-white mt-0.5',
                 m.role === 'user'
                   ? 'bg-blue-600'
+                  : m.isError
+                  ? 'bg-amber-600'
                   : 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-500/20'
               )}
             >
-              {m.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+              {m.role === 'user' ? (
+                <User className="w-4 h-4" />
+              ) : m.isError ? (
+                <AlertCircle className="w-4 h-4" />
+              ) : (
+                <Bot className="w-4 h-4" />
+              )}
             </div>
 
             <div className="space-y-2">
               <div
                 className={cn(
-                  'px-4 py-3 rounded-2xl leading-relaxed whitespace-pre-wrap text-sm',
+                  'px-4 py-3 rounded-2xl leading-relaxed text-sm',
                   m.role === 'user'
-                    ? 'bg-blue-600 text-white rounded-tr-sm'
+                    ? 'bg-blue-600 text-white rounded-tr-sm whitespace-pre-wrap'
+                    : m.isError
+                    ? 'bg-amber-950/40 text-amber-200 border border-amber-800/50 rounded-tl-sm'
                     : 'bg-slate-900/90 text-slate-200 border border-slate-800 rounded-tl-sm shadow-md'
                 )}
               >
-                {m.content}
+                {m.role === 'user' ? m.content : <AiMarkdownContent content={m.content} />}
               </div>
 
               {m.tools && m.tools.length > 0 && (
@@ -154,10 +333,10 @@ export function AIChatSection() {
                   {m.tools.map((t, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] bg-slate-900 text-indigo-300 border border-indigo-500/20 font-mono"
+                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] bg-slate-900 text-indigo-300 border border-indigo-500/20"
                     >
                       <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                      Tool: {t}
+                      <span>{formatToolAction(t)}</span>
                     </span>
                   ))}
                 </div>
@@ -168,20 +347,32 @@ export function AIChatSection() {
                   {m.products.map((p) => (
                     <Link
                       key={p.id}
-                      href="/products"
+                      href={`/products/${p.id}`}
                       className="p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/40 transition-all group"
                     >
                       <div className="flex justify-between items-start">
                         <h4 className="font-semibold text-white group-hover:text-indigo-400 transition-colors">
                           {p.name}
                         </h4>
-                        <span className="text-emerald-400 font-mono text-xs shrink-0 font-bold">
-                          ₹{p.price?.toLocaleString()}
-                        </span>
+                        {p.price != null && p.price > 0 ? (
+                          <span className="text-emerald-400 font-mono text-xs shrink-0 font-bold">
+                            ₹{p.price.toLocaleString()}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs shrink-0">
+                            Contact us for pricing
+                          </span>
+                        )}
                       </div>
-                      <p className="text-xs text-slate-400 line-clamp-2 mt-1">
-                        {p.description}
-                      </p>
+                      {p.description && (
+                        <p className="text-xs text-slate-400 line-clamp-2 mt-1">
+                          {p.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-end mt-1 text-[11px] text-indigo-400 font-medium group-hover:translate-x-0.5 transition-transform">
+                        <span>View Platform Details</span>
+                        <ChevronRight className="w-3 h-3 ml-0.5" />
+                      </div>
                     </Link>
                   ))}
                 </div>
@@ -198,6 +389,7 @@ export function AIChatSection() {
               <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" />
               <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:0.2s]" />
               <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:0.4s]" />
+              <span className="text-xs text-slate-400 ml-1.5">Consulting advisory engine...</span>
             </div>
           </div>
         )}
@@ -206,16 +398,17 @@ export function AIChatSection() {
 
       <div className="flex gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-slate-800">
         {[
-          'Show me hospital & healthcare software',
-          'What is included in School ERP?',
-          'How do I track order status?',
-          'Multi-vendor e-commerce platform pricing',
+          'Hospital Management Software (HMS)',
+          'School & College ERP Features',
+          'Retail POS & Multi-Store Billing',
+          'Track Active Order Fulfillment',
+          'Custom Cloud Architecture Consultation',
         ].map((qp, idx) => (
           <button
             key={idx}
             disabled={chatLoading}
             onClick={() => handleSendChat(qp)}
-            className="px-3 py-1.5 rounded-full text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 shrink-0 transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 rounded-full text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 shrink-0 transition-colors disabled:opacity-50 cursor-pointer"
           >
             {qp}
           </button>
@@ -240,7 +433,7 @@ export function AIChatSection() {
         <button
           disabled={chatLoading || !chatInput.trim()}
           onClick={() => handleSendChat()}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-2xl font-semibold text-sm transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/30"
+          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-2xl font-semibold text-sm transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/30 cursor-pointer disabled:cursor-not-allowed"
         >
           <span>Send</span>
           <Send className="w-4 h-4" />

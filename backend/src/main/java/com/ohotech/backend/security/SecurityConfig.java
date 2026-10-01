@@ -108,6 +108,8 @@ public class SecurityConfig {
                     "/api/webhooks/**",
                     "/api/payments/webhook",
                     "/api/ai/chat",
+                    "/api/ai/support",
+                    "/api/ai/health",
                     "/api/ai/product/**",
                     "/api/ai/classify",
                     "/api/ai/search",

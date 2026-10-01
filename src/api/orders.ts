@@ -1,7 +1,7 @@
-import { apiClient, getAccessToken } from './client';
+import { apiClient, getAccessToken, getApiBaseUrl } from './client';
 import { ApiResponse, Order } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
+const API_BASE_URL = getApiBaseUrl();
 
 export interface CreateOrderParams {
   shippingAddress: string;

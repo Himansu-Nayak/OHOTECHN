@@ -34,6 +34,23 @@ public class AiController {
     private final AiSemanticSearchService semanticSearchService;
     private final AIConversationRepository conversationRepository;
     private final AIMessageRepository messageRepository;
+    private final GeminiService geminiService;
+
+    @GetMapping("/health")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAiHealth() {
+        Map<String, Object> health = new java.util.HashMap<>();
+        boolean configured = geminiService.isConfigured();
+        boolean testMode = "test-key-mock".equals(geminiService.getApiKey());
+        String status = (configured || testMode) ? "READY" : "NOT_CONFIGURED";
+
+        health.put("status", status);
+        health.put("available", configured || testMode);
+        health.put("configured", configured || testMode);
+        health.put("model", geminiService.getDefaultModel());
+        health.put("service", "OHO TECH AI Advisory Engine");
+        health.put("timestamp", java.time.LocalDateTime.now());
+        return ResponseEntity.ok(ApiResponse.success("AI service status", health));
+    }
 
     @PostMapping("/chat")
     public ResponseEntity<ApiResponse<AiChatResponse>> chat(

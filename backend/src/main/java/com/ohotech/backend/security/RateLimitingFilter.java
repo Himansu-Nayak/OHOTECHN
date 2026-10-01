@@ -47,7 +47,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             uri.startsWith("/api/auth/register") ||
             uri.startsWith("/api/auth/send-otp") ||
             uri.startsWith("/api/payments/verify") ||
-            uri.startsWith("/api/ai/") ||
+            (uri.startsWith("/api/ai/") && !uri.equals("/api/ai/health")) ||
             uri.contains("/activate") ||
             uri.contains("/trial")) {
 

@@ -35,6 +35,39 @@ public class AdminAiController {
     private final AiSemanticSearchService semanticSearchService;
     private final AIUsageRepository aiUsageRepository;
     private final AIConversationRepository conversationRepository;
+    private final com.ohotech.backend.service.ai.GeminiService geminiService;
+
+    @GetMapping("/operations")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAiOperations() {
+        Map<String, Object> ops = new java.util.HashMap<>();
+        boolean configured = geminiService.isConfigured();
+        ops.put("configured", configured);
+        ops.put("available", configured);
+        ops.put("model", geminiService.getDefaultModel());
+        ops.put("embeddingModel", geminiService.getEmbeddingModel());
+        ops.put("status", configured ? "READY" : "NOT_CONFIGURED");
+
+        long totalUsage = aiUsageRepository.count();
+        ops.put("totalRequests", totalUsage);
+
+        java.time.LocalDateTime oneDayAgo = java.time.LocalDateTime.now().minusDays(1);
+        List<AIUsage> recentUsage = aiUsageRepository.findAll(Sort.by(Sort.Direction.DESC, "timestamp"));
+        long todayCount = recentUsage.stream()
+                .filter(u -> u.getTimestamp() != null && u.getTimestamp().isAfter(oneDayAgo))
+                .count();
+        long totalTokens = recentUsage.stream()
+                .filter(u -> u.getTotalTokens() != null)
+                .mapToLong(AIUsage::getTotalTokens)
+                .sum();
+
+        ops.put("requestsToday", todayCount);
+        ops.put("totalTokensUsed", totalTokens);
+        ops.put("activeConversations", conversationRepository.count());
+        ops.put("recentErrors", List.of());
+        ops.put("timestamp", java.time.LocalDateTime.now());
+
+        return ResponseEntity.ok(ApiResponse.success("AI operational metrics retrieved", ops));
+    }
 
     @PostMapping("/product-description")
     public ResponseEntity<ApiResponse<ProductAiGenerationResponse>> generateProductDescription(

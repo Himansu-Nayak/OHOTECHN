@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient, getApiBaseUrl } from './client';
 import { ApiResponse, ProductDto } from './types';
 
 export interface AiChatRequest {
@@ -107,17 +107,23 @@ export interface AIMessageDto {
 }
 
 // Public / Customer AI APIs
-export async function chatWithAi(request: AiChatRequest): Promise<ApiResponse<AiChatResponse>> {
+export async function getAiHealth(): Promise<ApiResponse<{ status: string; configured: boolean; model: string; service: string }>> {
+  return apiClient<{ status: string; configured: boolean; model: string; service: string }>('/api/ai/health');
+}
+
+export async function chatWithAi(request: AiChatRequest, signal?: AbortSignal): Promise<ApiResponse<AiChatResponse>> {
   return apiClient<AiChatResponse>('/api/ai/chat', {
     method: 'POST',
     body: JSON.stringify(request),
+    signal,
   });
 }
 
-export async function askAiSupport(request: AiChatRequest): Promise<ApiResponse<AiChatResponse>> {
+export async function askAiSupport(request: AiChatRequest, signal?: AbortSignal): Promise<ApiResponse<AiChatResponse>> {
   return apiClient<AiChatResponse>('/api/ai/support', {
     method: 'POST',
     body: JSON.stringify(request),
+    signal,
   });
 }
 
@@ -147,7 +153,7 @@ export async function analyzeAiDocument(file: File, prompt?: string): Promise<Ap
   formData.append('file', file);
   if (prompt) formData.append('prompt', prompt);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
+  const API_BASE_URL = getApiBaseUrl();
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
   const headers: Record<string, string> = {};
@@ -167,7 +173,7 @@ export async function analyzeAiImage(file: File, context?: string): Promise<ApiR
   formData.append('file', file);
   if (context) formData.append('context', context);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.ohotechn.com';
+  const API_BASE_URL = getApiBaseUrl();
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
   const headers: Record<string, string> = {};
