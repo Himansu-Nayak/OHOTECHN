@@ -11,7 +11,9 @@ import { useToast } from '@/context/ToastContext';
 import { getMyEntitledProductsApi } from '@/api/releases';
 import { getMyLicensesApi } from '@/api/licenses';
 import { getMySubscriptionsApi } from '@/api/subscriptions';
-import { ProductDto, License, Subscription } from '@/api/types';
+import { ProductDto, License, Subscription, DeploymentDto } from '@/api/types';
+import { getMyDeploymentsApi } from '@/api/deployments';
+import { cn } from '@/lib/utils';
 
 export default function MyProductsPage() {
   const { user } = useAuth();
@@ -20,6 +22,7 @@ export default function MyProductsPage() {
   const [products, setProducts] = React.useState<ProductDto[]>([]);
   const [licenses, setLicenses] = React.useState<License[]>([]);
   const [subscriptions, setSubscriptions] = React.useState<Subscription[]>([]);
+  const [deployments, setDeployments] = React.useState<DeploymentDto[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
 
@@ -28,14 +31,16 @@ export default function MyProductsPage() {
     async function loadData() {
       setLoading(true);
       try {
-        const [pRes, lRes, sRes] = await Promise.all([
+        const [pRes, lRes, sRes, dRes] = await Promise.all([
           getMyEntitledProductsApi().catch(() => ({ success: false, data: [] })),
           getMyLicensesApi().catch(() => ({ success: false, data: [] })),
           getMySubscriptionsApi().catch(() => ({ success: false, data: [] })),
+          getMyDeploymentsApi().catch(() => ({ success: false, data: [] })),
         ]);
         if (pRes.success && pRes.data) setProducts(pRes.data);
         if (lRes.success && lRes.data) setLicenses(lRes.data);
         if (sRes.success && sRes.data) setSubscriptions(sRes.data);
+        if (dRes.success && dRes.data) setDeployments(dRes.data);
       } finally {
         setLoading(false);
       }
@@ -179,6 +184,51 @@ export default function MyProductsPage() {
                       </Link>
                     </div>
                   </div>
+
+                  {/* Operational Deployment Tracking */}
+                  {(() => {
+                    const matchedDeployment = deployments.find((d) => d.productId === product.id);
+                    if (!matchedDeployment) return null;
+
+                    const isLive = matchedDeployment.status === 'LIVE';
+
+                    return (
+                      <div className="mt-4 p-4 rounded-2xl bg-sky-50/70 border border-sky-200 text-xs">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-1.5 font-bold text-sky-950 uppercase tracking-wider text-[11px]">
+                            <span className={cn("w-2 h-2 rounded-full", isLive ? "bg-emerald-500" : "bg-sky-600 animate-pulse")} />
+                            Software Provisioning &amp; Environment
+                          </div>
+                          <span className={cn(
+                            "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase",
+                            isLive
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                              : "bg-amber-100 text-amber-800 border border-amber-300"
+                          )}>
+                            Status: {matchedDeployment.status}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                          <div className="text-slate-600 text-[11px] leading-relaxed">
+                            {matchedDeployment.customerNotes || 'Your dedicated instance is undergoing automated environment configuration and security testing.'}
+                          </div>
+
+                          {isLive && matchedDeployment.accessUrl && (
+                            <a
+                              href={matchedDeployment.accessUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shrink-0 shadow-xs"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              <span>Launch Cloud Console</span>
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* License & Subscription Cards */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-5 text-xs font-mono">

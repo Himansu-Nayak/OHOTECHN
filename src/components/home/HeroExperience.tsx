@@ -21,7 +21,6 @@ if (typeof window !== 'undefined') {
  */
 export function HeroExperience() {
   const containerRef = useRef<HTMLElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
   const headlineLine1Ref = useRef<HTMLDivElement>(null);
   const headlineLine2Ref = useRef<HTMLDivElement>(null);
   const headlineLine3Ref = useRef<HTMLDivElement>(null);
@@ -41,7 +40,6 @@ export function HeroExperience() {
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
         gsap.set([
-          badgeRef.current,
           headlineLine1Ref.current,
           headlineLine2Ref.current,
           headlineLine3Ref.current,
@@ -56,14 +54,7 @@ export function HeroExperience() {
         defaults: { ease: 'power3.out' }
       });
 
-      // 1. Badge arrives
-      entranceTl.fromTo(
-        badgeRef.current,
-        { opacity: 0, y: isMobile ? 10 : 16 },
-        { opacity: 1, y: 0, duration: isMobile ? 0.45 : 0.6 }
-      );
-
-      // 2. Headline enters with crisp masked clip reveal
+      // 1. Headline enters with crisp masked clip reveal
       entranceTl.fromTo(
         [headlineLine1Ref.current, headlineLine2Ref.current, headlineLine3Ref.current],
         { yPercent: 110, opacity: 0 },
@@ -72,8 +63,7 @@ export function HeroExperience() {
           opacity: 1, 
           duration: isMobile ? 0.6 : 0.85, 
           stagger: isMobile ? 0.08 : 0.12 
-        },
-        '-=0.3'
+        }
       );
 
       // 3. Supporting editorial narrative
@@ -148,13 +138,6 @@ export function HeroExperience() {
 
       <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col justify-center">
         
-        {/* Step 1: Technical Pill Badge */}
-        <div ref={badgeRef} className="mb-4 sm:mb-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-emerald-500/40 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-xl shadow-black/50">
-            <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
-            <span>SOFTWARE PRODUCTS &amp; BESPOKE DIGITAL ENGINEERING</span>
-          </div>
-        </div>
 
         {/* Step 2: Cinematic Kinetic Headline Display with Razor-Sharp Drop Shadows */}
         <div className="space-y-1 sm:space-y-2 mb-6 sm:mb-8 select-none">

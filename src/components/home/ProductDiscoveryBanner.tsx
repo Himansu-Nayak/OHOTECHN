@@ -53,8 +53,8 @@ export function ProductDiscoveryBanner() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 pb-8 border-b border-white/10">
           <div>
             <ScrollReveal yOffset={15} duration={0.6}>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
-                <Package className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-2 text-sky-400 font-mono text-xs sm:text-sm font-black tracking-[0.15em] uppercase mb-3">
+                <Package className="w-4 h-4" />
                 <span>COMMERCIAL SOFTWARE CATALOG • 28 READY SYSTEMS</span>
               </div>
             </ScrollReveal>

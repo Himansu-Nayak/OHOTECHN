@@ -28,14 +28,77 @@ export interface AuthResponse {
 export interface ProductDto {
   id: number;
   name: string;
+  slug?: string;
   description: string;
   price: number;
+  providerCost?: number;
+  resellerMargin?: number;
+  providerId?: number;
+  providerName?: string;
+  integrationStatus?: string;
+  deploymentType?: string;
+  demoUrl?: string;
+  documentationUrl?: string;
+  featured?: boolean;
   stock: number;
   imageUrl?: string;
   serviceType?: string;
   categoryId?: number;
   categoryName?: string;
   active: boolean;
+}
+
+export interface ProviderDto {
+  id: number;
+  name: string;
+  companyName?: string;
+  contactPerson?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  website?: string;
+  commercialTerms?: string;
+  commissionRate?: number;
+  technicalIntegrationType?: string;
+  integrationStatus?: string;
+  supportResponsibility?: string;
+  deploymentResponsibility?: string;
+  contractStatus?: string;
+  notes?: string;
+  active: boolean;
+  productsCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type DeploymentStatus =
+  | 'PENDING'
+  | 'ASSIGNED'
+  | 'CONFIGURING'
+  | 'TESTING'
+  | 'READY'
+  | 'LIVE'
+  | 'SUSPENDED'
+  | 'CANCELLED';
+
+export interface DeploymentDto {
+  id: number;
+  orderId?: number;
+  productId: number;
+  productName?: string;
+  userId: number;
+  userEmail?: string;
+  userName?: string;
+  licenseId?: number;
+  licenseKey?: string;
+  status: DeploymentStatus;
+  targetEnvironment?: string;
+  accessUrl?: string;
+  assignedEngineer?: string;
+  adminNotes?: string;
+  customerNotes?: string;
+  completedAt?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Page<T> {

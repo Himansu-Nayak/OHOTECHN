@@ -21,6 +21,8 @@ import { AdminHeader } from '@/components/admin/AdminHeader';
 import { AdminSidebar, AdminTabKey } from '@/components/admin/AdminSidebar';
 import { AdminDashboardView } from '@/components/admin/AdminDashboardView';
 import { AdminProductsView } from '@/components/admin/AdminProductsView';
+import { AdminProvidersView } from '@/components/admin/AdminProvidersView';
+import { AdminDeploymentsView } from '@/components/admin/AdminDeploymentsView';
 import { AdminOrdersView } from '@/components/admin/AdminOrdersView';
 import { AdminPaymentsView } from '@/components/admin/AdminPaymentsView';
 import { AdminSubscriptionsView } from '@/components/admin/AdminSubscriptionsView';
@@ -261,9 +263,17 @@ export default function AdminConsolePage() {
             />
           )}
 
-          {/* PILLAR 2: COMMERCE */}
+          {/* PILLAR 2: COMMERCE & RESELLER MARKETPLACE */}
           {activeTab === 'products' && (
             <AdminProductsView />
+          )}
+
+          {activeTab === 'providers' && (
+            <AdminProvidersView />
+          )}
+
+          {activeTab === 'deployments' && (
+            <AdminDeploymentsView />
           )}
 
           {activeTab === 'orders' && (

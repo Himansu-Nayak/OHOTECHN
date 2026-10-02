@@ -157,6 +157,12 @@ public class SoftwareReleaseService {
         softwareReleaseRepository.save(release);
     }
 
+    public List<SoftwareReleaseDto> getAllReleasesAdmin() {
+        return softwareReleaseRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
     public SoftwareReleaseDto mapToDto(SoftwareRelease release) {
         return SoftwareReleaseDto.builder()
                 .id(release.getId())

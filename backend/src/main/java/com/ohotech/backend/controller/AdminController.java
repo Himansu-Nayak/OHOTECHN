@@ -74,7 +74,7 @@ public class AdminController {
 
     @GetMapping("/products/{id}")
     public ResponseEntity<ApiResponse<ProductDto>> getAdminProductById(@PathVariable Long id) {
-        ProductDto product = productService.getProductById(id);
+        ProductDto product = productService.getAdminProductById(id);
         return ResponseEntity.ok(ApiResponse.success("Product fetched successfully", product));
     }
 

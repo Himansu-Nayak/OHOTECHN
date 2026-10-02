@@ -112,8 +112,8 @@ export function TechnologyStatement() {
           
           {/* Category Capsule */}
           <ScrollReveal yOffset={14} duration={0.6}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <div className="flex items-center justify-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.2em] uppercase mb-4">
+              <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>OHO STATEMENT • ARCHITECTURAL FORMULA</span>
             </div>
           </ScrollReveal>

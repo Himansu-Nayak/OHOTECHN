@@ -16,6 +16,8 @@ export type AdminTabKey =
   | 'overview' 
   | 'analytics' 
   | 'products' 
+  | 'providers'
+  | 'deployments'
   | 'orders' 
   | 'payments' 
   | 'subscriptions' 
@@ -97,6 +99,13 @@ export function AdminSidebar({
         { key: 'payments', label: 'Payments', icon: CreditCard },
         { key: 'subscriptions', label: 'Subscriptions', icon: Layers },
         { key: 'licenses', label: 'License Keys', icon: KeyRound },
+      ],
+    },
+    {
+      label: 'RESELLER MARKETPLACE',
+      items: [
+        { key: 'providers', label: 'Provider Agencies', icon: Building2 },
+        { key: 'deployments', label: 'Deployments & VPS', icon: GitPullRequest },
       ],
     },
     {

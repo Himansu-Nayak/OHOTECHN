@@ -117,13 +117,15 @@ public class SecurityConfig {
                     "/api/ai/image/analyze"
                 ).permitAll()
                 .requestMatchers("/api/products/my/**", "/api/products/my").authenticated()
+                .requestMatchers("/api/deployments/my/**", "/api/deployments/my", "/api/deployments/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/support/public/**").permitAll()
                 .requestMatchers("/api/support/customer/**").authenticated()
-                .requestMatchers("/api/support/**").hasAnyAuthority("ROLE_SUPPORT", "ROLE_ADMIN", "ROLE_DEVELOPER")
-                .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_DEVELOPER")
-                .requestMatchers("/api/developer/**").hasAuthority("ROLE_DEVELOPER")
+                .requestMatchers("/api/support/**").hasAnyAuthority("ROLE_SUPPORT", "ROLE_ADMIN")
+                .requestMatchers("/api/admin/analytics/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_DEVELOPER")
+                .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/api/developer/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_DEVELOPER")
                 .anyRequest().authenticated()
             );
 

@@ -124,8 +124,8 @@ export function ProofWall() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-widest mb-6">
-            <ShieldCheck className="w-3.5 h-3.5" />
+          <div className="flex items-center justify-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.2em] uppercase mb-4">
+            <ShieldCheck className="w-4 h-4" />
             <span>VERIFIED PRODUCTION ENDORSEMENTS</span>
           </div>
 

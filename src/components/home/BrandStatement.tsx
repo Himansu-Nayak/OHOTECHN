@@ -74,8 +74,8 @@ export function BrandStatement() {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="flex items-center justify-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.2em] uppercase mb-4">
+            <Sparkles className="w-4 h-4" />
             <span>TWO WAYS TO WORK WITH OHO TECH</span>
           </div>
 

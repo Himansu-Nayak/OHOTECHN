@@ -97,6 +97,12 @@ public class SoftwareReleaseController {
     }
 
     // Admin / Developer Endpoints
+    @GetMapping({"/admin/releases", "/developer/releases"})
+    public ResponseEntity<ApiResponse<List<SoftwareReleaseDto>>> getAllReleasesAdmin() {
+        List<SoftwareReleaseDto> releases = softwareReleaseService.getAllReleasesAdmin();
+        return ResponseEntity.ok(ApiResponse.success("All software releases retrieved", releases));
+    }
+
     @GetMapping("/admin/products/{productId}/releases")
     public ResponseEntity<ApiResponse<List<SoftwareReleaseDto>>> getAdminReleases(@PathVariable Long productId) {
         List<SoftwareReleaseDto> releases = softwareReleaseService.getAdminReleases(productId);

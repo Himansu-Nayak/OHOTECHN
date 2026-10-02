@@ -19,9 +19,7 @@ import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -589,6 +587,185 @@ public class PaymentService {
         }
 
         return mapPaymentToDto(payment);
+    }
+
+    @Transactional
+    public PaymentResponseDto adminRefundPayment(Long adminId, Long paymentId, PaymentRefundRequest refundRequest) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
+
+        User adminUser = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin User", "id", adminId));
+
+        if (payment.getStatus() != PaymentStatus.SUCCESSFUL) {
+            throw new BadRequestException("Only SUCCESSFUL payments can be refunded. Current status: " + payment.getStatus());
+        }
+
+        Order order = payment.getOrder();
+        BigDecimal refundAmount = (refundRequest != null && refundRequest.getAmount() != null)
+                ? refundRequest.getAmount()
+                : payment.getAmount();
+
+        String reason = (refundRequest != null && refundRequest.getReason() != null)
+                ? refundRequest.getReason().trim()
+                : "Administrative refund";
+
+        // Provider-specific refund handling
+        if ("RAZORPAY".equalsIgnoreCase(payment.getProvider()) ||
+                (payment.getRazorpayPaymentId() != null && !payment.getRazorpayPaymentId().isBlank())) {
+
+            if (testMode && !razorpayConfigured()) {
+                logger.info("Test mode active: Simulated Razorpay refund for payment #{}", payment.getId());
+            } else {
+                if (!razorpayConfigured()) {
+                    throw new BadRequestException("Razorpay gateway credentials are not configured on server.");
+                }
+
+                try {
+                    com.razorpay.RazorpayClient razorpay = new com.razorpay.RazorpayClient(razorpayKeyId, razorpayKeySecret);
+                    org.json.JSONObject refundObj = new org.json.JSONObject();
+                    long paise = refundAmount.multiply(new BigDecimal(100)).setScale(0, RoundingMode.HALF_UP).longValueExact();
+                    refundObj.put("amount", paise);
+                    refundObj.put("notes", new org.json.JSONObject(Map.of("reason", reason, "orderId", String.valueOf(order != null ? order.getId() : ""))));
+
+                    razorpay.payments.refund(payment.getRazorpayPaymentId(), refundObj);
+                    logger.info("Razorpay refund API call succeeded for payment {}", payment.getRazorpayPaymentId());
+                } catch (Exception e) {
+                    logger.error("Razorpay refund execution failed: {}", e.getMessage(), e);
+                    throw new BadRequestException("Gateway rejected refund: " + e.getMessage());
+                }
+            }
+        }
+
+        // Update payment state
+        payment.setStatus(PaymentStatus.REFUNDED);
+        payment.setFailureReason("Refunded: " + reason);
+        if (refundRequest != null && refundRequest.getAdminNotes() != null && !refundRequest.getAdminNotes().isBlank()) {
+            payment.setAdminNotes(refundRequest.getAdminNotes().trim());
+        }
+        payment = paymentRepository.save(payment);
+
+        // Update order state
+        if (order != null) {
+            order.setStatus(OrderStatus.REFUNDED);
+            orderRepository.save(order);
+
+            // Revoke active entitlements
+            List<Subscription> subs = subscriptionRepository.findAllByOrderId(order.getId());
+            for (Subscription sub : subs) {
+                sub.setStatus(SubscriptionStatus.CANCELLED);
+                subscriptionRepository.save(sub);
+                Optional<License> lic = licenseRepository.findBySubscriptionId(sub.getId());
+                lic.ifPresent(l -> {
+                    l.setStatus(LicenseStatus.REVOKED);
+                    licenseRepository.save(l);
+                });
+            }
+        }
+
+        // Audit Trail
+        auditService.logUserEvent(adminUser, "PAYMENT_REFUNDED", "Payment", String.valueOf(payment.getId()),
+                "Admin #" + adminId + " approved refund for Payment #" + payment.getId() +
+                " (Amount: ₹" + refundAmount + "). Reason: " + reason);
+
+        // Notify customer
+        try {
+            if (order != null && order.getUser() != null) {
+                notificationService.createNotification(
+                        order.getUser().getId(),
+                        "Payment Refund Processed",
+                        "A refund of ₹" + refundAmount + " has been processed for Order #" + order.getId() + ". Status: REFUNDED.",
+                        NotificationType.INFO,
+                        NotificationCategory.PAYMENT,
+                        "/orders"
+                );
+            }
+        } catch (Exception e) {
+            logger.warn("Refund customer notification warning: {}", e.getMessage());
+        }
+
+        return mapPaymentToDto(payment);
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentReconciliationReportDto generateReconciliationReport() {
+        List<Payment> allPayments = paymentRepository.findAll();
+        List<PaymentReconciliationReportDto.ReconciliationAnomalyDto> anomalies = new ArrayList<>();
+
+        int matchedCount = 0;
+        LocalDateTime threshold24h = LocalDateTime.now().minusHours(24);
+
+        for (Payment p : allPayments) {
+            boolean hasAnomaly = false;
+            Order ord = p.getOrder();
+
+            if (p.getStatus() == PaymentStatus.PENDING) {
+                if (p.getCreatedAt() != null && p.getCreatedAt().isBefore(threshold24h)) {
+                    anomalies.add(PaymentReconciliationReportDto.ReconciliationAnomalyDto.builder()
+                            .paymentId(p.getId())
+                            .orderId(ord != null ? ord.getId() : null)
+                            .provider(p.getProvider())
+                            .gatewayOrderId(p.getRazorpayOrderId())
+                            .gatewayPaymentId(p.getRazorpayPaymentId())
+                            .recordedAmount(p.getAmount())
+                            .currentPaymentStatus(p.getStatus().name())
+                            .currentOrderStatus(ord != null ? ord.getStatus().name() : "NONE")
+                            .anomalyType("PENDING_EXCEEDED_24H")
+                            .recommendation("Mark as FAILED or verify bank statement if customer made manual UTR transfer.")
+                            .detectedAt(LocalDateTime.now())
+                            .build());
+                    hasAnomaly = true;
+                }
+            }
+
+            if (ord != null) {
+                if (p.getStatus() == PaymentStatus.SUCCESSFUL && ord.getStatus() != OrderStatus.PAID && ord.getStatus() != OrderStatus.CONFIRMED && ord.getStatus() != OrderStatus.REFUNDED) {
+                    anomalies.add(PaymentReconciliationReportDto.ReconciliationAnomalyDto.builder()
+                            .paymentId(p.getId())
+                            .orderId(ord.getId())
+                            .provider(p.getProvider())
+                            .gatewayOrderId(p.getRazorpayOrderId())
+                            .gatewayPaymentId(p.getRazorpayPaymentId())
+                            .recordedAmount(p.getAmount())
+                            .currentPaymentStatus(p.getStatus().name())
+                            .currentOrderStatus(ord.getStatus().name())
+                            .anomalyType("ORDER_PAYMENT_STATUS_MISMATCH")
+                            .recommendation("Payment is marked SUCCESSFUL but Order status is " + ord.getStatus() + ". Re-sync order state.")
+                            .detectedAt(LocalDateTime.now())
+                            .build());
+                    hasAnomaly = true;
+                }
+
+                if (p.getAmount() != null && ord.getTotalAmount() != null && p.getAmount().compareTo(ord.getTotalAmount()) != 0) {
+                    anomalies.add(PaymentReconciliationReportDto.ReconciliationAnomalyDto.builder()
+                            .paymentId(p.getId())
+                            .orderId(ord.getId())
+                            .provider(p.getProvider())
+                            .gatewayOrderId(p.getRazorpayOrderId())
+                            .gatewayPaymentId(p.getRazorpayPaymentId())
+                            .recordedAmount(p.getAmount())
+                            .currentPaymentStatus(p.getStatus().name())
+                            .currentOrderStatus(ord.getStatus().name())
+                            .anomalyType("AMOUNT_MISMATCH")
+                            .recommendation("Payment amount (₹" + p.getAmount() + ") does not match Order amount (₹" + ord.getTotalAmount() + "). Review ledger.")
+                            .detectedAt(LocalDateTime.now())
+                            .build());
+                    hasAnomaly = true;
+                }
+            }
+
+            if (!hasAnomaly) {
+                matchedCount++;
+            }
+        }
+
+        return PaymentReconciliationReportDto.builder()
+                .generatedAt(LocalDateTime.now())
+                .totalRecordsEvaluated(allPayments.size())
+                .matchedCount(matchedCount)
+                .anomalyCount(anomalies.size())
+                .anomalies(anomalies)
+                .build();
     }
 
     public PaymentResponseDto mapPaymentToDto(Payment payment) {

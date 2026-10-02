@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
-import { ProductDto } from '@/api/types';
+import { ProductDto, ProviderDto } from '@/api/types';
 import { 
   getAdminProductsApi, 
   createAdminProductApi, 
@@ -17,6 +17,7 @@ import {
   deleteAdminProductApi,
   getCategoriesApi 
 } from '@/api/products';
+import { getAllActiveProvidersApi } from '@/api/providers';
 import { 
   AdminCard, AdminBadge, StatusBadge, AdminButton, 
   AdminInput, AdminSelect, AdminEmptyState, AdminTableSkeleton, 
@@ -27,6 +28,7 @@ export function AdminProductsView() {
   const { showToast } = useToast();
   const [products, setProducts] = React.useState<ProductDto[]>([]);
   const [categories, setCategories] = React.useState<any[]>([]);
+  const [providers, setProviders] = React.useState<ProviderDto[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
@@ -80,9 +82,21 @@ export function AdminProductsView() {
     }
   }, [page, pageSize, searchQuery, selectedCategory, statusFilter]);
 
+  const fetchProviders = React.useCallback(async () => {
+    try {
+      const res = await getAllActiveProvidersApi();
+      if (res.success && res.data) {
+        setProviders(res.data);
+      }
+    } catch (e) {
+      console.warn('Failed to load active providers', e);
+    }
+  }, []);
+
   React.useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+    fetchProviders();
+  }, [fetchCategories, fetchProviders]);
 
   React.useEffect(() => {
     fetchProducts();
@@ -108,9 +122,14 @@ export function AdminProductsView() {
       name: '',
       description: '',
       price: 0,
+      providerCost: 0,
+      resellerMargin: 0,
+      providerId: undefined,
       stock: 100,
       active: true,
       serviceType: 'Software',
+      integrationStatus: 'Integration pending provider/API information',
+      deploymentType: 'MANAGED_CLOUD',
       categoryId: categories.length > 0 ? categories[0].id : 1,
     });
     setIsModalOpen(true);
@@ -132,31 +151,32 @@ export function AdminProductsView() {
 
     setIsSaving(true);
     try {
+      const payload: Partial<ProductDto> = {
+        name: editingProduct.name,
+        description: editingProduct.description || '',
+        price: Number(editingProduct.price),
+        providerCost: editingProduct.providerCost !== undefined ? Number(editingProduct.providerCost) : undefined,
+        resellerMargin: editingProduct.resellerMargin !== undefined ? Number(editingProduct.resellerMargin) : undefined,
+        providerId: editingProduct.providerId ? Number(editingProduct.providerId) : undefined,
+        integrationStatus: editingProduct.integrationStatus || 'Integration pending provider/API information',
+        deploymentType: editingProduct.deploymentType || 'MANAGED_CLOUD',
+        demoUrl: editingProduct.demoUrl || '',
+        documentationUrl: editingProduct.documentationUrl || '',
+        stock: Number(editingProduct.stock || 100),
+        categoryId: Number(editingProduct.categoryId || 1),
+        serviceType: editingProduct.serviceType || 'Software',
+        imageUrl: editingProduct.imageUrl || '/OHO_TECH_LOGO.png',
+      };
+
       if (editingProduct.id) {
-        const res = await updateAdminProductApi(editingProduct.id, {
-          name: editingProduct.name,
-          description: editingProduct.description || '',
-          price: Number(editingProduct.price),
-          stock: Number(editingProduct.stock || 100),
-          categoryId: Number(editingProduct.categoryId || 1),
-          serviceType: editingProduct.serviceType || 'Software',
-          imageUrl: editingProduct.imageUrl || '/OHO_TECH_LOGO.png',
-        });
+        const res = await updateAdminProductApi(editingProduct.id, payload);
         if (res.success) {
           showToast('Product updated successfully', 'success');
           setIsModalOpen(false);
           fetchProducts();
         }
       } else {
-        const res = await createAdminProductApi({
-          name: editingProduct.name,
-          description: editingProduct.description || '',
-          price: Number(editingProduct.price),
-          stock: Number(editingProduct.stock || 100),
-          categoryId: Number(editingProduct.categoryId || 1),
-          serviceType: editingProduct.serviceType || 'Software',
-          imageUrl: '/OHO_TECH_LOGO.png',
-        });
+        const res = await createAdminProductApi(payload);
         if (res.success) {
           showToast('Product created successfully', 'success');
           setIsModalOpen(false);
@@ -322,8 +342,10 @@ export function AdminProductsView() {
               <thead>
                 <tr className="bg-slate-50/70 border-b border-slate-100 text-slate-500 text-[11px] font-semibold">
                   <th className="px-5 py-3">Product Name</th>
-                  <th className="px-4 py-3">Category</th>
-                  <th className="px-4 py-3">Price</th>
+                  <th className="px-4 py-3">Category &amp; Provider</th>
+                  <th className="px-4 py-3">Selling Price</th>
+                  <th className="px-4 py-3">Wholesale / Margin</th>
+                  <th className="px-4 py-3">Integration</th>
                   <th className="px-4 py-3">Catalog Status</th>
                   <th className="px-5 py-3 text-right">Actions</th>
                 </tr>
@@ -346,13 +368,42 @@ export function AdminProductsView() {
                           {p.description || 'No description provided'}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-slate-700 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
+                      <td className="px-4 py-3.5 text-slate-700 whitespace-nowrap space-y-1">
+                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200 block w-fit">
                           {p.categoryName || 'General'}
                         </span>
+                        {p.providerName ? (
+                          <span className="text-[10px] text-indigo-700 font-semibold block">
+                            Agency: {p.providerName}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-slate-400 italic block">
+                            Direct Solution
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3.5 font-semibold text-slate-900 whitespace-nowrap">
                         {priceFormatted}
+                      </td>
+                      <td className="px-4 py-3.5 whitespace-nowrap text-[11px]">
+                        {p.providerCost !== undefined && p.providerCost !== null ? (
+                          <div>
+                            <div className="text-slate-600">Cost: ₹{Number(p.providerCost).toLocaleString('en-IN')}</div>
+                            <div className="text-emerald-600 font-bold">Margin: ₹{Number(p.resellerMargin || 0).toLocaleString('en-IN')}</div>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 italic">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3.5 whitespace-nowrap">
+                        <span className={cn(
+                          "text-[10px] px-2 py-0.5 rounded-full font-mono font-medium border",
+                          p.integrationStatus?.includes('pending')
+                            ? "bg-amber-50 text-amber-800 border-amber-200"
+                            : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                        )}>
+                          {p.integrationStatus?.includes('pending') ? 'Pending API' : (p.integrationStatus || 'Verified')}
+                        </span>
                       </td>
                       <td className="px-4 py-3.5 whitespace-nowrap">
                         <button
@@ -430,31 +481,123 @@ export function AdminProductsView() {
         onClose={() => setIsModalOpen(false)}
         title={editingProduct?.id ? 'Edit Product' : 'Add New Solution'}
         subtitle={editingProduct?.id ? `Product ID #${editingProduct.id}` : 'Create a new software offering'}
-        maxWidth="md"
+        maxWidth="max-w-2xl"
       >
         <form onSubmit={handleSaveProduct} className="space-y-4">
           <AdminInput
-            label="Product Title"
+            label="Product Title *"
             required
             value={editingProduct?.name || ''}
             onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-            placeholder="e.g. Hospital Management System"
+            placeholder="e.g. Cooperative Banking & Society ERP"
           />
 
-          <div className="grid grid-cols-2 gap-3">
-            <AdminInput
-              label="Price (INR)"
-              type="number"
-              required
-              value={editingProduct?.price || ''}
-              onChange={(e) => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })}
-              placeholder="45000"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <AdminSelect
-              label="Category"
+              label="Product Category"
               value={editingProduct?.categoryId || (categories[0]?.id ?? 1)}
               onChange={(e) => setEditingProduct({ ...editingProduct, categoryId: Number(e.target.value) })}
               options={categories.map((c) => ({ value: String(c.id), label: c.name }))}
+            />
+
+            <AdminSelect
+              label="Software Provider Agency"
+              value={editingProduct?.providerId ? String(editingProduct.providerId) : ''}
+              onChange={(e) => {
+                const val = e.target.value ? Number(e.target.value) : undefined;
+                setEditingProduct({ ...editingProduct, providerId: val });
+              }}
+              options={[
+                { value: '', label: 'None (Direct In-House OHO Solution)' },
+                ...providers.map((p) => ({ value: String(p.id), label: `${p.name} (${p.commercialTerms || 'Agency'})` })),
+              ]}
+            />
+          </div>
+
+          {/* Pricing Architecture: Wholesale Cost + Margin = Selling Price */}
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div className="text-[11px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+              Wholesale Pricing &amp; Margin Engine
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <AdminInput
+                label="Wholesale Cost (INR)"
+                type="number"
+                value={editingProduct?.providerCost !== undefined ? String(editingProduct.providerCost) : ''}
+                onChange={(e) => {
+                  const cost = Number(e.target.value || 0);
+                  const margin = Number(editingProduct?.resellerMargin || 0);
+                  setEditingProduct({
+                    ...editingProduct,
+                    providerCost: cost,
+                    price: cost + margin > 0 ? cost + margin : Number(editingProduct?.price || 0),
+                  });
+                }}
+                placeholder="25000"
+              />
+
+              <AdminInput
+                label="OHO Margin (INR)"
+                type="number"
+                value={editingProduct?.resellerMargin !== undefined ? String(editingProduct.resellerMargin) : ''}
+                onChange={(e) => {
+                  const margin = Number(e.target.value || 0);
+                  const cost = Number(editingProduct?.providerCost || 0);
+                  setEditingProduct({
+                    ...editingProduct,
+                    resellerMargin: margin,
+                    price: cost + margin > 0 ? cost + margin : Number(editingProduct?.price || 0),
+                  });
+                }}
+                placeholder="10000"
+              />
+
+              <AdminInput
+                label="Customer Selling Price (INR) *"
+                type="number"
+                required
+                value={editingProduct?.price || ''}
+                onChange={(e) => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })}
+                placeholder="35000"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <AdminSelect
+              label="Deployment Architecture"
+              value={editingProduct?.deploymentType || 'MANAGED_CLOUD'}
+              onChange={(e) => setEditingProduct({ ...editingProduct, deploymentType: e.target.value })}
+              options={[
+                { value: 'MANAGED_CLOUD', label: 'Managed Cloud (Automated Provisioning)' },
+                { value: 'SAAS', label: 'Hosted SaaS Multi-Tenant' },
+                { value: 'SELF_HOSTED', label: 'Self-Hosted / VPS Deployment' },
+                { value: 'DESKTOP_INSTALL', label: 'Desktop Installer (Windows/Mac)' },
+                { value: 'MANUAL_SETUP', label: 'Manual Engineer Setup' },
+              ]}
+            />
+
+            <AdminInput
+              label="Integration Status"
+              value={editingProduct?.integrationStatus || 'Integration pending provider/API information'}
+              onChange={(e) => setEditingProduct({ ...editingProduct, integrationStatus: e.target.value })}
+              placeholder="Integration pending provider/API information"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <AdminInput
+              label="Live Demo URL (Optional)"
+              value={editingProduct?.demoUrl || ''}
+              onChange={(e) => setEditingProduct({ ...editingProduct, demoUrl: e.target.value })}
+              placeholder="https://demo.ohotechn.com"
+            />
+
+            <AdminInput
+              label="Documentation URL (Optional)"
+              value={editingProduct?.documentationUrl || ''}
+              onChange={(e) => setEditingProduct({ ...editingProduct, documentationUrl: e.target.value })}
+              placeholder="https://docs.ohotechn.com"
             />
           </div>
 

@@ -30,6 +30,8 @@ public class RazorpayWebhookController {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     private final CartService cartService;
+    private final com.ohotech.backend.repository.WebhookEventRepository webhookEventRepository;
+    private final com.ohotech.backend.service.AuditService auditService;
 
     @PostMapping("/webhook")
     public ResponseEntity<ApiResponse<String>> handleRazorpayWebhook(
@@ -52,7 +54,23 @@ public class RazorpayWebhookController {
         try {
             JSONObject event = new JSONObject(rawPayload);
             String eventType = event.optString("event");
-            logger.info("Processing verified Razorpay webhook event: {}", eventType);
+            String eventId = event.optString("id", "rzp_evt_" + System.currentTimeMillis());
+            logger.info("Processing verified Razorpay webhook event: {} (id: {})", eventType, eventId);
+
+            // Deduplication protection
+            if (webhookEventRepository.existsByProviderAndExternalEventId("RAZORPAY", eventId)) {
+                logger.warn("Duplicate Razorpay webhook event detected and ignored: {}", eventId);
+                return ResponseEntity.ok(ApiResponse.success("Duplicate webhook event acknowledged", "ALREADY_PROCESSED"));
+            }
+
+            com.ohotech.backend.entity.WebhookEvent webhookEvent = com.ohotech.backend.entity.WebhookEvent.builder()
+                    .provider("RAZORPAY")
+                    .externalEventId(eventId)
+                    .eventType(eventType)
+                    .status(com.ohotech.backend.entity.WebhookEventStatus.RECEIVED)
+                    .payloadSummary(rawPayload.length() > 500 ? rawPayload.substring(0, 500) + "..." : rawPayload)
+                    .build();
+            webhookEvent = webhookEventRepository.save(webhookEvent);
 
             if ("payment.captured".equals(eventType) || "order.paid".equals(eventType)) {
                 JSONObject payloadObj = event.optJSONObject("payload");
@@ -92,6 +110,13 @@ public class RazorpayWebhookController {
                     }
                 }
             }
+
+            webhookEvent.setStatus(com.ohotech.backend.entity.WebhookEventStatus.PROCESSED);
+            webhookEvent.setProcessedAt(java.time.LocalDateTime.now());
+            webhookEventRepository.save(webhookEvent);
+
+            auditService.logEvent("WEBHOOK_PROCESSED", "WebhookEvent", String.valueOf(webhookEvent.getId()),
+                    "Processed Razorpay webhook event: " + eventType + " [" + eventId + "]");
 
             return ResponseEntity.ok(ApiResponse.success("Webhook processed successfully", "OK"));
         } catch (Exception e) {

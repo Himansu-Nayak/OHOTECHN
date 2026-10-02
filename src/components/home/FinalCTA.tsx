@@ -68,9 +68,9 @@ export function FinalCTA({ onOpenEstimate }: FinalCTAProps) {
 
       <div ref={contentRef} className="relative z-10 max-w-5xl mx-auto w-full text-center">
         
-        {/* Status Pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-6 sm:mb-8">
-          <Sparkles className="w-3.5 h-3.5" />
+        {/* Section Eyebrow */}
+        <div className="flex items-center justify-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.2em] uppercase mb-4 sm:mb-6">
+          <Sparkles className="w-4 h-4" />
           <span>START YOUR TECHNICAL TRANSFORMATION</span>
         </div>
 

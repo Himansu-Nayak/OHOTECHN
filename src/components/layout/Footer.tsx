@@ -111,7 +111,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center text-center mb-16 sm:mb-24">
         
         {/* Brand Chapter Sub-header */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] mb-6 sm:mb-8">
+        <div className="flex items-center justify-center gap-2.5 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.25em] uppercase mb-6 sm:mb-8">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>SIGNATURE DIGITAL ENGINEERING AGENCY</span>
         </div>

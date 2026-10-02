@@ -129,7 +129,7 @@ export function TechnologyExplorer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1.5 rounded-full">
+          <div className="flex items-center gap-2 font-mono text-xs font-black text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 rounded-lg">
             <Activity className="w-3.5 h-3.5 animate-pulse" />
             <span>PRODUCTION VERIFIED</span>
           </div>

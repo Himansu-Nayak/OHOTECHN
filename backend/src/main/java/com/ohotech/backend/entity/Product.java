@@ -21,11 +21,34 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    private String slug;
+
     @Column(length = 2000)
     private String description;
 
     @Column(nullable = false)
     private BigDecimal price;
+
+    private BigDecimal providerCost; // Internal wholesale cost from provider
+
+    private BigDecimal resellerMargin; // Internal OHO TECH markup
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id")
+    private Provider provider;
+
+    @Builder.Default
+    private String integrationStatus = "Integration pending provider/API information";
+
+    @Builder.Default
+    private String deploymentType = "MANAGED_CLOUD"; // MANAGED_CLOUD, SELF_HOSTED, SAAS, DESKTOP_INSTALL, MANUAL_SETUP
+
+    private String demoUrl;
+
+    private String documentationUrl;
+
+    @Builder.Default
+    private boolean featured = false;
 
     @Builder.Default
     private Integer stock = 100;
@@ -48,6 +71,12 @@ public class Product {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (integrationStatus == null || integrationStatus.isBlank()) {
+            integrationStatus = "Integration pending provider/API information";
+        }
+        if (deploymentType == null || deploymentType.isBlank()) {
+            deploymentType = "MANAGED_CLOUD";
+        }
     }
 
     @PreUpdate

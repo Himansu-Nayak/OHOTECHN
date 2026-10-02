@@ -17,4 +17,8 @@ public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long
     boolean existsByProviderAndExternalEventId(String provider, String externalEventId);
 
     boolean existsByProviderAndExternalLeadIdAndStatus(String provider, String externalLeadId, WebhookEventStatus status);
+
+    java.util.List<WebhookEvent> findTop50ByOrderByReceivedAtDesc();
+
+    java.util.List<WebhookEvent> findByProviderOrderByReceivedAtDesc(String provider);
 }

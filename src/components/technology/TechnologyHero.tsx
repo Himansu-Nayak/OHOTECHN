@@ -83,9 +83,9 @@ export function TechnologyHero() {
         <span className="text-emerald-400 font-bold">TECHNOLOGY &amp; AI ARCHITECTURE</span>
       </nav>
 
-      {/* Badge Pill */}
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-6">
-        <Workflow className="w-3.5 h-3.5" />
+      {/* Eyebrow Label */}
+      <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.15em] uppercase mb-4">
+        <Workflow className="w-4 h-4" />
         <span>DISTRIBUTED SYSTEMS • CLOUD MESH • AI AUTOMATION</span>
       </div>
 

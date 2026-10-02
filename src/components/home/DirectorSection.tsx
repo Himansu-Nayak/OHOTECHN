@@ -28,8 +28,8 @@ export function DirectorSection() {
       {/* Top Section Header */}
       <div className="relative z-10 max-w-4xl mx-auto text-center mb-10 sm:mb-14">
         <ScrollReveal yOffset={15} duration={0.6}>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
-            <User className="w-3.5 h-3.5" />
+          <div className="flex items-center justify-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.2em] uppercase mb-3">
+            <User className="w-4 h-4" />
             <span>FOUNDER &amp; EXECUTIVE LEADERSHIP</span>
           </div>
         </ScrollReveal>

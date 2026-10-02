@@ -617,6 +617,8 @@ public class GeminiService {
                     "• **Inventory & Stock Alerts**: Low stock alerts, batch number tracking, and automated vendor purchase orders.\n" +
                     "• **Multi-Branch Management**: Centralized dashboard for multi-store inventory and daily sales settlement.\n" +
                     "• **Customer Loyalty & GST**: Integrated GST tax invoices, customer credit tracking, and discount campaigns.";
+        }
+
         if (lower.contains("order")) {
             return "To check your order status, please sign in to your OHO TECH account. Once logged in, visit **Profile → Orders** to view real-time delivery status, transaction IDs, and downloadable PDF invoices.";
         }

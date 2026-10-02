@@ -20,6 +20,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("SELECT s FROM Subscription s WHERE s.order.id = :orderId")
     Optional<Subscription> findByOrderId(@Param("orderId") Long orderId);
 
+    @Query("SELECT s FROM Subscription s WHERE s.order.id = :orderId")
+    List<Subscription> findAllByOrderId(@Param("orderId") Long orderId);
+
     @Query("SELECT s FROM Subscription s WHERE s.order.id = :orderId AND s.product.id = :productId")
     Optional<Subscription> findByOrderIdAndProductId(@Param("orderId") Long orderId, @Param("productId") Long productId);
 

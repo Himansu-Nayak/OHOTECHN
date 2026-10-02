@@ -88,9 +88,9 @@ export function PlatformEnginesShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 font-mono text-[11px] font-bold uppercase tracking-widest mb-8"
+            className="flex items-center justify-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.2em] uppercase mb-6"
           >
-            <Layers className="w-3.5 h-3.5 text-emerald-400" />
+            <Layers className="w-4 h-4" />
             <span>UNIFIED TECHNICAL CAPABILITY</span>
           </motion.div>
 
@@ -149,10 +149,10 @@ export function PlatformEnginesShowcase() {
               <div>
                 {/* Header */}
                 <div className="flex items-center justify-between gap-3 mb-6">
-                  <span className="font-mono text-xs font-bold text-slate-500">
+                  <span className="font-mono text-xs font-black text-slate-400 tracking-wider">
                     {eng.number} // ENGINE
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                  <span className="px-3.5 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 font-mono text-xs font-black text-emerald-300 uppercase tracking-wider">
                     {eng.badge}
                   </span>
                 </div>

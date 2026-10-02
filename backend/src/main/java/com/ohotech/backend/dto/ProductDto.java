@@ -20,11 +20,24 @@ public class ProductDto {
     @NotBlank(message = "Product name is required")
     private String name;
 
+    private String slug;
+
     private String description;
 
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
     private BigDecimal price;
+
+    private BigDecimal providerCost;
+    private BigDecimal resellerMargin;
+    private Long providerId;
+    private String providerName;
+
+    private String integrationStatus;
+    private String deploymentType;
+    private String demoUrl;
+    private String documentationUrl;
+    private boolean featured;
 
     private Integer stock;
     private String imageUrl;

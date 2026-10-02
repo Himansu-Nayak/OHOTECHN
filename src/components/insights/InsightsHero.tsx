@@ -65,9 +65,9 @@ export function InsightsHero() {
         <span className="text-emerald-400 font-bold">ENGINEERING INSIGHTS &amp; JOURNAL</span>
       </nav>
 
-      {/* Category Capsule */}
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-6">
-        <BookOpen className="w-3.5 h-3.5" />
+      {/* Category Eyebrow */}
+      <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-black tracking-[0.15em] uppercase mb-4">
+        <BookOpen className="w-4 h-4" />
         <span>TECHNICAL WHITEPAPERS • SYSTEM DESIGN • 08 PUBLICATIONS</span>
       </div>
 
