@@ -44,6 +44,15 @@ public class AnalyticsDto {
         private BigDecimal revenueThisMonth;
         private BigDecimal revenueThisYear;
         private BigDecimal filteredRevenue;
+
+        // Reseller Marketplace Financial Metrics
+        private BigDecimal customerRevenue;
+        private BigDecimal providerCost;
+        private BigDecimal grossMargin;
+        private BigDecimal refunds;
+        private BigDecimal netRevenue;
+        private BigDecimal pendingPayments;
+        private BigDecimal completedPayments;
     }
 
     @Data

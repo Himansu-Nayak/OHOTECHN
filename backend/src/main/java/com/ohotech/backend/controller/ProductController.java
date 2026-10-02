@@ -30,4 +30,10 @@ public class ProductController {
         ProductDto product = productService.getProductById(id);
         return ResponseEntity.ok(ApiResponse.success("Product fetched successfully", product));
     }
+
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<ApiResponse<com.ohotech.backend.dto.PublicProductDto>> getProductBySlug(@PathVariable String slug) {
+        com.ohotech.backend.dto.PublicProductDto product = productService.getPublicProductBySlug(slug);
+        return ResponseEntity.ok(ApiResponse.success("Product fetched successfully", product));
+    }
 }

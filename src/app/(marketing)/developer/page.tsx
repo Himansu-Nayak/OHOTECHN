@@ -14,6 +14,7 @@ import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
 import { DeveloperAnalyticsDto } from '@/api/types';
 import { getDeveloperAnalyticsApi } from '@/api/developer';
+import { AdminDeploymentsView } from '@/components/admin/AdminDeploymentsView';
 
 interface DevUser {
   id: number;
@@ -49,7 +50,7 @@ export default function DeveloperStudioPage() {
     }
   }, [user, isLoading, router, showToast]);
 
-  const [activeTab, setActiveTab] = React.useState<'analytics' | 'vault' | 'webhooks' | 'telemetry' | 'rbac' | 'seed' | 'ai'>('analytics');
+  const [activeTab, setActiveTab] = React.useState<'deployments' | 'analytics' | 'vault' | 'webhooks' | 'telemetry' | 'rbac' | 'seed' | 'ai'>('deployments');
   const [controlMode, setControlMode] = React.useState<'manual' | 'ai'>('manual');
 
   const [analytics, setAnalytics] = React.useState<DeveloperAnalyticsDto | null>(null);
@@ -279,6 +280,7 @@ export default function DeveloperStudioPage() {
         <section className="bg-[#141416] border border-white/10 rounded-2xl p-2 shadow-lg">
           <div className="flex items-center gap-1.5 overflow-x-auto text-xs font-bold">
             {[
+              { key: 'deployments', label: '🚀 Deployments & Provisioning', icon: Layers },
               { key: 'analytics', label: '📱 Telemetry & Downloads', icon: Smartphone },
               { key: 'vault', label: '🔐 API Keys & Vault', icon: Key },
               { key: 'webhooks', label: '⚡ Webhook Simulator', icon: Zap },
@@ -309,6 +311,13 @@ export default function DeveloperStudioPage() {
             })}
           </div>
         </section>
+
+        {/* TAB: DEPLOYMENTS & PROVISIONING OPERATIONS */}
+        {activeTab === 'deployments' && (
+          <section className="space-y-6 animate-in fade-in duration-300">
+            <AdminDeploymentsView />
+          </section>
+        )}
 
         {/* TAB: ANALYTICS & DOWNLOADS */}
         {activeTab === 'analytics' && (

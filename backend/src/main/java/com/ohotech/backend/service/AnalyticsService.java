@@ -78,12 +78,48 @@ public class AnalyticsService {
                 .map(p -> p.getAmount() != null ? p.getAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
+        List<Payment> allPayments = paymentRepository.findAll();
+
+        BigDecimal pendingPaymentsTotal = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.PENDING)
+                .map(p -> p.getAmount() != null ? p.getAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal refundsTotal = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.REFUNDED)
+                .map(p -> p.getAmount() != null ? p.getAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Real Provider Wholesale Cost Liability from completed paid orders
+        BigDecimal totalProviderCost = BigDecimal.ZERO;
+        for (Payment p : successfulPaymentsList) {
+            Order ord = p.getOrder();
+            if (ord != null && ord.getItems() != null) {
+                for (OrderItem item : ord.getItems()) {
+                    if (item.getProduct() != null && item.getProduct().getProviderCost() != null) {
+                        int qty = item.getQuantity() != null && item.getQuantity() > 0 ? item.getQuantity() : 1;
+                        totalProviderCost = totalProviderCost.add(item.getProduct().getProviderCost().multiply(BigDecimal.valueOf(qty)));
+                    }
+                }
+            }
+        }
+
+        BigDecimal grossMargin = totalRevenue.subtract(totalProviderCost);
+        BigDecimal netRevenue = totalRevenue.subtract(refundsTotal);
+
         AnalyticsDto.RevenueMetrics revenueMetrics = AnalyticsDto.RevenueMetrics.builder()
                 .totalRevenue(totalRevenue)
                 .revenueToday(revenueToday)
                 .revenueThisMonth(revenueThisMonth)
                 .revenueThisYear(revenueThisYear)
                 .filteredRevenue(filteredRevenue)
+                .customerRevenue(totalRevenue)
+                .providerCost(totalProviderCost)
+                .grossMargin(grossMargin)
+                .refunds(refundsTotal)
+                .netRevenue(netRevenue)
+                .pendingPayments(pendingPaymentsTotal)
+                .completedPayments(totalRevenue)
                 .build();
 
         // 3. Order Metrics
@@ -157,7 +193,6 @@ public class AnalyticsService {
                 .build();
 
         // 7. Payment Metrics
-        List<Payment> allPayments = paymentRepository.findAll();
         long successfulPayments = successfulPaymentsList.size();
         long failedPayments = allPayments.stream().filter(p -> p.getStatus() == PaymentStatus.FAILED).count();
 

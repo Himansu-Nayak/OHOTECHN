@@ -50,6 +50,7 @@ public class DeveloperController {
     private final WebhookEventRepository webhookEventRepository;
     private final AuditService auditService;
     private final SoftwareReleaseService softwareReleaseService;
+    private final DeploymentService deploymentService;
     private final Environment environment;
     private final DataSource dataSource;
 
@@ -233,6 +234,26 @@ public class DeveloperController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         DeveloperAnalyticsDto analytics = developerAnalyticsService.getDeveloperAnalytics(startDate, endDate);
         return ResponseEntity.ok(ApiResponse.success("Developer device and download analytics fetched successfully", analytics));
+    }
+
+    // 6. Operational Deployments Queue
+    @GetMapping("/deployments")
+    public ResponseEntity<ApiResponse<Page<DeploymentDto>>> getDeveloperDeployments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) com.ohotech.backend.entity.DeploymentStatus status) {
+        Page<DeploymentDto> deployments = deploymentService.getDeploymentsAdmin(page, size, status);
+        return ResponseEntity.ok(ApiResponse.success("Operational deployments retrieved", deployments));
+    }
+
+    @PostMapping("/deployments/{id}/transition")
+    public ResponseEntity<ApiResponse<DeploymentDto>> transitionDeploymentStatus(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PathVariable Long id,
+            @Valid @RequestBody com.ohotech.backend.dto.DeploymentTransitionRequest request) {
+        User user = getUser(currentUser.getId());
+        DeploymentDto updated = deploymentService.transitionDeployment(id, request, user);
+        return ResponseEntity.ok(ApiResponse.success("Deployment state transition successful", updated));
     }
 
     private User getUser(Long userId) {

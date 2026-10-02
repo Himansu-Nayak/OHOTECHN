@@ -38,6 +38,8 @@ public class PaymentService {
     private final EmailTemplateService emailTemplateService;
     private final CartService cartService;
     private final AuditService auditService;
+    private final DeploymentRepository deploymentRepository;
+    private final com.ohotech.backend.service.provisioning.SoftwareProvisioningService softwareProvisioningService;
 
     @Value("${app.razorpay.key-id:${razorpay.key-id:}}")
     private String razorpayKeyId;
@@ -845,7 +847,34 @@ public class PaymentService {
                         .expiresAt(expiresAt)
                         .build();
 
-                licenseRepository.save(license);
+                license = licenseRepository.save(license);
+
+                // Auto-create Deployment provisioning record for Reseller Marketplace workflow
+                List<Deployment> existingDeployments = deploymentRepository.findByOrderId(order.getId());
+                boolean hasDeploymentForProduct = existingDeployments.stream()
+                        .anyMatch(d -> d.getProduct() != null && d.getProduct().getId().equals(product.getId()));
+
+                if (!hasDeploymentForProduct) {
+                    Deployment deployment = Deployment.builder()
+                            .order(order)
+                            .product(product)
+                            .user(order.getUser())
+                            .license(license)
+                            .status(DeploymentStatus.PENDING)
+                            .targetEnvironment(product.getDeploymentType() != null ? product.getDeploymentType() : "MANAGED_CLOUD")
+                            .customerNotes("Order #" + order.getId() + " verified. Instance provisioning pipeline initialized.")
+                            .build();
+
+                    deployment = deploymentRepository.save(deployment);
+                    logger.info("Created Deployment #{} in state PENDING for order #{} and product '{}'",
+                            deployment.getId(), order.getId(), product.getName());
+
+                    try {
+                        softwareProvisioningService.dispatchProvisioning(deployment);
+                    } catch (Exception pe) {
+                        logger.warn("Software provisioning dispatch warning for deployment #{}: {}", deployment.getId(), pe.getMessage());
+                    }
+                }
             }
         }
     }

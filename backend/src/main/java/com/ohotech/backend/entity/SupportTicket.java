@@ -70,6 +70,16 @@ public class SupportTicket {
     @Column(name = "order_id")
     private Long orderId;
 
+    @Column(name = "product_id")
+    private Long productId;
+
+    @Column(name = "deployment_id")
+    private Long deploymentId;
+
+    @Column(name = "issue_ownership", length = 50)
+    @Builder.Default
+    private String issueOwnership = "OHO_TECH"; // OHO_TECH, PROVIDER, INFRASTRUCTURE, CUSTOMER_CONFIG
+
     @Column(name = "sla_due_at")
     private LocalDateTime slaDueAt;
 

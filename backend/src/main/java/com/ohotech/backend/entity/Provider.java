@@ -41,19 +41,19 @@ public class Provider {
     private BigDecimal commissionRate; // e.g. default margin percentage or agreed wholesale discount
 
     @Builder.Default
-    private String technicalIntegrationType = "MANUAL"; // API, WEBHOOK, MANUAL, NONE
+    private String technicalIntegrationType = "PENDING_SPECS"; // API, WEBHOOK, SOURCE_CODE, DEDICATED_INSTANCE, HOSTED_SAAS, PENDING_SPECS
 
     @Builder.Default
-    private String integrationStatus = "Integration pending provider/API information";
+    private String integrationStatus = "PENDING_API_INFO"; // ACTIVE, IN_REVIEW, SUSPENDED, ONBOARDING, PENDING_API_INFO
 
     @Builder.Default
     private String supportResponsibility = "OHO_TECH"; // OHO_TECH, PROVIDER, SHARED
 
     @Builder.Default
-    private String deploymentResponsibility = "OHO_TECH"; // OHO_TECH, PROVIDER, CUSTOMER_HOSTED, MANAGED_SAAS
+    private String deploymentResponsibility = "OHO_TECH_VPS"; // OHO_TECH_VPS, PROVIDER_CLOUD, CUSTOMER_SELF_HOSTED
 
     @Builder.Default
-    private String contractStatus = "ACTIVE"; // ACTIVE, PENDING, EXPIRED, TERMINATED
+    private String contractStatus = "DRAFT"; // DRAFT, ACTIVE, RENEWAL_DUE, TERMINATED
 
     @Column(length = 2000)
     private String notes;

@@ -211,10 +211,66 @@ public class ProductService {
     }
 
     /**
+     * Public Product DTO Mapping: Compile-time structural guarantee of zero wholesale leakage
+     */
+    public com.ohotech.backend.dto.PublicProductDto mapToPublicProductDto(Product product) {
+        return com.ohotech.backend.dto.PublicProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .slug(product.getSlug())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .integrationStatus(product.getIntegrationStatus())
+                .deploymentType(product.getDeploymentType())
+                .demoUrl(product.getDemoUrl())
+                .documentationUrl(product.getDocumentationUrl())
+                .featured(product.isFeatured())
+                .stock(product.getStock())
+                .imageUrl(product.getImageUrl())
+                .serviceType(product.getServiceType())
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .active(product.isActive())
+                .build();
+    }
+
+    public com.ohotech.backend.dto.PublicProductDto getPublicProductBySlug(String slug) {
+        Product product = productRepository.findBySlugAndActiveTrue(slug)
+                .or(() -> productRepository.findBySlug(slug))
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "slug", slug));
+        return mapToPublicProductDto(product);
+    }
+
+    /**
      * Admin mapping: Includes wholesale pricing, internal margins, and provider relationship
      */
     public ProductDto mapToAdminDto(Product product) {
         return ProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .slug(product.getSlug())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .providerCost(product.getProviderCost())
+                .resellerMargin(product.getResellerMargin())
+                .providerId(product.getProvider() != null ? product.getProvider().getId() : null)
+                .providerName(product.getProvider() != null ? product.getProvider().getName() : null)
+                .integrationStatus(product.getIntegrationStatus())
+                .deploymentType(product.getDeploymentType())
+                .demoUrl(product.getDemoUrl())
+                .documentationUrl(product.getDocumentationUrl())
+                .featured(product.isFeatured())
+                .stock(product.getStock())
+                .imageUrl(product.getImageUrl())
+                .serviceType(product.getServiceType())
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .active(product.isActive())
+                .build();
+    }
+
+    public com.ohotech.backend.dto.AdminProductDto mapToAdminProductDto(Product product) {
+        return com.ohotech.backend.dto.AdminProductDto.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .slug(product.getSlug())

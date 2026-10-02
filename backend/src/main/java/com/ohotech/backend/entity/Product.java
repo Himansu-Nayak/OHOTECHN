@@ -41,7 +41,10 @@ public class Product {
     private String integrationStatus = "Integration pending provider/API information";
 
     @Builder.Default
-    private String deploymentType = "MANAGED_CLOUD"; // MANAGED_CLOUD, SELF_HOSTED, SAAS, DESKTOP_INSTALL, MANUAL_SETUP
+    private String deploymentType = "MANAGED_CLOUD"; // MANAGED_CLOUD, VPS_DEDICATED, SAAS_SHARED, STANDALONE_LICENSE
+
+    @Builder.Default
+    private String lifecycleStatus = "ACTIVE"; // DRAFT, ACTIVE, PAUSED, ARCHIVED
 
     private String demoUrl;
 
