@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { 
-  ArrowRight, ChevronLeft, ChevronRight, Pause, Play 
-} from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useMotion } from '@/components/experience/MotionContext';
@@ -16,18 +15,18 @@ if (typeof window !== 'undefined') {
 /**
  * OHO TECH Cinematic Hero Experience
  * 
- * Master Motion & Visual Architecture:
- * 1. Responsive Fit: Intelligent contain-style framing with ambient bleed underlay;
- *    zero awkward cropping across 1920x1080, 1600x900, 1440x900, 1366x768, 1280x720, laptop, tablet, mobile.
- * 2. Intelligent Auto Side-Scroll: 2.5s natural hold, followed by ultra-smooth, slow cinematic
- *    camera pan with responsive distance scaling (reduced on laptops/tablets, locked on mobile).
- * 3. Seamless Cinematic Transition: 1.3s crossfade with directional parallax and micro-blur-to-sharp
- *    transition between Scene 1 (Creative Studio) and Scene 2 (Urban Billboard ohotechbg.1).
- * 4. ohotechbg.1 Visual Alignment: Atmospheric dusk/twilight color-grading, crisp billboard terminal,
- *    matching the dark premium technology aesthetic.
- * 5. Content Hierarchy: Typography & CTAs stay 100% stable, crisp, and readable in the foreground.
- * 6. Seamless Infinite Loop: Continuous smooth cycling with zero visible jump or reset snap.
- * 7. Performance: 60 FPS GPU-accelerated transforms & opacity, with prefers-reduced-motion support.
+ * Precision Architecture:
+ * 1. Edge-to-Edge Panoramic Canvas: 100% viewport coverage across all resolutions
+ *    (1920x1080, 1600x900, 1440x900, 1366x768, 1280x720, laptops, tablets, mobile)
+ *    with zero black side bars, zero empty gaps, and zero awkward letterboxing.
+ * 2. Ultra-High-Definition Imagery: Native 4K/4.5K photography rendered via Next.js
+ *    optimized Image component with quality={100}, priority preloading, and object-cover fit.
+ * 3. Seamless Automatic Side-Scroll: Continuous, autonomous horizontal glide between
+ *    Scene 1 (Studio) and Scene 2 (Billboard) with smooth cubic-bezier easing.
+ * 4. Zero Unwanted Marker UI: Internalized animation state with no user-facing controls,
+ *    dots, labels, or arrows obscuring the composition.
+ * 5. Preserved Typography & Brand Identity: Masked headline entrance, stable foreground,
+ *    and responsive action CTAs.
  */
 export function HeroExperience() {
   const containerRef = useRef<HTMLElement>(null);
@@ -37,15 +36,10 @@ export function HeroExperience() {
   const editorialTextRef = useRef<HTMLDivElement>(null);
   const ctaGroupRef = useRef<HTMLDivElement>(null);
 
-  // Background Scene Stage Refs for GSAP camera panning
-  const scene1StageRef = useRef<HTMLDivElement>(null);
-  const scene2StageRef = useRef<HTMLDivElement>(null);
-
   const { setActiveScene } = useMotion();
 
-  // Multi-Slide State (0 = Studio, 1 = Billboard)
+  // Autonomous Multi-Scene Transition State (0 = Studio, 1 = Billboard)
   const [activeSlide, setActiveSlide] = useState<0 | 1>(0);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
 
   // Foreground Headline Entrance Animation (Preserved OHO TECH Brand Identity)
   useEffect(() => {
@@ -137,26 +131,14 @@ export function HeroExperience() {
     return () => ctx.revert();
   }, [setActiveScene]);
 
-  // Master Cinematic Horizontal Auto-Scroll Loop
+  // Master Autonomous Horizontal Auto-Scroll Loop (Internal State, Zero UI Controls)
   useEffect(() => {
-    if (isPaused) return;
-
-    // Automatic side-scroll interval: holds 4.5s, then glides horizontally to next scene
+    // 5-second hold per scene, then smooth panoramic glide
     const scrollTimer = setInterval(() => {
       setActiveSlide((prev) => (prev === 0 ? 1 : 0));
-    }, 4500);
+    }, 5000);
 
     return () => clearInterval(scrollTimer);
-  }, [isPaused]);
-
-  // Pause / Resume Toggle
-  const togglePlayPause = useCallback(() => {
-    setIsPaused((prev) => !prev);
-  }, []);
-
-  // Manual Slide Selectors
-  const jumpToSlide = useCallback((slideIndex: 0 | 1) => {
-    setActiveSlide(slideIndex);
   }, []);
 
   return (
@@ -168,77 +150,56 @@ export function HeroExperience() {
     >
       {/* ======================================================== */}
       {/* 1. CINEMATIC HORIZONTAL AUTO-SCROLL PANORAMIC STAGE      */}
-      {/* Continuous panoramic camera track sliding horizontally   */}
-      {/* from Scene 1 (Studio) to Scene 2 (ohotechbg.1 Billboard) */}
+      {/* Seamless edge-to-edge coverage, zero side bars           */}
       {/* ======================================================== */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
         
         {/* Continuous Panoramic Track: 200% width, sliding 0% -> -50% */}
         <div 
-          className="absolute inset-0 flex h-full will-change-transform transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+          className="absolute inset-0 flex h-full will-change-transform transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
             width: '200%',
             transform: activeSlide === 0 ? 'translate3d(0%, 0, 0)' : 'translate3d(-50%, 0, 0)',
           }}
         >
           {/* ========================================== */}
-          {/* PANEL 1 (Width 50% = 100vw): Recent Studio */}
+          {/* SCENE 1 (Width 50% = 100vw): Studio 4K     */}
           {/* ========================================== */}
           <div className="relative w-1/2 h-full overflow-hidden shrink-0">
-            {/* Ambient Bleed Underlay */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center filter blur-3xl opacity-35 scale-110 pointer-events-none"
-              style={{ backgroundImage: `url('/images/hero-surreal-office.jpg')` }}
+            {/* Native 4K Studio Image with Edge-to-Edge Coverage */}
+            <Image
+              src="/images/hero-surreal-office.jpg"
+              alt="OHO TECH Engineering Studio"
+              fill
+              priority
+              quality={100}
+              sizes="100vw"
+              className="object-cover object-center contrast-[1.04] brightness-[0.98]"
             />
 
-            {/* Focal Composition Stage: Intelligent Responsive Containment */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/hero-surreal-office.jpg"
-                alt="OHO TECH Engineering Studio"
-                className="w-full h-full max-w-none object-contain contrast-[1.05] brightness-[0.97]"
-                style={{
-                  imageRendering: '-webkit-optimize-contrast',
-                  maskImage: 'radial-gradient(ellipse 95% 90% at 50% 50%, black 75%, transparent 100%)',
-                  WebkitMaskImage: 'radial-gradient(ellipse 95% 90% at 50% 50%, black 75%, transparent 100%)',
-                }}
-              />
-            </div>
-
-            {/* Cinematic Vignette Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-black/35 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/85 via-[#08090b]/35 to-transparent pointer-events-none" />
+            {/* Cinematic Gradient Overlays for High-Contrast Headline Legibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-black/30 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent pointer-events-none" />
           </div>
 
           {/* ========================================== */}
-          {/* PANEL 2 (Width 50% = 100vw): ohotechbg.1   */}
+          {/* SCENE 2 (Width 50% = 100vw): Billboard 4.5K*/}
           {/* ========================================== */}
           <div className="relative w-1/2 h-full overflow-hidden shrink-0">
-            {/* Ambient Bleed Underlay */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center filter blur-3xl opacity-35 scale-110 pointer-events-none"
-              style={{ backgroundImage: `url('/images/ohotechbg.1.jpg?v=20261003')` }}
+            {/* High-Definition 4.5K Urban Billboard with Edge-to-Edge Coverage */}
+            <Image
+              src="/images/ohotechbg.1.jpg"
+              alt="OHO TECH Turnkey Software Ecosystem"
+              fill
+              priority
+              quality={100}
+              sizes="100vw"
+              className="object-cover object-center contrast-[1.06] brightness-[1.0]"
             />
 
-            {/* Focal Composition Stage */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/ohotechbg.1.jpg?v=20261003"
-                alt="OHO TECH Turnkey Software Ecosystem"
-                className="w-full h-full max-w-none object-contain contrast-[1.10] brightness-[1.0] saturate-[1.10] lg:translate-x-[12%] xl:translate-x-[16%]"
-                style={{
-                  imageRendering: '-webkit-optimize-contrast',
-                  maskImage: 'radial-gradient(ellipse 95% 90% at 50% 50%, black 75%, transparent 100%)',
-                  WebkitMaskImage: 'radial-gradient(ellipse 95% 90% at 50% 50%, black 75%, transparent 100%)',
-                }}
-              />
-            </div>
-
-            {/* Twilight Technological Ambience Grade */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-black/40 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/85 via-[#08090b]/35 to-transparent pointer-events-none" />
+            {/* Cinematic Gradient Overlays for High-Contrast Headline Legibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-black/35 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent pointer-events-none" />
           </div>
 
         </div>
@@ -311,75 +272,6 @@ export function HeroExperience() {
             </Link>
           </div>
         </div>
-      </div>
-
-      {/* ======================================================== */}
-      {/* 3. FLOATING CINEMATIC CONTROLS & SCENE SELECTORS        */}
-      {/* ======================================================== */}
-      <div className="absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 sm:gap-3 px-3 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-[11px] sm:text-xs font-mono shadow-2xl select-none whitespace-nowrap max-w-[95vw] pointer-events-auto">
-        <button
-          type="button"
-          id="hero-slide-prev"
-          onClick={() => jumpToSlide(activeSlide === 0 ? 1 : 0)}
-          className="p-1 rounded-full text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
-          aria-label="Previous Scene"
-        >
-          <ChevronLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
-        </button>
-
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          <button
-            type="button"
-            id="hero-slide-btn-0"
-            onClick={() => jumpToSlide(0)}
-            className={`px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-              activeSlide === 0
-                ? 'bg-emerald-500 text-black font-black shadow-[0_0_15px_rgba(16,185,129,0.6)]'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <span className="hidden sm:inline">01 • </span>Studio
-          </button>
-
-          <button
-            type="button"
-            id="hero-slide-btn-1"
-            onClick={() => jumpToSlide(1)}
-            className={`px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-              activeSlide === 1
-                ? 'bg-emerald-500 text-black font-black shadow-[0_0_15px_rgba(16,185,129,0.6)]'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <span className="hidden sm:inline">02 • </span>Billboard
-          </button>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-emerald-400 font-mono select-none shrink-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>AUTO-SCROLL</span>
-        </div>
-
-        <button
-          type="button"
-          id="hero-toggle-play-pause"
-          onClick={togglePlayPause}
-          className="p-1 rounded-full text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
-          title={isPaused ? 'Resume Motion' : 'Pause Motion'}
-          aria-label={isPaused ? 'Resume Motion' : 'Pause Motion'}
-        >
-          {isPaused ? <Play className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-400" /> : <Pause className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-400" />}
-        </button>
-
-        <button
-          type="button"
-          id="hero-slide-next"
-          onClick={() => jumpToSlide(activeSlide === 0 ? 1 : 0)}
-          className="p-1 rounded-full text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
-          aria-label="Next Scene"
-        >
-          <ChevronRight className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
-        </button>
       </div>
 
     </section>
