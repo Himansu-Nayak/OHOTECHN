@@ -62,9 +62,11 @@ public class ResellerMarketplaceTests {
     private User adminUser;
     private User customerUser;
     private User anotherCustomer;
+    private User developerUser;
     private String adminToken;
     private String customerToken;
     private String anotherCustomerToken;
+    private String developerToken;
     private Category softwareCategory;
 
     @BeforeEach
@@ -79,6 +81,15 @@ public class ResellerMarketplaceTests {
                 .enabled(true)
                 .build());
         adminToken = jwtTokenProvider.generateTokenFromUserId(adminUser.getId());
+
+        developerUser = userRepository.save(User.builder()
+                .name("Developer Ops")
+                .email("dev_" + uid + "@ohotech.com")
+                .passwordHash(passwordEncoder.encode("Password123!"))
+                .role(Role.ROLE_DEVELOPER)
+                .enabled(true)
+                .build());
+        developerToken = jwtTokenProvider.generateTokenFromUserId(developerUser.getId());
 
         customerUser = userRepository.save(User.builder()
                 .name("Customer Reseller Buyer")
@@ -226,7 +237,9 @@ public class ResellerMarketplaceTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(greaterThanOrEqualTo(1))))
                 .andExpect(jsonPath("$.data[0].customerNotes").value("Your cloud environment is currently being provisioned on OHO Managed Cloud."))
-                .andExpect(jsonPath("$.data[0].adminNotes").doesNotExist()); // Admin notes never leaked!
+                .andExpect(jsonPath("$.data[0].adminNotes").doesNotExist()) // Admin notes never leaked!
+                .andExpect(jsonPath("$.data[0].providerId").doesNotExist()) // Provider ID quarantined!
+                .andExpect(jsonPath("$.data[0].providerName").doesNotExist()); // Provider Name quarantined!
 
         // 2. Another customer CANNOT access this customer's deployment (Forbidden)
         mockMvc.perform(get("/api/deployments/" + deploymentId)
@@ -247,6 +260,160 @@ public class ResellerMarketplaceTests {
                         .header("Authorization", "Bearer " + customerToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("LIVE"))
-                .andExpect(jsonPath("$.data.accessUrl").value("https://client-portal.ohotechn.com"));
+                .andExpect(jsonPath("$.data.accessUrl").value("https://client-portal.ohotechn.com"))
+                .andExpect(jsonPath("$.data.providerId").doesNotExist())
+                .andExpect(jsonPath("$.data.providerName").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("Reseller 5: Developer Diagnostics and System Telemetry Access")
+    void testDeveloperDiagnosticsAccess() throws Exception {
+        // Developer can access diagnostics
+        mockMvc.perform(get("/api/developer/diagnostics")
+                        .header("Authorization", "Bearer " + developerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.status").value("OPERATIONAL"))
+                .andExpect(jsonPath("$.data.jvmVersion").exists())
+                .andExpect(jsonPath("$.data.osName").exists())
+                .andExpect(jsonPath("$.data.dbConnectionUrlMasked").exists())
+                .andExpect(jsonPath("$.data.dbActiveConnections").exists());
+
+        // Customer is forbidden from accessing developer diagnostics
+        mockMvc.perform(get("/api/developer/diagnostics")
+                        .header("Authorization", "Bearer " + customerToken))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Reseller 6: Programmatic API Key Lifecycle for Developer")
+    void testDeveloperApiKeyLifecycle() throws Exception {
+        // 1. Developer generates new API key
+        String createReq = "{\"name\":\"Data Pipeline Sync Key\",\"scope\":\"read_write\"}";
+        String res = mockMvc.perform(post("/api/developer/keys")
+                        .header("Authorization", "Bearer " + developerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createReq))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.name").value("Data Pipeline Sync Key"))
+                .andExpect(jsonPath("$.data.plaintextSecret").exists())
+                .andExpect(jsonPath("$.data.active").value(true))
+                .andReturn().getResponse().getContentAsString();
+
+        Long keyId = objectMapper.readTree(res).path("data").path("id").asLong();
+
+        // 2. Fetch list of API keys
+        mockMvc.perform(get("/api/developer/keys")
+                        .header("Authorization", "Bearer " + developerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(greaterThanOrEqualTo(1))));
+
+        // 3. Revoke API key
+        mockMvc.perform(post("/api/developer/keys/" + keyId + "/revoke")
+                        .header("Authorization", "Bearer " + developerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.active").value(false));
+    }
+
+    @Test
+    @DisplayName("Reseller 7: Developer Webhook Delivery Logs Endpoint")
+    void testDeveloperWebhooksEndpoint() throws Exception {
+        mockMvc.perform(get("/api/developer/webhooks")
+                        .header("Authorization", "Bearer " + developerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data").isArray());
+
+        // Customer forbidden
+        mockMvc.perform(get("/api/developer/webhooks")
+                        .header("Authorization", "Bearer " + customerToken))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Reseller 8: Admin Provider Products Endpoint & Licensing/Support Models")
+    void testProviderProductsAndLicensingModels() throws Exception {
+        // 1. Create a provider agency
+        Provider agency = providerRepository.save(Provider.builder()
+                .name("Fintech Core Systems")
+                .companyName("Fintech Core Ltd")
+                .contactEmail("partner@fintechcore.io")
+                .commissionRate(new BigDecimal("25.00"))
+                .supportResponsibility("PROVIDER_BACKED")
+                .deploymentResponsibility("OHO_TECH")
+                .contractStatus("ACTIVE")
+                .active(true)
+                .build());
+
+        // 2. Create products under this provider with licenseModel and supportModel
+        Product p1 = productRepository.save(Product.builder()
+                .name("Core Banking SaaS Engine")
+                .slug("core-banking-saas-engine-" + UUID.randomUUID().toString().substring(0, 6))
+                .price(new BigDecimal("99000.00"))
+                .providerCost(new BigDecimal("70000.00"))
+                .resellerMargin(new BigDecimal("29000.00"))
+                .provider(agency)
+                .category(softwareCategory)
+                .licenseModel("SUBSCRIPTION")
+                .supportModel("PROVIDER_BACKED")
+                .deploymentType("MANAGED_CLOUD")
+                .active(true)
+                .build());
+
+        // 3. Admin queries provider products
+        mockMvc.perform(get("/api/admin/providers/" + agency.getId() + "/products")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.data[0].name").value("Core Banking SaaS Engine"))
+                .andExpect(jsonPath("$.data[0].providerCost").value(70000.00))
+                .andExpect(jsonPath("$.data[0].resellerMargin").value(29000.00))
+                .andExpect(jsonPath("$.data[0].licenseModel").value("SUBSCRIPTION"))
+                .andExpect(jsonPath("$.data[0].supportModel").value("PROVIDER_BACKED"));
+
+        // 4. Customer accesses public product: licenseModel & supportModel visible, wholesale quarantined
+        mockMvc.perform(get("/api/products/" + p1.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.name").value("Core Banking SaaS Engine"))
+                .andExpect(jsonPath("$.data.licenseModel").value("SUBSCRIPTION"))
+                .andExpect(jsonPath("$.data.supportModel").value("PROVIDER_BACKED"))
+                .andExpect(jsonPath("$.data.providerCost").doesNotExist())
+                .andExpect(jsonPath("$.data.resellerMargin").doesNotExist())
+                .andExpect(jsonPath("$.data.providerId").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("Reseller 9: Enriched Admin Dashboard Stats with Real Operational Reseller Metrics")
+    void testEnrichedAdminStats() throws Exception {
+        mockMvc.perform(get("/api/admin/stats")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.totalProducts").isNumber())
+                .andExpect(jsonPath("$.data.activeProducts").isNumber())
+                .andExpect(jsonPath("$.data.totalOrders").isNumber())
+                .andExpect(jsonPath("$.data.totalUsers").isNumber())
+                .andExpect(jsonPath("$.data.activeLicenses").isNumber())
+                .andExpect(jsonPath("$.data.activeSubscriptions").isNumber())
+                .andExpect(jsonPath("$.data.pendingDeployments").isNumber())
+                .andExpect(jsonPath("$.data.liveDeployments").isNumber())
+                .andExpect(jsonPath("$.data.failedPayments").isNumber())
+                .andExpect(jsonPath("$.data.activeProviders").isNumber())
+                .andExpect(jsonPath("$.data.systemStatus").value("OPERATIONAL_100"));
+    }
+
+    @Test
+    @DisplayName("Reseller 10: Admin Payment Reconciliation Audit Endpoint")
+    void testPaymentReconciliationAuditEndpoint() throws Exception {
+        mockMvc.perform(get("/api/admin/payments/reconciliation")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.totalRecordsEvaluated").isNumber())
+                .andExpect(jsonPath("$.data.matchedCount").isNumber())
+                .andExpect(jsonPath("$.data.anomalyCount").isNumber())
+                .andExpect(jsonPath("$.data.anomalies").isArray());
     }
 }

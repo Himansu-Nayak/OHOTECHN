@@ -1,5 +1,14 @@
 import { apiClient } from './client';
-import { ApiResponse, DeveloperAnalyticsDto } from './types';
+import {
+  ApiResponse,
+  DeveloperAnalyticsDto,
+  DeveloperDiagnosticsDto,
+  ApiKeyDto,
+  CreateApiKeyRequest,
+  WebhookEventDto,
+  WebhookTestRequest,
+  WebhookTestResponseDto,
+} from './types';
 
 export async function getDeveloperAnalyticsApi(
   startDate?: string,
@@ -13,6 +22,50 @@ export async function getDeveloperAnalyticsApi(
 
   return apiClient<DeveloperAnalyticsDto>(url, {
     method: 'GET',
+  });
+}
+
+export async function getSystemDiagnosticsApi(): Promise<ApiResponse<DeveloperDiagnosticsDto>> {
+  return apiClient<DeveloperDiagnosticsDto>('/api/developer/diagnostics', {
+    method: 'GET',
+  });
+}
+
+export async function getDeveloperConfigApi(): Promise<ApiResponse<Record<string, any>>> {
+  return apiClient<Record<string, any>>('/api/developer/config', {
+    method: 'GET',
+  });
+}
+
+export async function getApiKeysApi(): Promise<ApiResponse<ApiKeyDto[]>> {
+  return apiClient<ApiKeyDto[]>('/api/developer/keys', {
+    method: 'GET',
+  });
+}
+
+export async function createApiKeyApi(data: CreateApiKeyRequest): Promise<ApiResponse<ApiKeyDto>> {
+  return apiClient<ApiKeyDto>('/api/developer/keys', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function revokeApiKeyApi(id: number): Promise<ApiResponse<ApiKeyDto>> {
+  return apiClient<ApiKeyDto>(`/api/developer/keys/${id}/revoke`, {
+    method: 'POST',
+  });
+}
+
+export async function getWebhookLogsApi(): Promise<ApiResponse<WebhookEventDto[]>> {
+  return apiClient<WebhookEventDto[]>('/api/developer/webhooks', {
+    method: 'GET',
+  });
+}
+
+export async function sendWebhookTestPingApi(data: WebhookTestRequest): Promise<ApiResponse<WebhookTestResponseDto>> {
+  return apiClient<WebhookTestResponseDto>('/api/developer/webhooks/test', {
+    method: 'POST',
+    body: JSON.stringify(data),
   });
 }
 

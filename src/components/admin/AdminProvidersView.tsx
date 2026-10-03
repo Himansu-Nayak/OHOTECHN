@@ -4,16 +4,17 @@ import * as React from 'react';
 import { 
   Building2, Search, Plus, Edit3, Trash2, CheckCircle2, 
   X, RefreshCw, AlertCircle, ExternalLink, Mail, Phone,
-  Layers, ShieldAlert, FileText, ToggleLeft, ToggleRight
+  Layers, ShieldAlert, FileText, ToggleLeft, ToggleRight, Eye
 } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
-import { ProviderDto } from '@/api/types';
+import { ProviderDto, ProductDto } from '@/api/types';
 import { 
   getAdminProvidersApi, 
   createAdminProviderApi, 
   updateAdminProviderApi, 
   toggleAdminProviderStatusApi, 
-  deleteAdminProviderApi 
+  deleteAdminProviderApi,
+  getAdminProviderProductsApi
 } from '@/api/providers';
 import { 
   AdminCard, AdminBadge, AdminButton, 
@@ -33,6 +34,11 @@ export function AdminProvidersView() {
   const [totalPages, setTotalPages] = React.useState(0);
   const [totalElements, setTotalElements] = React.useState(0);
   const [searchQuery, setSearchQuery] = React.useState('');
+
+  // View Provider Profile Modal & Products
+  const [viewingProvider, setViewingProvider] = React.useState<ProviderDto | null>(null);
+  const [providerProducts, setProviderProducts] = React.useState<ProductDto[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = React.useState(false);
 
   // Add / Edit Modal State
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -65,6 +71,24 @@ export function AdminProvidersView() {
   React.useEffect(() => {
     fetchProviders();
   }, [fetchProviders]);
+
+  React.useEffect(() => {
+    if (viewingProvider?.id) {
+      setIsLoadingProducts(true);
+      getAdminProviderProductsApi(viewingProvider.id)
+        .then((res) => {
+          if (res.success && res.data) {
+            setProviderProducts(res.data);
+          } else {
+            setProviderProducts([]);
+          }
+        })
+        .catch(() => setProviderProducts([]))
+        .finally(() => setIsLoadingProducts(false));
+    } else {
+      setProviderProducts([]);
+    }
+  }, [viewingProvider]);
 
   const handleToggleStatus = async (provider: ProviderDto) => {
     try {
@@ -330,6 +354,13 @@ export function AdminProvidersView() {
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
+                          onClick={() => setViewingProvider(p)}
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-purple-700 hover:bg-purple-50 cursor-pointer"
+                          title="View Agency Profile & SLA"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => handleOpenEditModal(p)}
                           className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 cursor-pointer"
                           title="Edit Provider"
@@ -352,6 +383,169 @@ export function AdminProvidersView() {
           </div>
         )}
       </AdminCard>
+
+      {/* View Agency Profile Modal */}
+      {viewingProvider && (
+        <AdminModal
+          isOpen={!!viewingProvider}
+          onClose={() => setViewingProvider(null)}
+          title={`Agency Profile: ${viewingProvider.name}`}
+          subtitle="Wholesale operational profile, technical SLA, and commercial boundaries."
+          maxWidth="max-w-2xl"
+        >
+          <div className="space-y-4 text-xs">
+            <div className="p-4 rounded-xl bg-purple-50/50 border border-purple-100 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">Internal Partner ID</span>
+                <p className="text-base font-bold text-slate-900 font-mono">#PRV-{viewingProvider.id}</p>
+                {viewingProvider.companyName && (
+                  <p className="text-xs text-slate-600 font-medium">{viewingProvider.companyName}</p>
+                )}
+              </div>
+              <div className="flex flex-col items-end gap-1">
+                <AdminBadge variant={viewingProvider.active ? 'success' : 'neutral'}>
+                  {viewingProvider.active ? 'OPERATIONAL' : 'INACTIVE'}
+                </AdminBadge>
+                <span className="text-[11px] text-slate-500 font-mono">
+                  Contract: {viewingProvider.contractStatus || 'ACTIVE'}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-slate-500">Contact &amp; Credentials</span>
+                <p className="font-semibold text-slate-900">{viewingProvider.contactPerson || 'No contact named'}</p>
+                {viewingProvider.contactEmail && (
+                  <p className="text-slate-600 flex items-center gap-1 font-mono text-[11px]">
+                    <Mail className="w-3 h-3 text-slate-400" />
+                    <span>{viewingProvider.contactEmail}</span>
+                  </p>
+                )}
+                {viewingProvider.contactPhone && (
+                  <p className="text-slate-600 flex items-center gap-1 font-mono text-[11px]">
+                    <Phone className="w-3 h-3 text-slate-400" />
+                    <span>{viewingProvider.contactPhone}</span>
+                  </p>
+                )}
+                {viewingProvider.website && (
+                  <a
+                    href={viewingProvider.website.startsWith('http') ? viewingProvider.website : `https://${viewingProvider.website}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-sky-600 hover:underline font-mono text-[11px]"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    <span>{viewingProvider.website}</span>
+                  </a>
+                )}
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-slate-500">Commercial Terms</span>
+                <p className="font-semibold text-slate-900">
+                  OHO Retained Margin: {viewingProvider.commissionRate ? `${viewingProvider.commissionRate}%` : 'Variable'}
+                </p>
+                <p className="text-slate-600 text-[11px] leading-relaxed">
+                  {viewingProvider.commercialTerms || 'Standard wholesale supply agreement.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <span className="text-[10px] uppercase font-bold text-slate-500">Technical Integration &amp; SLA</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="p-2 rounded-lg bg-white border border-slate-200">
+                  <span className="text-[10px] text-slate-400">Integration</span>
+                  <p className="font-bold text-slate-800">{viewingProvider.technicalIntegrationType || 'MANUAL'}</p>
+                </div>
+                <div className="p-2 rounded-lg bg-white border border-slate-200">
+                  <span className="text-[10px] text-slate-400">Support</span>
+                  <p className="font-bold text-slate-800">{viewingProvider.supportResponsibility || 'OHO_TECH'}</p>
+                </div>
+                <div className="p-2 rounded-lg bg-white border border-slate-200">
+                  <span className="text-[10px] text-slate-400">Deployment</span>
+                  <p className="font-bold text-slate-800">{viewingProvider.deploymentResponsibility || 'OHO_TECH'}</p>
+                </div>
+                <div className="p-2 rounded-lg bg-white border border-slate-200">
+                  <span className="text-[10px] text-slate-400">Status</span>
+                  <p className="font-bold text-slate-800">{viewingProvider.integrationStatus ? 'Configured' : 'Pending'}</p>
+                </div>
+              </div>
+              {viewingProvider.integrationStatus && (
+                <p className="text-slate-600 text-[11px] mt-1 font-mono bg-white p-2 rounded-lg border border-slate-200">
+                  {viewingProvider.integrationStatus}
+                </p>
+              )}
+            </div>
+
+            {viewingProvider.notes && (
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-[10px] uppercase font-bold text-slate-500">Internal Confidential Notes</span>
+                <p className="text-slate-700 text-[11px] leading-relaxed font-mono">
+                  {viewingProvider.notes}
+                </p>
+              </div>
+            )}
+
+            {/* Supplied Products List (Requirement 1) */}
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-bold text-slate-500">
+                  Supplied Products ({providerProducts.length})
+                </span>
+                {isLoadingProducts && <span className="text-[10px] text-slate-400">Loading catalog...</span>}
+              </div>
+
+              {providerProducts.length === 0 && !isLoadingProducts ? (
+                <p className="text-slate-500 text-[11px] italic">No software products mapped to this provider agency yet.</p>
+              ) : (
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                  {providerProducts.map((p) => (
+                    <div key={p.id} className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center justify-between text-xs">
+                      <div className="space-y-0.5">
+                        <span className="font-semibold text-slate-900 block">{p.name}</span>
+                        <div className="text-[10px] text-slate-500 font-mono flex items-center gap-2">
+                          <span>Retail: ₹{Number(p.price).toLocaleString('en-IN')}</span>
+                          <span>&bull;</span>
+                          <span>Wholesale: ₹{p.providerCost ? Number(p.providerCost).toLocaleString('en-IN') : '0'}</span>
+                          <span>&bull;</span>
+                          <span className="text-emerald-700 font-semibold">Margin: ₹{p.resellerMargin ? Number(p.resellerMargin).toLocaleString('en-IN') : '0'}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                          {p.deploymentType || 'MANAGED_CLOUD'}
+                        </span>
+                        <AdminBadge variant={p.active ? 'success' : 'neutral'}>
+                          {p.active ? 'Active' : 'Draft'}
+                        </AdminBadge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>
+                <strong>Confidential Wholesale Boundary:</strong> All provider metadata and wholesale terms are strictly quarantined. Customers only ever see OHO TECH as the turnkey provider.
+              </span>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-slate-100">
+              <AdminButton
+                type="button"
+                variant="outline"
+                onClick={() => setViewingProvider(null)}
+              >
+                Close Profile
+              </AdminButton>
+            </div>
+          </div>
+        </AdminModal>
+      )}
 
       {/* Register/Edit Provider Agency Modal */}
       {isModalOpen && editingProvider && (

@@ -20,4 +20,6 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
     
     @Query("SELECT l FROM License l WHERE l.subscription.id = :subscriptionId")
     Optional<License> findBySubscriptionId(@Param("subscriptionId") Long subscriptionId);
+
+    long countByStatus(LicenseStatus status);
 }

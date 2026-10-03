@@ -40,6 +40,14 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.success("Payment verified successfully", payment));
     }
 
+    @PostMapping("/demo-pay")
+    public ResponseEntity<ApiResponse<PaymentResponseDto>> demoPay(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @Valid @RequestBody PaymentOrderRequest request) {
+        PaymentResponseDto payment = paymentService.processDemoPayment(currentUser.getId(), request.getOrderId());
+        return ResponseEntity.ok(ApiResponse.success("Demo payment processed and verified successfully. Software active.", payment));
+    }
+
     @PostMapping("/initiate-upi")
     public ResponseEntity<ApiResponse<UpiInitiateResponse>> initiateUpiPayment(
             @AuthenticationPrincipal UserPrincipal currentUser,

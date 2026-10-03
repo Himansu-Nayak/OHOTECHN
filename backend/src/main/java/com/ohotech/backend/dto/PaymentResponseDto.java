@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class PaymentResponseDto {
     private Long id;
     private Long orderId;
+    private String orderStatus;
     private BigDecimal amount;
     private PaymentStatus status;
     private String provider;

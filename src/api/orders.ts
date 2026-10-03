@@ -56,3 +56,10 @@ export async function updateAdminOrderStatusApi(id: number | string, status: str
   });
 }
 
+export async function clearAllAdminOrdersApi(): Promise<ApiResponse<Record<string, number>>> {
+  return apiClient<Record<string, number>>('/api/admin/orders/clear-all', {
+    method: 'DELETE',
+  });
+}
+
+

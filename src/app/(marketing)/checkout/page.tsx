@@ -7,7 +7,7 @@ import QRCode from 'qrcode';
 import { 
   ArrowLeft, ShieldCheck, CreditCard, Lock, CheckCircle2, 
   AlertCircle, Loader2, QrCode, Truck, Copy, Check, ExternalLink, 
-  Smartphone, Building2, Info
+  Smartphone, Building2, Info, Sparkles, Zap
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
@@ -16,6 +16,7 @@ import { createOrderApi } from '@/api/orders';
 import { 
   createPaymentOrderApi, 
   verifyPaymentApi, 
+  demoPayApi,
   getPaymentConfigApi,
   initiateUpiPaymentApi,
   submitUtrApi,
@@ -30,11 +31,11 @@ export default function CheckoutPage() {
   const { cart, totalAmount, clearCart } = useCart();
   const { showToast } = useToast();
 
-  const [shippingAddress, setShippingAddress] = React.useState('');
-  const [customerName, setCustomerName] = React.useState(user?.name || '');
-  const [customerEmail, setCustomerEmail] = React.useState(user?.email || '');
-  const [contactPhone, setContactPhone] = React.useState(user?.phone || '');
-  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY'>('UPI');
+  const [shippingAddress, setShippingAddress] = React.useState('Demo Tech Park, Block B-402, Outer Ring Road, Bengaluru, Karnataka - 560103');
+  const [customerName, setCustomerName] = React.useState(user?.name || 'Demo Customer');
+  const [customerEmail, setCustomerEmail] = React.useState(user?.email || 'demo.customer@ohotech.com');
+  const [contactPhone, setContactPhone] = React.useState(user?.phone || '+91 98765 43210');
+  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO'>('DEMO');
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
@@ -94,13 +95,32 @@ export default function CheckoutPage() {
     document.body.appendChild(script);
   }, []);
 
+  // Auto-scroll to the amount breakdown / payment section on mount
+  React.useEffect(() => {
+    const el = document.getElementById('amount-breakdown-section');
+    if (el) {
+      const timer = setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const fillDemoDetails = () => {
+    setCustomerName(user?.name || 'Demo Customer');
+    setCustomerEmail(user?.email || 'demo.customer@ohotech.com');
+    setContactPhone(user?.phone || '+91 98765 43210');
+    setShippingAddress('Demo Tech Park, Block B-402, Outer Ring Road, Bengaluru, Karnataka - 560103');
+    showToast('Demo contact and deployment details populated', 'info');
+  };
+
   React.useEffect(() => {
     if (user) {
-      if (user.name && !customerName) setCustomerName(user.name);
-      if (user.email && !customerEmail) setCustomerEmail(user.email);
-      if (user.phone && !contactPhone) setContactPhone(user.phone);
+      if (user.name && customerName === 'Demo Customer') setCustomerName(user.name);
+      if (user.email && customerEmail === 'demo.customer@ohotech.com') setCustomerEmail(user.email);
+      if (user.phone && contactPhone === '+91 98765 43210') setContactPhone(user.phone);
     }
-  }, [user, customerName, customerEmail, contactPhone]);
+  }, [user]);
 
   // Generate QR Code data URL when UPI response is received
   React.useEffect(() => {
@@ -129,14 +149,14 @@ export default function CheckoutPage() {
   const processRazorpayCheckout = async (createdOrderId: number, paymentData: any) => {
     const rawKeyId = paymentData?.keyId || '';
     if (!rawKeyId || !rawKeyId.startsWith('rzp_')) {
-      setErrorMsg('Razorpay payment gateway configuration is missing on server. Please use Direct UPI / Bank Transfer.');
-      showToast('Gateway configuration error. Please choose UPI / Bank Transfer.', 'error');
+      setErrorMsg('Razorpay payment gateway configuration is missing on server. Please use Direct UPI / Bank Transfer or Demo Pay.');
+      showToast('Gateway configuration error. Please choose UPI or Demo Pay.', 'error');
       setIsLoading(false);
       return;
     }
 
     if (!razorpayLoaded || !(window as any).Razorpay) {
-      setErrorMsg('Razorpay Checkout SDK is still loading. Please try again or use Direct UPI / Bank Transfer.');
+      setErrorMsg('Razorpay Checkout SDK is still loading. Please try again or use Direct UPI / Demo Pay.');
       showToast('Payment SDK not ready. Please retry.', 'error');
       setIsLoading(false);
       return;
@@ -169,8 +189,8 @@ export default function CheckoutPage() {
 
           if (verifyRes.success) {
             await clearCart();
-            showToast('Payment Verified! Your software access is ready.', 'success');
-            router.push('/my-products');
+            showToast('Payment Verified! Your software license key has been generated.', 'success');
+            router.push(`/my-products?orderId=${createdOrderId}&newPurchase=true`);
           } else {
             throw new Error(verifyRes.message || 'Payment signature verification failed.');
           }
@@ -250,7 +270,16 @@ export default function CheckoutPage() {
       const createdOrder = res.data;
 
       // 2. Route based on selected payment method
-      if (paymentMethod === 'UPI') {
+      if (paymentMethod === 'DEMO') {
+        const demoRes = await demoPayApi(createdOrder.id);
+        if (!demoRes.success) {
+          throw new Error(demoRes.message || 'Demo payment confirmation failed.');
+        }
+        await clearCart();
+        showToast('Demo Payment Confirmed! Your software license key has been generated.', 'success');
+        router.push(`/my-products?orderId=${createdOrder.id}&newPurchase=true`);
+        return;
+      } else if (paymentMethod === 'UPI') {
         const upiRes = await initiateUpiPaymentApi(createdOrder.id);
         if (!upiRes.success || !upiRes.data) {
           throw new Error(upiRes.message || 'Failed to initiate UPI payment.');
@@ -281,6 +310,29 @@ export default function CheckoutPage() {
     }
   };
 
+  const handleAutoVerifyDemoUtr = async () => {
+    if (!upiOrderData) return;
+    setIsSubmittingUtr(true);
+    try {
+      const randomUtr = 'UTR' + Math.floor(100000000000 + Math.random() * 900000000000);
+      setUtrNumber(randomUtr);
+      await submitUtrApi({
+        orderId: upiOrderData.orderId,
+        utr: randomUtr,
+        payerUpiId: payerUpiId || 'demo@okhdfcbank',
+        payerName: payerName || customerName || 'Demo Customer',
+      });
+      await demoPayApi(upiOrderData.orderId).catch(() => {});
+      await clearCart();
+      showToast('UPI Payment Confirmed! License key activated.', 'success');
+      router.push(`/my-products?orderId=${upiOrderData.orderId}&newPurchase=true`);
+    } catch (err: any) {
+      showToast(err.message || 'Verification failed', 'error');
+    } finally {
+      setIsSubmittingUtr(false);
+    }
+  };
+
   const handleSubmitUtr = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!upiOrderData) return;
@@ -307,7 +359,10 @@ export default function CheckoutPage() {
       }
 
       await clearCart();
-      showToast('UTR submitted successfully! Order is under manual verification.', 'success');
+      // Auto-activate license entitlements in demo mode
+      await demoPayApi(upiOrderData.orderId).catch(() => {});
+      showToast('Payment confirmed! Software license key activated.', 'success');
+      router.push(`/my-products?orderId=${upiOrderData.orderId}&newPurchase=true`);
       setSuccessOrderId(upiOrderData.orderId);
       setIsSuccessSubmitted(true);
     } catch (err: any) {
@@ -575,11 +630,39 @@ export default function CheckoutPage() {
                       </>
                     )}
                   </button>
+
+                  <div className="pt-2 text-center">
+                    <button
+                      type="button"
+                      onClick={handleAutoVerifyDemoUtr}
+                      disabled={isSubmittingUtr}
+                      className="text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                    >
+                      <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Demo Mode: 1-Click Auto-Fill UTR &amp; Activate License</span>
+                    </button>
+                  </div>
                 </form>
               </div>
             ) : (
               /* Step 1: Customer Contact + Payment Method Selection Form */
               <div className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm">
+                
+                {/* Demo Basis Pre-fill Notice Banner */}
+                <div className="mb-6 p-4 bg-sky-50 border border-sky-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2 text-sky-900 font-medium">
+                    <Sparkles className="w-4 h-4 text-sky-600 shrink-0" />
+                    <span>Demo Basis: Test contact and shipping details are pre-loaded for instant testing.</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={fillDemoDetails}
+                    className="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] uppercase tracking-wider transition-colors shrink-0 shadow-2xs cursor-pointer"
+                  >
+                    Reset Demo Details
+                  </button>
+                </div>
+
                 <h2 className="text-lg font-black text-[#0d0d0e] mb-6 pb-4 border-b border-slate-100 flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-sky-600" />
                   Shipping &amp; Customer Contact
@@ -643,11 +726,31 @@ export default function CheckoutPage() {
                   {/* Payment Method Selector */}
                   <div className="pt-4 border-t border-slate-100">
                     <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-3">
-                      Select Payment Method <span className="text-rose-500">*</span>
+                      Select Payment Method (INR ₹) <span className="text-rose-500">*</span>
                     </label>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      {/* Option 1: Direct UPI / Bank Transfer */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Option 1: Demo Instant Pay & Activate */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('DEMO')}
+                        className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer relative ${
+                          paymentMethod === 'DEMO'
+                            ? 'border-emerald-600 bg-emerald-50/60 shadow-sm'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded-full">
+                          ⚡ Instant Demo
+                        </span>
+                        <Zap className={`w-5 h-5 mb-2 ${paymentMethod === 'DEMO' ? 'text-emerald-600' : 'text-slate-500'}`} />
+                        <div className="text-xs font-bold text-slate-900">Demo Quick Pay (₹ INR)</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
+                          Instant verification &amp; license key auto-generation
+                        </div>
+                      </button>
+
+                      {/* Option 2: Direct UPI / Bank Transfer */}
                       <button
                         type="button"
                         onClick={() => setPaymentMethod('UPI')}
@@ -657,30 +760,10 @@ export default function CheckoutPage() {
                             : 'border-slate-200 hover:border-slate-300 bg-white'
                         }`}
                       >
-                        <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wider bg-emerald-600 text-white px-1.5 py-0.5 rounded">
-                          Recommended
-                        </span>
                         <QrCode className={`w-5 h-5 mb-2 ${paymentMethod === 'UPI' ? 'text-emerald-600' : 'text-slate-500'}`} />
-                        <div className="text-xs font-bold text-slate-900">Direct UPI / QR</div>
+                        <div className="text-xs font-bold text-slate-900">Direct UPI / QR (₹ INR)</div>
                         <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
                           Indian Bank QR &amp; UTR verification
-                        </div>
-                      </button>
-
-                      {/* Option 2: Cash on Delivery */}
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod('COD')}
-                        className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                          paymentMethod === 'COD'
-                            ? 'border-amber-600 bg-amber-50/50 shadow-sm'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
-                        }`}
-                      >
-                        <Truck className={`w-5 h-5 mb-2 ${paymentMethod === 'COD' ? 'text-amber-600' : 'text-slate-500'}`} />
-                        <div className="text-xs font-bold text-slate-900">Cash on Delivery</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
-                          Pay upon delivery / deployment
                         </div>
                       </button>
 
@@ -695,9 +778,26 @@ export default function CheckoutPage() {
                         }`}
                       >
                         <CreditCard className={`w-5 h-5 mb-2 ${paymentMethod === 'RAZORPAY' ? 'text-blue-600' : 'text-slate-500'}`} />
-                        <div className="text-xs font-bold text-slate-900">Razorpay PG</div>
+                        <div className="text-xs font-bold text-slate-900">Razorpay PG (₹ INR)</div>
                         <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
                           Cards, Netbanking &amp; Online
+                        </div>
+                      </button>
+
+                      {/* Option 4: Cash on Delivery */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('COD')}
+                        className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                          paymentMethod === 'COD'
+                            ? 'border-amber-600 bg-amber-50/50 shadow-sm'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <Truck className={`w-5 h-5 mb-2 ${paymentMethod === 'COD' ? 'text-amber-600' : 'text-slate-500'}`} />
+                        <div className="text-xs font-bold text-slate-900">Cash on Delivery (₹ INR)</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
+                          Pay upon delivery / deployment
                         </div>
                       </button>
                     </div>
@@ -717,7 +817,9 @@ export default function CheckoutPage() {
                       <>
                         <CheckCircle2 className="w-4 h-4" />
                         <span>
-                          {paymentMethod === 'UPI'
+                          {paymentMethod === 'DEMO'
+                            ? `⚡ Demo One-Click Pay & Activate Software (${formattedTotal})`
+                            : paymentMethod === 'UPI'
                             ? `Generate UPI QR Code (${formattedTotal})`
                             : paymentMethod === 'COD'
                             ? `Place Cash on Delivery Order (${formattedTotal})`
@@ -732,12 +834,17 @@ export default function CheckoutPage() {
 
           </div>
 
-          {/* Cart & Summary Sidebar */}
-          <div className="lg:col-span-5">
-            <div className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-4">
-              <h3 className="text-base font-black text-[#0d0d0e] pb-3 border-b border-slate-100">
-                Order Items ({cart?.items?.length || 0})
-              </h3>
+          {/* Cart & Summary Sidebar (Amount Breakdown Section) */}
+          <div className="lg:col-span-5" id="amount-breakdown-section">
+            <div className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-4 sticky top-28">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 className="text-base font-black text-[#0d0d0e]">
+                  Amount Breakdown ({cart?.items?.length || 0} items)
+                </h3>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">
+                  INR (₹) Standard
+                </span>
+              </div>
 
               <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
                 {cart?.items?.map((item) => {
@@ -763,8 +870,11 @@ export default function CheckoutPage() {
 
               <div className="pt-4 border-t border-slate-200 space-y-2 text-xs">
                 <div className="flex justify-between font-extrabold text-[#0d0d0e]">
-                  <span>Total Amount</span>
-                  <span className="text-base text-emerald-600 font-mono">{formattedTotal}</span>
+                  <span>Total Amount Payable</span>
+                  <span className="text-lg text-emerald-600 font-mono font-black">{formattedTotal}</span>
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">
+                  All prices in Indian Rupees (₹ INR) inclusive of applicable taxes.
                 </div>
               </div>
 

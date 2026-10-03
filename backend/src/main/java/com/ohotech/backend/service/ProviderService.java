@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class ProviderService {
 
     private final ProviderRepository providerRepository;
+    private final AuditService auditService;
 
     public Page<ProviderDto> getProviders(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
@@ -66,7 +67,10 @@ public class ProviderService {
                 .active(dto.isActive())
                 .build();
 
-        return mapToDto(providerRepository.save(provider));
+        Provider saved = providerRepository.save(provider);
+        auditService.logEvent("PROVIDER_CREATED", "Provider", String.valueOf(saved.getId()),
+                "Registered software provider agency: " + saved.getName());
+        return mapToDto(saved);
     }
 
     @Transactional
@@ -90,7 +94,10 @@ public class ProviderService {
         if (dto.getNotes() != null) provider.setNotes(dto.getNotes());
         provider.setActive(dto.isActive());
 
-        return mapToDto(providerRepository.save(provider));
+        Provider updated = providerRepository.save(provider);
+        auditService.logEvent("PROVIDER_UPDATED", "Provider", String.valueOf(updated.getId()),
+                "Updated software provider agency: " + updated.getName());
+        return mapToDto(updated);
     }
 
     @Transactional
@@ -98,7 +105,10 @@ public class ProviderService {
         Provider provider = providerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Provider", "id", id));
         provider.setActive(active);
-        return mapToDto(providerRepository.save(provider));
+        Provider saved = providerRepository.save(provider);
+        auditService.logEvent("PROVIDER_STATUS_TOGGLED", "Provider", String.valueOf(saved.getId()),
+                "Toggled provider active status to " + active + " for: " + saved.getName());
+        return mapToDto(saved);
     }
 
     @Transactional
@@ -107,6 +117,8 @@ public class ProviderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Provider", "id", id));
         provider.setActive(false);
         providerRepository.save(provider);
+        auditService.logEvent("PROVIDER_DEACTIVATED", "Provider", String.valueOf(provider.getId()),
+                "Deactivated software provider agency: " + provider.getName());
     }
 
     public ProviderDto mapToDto(Provider provider) {

@@ -26,6 +26,8 @@ public class PublicProductDto {
     private String demoUrl;
     private String documentationUrl;
     private boolean featured;
+    private String licenseModel;
+    private String supportModel;
     private Integer stock;
     private String imageUrl;
     private String serviceType;

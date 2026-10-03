@@ -27,4 +27,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Optional<Subscription> findByOrderIdAndProductId(@Param("orderId") Long orderId, @Param("productId") Long productId);
 
     List<Subscription> findByStatus(SubscriptionStatus status);
+    long countByStatus(SubscriptionStatus status);
 }

@@ -6,6 +6,7 @@ import {
   UpiInitiateResponse,
   UtrSubmissionRequest,
   AdminPaymentActionRequest,
+  PaymentReconciliationReportDto,
 } from './types';
 
 export interface CreatePaymentOrderParams {
@@ -36,6 +37,13 @@ export async function verifyPaymentApi(params: VerifyPaymentParams): Promise<Api
   return apiClient<Payment>('/api/payments/verify', {
     method: 'POST',
     body: JSON.stringify(params),
+  });
+}
+
+export async function demoPayApi(orderId: number): Promise<ApiResponse<Payment>> {
+  return apiClient<Payment>('/api/payments/demo-pay', {
+    method: 'POST',
+    body: JSON.stringify({ orderId }),
   });
 }
 
@@ -83,6 +91,12 @@ export async function adminRejectPaymentApi(
   return apiClient<Payment>(`/api/admin/payments/${paymentId}/reject`, {
     method: 'PUT',
     body: data ? JSON.stringify(data) : undefined,
+  });
+}
+
+export async function getPaymentReconciliationReportApi(): Promise<ApiResponse<PaymentReconciliationReportDto>> {
+  return apiClient<PaymentReconciliationReportDto>('/api/admin/payments/reconciliation', {
+    method: 'GET',
   });
 }
 

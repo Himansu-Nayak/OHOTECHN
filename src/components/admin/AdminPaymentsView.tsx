@@ -4,15 +4,16 @@ import * as React from 'react';
 import { 
   CreditCard, Search, Filter, RefreshCw, CheckCircle2, 
   AlertCircle, ArrowDownLeft, ShieldCheck, Download, Check,
-  XCircle, Copy, Clock, QrCode, Truck, Building2
+  XCircle, Copy, Clock, QrCode, Truck, Building2, AlertTriangle, Scale
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
-import { Payment } from '@/api/types';
+import { Payment, PaymentReconciliationReportDto } from '@/api/types';
 import { 
   getAdminPaymentsApi, 
   adminVerifyPaymentApi, 
-  adminRejectPaymentApi 
+  adminRejectPaymentApi,
+  getPaymentReconciliationReportApi
 } from '@/api/payments';
 import { 
   AdminCard, 
@@ -32,6 +33,10 @@ export function AdminPaymentsView() {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
+  const [viewMode, setViewMode] = React.useState<'ledger' | 'reconciliation'>('ledger');
+  const [reconReport, setReconReport] = React.useState<PaymentReconciliationReportDto | null>(null);
+  const [isLoadingRecon, setIsLoadingRecon] = React.useState<boolean>(false);
+
   const [searchQuery, setSearchQuery] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('ALL');
   const [providerFilter, setProviderFilter] = React.useState('ALL');
@@ -46,15 +51,37 @@ export function AdminPaymentsView() {
   const [rejectionReason, setRejectionReason] = React.useState('');
   const [isRejectingAction, setIsRejectingAction] = React.useState(false);
 
+  const fetchReconciliation = React.useCallback(async () => {
+    setIsLoadingRecon(true);
+    try {
+      const res = await getPaymentReconciliationReportApi();
+      if (res.success && res.data) {
+        setReconReport(res.data);
+      }
+    } catch (err: any) {
+      console.warn('Reconciliation report fetch note:', err?.message);
+    } finally {
+      setIsLoadingRecon(false);
+    }
+  }, []);
+
   const fetchPayments = React.useCallback(async () => {
     setIsLoading(true);
     setErrorMsg(null);
     try {
-      const res = await getAdminPaymentsApi();
-      if (res.success && res.data) {
-        setPayments(res.data);
-      } else {
-        setErrorMsg(res.message || 'Unable to retrieve payments.');
+      const [paymentsRes, reconRes] = await Promise.allSettled([
+        getAdminPaymentsApi(),
+        getPaymentReconciliationReportApi()
+      ]);
+
+      if (paymentsRes.status === 'fulfilled' && paymentsRes.value.success && paymentsRes.value.data) {
+        setPayments(paymentsRes.value.data);
+      } else if (paymentsRes.status === 'fulfilled') {
+        setErrorMsg(paymentsRes.value.message || 'Unable to retrieve payments.');
+      }
+
+      if (reconRes.status === 'fulfilled' && reconRes.value.success && reconRes.value.data) {
+        setReconReport(reconRes.value.data);
       }
     } catch (err: any) {
       setErrorMsg(err?.message || 'Error connecting to payment records.');
@@ -196,8 +223,46 @@ export function AdminPaymentsView() {
         </div>
       </div>
 
-      {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* View Switcher: Payment Ledger vs Payment Reconciliation */}
+      <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+        <button
+          onClick={() => setViewMode('ledger')}
+          className={cn(
+            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2",
+            viewMode === 'ledger'
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          )}
+        >
+          <CreditCard className="w-3.5 h-3.5" />
+          <span>Payment Ledger ({payments.length})</span>
+        </button>
+        <button
+          onClick={() => {
+            setViewMode('reconciliation');
+            fetchReconciliation();
+          }}
+          className={cn(
+            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2",
+            viewMode === 'reconciliation'
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          )}
+        >
+          <Scale className="w-3.5 h-3.5" />
+          <span>Reconciliation &amp; Mismatch Audit</span>
+          {reconReport && reconReport.anomalyCount > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-white">
+              {reconReport.anomalyCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {viewMode === 'ledger' ? (
+        <>
+          {/* Summary KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <AdminCard className="p-4 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
             <CheckCircle2 className="w-5 h-5" />
@@ -457,6 +522,244 @@ export function AdminPaymentsView() {
           />
         )}
       </AdminCard>
+      </>
+      ) : (
+        /* Dedicated Reconciliation View satisfying Requirement 9 */
+        <div className="space-y-6">
+          {/* Reconciliation KPIs */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <AdminCard className="p-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700">
+                <Scale className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Evaluated Records</div>
+                <div className="text-lg font-bold text-slate-900">{reconReport?.totalRecordsEvaluated ?? payments.length}</div>
+              </div>
+            </AdminCard>
+
+            <AdminCard className="p-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Matched &amp; Balanced</div>
+                <div className="text-lg font-bold text-slate-900">{reconReport?.matchedCount ?? completedCount}</div>
+              </div>
+            </AdminCard>
+
+            <AdminCard className="p-4 flex items-center gap-4">
+              <div className={cn(
+                "w-10 h-10 rounded-xl border flex items-center justify-center",
+                (reconReport?.anomalyCount || 0) > 0
+                  ? "bg-rose-50 border-rose-200 text-rose-600"
+                  : "bg-slate-50 border-slate-100 text-slate-400"
+              )}>
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status Anomalies</div>
+                <div className={cn(
+                  "text-lg font-bold font-mono",
+                  (reconReport?.anomalyCount || 0) > 0 ? "text-rose-600" : "text-slate-900"
+                )}>
+                  {reconReport?.anomalyCount ?? 0}
+                </div>
+              </div>
+            </AdminCard>
+
+            <AdminCard className="p-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Audit Health</div>
+                <div className="text-lg font-bold text-slate-900">
+                  {(reconReport?.anomalyCount || 0) === 0 ? 'HEALTHY' : 'ACTION REQUIRED'}
+                </div>
+              </div>
+            </AdminCard>
+          </div>
+
+          {/* Anomaly Callout Banner if any anomaly detected */}
+          {reconReport && reconReport.anomalies && reconReport.anomalies.length > 0 && (
+            <div className="p-4 bg-rose-50/70 border border-rose-200 rounded-2xl text-xs space-y-3">
+              <div className="flex items-center gap-2 font-bold text-rose-900">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>Ledger Reconciliation Alerts ({reconReport.anomalies.length} Issues Detected)</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {reconReport.anomalies.map((anom, idx) => (
+                  <div key={idx} className="bg-white p-3 rounded-xl border border-rose-200 shadow-xs space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-rose-700">{anom.anomalyType}</span>
+                      <span className="font-mono text-[11px] text-slate-500">PAY #{anom.paymentId} &bull; ORD #{anom.orderId || '—'}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">{anom.recommendation}</p>
+                    <div className="text-[10px] text-slate-400 pt-1 flex items-center justify-between">
+                      <span>Payment: {anom.currentPaymentStatus} &bull; Order: {anom.currentOrderStatus}</span>
+                      <span>₹{Number(anom.recordedAmount || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Reconciliation Audit Table */}
+          <AdminCard className="overflow-hidden">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Payment Reconciliation Audit Matrix</h3>
+                <p className="text-xs text-slate-500">Cross-verifying PostgreSQL Payment records with Order state machines &amp; Gateway IDs.</p>
+              </div>
+              <AdminButton
+                variant="secondary"
+                size="sm"
+                onClick={fetchReconciliation}
+                disabled={isLoadingRecon}
+                leftIcon={<RefreshCw className={cn("w-3.5 h-3.5", isLoadingRecon && "animate-spin")} />}
+              >
+                Re-evaluate
+              </AdminButton>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                    <th className="py-3 px-4">Order ID</th>
+                    <th className="py-3 px-4">Payment ID</th>
+                    <th className="py-3 px-4">Razorpay Order ID</th>
+                    <th className="py-3 px-4 text-right">Amount</th>
+                    <th className="py-3 px-4 text-center">Currency</th>
+                    <th className="py-3 px-4 text-center">Payment Status</th>
+                    <th className="py-3 px-4 text-center">Order Status</th>
+                    <th className="py-3 px-4 whitespace-nowrap">Created At</th>
+                    <th className="py-3 px-4 whitespace-nowrap">Verified At</th>
+                    <th className="py-3 px-4 text-center">Audit Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {payments.map((pay) => {
+                    const isMismatch = (pay.status === 'SUCCESSFUL' || pay.status === 'COMPLETED') &&
+                      pay.orderStatus && pay.orderStatus !== 'PAID' && pay.orderStatus !== 'CONFIRMED' && pay.orderStatus !== 'DELIVERED';
+                    const isPending = pay.status === 'PENDING';
+
+                    return (
+                      <tr 
+                        key={pay.id} 
+                        className={cn(
+                          "transition-colors",
+                          isMismatch ? "bg-rose-50/50 hover:bg-rose-50/80" : "hover:bg-slate-50/60"
+                        )}
+                      >
+                        {/* 1. Order ID */}
+                        <td className="py-3 px-4 font-mono font-bold text-slate-900">
+                          {pay.orderId ? (
+                            <span className="text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                              #ORD-{pay.orderId}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+
+                        {/* 2. Payment ID */}
+                        <td className="py-3 px-4 font-mono font-medium text-slate-800">
+                          #PAY-{pay.id}
+                        </td>
+
+                        {/* 3. Razorpay Order ID */}
+                        <td className="py-3 px-4 font-mono text-[11px] text-slate-600">
+                          {pay.razorpayOrderId || (
+                            <span className="text-slate-400 italic">Direct / UTR</span>
+                          )}
+                        </td>
+
+                        {/* 4. Amount */}
+                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">
+                          ₹{Number(pay.amount || 0).toLocaleString('en-IN')}
+                        </td>
+
+                        {/* 5. Currency */}
+                        <td className="py-3 px-4 text-center font-mono text-slate-500">
+                          {pay.currency || 'INR'}
+                        </td>
+
+                        {/* 6. Payment Status */}
+                        <td className="py-3 px-4 text-center">
+                          <StatusBadge status={pay.status} />
+                        </td>
+
+                        {/* 7. Order Status */}
+                        <td className="py-3 px-4 text-center font-mono">
+                          {pay.orderStatus ? (
+                            <span className={cn(
+                              "px-2 py-0.5 rounded text-[10px] font-bold border",
+                              pay.orderStatus === 'PAID' || pay.orderStatus === 'CONFIRMED' || pay.orderStatus === 'DELIVERED'
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : pay.orderStatus === 'PENDING'
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
+                                : "bg-rose-50 text-rose-700 border-rose-200"
+                            )}>
+                              {pay.orderStatus}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 text-[10px]">NONE</span>
+                          )}
+                        </td>
+
+                        {/* 8. Created At */}
+                        <td className="py-3 px-4 text-slate-500 text-[11px] whitespace-nowrap">
+                          {pay.createdAt ? new Date(pay.createdAt).toLocaleString('en-IN', {
+                            dateStyle: 'short',
+                            timeStyle: 'short'
+                          }) : '—'}
+                        </td>
+
+                        {/* 9. Verified At */}
+                        <td className="py-3 px-4 text-slate-500 text-[11px] whitespace-nowrap">
+                          {pay.verifiedAt ? (
+                            <span className="text-emerald-700 font-medium">
+                              {new Date(pay.verifiedAt).toLocaleString('en-IN', {
+                                dateStyle: 'short',
+                                timeStyle: 'short'
+                              })}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 italic">Unverified</span>
+                          )}
+                        </td>
+
+                        {/* Audit Status / Mismatch Highlight */}
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          {isMismatch ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                              <AlertTriangle className="w-3 h-3 text-rose-600" />
+                              <span>STATUS MISMATCH</span>
+                            </span>
+                          ) : isPending ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                              <Clock className="w-3 h-3 text-amber-600" />
+                              <span>PENDING AUDIT</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              <span>BALANCED</span>
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </AdminCard>
+        </div>
+      )}
 
       {/* Verify & Approve Modal */}
       <AdminModal

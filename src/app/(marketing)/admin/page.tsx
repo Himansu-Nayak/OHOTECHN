@@ -8,7 +8,8 @@ import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
 import { 
   ContactEnquiry, 
-  AnalyticsDashboardDto 
+  AnalyticsDashboardDto,
+  AdminStatsDto 
 } from '@/api/types';
 import { 
   getAdminStatsApi, 
@@ -36,15 +37,6 @@ import { AdminGatewaysView } from '@/components/admin/AdminGatewaysView';
 import { AdminAiTab } from '@/components/admin/AdminAiTab';
 import { AdminSettingsView } from '@/components/admin/AdminSettingsView';
 import { AdminAnalyticsView } from '@/components/admin/AdminAnalyticsView';
-
-interface Stats {
-  totalProducts: number;
-  totalOrders: number;
-  totalUsers: number;
-  totalQuotes: number;
-  totalRevenue: number;
-  systemStatus: string;
-}
 
 export default function AdminConsolePage() {
   const router = useRouter();
@@ -85,12 +77,21 @@ export default function AdminConsolePage() {
   }, []);
 
   // System Core Statistics from Backend
-  const [stats, setStats] = React.useState<Stats>({
+  const [stats, setStats] = React.useState<AdminStatsDto>({
     totalProducts: 0,
+    activeProducts: 0,
     totalOrders: 0,
     totalUsers: 0,
     totalQuotes: 0,
     totalRevenue: 0,
+    activeLicenses: 0,
+    activeSubscriptions: 0,
+    pendingDeployments: 0,
+    liveDeployments: 0,
+    failedPayments: 0,
+    activeProviders: 0,
+    inactiveProviders: 0,
+    providerIssues: 0,
     systemStatus: 'OPERATIONAL_100',
   });
 
@@ -100,10 +101,19 @@ export default function AdminConsolePage() {
       if (res.success && res.data) {
         setStats({
           totalProducts: res.data.totalProducts || 0,
+          activeProducts: res.data.activeProducts ?? res.data.totalProducts ?? 0,
           totalOrders: res.data.totalOrders || 0,
           totalUsers: res.data.totalUsers || 0,
           totalQuotes: res.data.totalQuotes || 0,
           totalRevenue: res.data.totalRevenue || 0,
+          activeLicenses: res.data.activeLicenses ?? 0,
+          activeSubscriptions: res.data.activeSubscriptions ?? 0,
+          pendingDeployments: res.data.pendingDeployments ?? 0,
+          liveDeployments: res.data.liveDeployments ?? 0,
+          failedPayments: res.data.failedPayments ?? 0,
+          activeProviders: res.data.activeProviders ?? 0,
+          inactiveProviders: res.data.inactiveProviders ?? 0,
+          providerIssues: res.data.providerIssues ?? 0,
           systemStatus: res.data.systemStatus || 'OPERATIONAL_100',
         });
       }

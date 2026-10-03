@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { 
   Package, Key, Download, Repeat, Sparkles, AlertCircle, ShieldCheck, 
-  Copy, Check, Headphones, ArrowRight, Laptop, ExternalLink, ChevronRight 
+  Copy, Check, Headphones, ArrowRight, Laptop, ExternalLink, ChevronRight, Zap 
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -15,10 +16,14 @@ import { ProductDto, License, Subscription, DeploymentDto } from '@/api/types';
 import { getMyDeploymentsApi } from '@/api/deployments';
 import { cn } from '@/lib/utils';
 
-export default function MyProductsPage() {
+function MyProductsContent() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const searchParams = useSearchParams();
   
+  const orderIdParam = searchParams.get('orderId');
+  const isNewPurchase = searchParams.get('newPurchase') === 'true';
+
   const [products, setProducts] = React.useState<ProductDto[]>([]);
   const [licenses, setLicenses] = React.useState<License[]>([]);
   const [subscriptions, setSubscriptions] = React.useState<Subscription[]>([]);
@@ -52,7 +57,7 @@ export default function MyProductsPage() {
     if (navigator?.clipboard) {
       navigator.clipboard.writeText(key);
       setCopiedKey(key);
-      showToast('License key copied to clipboard', 'info');
+      showToast('License key copied to clipboard!', 'info');
       setTimeout(() => setCopiedKey(null), 2000);
     }
   };
@@ -72,11 +77,122 @@ export default function MyProductsPage() {
     );
   }
 
+  // Identify most recent license for new purchase display
+  const newestLicense = licenses.length > 0 ? licenses[0] : null;
+  const newestProduct = newestLicense ? products.find(p => p.id === newestLicense.product?.id) : null;
+  const newestSub = newestLicense ? subscriptions.find(s => s.product?.id === newestLicense.product?.id) : null;
+
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8">
       <main className="max-w-5xl w-full mx-auto" id="my-products-main">
         
-        {/* Header */}
+        {/* NEW PURCHASE CELEBRATION & AUTO-GENERATED KEY MODAL / BANNER */}
+        {isNewPurchase && newestLicense && (
+          <div className="mb-10 p-6 sm:p-8 rounded-[32px] bg-gradient-to-br from-[#0c1f17] via-[#0d1824] to-[#0d0d0e] text-white shadow-2xl border-2 border-emerald-500/40 relative overflow-hidden">
+            {/* Ambient Background Glow */}
+            <div className="absolute -right-16 -top-16 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -left-16 -bottom-16 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono text-xs font-bold uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                  <span>PAYMENT CONFIRMED &bull; LICENSE KEY ACTIVATED</span>
+                </div>
+                {orderIdParam && (
+                  <span className="text-xs font-mono font-bold text-slate-300 bg-white/10 px-3 py-1 rounded-full border border-white/15">
+                    Order Ref: #ORD-{orderIdParam}
+                  </span>
+                )}
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
+                Your Software License is Live!
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed mb-6 font-medium">
+                Thank you for your purchase. Your software has been provisioned and your unique cryptographic license key has been generated automatically.
+              </p>
+
+              {/* Cryptographic License Key Highlight Card */}
+              <div className="p-5 sm:p-6 rounded-2xl bg-black/60 border border-emerald-500/50 backdrop-blur-md mb-6 shadow-inner">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-bold mb-1.5">
+                      <Key className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Auto-Generated Software License Key</span>
+                    </div>
+                    <code className="text-xl sm:text-3xl font-mono font-black text-white tracking-wider select-all break-all drop-shadow-sm">
+                      {newestLicense.licenseKey}
+                    </code>
+                    <div className="text-[11px] text-slate-400 font-mono mt-1">
+                      Status: <span className="text-emerald-400 font-bold">ACTIVE</span> &bull; Plan: {newestLicense.productPlan?.name || 'Commercial License'} &bull; Seats: {newestLicense.activationCount || 0} / {newestLicense.activationLimit || 1}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyKey(newestLicense.licenseKey)}
+                    className="px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-98 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shrink-0 shadow-lg cursor-pointer"
+                  >
+                    {copiedKey === newestLicense.licenseKey ? (
+                      <>
+                        <Check className="w-4 h-4 text-slate-950" />
+                        <span>Key Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 text-slate-950" />
+                        <span>Copy License Key</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Software Startup & First-Login Instructions */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white/10 border border-white/15 text-xs text-slate-200 space-y-2 mb-6 backdrop-blur-xs">
+                <div className="flex items-center gap-2 font-bold text-white text-[11px] uppercase tracking-wider">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>How to Start &amp; Activate Your Software</span>
+                </div>
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  When you launch or open the software on your computer or log into the client console for the first time, you will be prompted for your <strong>License Key</strong>. Copy and paste the key above into the startup activation prompt to register your device seat and immediately begin using your active subscription.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3">
+                {newestProduct?.demoUrl && (
+                  <a
+                    href={newestProduct.demoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-5 py-2.5 rounded-full bg-white text-slate-950 font-bold text-xs uppercase tracking-wider hover:bg-slate-200 transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Launch Software Console</span>
+                  </a>
+                )}
+                <Link
+                  href="/downloads"
+                  className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Platform Client</span>
+                </Link>
+                <Link
+                  href="/licenses"
+                  className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 border border-white/20"
+                >
+                  <Key className="w-3.5 h-3.5" />
+                  <span>Manage Device Seats</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Standard Page Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-2">
@@ -142,10 +258,20 @@ export default function MyProductsPage() {
                   {/* Top Bar: Title & Primary Actions */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-4">
                     <div>
-                      <div className="flex items-center gap-2 mb-1.5">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
                           {product.categoryName || 'Enterprise Software'}
                         </span>
+                        {product.licenseModel && (
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
+                            {product.licenseModel}
+                          </span>
+                        )}
+                        {product.supportModel && (
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
+                            {product.supportModel.replace(/_/g, ' ')}
+                          </span>
+                        )}
                         {matchedLicense && (
                           <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                             matchedLicense.status === 'ACTIVE' 
@@ -329,5 +455,17 @@ export default function MyProductsPage() {
 
       </main>
     </div>
+  );
+}
+
+export default function MyProductsPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-[#f7f7f5] pt-32 text-center text-xs text-slate-500">
+        Loading software entitlements...
+      </div>
+    }>
+      <MyProductsContent />
+    </React.Suspense>
   );
 }

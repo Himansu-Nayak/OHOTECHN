@@ -1,7 +1,9 @@
 package com.ohotech.backend.controller;
 
 import com.ohotech.backend.dto.ApiResponse;
+import com.ohotech.backend.dto.ProductDto;
 import com.ohotech.backend.dto.ProviderDto;
+import com.ohotech.backend.service.ProductService;
 import com.ohotech.backend.service.ProviderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Map;
 public class AdminProviderController {
 
     private final ProviderService providerService;
+    private final ProductService productService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<ProviderDto>>> getProviders(
@@ -40,6 +43,12 @@ public class AdminProviderController {
     public ResponseEntity<ApiResponse<ProviderDto>> getProviderById(@PathVariable Long id) {
         ProviderDto provider = providerService.getProviderById(id);
         return ResponseEntity.ok(ApiResponse.success("Provider retrieved successfully", provider));
+    }
+
+    @GetMapping("/{id}/products")
+    public ResponseEntity<ApiResponse<List<ProductDto>>> getProviderProducts(@PathVariable Long id) {
+        List<ProductDto> products = productService.getProductsByProviderId(id);
+        return ResponseEntity.ok(ApiResponse.success("Provider products retrieved successfully", products));
     }
 
     @PostMapping

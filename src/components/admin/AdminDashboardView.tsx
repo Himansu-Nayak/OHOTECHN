@@ -4,23 +4,16 @@ import * as React from 'react';
 import { 
   ShoppingCart, DollarSign, Users, Package, KeyRound, Layers, 
   ArrowRight, RefreshCw, CheckCircle2, ShieldCheck, Clock,
-  ExternalLink, Server, Database, Sparkles, Inbox
+  ExternalLink, Server, Database, Sparkles, Inbox, AlertTriangle, CreditCard, Building2, HardDrive
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AdminTabKey } from './AdminSidebar';
-import { AnalyticsDashboardDto, Order } from '@/api/types';
-import { getAdminOrdersApi } from '@/api/orders';
+import { AnalyticsDashboardDto, Order, AdminStatsDto } from '@/api/types';
+import { getAdminOrdersApi, clearAllAdminOrdersApi } from '@/api/orders';
 import { AdminCard, AdminBadge, StatusBadge, AdminButton, AdminEmptyState } from './AdminUiPrimitives';
 
 interface AdminDashboardViewProps {
-  stats: {
-    totalProducts: number;
-    totalOrders: number;
-    totalUsers: number;
-    totalQuotes: number;
-    totalRevenue: number;
-    systemStatus: string;
-  };
+  stats: AdminStatsDto;
   analyticsData?: AnalyticsDashboardDto | null;
   onNavigateTab: (tab: AdminTabKey) => void;
   onRefresh?: () => void;
@@ -60,8 +53,8 @@ export function AdminDashboardView({
     setLastRefreshed(new Date().toLocaleTimeString('en-IN'));
   };
 
-  // Safe KPI calculations strictly from backend
-  const grossRevenue = analyticsData?.revenueMetrics?.totalRevenue != null 
+  // Safe KPI calculations strictly from backend APIs
+  const grossRevenue = analyticsData?.revenueMetrics?.totalRevenue != null && Number(analyticsData.revenueMetrics.totalRevenue) > 0
     ? Number(analyticsData.revenueMetrics.totalRevenue) 
     : (stats.totalRevenue || 0);
 
@@ -73,9 +66,38 @@ export function AdminDashboardView({
 
   const totalOrders = stats.totalOrders || analyticsData?.orderMetrics?.totalOrders || 0;
   const totalCustomers = stats.totalUsers || analyticsData?.userMetrics?.totalCustomers || 0;
-  const activeSubs = analyticsData?.subscriptionMetrics?.activeSubscriptions ?? 0;
-  const activeLicenses = analyticsData?.licenseMetrics?.activeLicenses ?? 0;
+  const activeProducts = stats.activeProducts ?? stats.totalProducts ?? 0;
+  const totalProducts = stats.totalProducts ?? 0;
+  const activeSubs = stats.activeSubscriptions ?? (analyticsData?.subscriptionMetrics?.activeSubscriptions ?? 0);
+  const activeLicenses = stats.activeLicenses ?? (analyticsData?.licenseMetrics?.activeLicenses ?? 0);
   const activeEntitlements = activeSubs + activeLicenses;
+  const pendingDeployments = stats.pendingDeployments ?? 0;
+  const liveDeployments = stats.liveDeployments ?? 0;
+  const failedPayments = stats.failedPayments ?? 0;
+  const activeProviders = stats.activeProviders ?? 0;
+  const providerIssues = stats.providerIssues ?? stats.inactiveProviders ?? 0;
+
+  const [isClearingOrders, setIsClearingOrders] = React.useState<boolean>(false);
+
+  const handleClearAllOrders = async () => {
+    if (!window.confirm('Are you sure you want to clear all orders and related transaction records? This will reset the order ledger for testing/demo.')) {
+      return;
+    }
+    setIsClearingOrders(true);
+    try {
+      const res = await clearAllAdminOrdersApi();
+      if (res.success) {
+        alert('All orders and associated transactions have been successfully cleared.');
+        handleRefreshAll();
+      } else {
+        alert(res.message || 'Failed to clear orders');
+      }
+    } catch (e: any) {
+      alert(e.message || 'Error clearing orders');
+    } finally {
+      setIsClearingOrders(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -95,6 +117,14 @@ export function AdminDashboardView({
             Updated {lastRefreshed}
           </span>
           <AdminButton
+            variant="danger"
+            size="sm"
+            onClick={handleClearAllOrders}
+            disabled={isClearingOrders}
+          >
+            {isClearingOrders ? 'Clearing...' : 'Clear All Orders'}
+          </AdminButton>
+          <AdminButton
             variant="secondary"
             size="sm"
             onClick={handleRefreshAll}
@@ -105,7 +135,7 @@ export function AdminDashboardView({
         </div>
       </div>
 
-      {/* 2. Four Focused Operational KPIs */}
+      {/* 2. Primary Commercial KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Gross Revenue */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
@@ -176,6 +206,97 @@ export function AdminDashboardView({
             <p className="text-[11px] text-slate-500 mt-1">
               {activeSubs} subscriptions &bull; {activeLicenses} license keys
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2b. Reseller Operations Live Telemetry Strip */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Active Products */}
+        <div 
+          onClick={() => onNavigateTab('products')}
+          className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all cursor-pointer flex items-center justify-between"
+        >
+          <div className="space-y-0.5">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Active Products</span>
+            <div className="text-lg font-bold text-slate-900">
+              {activeProducts} <span className="text-xs font-normal text-slate-400">/ {totalProducts} in catalog</span>
+            </div>
+          </div>
+          <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+            <Package className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Pending Deployments */}
+        <div 
+          onClick={() => onNavigateTab('deployments')}
+          className={cn(
+            "rounded-xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
+            pendingDeployments > 0 
+              ? "bg-amber-50/40 border-amber-200/80 hover:border-amber-300" 
+              : "bg-white border-slate-200/80 hover:border-slate-300"
+          )}
+        >
+          <div className="space-y-0.5">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Pending Deployments</span>
+            <div className="text-lg font-bold text-slate-900">
+              {pendingDeployments} <span className="text-xs font-normal text-slate-400">({liveDeployments} live)</span>
+            </div>
+          </div>
+          <div className={cn(
+            "p-2 rounded-lg border",
+            pendingDeployments > 0 ? "bg-amber-100 text-amber-800 border-amber-200" : "bg-slate-50 text-slate-600 border-slate-100"
+          )}>
+            <HardDrive className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Failed / At-Risk Payments */}
+        <div 
+          onClick={() => onNavigateTab('payments')}
+          className={cn(
+            "rounded-xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
+            failedPayments > 0 
+              ? "bg-rose-50/40 border-rose-200/80 hover:border-rose-300" 
+              : "bg-white border-slate-200/80 hover:border-slate-300"
+          )}
+        >
+          <div className="space-y-0.5">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Payment Exceptions</span>
+            <div className="text-lg font-bold text-slate-900">
+              {failedPayments} <span className="text-xs font-normal text-slate-400">failed/unresolved</span>
+            </div>
+          </div>
+          <div className={cn(
+            "p-2 rounded-lg border",
+            failedPayments > 0 ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-slate-50 text-slate-600 border-slate-100"
+          )}>
+            <CreditCard className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Agency Provider Issues */}
+        <div 
+          onClick={() => onNavigateTab('providers')}
+          className={cn(
+            "rounded-xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
+            providerIssues > 0 
+              ? "bg-amber-50/40 border-amber-200/80 hover:border-amber-300" 
+              : "bg-white border-slate-200/80 hover:border-slate-300"
+          )}
+        >
+          <div className="space-y-0.5">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Provider Agencies</span>
+            <div className="text-lg font-bold text-slate-900">
+              {activeProviders} active <span className="text-xs font-normal text-slate-400">({providerIssues} inactive)</span>
+            </div>
+          </div>
+          <div className={cn(
+            "p-2 rounded-lg border",
+            providerIssues > 0 ? "bg-amber-100 text-amber-800 border-amber-200" : "bg-slate-50 text-slate-600 border-slate-100"
+          )}>
+            <Building2 className="w-4 h-4" />
           </div>
         </div>
       </div>
@@ -288,7 +409,7 @@ export function AdminDashboardView({
                   </div>
                   <div>
                     <span className="text-xs font-semibold text-slate-900 block">Catalog Inventory</span>
-                    <span className="text-[11px] text-slate-500">28 Turnkey Solutions</span>
+                    <span className="text-[11px] text-slate-500">{activeProducts} Active of {totalProducts} Total</span>
                   </div>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all" />

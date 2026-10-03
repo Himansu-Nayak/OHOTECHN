@@ -39,6 +39,9 @@ public class ProductDto {
     private String documentationUrl;
     private boolean featured;
 
+    private String licenseModel;
+    private String supportModel;
+
     private Integer stock;
     private String imageUrl;
     private String serviceType;

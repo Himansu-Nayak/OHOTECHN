@@ -17,6 +17,8 @@ public class DeploymentDto {
     private Long orderId;
     private Long productId;
     private String productName;
+    private Long providerId;
+    private String providerName;
     private Long userId;
     private String userEmail;
     private String userName;

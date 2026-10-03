@@ -151,3 +151,86 @@ This document specifies the exact REST API contracts implemented in the OHO TECH
 }
 ```
 - **Response**: Returns updated `DeploymentDto`. Writes transition record to `AuditLog`.
+
+---
+
+## 6. Developer Telemetry, API Vault & Webhook Endpoints
+
+### 6.1 Get Live JVM & Infrastructure Diagnostics
+- **Method**: `GET`
+- **Path**: `/api/developer/diagnostics`
+- **Security**: `ROLE_DEVELOPER`, `ROLE_ADMIN`
+- **Response**: `ApiResponse<DeveloperDiagnosticsDto>`
+```json
+{
+  "success": true,
+  "message": "System diagnostics telemetry retrieved",
+  "data": {
+    "jvmVersion": "21.0.2",
+    "javaVendor": "Oracle Corporation",
+    "osName": "Windows 11 10.0",
+    "osArch": "amd64",
+    "systemUptimeMs": 3600000,
+    "heapUsedBytes": 1450000000,
+    "heapMaxBytes": 4294967296,
+    "heapUsedPercent": 33.8,
+    "activeThreadCount": 42,
+    "dbConnectionUrlMasked": "jdbc:postgresql://localhost:5432/OHOTECH",
+    "dbActiveConnections": 2,
+    "dbMaxConnections": 20,
+    "springActiveProfiles": ["production"],
+    "rateLimitActiveTrackers": 14,
+    "serverTimestamp": "2026-10-02T16:45:00",
+    "status": "OPERATIONAL"
+  }
+}
+```
+
+### 6.2 Manage Programmatic API Keys
+- **Method**: `GET` / `POST`
+- **Path**: `/api/developer/keys`
+- **Security**: `ROLE_DEVELOPER`, `ROLE_ADMIN`
+- **Create Request**:
+```json
+{
+  "name": "Production Microservice Key",
+  "scope": "read_write"
+}
+```
+- **Create Response**: Returns `ApiKeyDto` including one-time unmasked `plaintextSecret`.
+- **Revoke Path**: `/api/developer/keys/{id}/revoke` (`POST`)
+
+### 6.3 Webhook Event Delivery Stream & Simulation
+- **Method**: `GET`
+- **Path**: `/api/developer/webhooks`
+- **Security**: `ROLE_DEVELOPER`, `ROLE_ADMIN`
+- **Response**: `ApiResponse<List<WebhookEventDto>>` (Top 50 recent events)
+- **Simulator Dispatch**: `POST /api/developer/webhooks/test`
+  - **Request**: `{ "targetUrl": "https://client-listener.example.com", "eventType": "order.completed" }`
+  - **Response**: `{ "statusCode": 200, "latencyMs": 34, "success": true, "responseSummary": "..." }`
+
+---
+
+## 7. Master Reseller API Summary Matrix
+
+| METHOD | PATH | ROLE REQUIRED | REQUEST BODY / PARAMS | RESPONSE PAYLOAD | DB ACTION | SECURITY RULE |
+|---|---|---|---|---|---|---|
+| `GET` | `/api/products` | `PUBLIC` | `page`, `size`, `search`, `category` | `Page<PublicProductDto>` | Read `products` | Wholesale costs & provider identity strictly quarantined |
+| `GET` | `/api/products/{id}` | `PUBLIC` | Path `id` or slug | `PublicProductDto` | Read `products` | 0% disclosure of provider commercial margins |
+| `GET` | `/api/deployments/my` | `ROLE_CUSTOMER` | None (User from JWT) | `List<DeploymentDto>` | Read `deployments` | Strict customer isolation; `adminNotes`, `providerId`, `providerName` nullified |
+| `GET` | `/api/deployments/{id}` | `ROLE_CUSTOMER` | Path `id` | `DeploymentDto` | Read `deployments` | Ownership check: customer must own the deployment or 403 Forbidden |
+| `GET` | `/api/admin/providers` | `ROLE_ADMIN` | `page`, `size`, `search` | `Page<ProviderDto>` | Read `providers` | Confidential wholesale records only visible to Admin |
+| `POST` | `/api/admin/providers` | `ROLE_ADMIN` | `ProviderDto` | `ProviderDto` | Insert `providers` | Validates provider name, commercial terms, SLA |
+| `PUT` | `/api/admin/providers/{id}` | `ROLE_ADMIN` | `ProviderDto` | `ProviderDto` | Update `providers` | Updates agency terms, contact details, SLA |
+| `PATCH`| `/api/admin/providers/{id}/status` | `ROLE_ADMIN` | `{ active: boolean }` | `ProviderDto` | Update `providers` | Toggles provider active state |
+| `GET` | `/api/admin/products` | `ROLE_ADMIN` | `page`, `size`, `search`, `category` | `Page<ProductDto>` | Read `products` | Exposes wholesale costs & margins exclusively to Admin |
+| `POST` | `/api/admin/products` | `ROLE_ADMIN` | `ProductDto` | `ProductDto` | Insert `products` | Computes selling price = providerCost + resellerMargin |
+| `GET` | `/api/admin/deployments` | `ROLE_ADMIN` | `page`, `size`, `status` | `Page<DeploymentDto>` | Read `deployments` | Exposes full operational metadata and confidential admin notes |
+| `PUT` | `/api/admin/deployments/{id}/status` | `ROLE_ADMIN` | `status`, `accessUrl`, `assignedEngineer` | `DeploymentDto` | Update `deployments` | Enforces valid `accessUrl` before permitting `LIVE` state |
+| `GET` | `/api/developer/diagnostics` | `ROLE_DEVELOPER`, `ROLE_ADMIN` | None | `DeveloperDiagnosticsDto` | JMX MXBeans | Real-time JVM memory, threads, masked DB connection pool |
+| `GET` | `/api/developer/keys` | `ROLE_DEVELOPER`, `ROLE_ADMIN` | None | `List<ApiKeyDto>` | Read `api_keys` | Keys scoped to user |
+| `POST` | `/api/developer/keys` | `ROLE_DEVELOPER`, `ROLE_ADMIN` | `CreateApiKeyRequest` | `ApiKeyDto` | Insert `api_keys` | Plaintext secret displayed only once at creation |
+| `POST` | `/api/developer/keys/{id}/revoke` | `ROLE_DEVELOPER`, `ROLE_ADMIN` | Path `id` | `ApiKeyDto` | Update `api_keys` | Revokes programmatic key immediately |
+| `GET` | `/api/developer/webhooks` | `ROLE_DEVELOPER`, `ROLE_ADMIN` | None | `List<WebhookEventDto>` | Read `crm_webhook_events` | Top 50 outbound & inbound webhook deliveries |
+| `POST` | `/api/developer/webhooks/test` | `ROLE_DEVELOPER`, `ROLE_ADMIN` | `WebhookTestRequest` | `WebhookTestResponseDto` | Dispatch HTTP + Insert | Validates URL format; logs dispatch and response latency |
+

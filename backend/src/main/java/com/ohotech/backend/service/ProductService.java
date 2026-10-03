@@ -25,6 +25,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProviderRepository providerRepository;
+    private final AuditService auditService;
 
     public Page<ProductDto> getActiveProducts(int page, int size, String searchQuery, Long categoryId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -80,6 +81,13 @@ public class ProductService {
         return mapToAdminDto(product);
     }
 
+    @Transactional(readOnly = true)
+    public java.util.List<ProductDto> getProductsByProviderId(Long providerId) {
+        return productRepository.findByProviderId(providerId).stream()
+                .map(this::mapToAdminDto)
+                .toList();
+    }
+
     @Transactional
     public ProductDto createProduct(ProductDto dto) {
         Category category = null;
@@ -112,6 +120,8 @@ public class ProductService {
                 .demoUrl(dto.getDemoUrl())
                 .documentationUrl(dto.getDocumentationUrl())
                 .featured(dto.isFeatured())
+                .licenseModel(dto.getLicenseModel() != null ? dto.getLicenseModel() : "PERPETUAL")
+                .supportModel(dto.getSupportModel() != null ? dto.getSupportModel() : "OHO_TECH_DIRECT")
                 .stock(dto.getStock() != null ? dto.getStock() : 100)
                 .imageUrl(dto.getImageUrl())
                 .serviceType(dto.getServiceType())
@@ -119,7 +129,10 @@ public class ProductService {
                 .active(dto.isActive())
                 .build();
 
-        return mapToAdminDto(productRepository.save(product));
+        Product saved = productRepository.save(product);
+        auditService.logEvent("PRODUCT_CREATED", "Product", String.valueOf(saved.getId()),
+                "Created product: " + saved.getName() + " with selling price ₹" + saved.getPrice());
+        return mapToAdminDto(saved);
     }
 
     @Transactional
@@ -156,6 +169,8 @@ public class ProductService {
         if (dto.getDeploymentType() != null) product.setDeploymentType(dto.getDeploymentType());
         if (dto.getDemoUrl() != null) product.setDemoUrl(dto.getDemoUrl());
         if (dto.getDocumentationUrl() != null) product.setDocumentationUrl(dto.getDocumentationUrl());
+        if (dto.getLicenseModel() != null) product.setLicenseModel(dto.getLicenseModel());
+        if (dto.getSupportModel() != null) product.setSupportModel(dto.getSupportModel());
         product.setFeatured(dto.isFeatured());
 
         if (dto.getStock() != null) product.setStock(dto.getStock());
@@ -163,7 +178,10 @@ public class ProductService {
         if (dto.getServiceType() != null) product.setServiceType(dto.getServiceType());
         product.setActive(dto.isActive());
 
-        return mapToAdminDto(productRepository.save(product));
+        Product updated = productRepository.save(product);
+        auditService.logEvent("PRODUCT_UPDATED", "Product", String.valueOf(updated.getId()),
+                "Updated product: " + updated.getName() + " with selling price ₹" + updated.getPrice());
+        return mapToAdminDto(updated);
     }
 
     @Transactional
@@ -171,7 +189,10 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
         product.setActive(active);
-        return mapToAdminDto(productRepository.save(product));
+        Product saved = productRepository.save(product);
+        auditService.logEvent("PRODUCT_STATUS_TOGGLED", "Product", String.valueOf(saved.getId()),
+                "Toggled active status to " + active + " for product: " + saved.getName());
+        return mapToAdminDto(saved);
     }
 
     @Transactional
@@ -201,6 +222,8 @@ public class ProductService {
                 .demoUrl(product.getDemoUrl())
                 .documentationUrl(product.getDocumentationUrl())
                 .featured(product.isFeatured())
+                .licenseModel(product.getLicenseModel())
+                .supportModel(product.getSupportModel())
                 .stock(product.getStock())
                 .imageUrl(product.getImageUrl())
                 .serviceType(product.getServiceType())
@@ -225,6 +248,8 @@ public class ProductService {
                 .demoUrl(product.getDemoUrl())
                 .documentationUrl(product.getDocumentationUrl())
                 .featured(product.isFeatured())
+                .licenseModel(product.getLicenseModel())
+                .supportModel(product.getSupportModel())
                 .stock(product.getStock())
                 .imageUrl(product.getImageUrl())
                 .serviceType(product.getServiceType())
@@ -260,6 +285,8 @@ public class ProductService {
                 .demoUrl(product.getDemoUrl())
                 .documentationUrl(product.getDocumentationUrl())
                 .featured(product.isFeatured())
+                .licenseModel(product.getLicenseModel())
+                .supportModel(product.getSupportModel())
                 .stock(product.getStock())
                 .imageUrl(product.getImageUrl())
                 .serviceType(product.getServiceType())
@@ -285,6 +312,8 @@ public class ProductService {
                 .demoUrl(product.getDemoUrl())
                 .documentationUrl(product.getDocumentationUrl())
                 .featured(product.isFeatured())
+                .licenseModel(product.getLicenseModel())
+                .supportModel(product.getSupportModel())
                 .stock(product.getStock())
                 .imageUrl(product.getImageUrl())
                 .serviceType(product.getServiceType())

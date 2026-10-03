@@ -10,6 +10,7 @@ export interface UserDto {
   id: number;
   name: string;
   email: string;
+  officialEmail?: string;
   phone?: string;
   role: 'CUSTOMER' | 'ADMIN' | 'DEVELOPER' | 'SUPPORT' | 'ROLE_CUSTOMER' | 'ROLE_ADMIN' | 'ROLE_DEVELOPER' | 'ROLE_SUPPORT' | string;
   enabled: boolean;
@@ -40,6 +41,8 @@ export interface ProductDto {
   demoUrl?: string;
   documentationUrl?: string;
   featured?: boolean;
+  licenseModel?: string;
+  supportModel?: string;
   stock: number;
   imageUrl?: string;
   serviceType?: string;
@@ -85,6 +88,8 @@ export interface DeploymentDto {
   orderId?: number;
   productId: number;
   productName?: string;
+  providerId?: number;
+  providerName?: string;
   userId: number;
   userEmail?: string;
   userName?: string;
@@ -157,6 +162,7 @@ export type PaymentMethod = 'UPI_QR' | 'UPI_INTENT' | 'UPI' | 'COD' | 'CARD' | '
 export interface Payment {
   id: number;
   orderId?: number;
+  orderStatus?: string;
   provider?: PaymentProvider;
   method?: PaymentMethod;
   razorpayOrderId?: string;
@@ -202,6 +208,28 @@ export interface UtrSubmissionRequest {
   payerUpiId?: string;
   payerName?: string;
   notes?: string;
+}
+
+export interface ReconciliationAnomalyDto {
+  paymentId: number;
+  orderId?: number;
+  provider?: string;
+  gatewayOrderId?: string;
+  gatewayPaymentId?: string;
+  recordedAmount?: number;
+  currentPaymentStatus?: string;
+  currentOrderStatus?: string;
+  anomalyType?: string;
+  recommendation?: string;
+  detectedAt?: string;
+}
+
+export interface PaymentReconciliationReportDto {
+  generatedAt: string;
+  totalRecordsEvaluated: number;
+  matchedCount: number;
+  anomalyCount: number;
+  anomalies: ReconciliationAnomalyDto[];
 }
 
 export interface AdminPaymentActionRequest {
@@ -426,6 +454,70 @@ export interface DeveloperAnalyticsDto {
     entityId: string;
     description: string;
   }>;
+}
+
+export interface DeveloperDiagnosticsDto {
+  jvmVersion: string;
+  javaVendor: string;
+  osName: string;
+  osArch: string;
+  systemUptimeMs: number;
+  heapUsedBytes: number;
+  heapMaxBytes: number;
+  heapUsedPercent: number;
+  activeThreadCount: number;
+  dbConnectionUrlMasked: string;
+  dbActiveConnections: number;
+  dbMaxConnections: number;
+  springActiveProfiles: string[];
+  rateLimitActiveTrackers: number;
+  serverTimestamp: string;
+  status: string;
+}
+
+export interface ApiKeyDto {
+  id: number;
+  name: string;
+  keyPrefix: string;
+  plaintextSecret?: string;
+  scope: string;
+  active: boolean;
+  createdAt: string;
+  lastUsedAt?: string;
+  expiresAt?: string;
+  createdByEmail?: string;
+}
+
+export interface CreateApiKeyRequest {
+  name: string;
+  scope: string;
+}
+
+export interface WebhookEventDto {
+  id: number;
+  provider: string;
+  externalEventId?: string;
+  externalLeadId?: string;
+  eventType: string;
+  receivedAt: string;
+  status: 'RECEIVED' | 'PROCESSED' | 'FAILED' | 'IGNORED';
+  processedAt?: string;
+  errorReason?: string;
+  payloadSummary?: string;
+}
+
+export interface WebhookTestRequest {
+  targetUrl: string;
+  eventType: string;
+}
+
+export interface WebhookTestResponseDto {
+  targetUrl: string;
+  statusCode: number;
+  latencyMs: number;
+  success: boolean;
+  responseSummary: string;
+  dispatchedAt: string;
 }
 
 export type LeadSource =
@@ -705,10 +797,19 @@ export interface CrmMarketingAnalyticsDto {
 
 export interface AdminStatsDto {
   totalProducts: number;
+  activeProducts?: number;
   totalOrders: number;
   totalUsers: number;
   totalQuotes: number;
   totalRevenue: number;
+  activeLicenses?: number;
+  activeSubscriptions?: number;
+  pendingDeployments?: number;
+  liveDeployments?: number;
+  failedPayments?: number;
+  activeProviders?: number;
+  inactiveProviders?: number;
+  providerIssues?: number;
   systemStatus: string;
 }
 

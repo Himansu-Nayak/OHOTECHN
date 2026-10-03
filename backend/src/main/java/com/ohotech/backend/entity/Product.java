@@ -46,6 +46,12 @@ public class Product {
     @Builder.Default
     private String lifecycleStatus = "ACTIVE"; // DRAFT, ACTIVE, PAUSED, ARCHIVED
 
+    @Builder.Default
+    private String licenseModel = "ONE_TIME_PERPETUAL"; // ONE_TIME_PERPETUAL, ANNUAL_SUBSCRIPTION, MONTHLY_SAAS
+
+    @Builder.Default
+    private String supportModel = "OHO_TECH_IN_HOUSE"; // OHO_TECH_IN_HOUSE, PROVIDER_DIRECT, SHARED_SLA
+
     private String demoUrl;
 
     private String documentationUrl;

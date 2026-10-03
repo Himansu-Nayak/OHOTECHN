@@ -72,8 +72,25 @@ public class DataInitializer implements CommandLineRunner {
                     log.info("Administrative account(s) present in database. Preserving all existing authentication credentials.");
                 }
             }
+
+            // Seed verified Demo Customer if not present
+            if (userRepository.findByEmail("customer@demo.ohotech.com").isEmpty()) {
+                User demoCustomer = User.builder()
+                        .name("Demo Customer")
+                        .email("customer@demo.ohotech.com")
+                        .phone("+919876543210")
+                        .passwordHash(passwordEncoder.encode("Demo@12345"))
+                        .role(Role.ROLE_CUSTOMER)
+                        .emailVerified(true)
+                        .phoneVerified(true)
+                        .enabled(true)
+                        .failedLoginAttempts(0)
+                        .build();
+                userRepository.save(demoCustomer);
+                log.info("Demo customer [customer@demo.ohotech.com] successfully initialized.");
+            }
         } catch (Exception e) {
-            log.warn("Administrator initialization check completed: {}", e.getMessage());
+            log.warn("User initialization check completed: {}", e.getMessage());
         }
 
         if (productRepository.count() > 0) {

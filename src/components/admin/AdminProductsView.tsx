@@ -130,6 +130,9 @@ export function AdminProductsView() {
       serviceType: 'Software',
       integrationStatus: 'Integration pending provider/API information',
       deploymentType: 'MANAGED_CLOUD',
+      licenseModel: 'PERPETUAL',
+      supportModel: 'OHO_TECH_DIRECT',
+      featured: false,
       categoryId: categories.length > 0 ? categories[0].id : 1,
     });
     setIsModalOpen(true);
@@ -599,6 +602,64 @@ export function AdminProductsView() {
               onChange={(e) => setEditingProduct({ ...editingProduct, documentationUrl: e.target.value })}
               placeholder="https://docs.ohotechn.com"
             />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <AdminSelect
+              label="License Model"
+              value={editingProduct?.licenseModel || 'PERPETUAL'}
+              onChange={(e) => setEditingProduct({ ...editingProduct, licenseModel: e.target.value })}
+              options={[
+                { value: 'PERPETUAL', label: 'Perpetual License (One-Time Purchase)' },
+                { value: 'SUBSCRIPTION', label: 'Recurring Subscription (Monthly/Annual)' },
+                { value: 'SEAT_BASED', label: 'Seat-Based / Per-User License' },
+                { value: 'TIERED', label: 'Tiered Feature License' },
+                { value: 'FREE_TRIAL', label: 'Evaluation / Trial License' },
+              ]}
+            />
+
+            <AdminSelect
+              label="Support &amp; Maintenance Model"
+              value={editingProduct?.supportModel || 'OHO_TECH_DIRECT'}
+              onChange={(e) => setEditingProduct({ ...editingProduct, supportModel: e.target.value })}
+              options={[
+                { value: 'OHO_TECH_DIRECT', label: 'OHO TECH Direct Tier-1 & Tier-2 Support' },
+                { value: 'PROVIDER_BACKED', label: 'OHO Frontline + Agency Escalation' },
+                { value: 'COMMUNITY', label: 'Documentation & Community Support' },
+                { value: 'SLA_24_7', label: 'Enterprise 24/7 Dedicated SLA' },
+              ]}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <AdminInput
+              label="URL Slug (Optional, auto-generated if blank)"
+              value={editingProduct?.slug || ''}
+              onChange={(e) => setEditingProduct({ ...editingProduct, slug: e.target.value })}
+              placeholder="e.g. cooperative-banking-erp"
+            />
+
+            <div className="flex items-center gap-6 pt-5">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={!!editingProduct?.featured}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, featured: e.target.checked })}
+                  className="rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                />
+                <span>Featured on Storefront</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={editingProduct?.active !== false}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, active: e.target.checked })}
+                  className="rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                />
+                <span>Published (Active)</span>
+              </label>
+            </div>
           </div>
 
           <div className="space-y-1.5">

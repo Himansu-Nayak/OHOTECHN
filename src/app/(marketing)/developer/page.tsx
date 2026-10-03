@@ -4,34 +4,34 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
-  Terminal, Shield, Key, Database, Cpu, UserCheck, Bot, CheckCircle2, 
-  AlertTriangle, RefreshCw, Save, Search, Lock, Zap, Server, Smartphone, 
-  Download, Laptop, Activity, ExternalLink, Copy, Check, Plus, Trash2, 
+  Terminal, Shield, Key, Database, Cpu, Bot, CheckCircle2, 
+  AlertTriangle, RefreshCw, Zap, Server, Smartphone, 
+  Activity, ExternalLink, Copy, Check, Plus, Trash2, 
   Send, Layers, ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
-import { DeveloperAnalyticsDto } from '@/api/types';
-import { getDeveloperAnalyticsApi } from '@/api/developer';
+import { 
+  DeveloperAnalyticsDto,
+  DeveloperDiagnosticsDto,
+  ApiKeyDto,
+  WebhookEventDto,
+  UserDto,
+  AdminStatsDto
+} from '@/api/types';
+import { 
+  getDeveloperAnalyticsApi,
+  getSystemDiagnosticsApi,
+  getApiKeysApi,
+  createApiKeyApi,
+  revokeApiKeyApi,
+  getWebhookLogsApi,
+  sendWebhookTestPingApi
+} from '@/api/developer';
+import { getAdminUsersApi, updateAdminUserRoleApi } from '@/api/users';
+import { getAdminStatsApi } from '@/api/admin';
 import { AdminDeploymentsView } from '@/components/admin/AdminDeploymentsView';
-
-interface DevUser {
-  id: number;
-  email: string;
-  name: string;
-  role: 'ROLE_CUSTOMER' | 'ROLE_ADMIN' | 'ROLE_DEVELOPER';
-}
-
-interface ApiKeyItem {
-  id: string;
-  name: string;
-  prefix: string;
-  created: string;
-  lastUsed: string;
-  scope: string;
-  status: 'ACTIVE' | 'REVOKED';
-}
 
 export default function DeveloperStudioPage() {
   const router = useRouter();
@@ -53,11 +53,11 @@ export default function DeveloperStudioPage() {
   const [activeTab, setActiveTab] = React.useState<'deployments' | 'analytics' | 'vault' | 'webhooks' | 'telemetry' | 'rbac' | 'seed' | 'ai'>('deployments');
   const [controlMode, setControlMode] = React.useState<'manual' | 'ai'>('manual');
 
+  // --- 1. Analytics & Telemetry State ---
   const [analytics, setAnalytics] = React.useState<DeveloperAnalyticsDto | null>(null);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = React.useState(false);
   const [startDateStr, setStartDateStr] = React.useState<string>('');
   const [endDateStr, setEndDateStr] = React.useState<string>('');
-  const [datePreset, setDatePreset] = React.useState<string>('30d');
 
   const fetchAnalytics = React.useCallback(async (start?: string, end?: string) => {
     setIsLoadingAnalytics(true);
@@ -73,122 +73,234 @@ export default function DeveloperStudioPage() {
     }
   }, []);
 
-  React.useEffect(() => {
-    if (activeTab === 'analytics') {
-      fetchAnalytics(startDateStr || undefined, endDateStr || undefined);
+  // --- 2. Live System Diagnostics State ---
+  const [diagnostics, setDiagnostics] = React.useState<DeveloperDiagnosticsDto | null>(null);
+  const [isLoadingDiagnostics, setIsLoadingDiagnostics] = React.useState(false);
+
+  const fetchDiagnostics = React.useCallback(async () => {
+    setIsLoadingDiagnostics(true);
+    try {
+      const res = await getSystemDiagnosticsApi();
+      if (res.success && res.data) {
+        setDiagnostics(res.data);
+      }
+    } catch (err: any) {
+      console.warn('System diagnostics fetch failed:', err?.message);
+    } finally {
+      setIsLoadingDiagnostics(false);
     }
-  }, [activeTab, startDateStr, endDateStr, fetchAnalytics]);
+  }, []);
 
-  const [users, setUsers] = React.useState<DevUser[]>([
-    { id: 1, email: 'kampainfraa@gmail.com', name: 'Jagabandhu Kampa', role: 'ROLE_DEVELOPER' },
-    { id: 2, email: 'himansu@ohotech.com', name: 'Himansu Nayak', role: 'ROLE_DEVELOPER' },
-    { id: 3, email: 'admin@ohotech.com', name: 'System Admin', role: 'ROLE_ADMIN' },
-    { id: 4, email: 'customer@client.com', name: 'Enterprise Client', role: 'ROLE_CUSTOMER' },
-  ]);
-
-  // API Keys Vault State
-  const [apiKeys, setApiKeys] = React.useState<ApiKeyItem[]>([
-    { id: 'key_1', name: 'Production Backend Microservices', prefix: 'oho_live_99a8••••', created: '2026-08-10', lastUsed: '2 mins ago', scope: 'full_access', status: 'ACTIVE' },
-    { id: 'key_2', name: 'Mobile POS Gateway Client', prefix: 'oho_live_21bf••••', created: '2026-09-01', lastUsed: '15 mins ago', scope: 'pos:read_write', status: 'ACTIVE' },
-    { id: 'key_3', name: 'HMS Enterprise Integration Suite', prefix: 'oho_live_7741••••', created: '2026-09-12', lastUsed: '3 days ago', scope: 'integration_full', status: 'ACTIVE' },
-  ]);
+  // --- 3. API Keys Vault State ---
+  const [apiKeys, setApiKeys] = React.useState<ApiKeyDto[]>([]);
+  const [isLoadingApiKeys, setIsLoadingApiKeys] = React.useState(false);
   const [newKeyName, setNewKeyName] = React.useState('');
+  const [newCreatedSecret, setNewCreatedSecret] = React.useState<string | null>(null);
+  const [isCreatingKey, setIsCreatingKey] = React.useState(false);
 
-  // Webhooks Simulator State
+  const fetchApiKeys = React.useCallback(async () => {
+    setIsLoadingApiKeys(true);
+    try {
+      const res = await getApiKeysApi();
+      if (res.success && res.data) {
+        setApiKeys(res.data);
+      }
+    } catch (err: any) {
+      console.warn('API keys fetch failed:', err?.message);
+    } finally {
+      setIsLoadingApiKeys(false);
+    }
+  }, []);
+
+  const handleGenerateApiKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newKeyName.trim()) return;
+
+    setIsCreatingKey(true);
+    try {
+      const res = await createApiKeyApi({
+        name: newKeyName.trim(),
+        scope: 'read_write',
+      });
+      if (res.success && res.data) {
+        showToast(`API Key "${res.data.name}" generated successfully.`, 'success');
+        if (res.data.plaintextSecret) {
+          setNewCreatedSecret(res.data.plaintextSecret);
+        }
+        setNewKeyName('');
+        fetchApiKeys();
+      } else {
+        showToast(res.message || 'Failed to create API key', 'error');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Error generating API key', 'error');
+    } finally {
+      setIsCreatingKey(false);
+    }
+  };
+
+  const handleRevokeApiKey = async (id: number) => {
+    try {
+      const res = await revokeApiKeyApi(id);
+      if (res.success) {
+        showToast('API Key revoked successfully.', 'info');
+        fetchApiKeys();
+      } else {
+        showToast(res.message || 'Failed to revoke API key', 'error');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Error revoking API key', 'error');
+    }
+  };
+
+  // --- 4. Webhooks Simulator State ---
   const [webhookTargetUrl, setWebhookTargetUrl] = React.useState('https://api.ohotech.com/webhooks/listener');
   const [webhookEvent, setWebhookEvent] = React.useState('order.completed');
-  const [webhookLogs, setWebhookLogs] = React.useState([
-    { id: 1, event: 'order.completed', status: 200, latency: '34ms', timestamp: '12:15 PM' },
-    { id: 2, event: 'license.activated', status: 200, latency: '19ms', timestamp: '11:42 AM' },
-    { id: 3, event: 'lead.created', status: 200, latency: '22ms', timestamp: '09:30 AM' },
-  ]);
+  const [webhookLogs, setWebhookLogs] = React.useState<WebhookEventDto[]>([]);
+  const [isLoadingWebhooks, setIsLoadingWebhooks] = React.useState(false);
   const [isPingingWebhook, setIsPingingWebhook] = React.useState(false);
+  const [lastPingResult, setLastPingResult] = React.useState<string | null>(null);
 
-  // Developer AI Terminal State
+  const fetchWebhookLogs = React.useCallback(async () => {
+    setIsLoadingWebhooks(true);
+    try {
+      const res = await getWebhookLogsApi();
+      if (res.success && res.data) {
+        setWebhookLogs(res.data);
+      }
+    } catch (err: any) {
+      console.warn('Webhook logs fetch failed:', err?.message);
+    } finally {
+      setIsLoadingWebhooks(false);
+    }
+  }, []);
+
+  const handleTriggerWebhookTest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!webhookTargetUrl.trim()) return;
+
+    setIsPingingWebhook(true);
+    setLastPingResult(null);
+    try {
+      const res = await sendWebhookTestPingApi({
+        targetUrl: webhookTargetUrl.trim(),
+        eventType: webhookEvent,
+      });
+      if (res.success && res.data) {
+        const ping = res.data;
+        const resultMsg = `HTTP ${ping.statusCode} (${ping.latencyMs}ms) - ${ping.success ? 'Delivered' : 'Failed'}: ${ping.responseSummary}`;
+        setLastPingResult(resultMsg);
+        showToast(`Webhook ping dispatched: HTTP ${ping.statusCode}`, ping.success ? 'success' : 'error');
+        fetchWebhookLogs();
+      } else {
+        showToast(res.message || 'Failed to dispatch webhook test', 'error');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Error sending webhook ping', 'error');
+    } finally {
+      setIsPingingWebhook(false);
+    }
+  };
+
+  // --- 5. RBAC Staff Accounts State ---
+  const [users, setUsers] = React.useState<UserDto[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = React.useState(false);
+
+  const fetchUsers = React.useCallback(async () => {
+    setIsLoadingUsers(true);
+    try {
+      const res = await getAdminUsersApi(0, 50);
+      if (res.success && res.data) {
+        setUsers(res.data.content || []);
+      }
+    } catch (err: any) {
+      console.warn('RBAC users fetch failed:', err?.message);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  }, []);
+
+  const handleRoleChange = async (userId: number, newRole: string) => {
+    try {
+      const res = await updateAdminUserRoleApi(userId, newRole);
+      if (res.success) {
+        showToast(`User role updated to ${newRole}`, 'success');
+        fetchUsers();
+      } else {
+        showToast(res.message || 'Failed to update user role', 'error');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Error updating user role', 'error');
+    }
+  };
+
+  // --- 6. Database Health / State Check ---
+  const [dbStats, setDbStats] = React.useState<AdminStatsDto | null>(null);
+  const [isCheckingDb, setIsCheckingDb] = React.useState(false);
+
+  const checkDatabaseState = async () => {
+    setIsCheckingDb(true);
+    try {
+      const res = await getAdminStatsApi();
+      if (res.success && res.data) {
+        setDbStats(res.data);
+        showToast(`Database verified: ${res.data.totalProducts} products loaded in PostgreSQL.`, 'success');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to query database state', 'error');
+    } finally {
+      setIsCheckingDb(false);
+    }
+  };
+
+  // --- 7. Developer AI Terminal State ---
   const [devAiPrompt, setDevAiPrompt] = React.useState('');
   const [devAiLogs, setDevAiLogs] = React.useState<string[]>([
     'Developer Control Engine Online: Spring Boot 4.0 + PostgreSQL 17 + Next.js 16 App Router.',
     'System Vault: Encrypted credentials and RBAC privilege matrix loaded cleanly.',
     'Ready for natural language administrative execution commands.',
   ]);
-  const [isExecuting, setIsExecuting] = React.useState(false);
-
-  const handleRoleChange = (userId: number, newRole: 'ROLE_CUSTOMER' | 'ROLE_ADMIN' | 'ROLE_DEVELOPER') => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-    );
-    showToast(`Updated user #${userId} privilege to ${newRole}`, 'success');
-  };
-
-  const triggerSeeding = () => {
-    setIsExecuting(true);
-    setTimeout(() => {
-      setIsExecuting(false);
-      showToast('Database re-seeded successfully! 28 Turnkey Products verified in PostgreSQL.', 'success');
-    }, 1200);
-  };
-
-  const handleGenerateApiKey = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newKeyName.trim()) return;
-
-    const newKey: ApiKeyItem = {
-      id: `key_${Date.now()}`,
-      name: newKeyName.trim(),
-      prefix: `oho_live_${Math.random().toString(36).substring(2, 6)}••••`,
-      created: new Date().toISOString().split('T')[0],
-      lastUsed: 'Just now',
-      scope: 'read_write',
-      status: 'ACTIVE',
-    };
-
-    setApiKeys([newKey, ...apiKeys]);
-    setNewKeyName('');
-    showToast(`API Key "${newKey.name}" generated with Full Access scope.`, 'success');
-  };
-
-  const handleRevokeApiKey = (id: string) => {
-    setApiKeys((prev) =>
-      prev.map((k) => (k.id === id ? { ...k, status: 'REVOKED' } : k))
-    );
-    showToast('API Key revoked immediately.', 'info');
-  };
-
-  const handleTriggerWebhookTest = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsPingingWebhook(true);
-    setTimeout(() => {
-      setIsPingingWebhook(false);
-      const newLog = {
-        id: Date.now(),
-        event: webhookEvent,
-        status: 200,
-        latency: `${Math.floor(15 + Math.random() * 25)}ms`,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setWebhookLogs([newLog, ...webhookLogs]);
-      showToast(`Webhook event [${webhookEvent}] successfully dispatched: 200 OK`, 'success');
-    }, 900);
-  };
+  const [isExecutingAi, setIsExecutingAi] = React.useState(false);
 
   const handleDevAiSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!devAiPrompt.trim()) return;
 
-    setIsExecuting(true);
+    setIsExecutingAi(true);
     const cmd = devAiPrompt.trim();
     setDevAiPrompt('');
 
     setTimeout(() => {
-      setIsExecuting(false);
+      setIsExecutingAi(false);
       setDevAiLogs((prev) => [
         `[${new Date().toLocaleTimeString()}] Dev AI Command Executed: "${cmd}"`,
         `> System configuration synced & verified cleanly across backend instances. Status: 200 OK.`,
         ...prev,
       ]);
       showToast('Developer AI Command Executed!', 'success');
-    }, 900);
+    }, 800);
   };
+
+  // Initial and tab-dependent loads
+  React.useEffect(() => {
+    fetchDiagnostics();
+  }, [fetchDiagnostics]);
+
+  React.useEffect(() => {
+    if (activeTab === 'analytics') {
+      fetchAnalytics(startDateStr || undefined, endDateStr || undefined);
+    } else if (activeTab === 'vault') {
+      fetchApiKeys();
+    } else if (activeTab === 'webhooks') {
+      fetchWebhookLogs();
+    } else if (activeTab === 'telemetry') {
+      fetchDiagnostics();
+    } else if (activeTab === 'rbac') {
+      fetchUsers();
+    } else if (activeTab === 'seed') {
+      checkDatabaseState();
+    }
+  }, [activeTab, startDateStr, endDateStr, fetchAnalytics, fetchApiKeys, fetchWebhookLogs, fetchDiagnostics, fetchUsers]);
 
   return (
     <div className="bg-[#0a0a0c] text-[#f1f1f3] min-h-screen selection:bg-purple-500 selection:text-white pb-16 font-sans">
@@ -224,7 +336,7 @@ export default function DeveloperStudioPage() {
 
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>LIVE SYSTEM: 16ms</span>
+              <span>LIVE SYSTEM: {diagnostics?.status || 'OPERATIONAL'}</span>
             </div>
           </div>
         </div>
@@ -246,7 +358,7 @@ export default function DeveloperStudioPage() {
                 System Infrastructure &amp; API Vault Studio
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-                Generate programmatic API keys, dispatch simulated webhooks, audit telemetry, and execute natural language DevOps scripts.
+                Generate programmatic API keys, dispatch simulated webhooks, audit real-time JVM telemetry, and execute DevOps operations.
               </p>
             </div>
 
@@ -286,7 +398,7 @@ export default function DeveloperStudioPage() {
               { key: 'webhooks', label: '⚡ Webhook Simulator', icon: Zap },
               { key: 'telemetry', label: '🖥️ System Telemetry', icon: Server },
               { key: 'rbac', label: '👥 RBAC Manager', icon: Shield },
-              { key: 'seed', label: '🗄️ Database Seeder', icon: Database },
+              { key: 'seed', label: '🗄️ Database Health', icon: Database },
               { key: 'ai', label: '🤖 Dev AI Terminal', icon: Bot, isAi: true },
             ].map((tab) => {
               const Icon = tab.icon;
@@ -322,7 +434,6 @@ export default function DeveloperStudioPage() {
         {/* TAB: ANALYTICS & DOWNLOADS */}
         {activeTab === 'analytics' && (
           <section className="space-y-6 animate-in fade-in duration-300">
-            {/* Header & Filter */}
             <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -343,7 +454,6 @@ export default function DeveloperStudioPage() {
               </div>
             </div>
 
-            {/* Metric Cards */}
             {isLoadingAnalytics ? (
               <div className="p-12 text-center text-xs text-slate-400 bg-[#141416] border border-white/10 rounded-2xl">
                 Loading telemetry data...
@@ -353,51 +463,52 @@ export default function DeveloperStudioPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="p-5 rounded-2xl bg-[#141416] border border-emerald-500/30">
                     <span className="text-slate-400 text-xs">Active Devices</span>
-                    <p className="text-3xl font-black text-white mt-1">{analytics?.deviceMetrics.activeDevices || 12}</p>
-                    <p className="text-[10px] text-emerald-400 mt-1">Total: {analytics?.deviceMetrics.totalActivations || 15} activations</p>
+                    <p className="text-3xl font-black text-white mt-1">{analytics?.deviceMetrics?.activeDevices ?? 0}</p>
+                    <p className="text-[10px] text-emerald-400 mt-1">Total: {analytics?.deviceMetrics?.totalActivations ?? 0} activations</p>
                   </div>
                   <div className="p-5 rounded-2xl bg-[#141416] border border-purple-500/30">
                     <span className="text-slate-400 text-xs">Activations Today</span>
-                    <p className="text-3xl font-black text-white mt-1">{analytics?.deviceMetrics.activationsToday || 3}</p>
-                    <p className="text-[10px] text-purple-400 mt-1">This month: {analytics?.deviceMetrics.activationsThisMonth || 8}</p>
+                    <p className="text-3xl font-black text-white mt-1">{analytics?.deviceMetrics?.activationsToday ?? 0}</p>
+                    <p className="text-[10px] text-purple-400 mt-1">This month: {analytics?.deviceMetrics?.activationsThisMonth ?? 0}</p>
                   </div>
                   <div className="p-5 rounded-2xl bg-[#141416] border border-blue-500/30">
                     <span className="text-slate-400 text-xs">Release Downloads</span>
-                    <p className="text-3xl font-black text-white mt-1">{analytics?.downloadMetrics.totalDownloads || 142}</p>
-                    <p className="text-[10px] text-blue-400 mt-1">Today: {analytics?.downloadMetrics.downloadsToday || 9}</p>
+                    <p className="text-3xl font-black text-white mt-1">{analytics?.downloadMetrics?.totalDownloads ?? 0}</p>
+                    <p className="text-[10px] text-blue-400 mt-1">Today: {analytics?.downloadMetrics?.downloadsToday ?? 0}</p>
                   </div>
                   <div className="p-5 rounded-2xl bg-[#141416] border border-amber-500/30">
                     <span className="text-slate-400 text-xs">Platforms Monitored</span>
-                    <p className="text-3xl font-black text-white mt-1">5 OS Targets</p>
+                    <p className="text-3xl font-black text-white mt-1">{analytics?.platformStats?.length ?? 5} OS Targets</p>
                     <p className="text-[10px] text-amber-400 mt-1">Win, Mac, Linux, Android, Web</p>
                   </div>
                 </div>
 
-                {/* Recent Activity */}
                 <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-3">
                   <h4 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-white/10">
                     <Activity className="w-4 h-4 text-emerald-400" />
                     <span>Recent Technical Event Trace</span>
                   </h4>
                   <div className="space-y-2 text-xs">
-                    {[
-                      { action: 'SOFTWARE_DOWNLOADED', actor: 'dr.rajesh@apollocare.org', desc: 'Downloaded Hospital Management Software v2.4.0 (Windows Installer)', time: '12:10 PM' },
-                      { action: 'DEVICE_ACTIVATED', actor: 'principal@doonglobal.edu.in', desc: 'Activated School Management Software on Terminal Station #3 (Win 11 x64)', time: '10:45 AM' },
-                      { action: 'LICENSE_GENERATED', actor: 'ops@ohotech.com', desc: 'Generated cryptographic license OHO-HMS-2026-X889-K112-9981', time: '09:15 AM' },
-                    ].map((item, idx) => (
-                      <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold text-[10px]">
-                              {item.action}
-                            </span>
-                            <span className="font-bold text-white">{item.actor}</span>
+                    {(analytics?.recentActivity && analytics.recentActivity.length > 0) ? (
+                      analytics.recentActivity.map((item, idx) => (
+                        <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold text-[10px]">
+                                {item.action}
+                              </span>
+                              <span className="font-bold text-white">{item.actorEmail || 'System'}</span>
+                            </div>
+                            <p className="text-slate-400 text-[11px] mt-1">{item.description}</p>
                           </div>
-                          <p className="text-slate-400 text-[11px] mt-1">{item.desc}</p>
+                          <span className="text-slate-400 text-[11px] shrink-0 font-mono">
+                            {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
                         </div>
-                        <span className="text-slate-400 text-[11px] shrink-0">{item.time}</span>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-slate-500 text-xs py-3 text-center">No recent telemetry events recorded.</p>
+                    )}
                   </div>
                 </div>
               </>
@@ -422,12 +533,40 @@ export default function DeveloperStudioPage() {
               </div>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer self-end sm:self-auto"
+                disabled={isCreatingKey || !newKeyName.trim()}
+                className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer self-end sm:self-auto disabled:opacity-50"
               >
                 <Plus className="w-4 h-4" />
-                <span>Create Key</span>
+                <span>{isCreatingKey ? 'Creating...' : 'Create Key'}</span>
               </button>
             </form>
+
+            {/* Secret key banner (if newly generated) */}
+            {newCreatedSecret && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-2">
+                <div className="flex items-center justify-between font-bold">
+                  <span className="flex items-center gap-1.5 text-amber-400">
+                    <AlertTriangle className="w-4 h-4" />
+                    Copy Secret Key Now
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(newCreatedSecret);
+                      showToast('Secret key copied to clipboard!', 'success');
+                    }}
+                    className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 rounded-lg text-amber-300 flex items-center gap-1 cursor-pointer font-mono"
+                  >
+                    <Copy className="w-3.5 h-3.5" /> Copy Secret
+                  </button>
+                </div>
+                <div className="p-2.5 rounded-xl bg-black/40 font-mono text-[11px] text-amber-300 break-all select-all">
+                  {newCreatedSecret}
+                </div>
+                <p className="text-[10px] text-slate-400">
+                  This secret is shown only once and cannot be retrieved later. Store it in your secure secrets manager.
+                </p>
+              </div>
+            )}
 
             {/* Keys Table */}
             <div className="bg-[#141416] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
@@ -435,45 +574,53 @@ export default function DeveloperStudioPage() {
                 <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
                   <Key className="w-4 h-4 text-purple-400" /> Active API Keys ({apiKeys.length})
                 </span>
-                <span className="text-[10px] text-emerald-400">Encrypted SHA-256</span>
+                <button
+                  onClick={fetchApiKeys}
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
+                >
+                  <RefreshCw className={cn("w-3 h-3", isLoadingApiKeys && "animate-spin")} />
+                  <span>Refresh</span>
+                </button>
               </div>
 
-              <div className="divide-y divide-white/5 text-xs">
-                {apiKeys.map((key) => (
-                  <div key={key.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/5 transition-colors">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-white">{key.name}</span>
-                        <span className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-bold",
-                          key.status === 'ACTIVE' ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
-                        )}>
-                          {key.status}
-                        </span>
+              {isLoadingApiKeys ? (
+                <div className="p-8 text-center text-xs text-slate-400">Loading API keys...</div>
+              ) : apiKeys.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-400">No active API keys found. Generate one above.</div>
+              ) : (
+                <div className="divide-y divide-white/5 text-xs">
+                  {apiKeys.map((key) => (
+                    <div key={key.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/5 transition-colors">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white">{key.name}</span>
+                          <span className={cn(
+                            "px-2 py-0.5 rounded text-[10px] font-bold",
+                            key.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
+                          )}>
+                            {key.active ? 'ACTIVE' : 'REVOKED'}
+                          </span>
+                        </div>
+                        <p className="text-purple-400 font-mono text-[11px] mt-0.5">{key.keyPrefix}••••••••</p>
+                        <p className="text-slate-400 text-[10px] mt-0.5">
+                          Created: {new Date(key.createdAt).toLocaleDateString()} • Scope: {key.scope} • By: {key.createdByEmail || 'Developer'}
+                        </p>
                       </div>
-                      <p className="text-purple-400 font-mono text-[11px] mt-0.5">{key.prefix}</p>
-                      <p className="text-slate-400 text-[10px] mt-0.5">Created: {key.created} • Last used: {key.lastUsed} • Scope: {key.scope}</p>
-                    </div>
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => showToast('API Key copied to clipboard', 'success')}
-                        className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white text-[11px] flex items-center gap-1 cursor-pointer"
-                      >
-                        <Copy className="w-3 h-3" /> Copy
-                      </button>
-                      {key.status === 'ACTIVE' && (
-                        <button
-                          onClick={() => handleRevokeApiKey(key.id)}
-                          className="px-3 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-[11px] cursor-pointer"
-                        >
-                          Revoke
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {key.active && (
+                          <button
+                            onClick={() => handleRevokeApiKey(key.id)}
+                            className="px-3 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-[11px] cursor-pointer"
+                          >
+                            Revoke
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -486,7 +633,7 @@ export default function DeveloperStudioPage() {
                 <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
                   <Zap className="w-4 h-4 text-cyan-400" /> Outbound Webhook Test Simulator
                 </span>
-                <span className="text-[10px] text-slate-400">HMAC-SHA256 Signed</span>
+                <span className="text-[10px] text-slate-400 font-mono">Live HTTP POST Dispatcher</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -496,7 +643,7 @@ export default function DeveloperStudioPage() {
                     type="text"
                     value={webhookTargetUrl}
                     onChange={(e) => setWebhookTargetUrl(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500 font-mono text-xs"
                   />
                 </div>
                 <div>
@@ -504,15 +651,22 @@ export default function DeveloperStudioPage() {
                   <select
                     value={webhookEvent}
                     onChange={(e) => setWebhookEvent(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#19191d] border border-white/10 rounded-xl text-white focus:outline-none"
+                    className="w-full px-3 py-2 bg-[#19191d] border border-white/10 rounded-xl text-white focus:outline-none text-xs font-mono"
                   >
                     <option value="order.completed">order.completed</option>
                     <option value="license.activated">license.activated</option>
+                    <option value="deployment.live">deployment.live</option>
                     <option value="lead.created">lead.created</option>
                     <option value="subscription.renewed">subscription.renewed</option>
                   </select>
                 </div>
               </div>
+
+              {lastPingResult && (
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-cyan-300">
+                  {lastPingResult}
+                </div>
+              )}
 
               <div className="flex justify-end pt-2">
                 <button
@@ -521,83 +675,155 @@ export default function DeveloperStudioPage() {
                   className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <Send className={cn("w-3.5 h-3.5", isPingingWebhook && "animate-spin")} />
-                  <span>{isPingingWebhook ? 'Pinging Endpoint...' : 'Send Test Ping'}</span>
+                  <span>{isPingingWebhook ? 'Pinging Endpoint...' : 'Send Live Test Ping'}</span>
                 </button>
               </div>
             </form>
 
             {/* Webhook Delivery Logs */}
             <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-3">
-              <span className="text-xs font-bold uppercase text-white">Delivery History Stream</span>
-              <div className="space-y-2 text-xs">
-                {webhookLogs.map((log) => (
-                  <div key={log.id} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
-                    <div>
-                      <p className="font-bold text-white">{log.event}</p>
-                      <span className="text-[10px] text-slate-400">{log.timestamp}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-slate-400">{log.latency}</span>
-                      <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">
-                        {log.status} OK
-                      </span>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                <span className="text-xs font-bold uppercase text-white">Delivery History Stream ({webhookLogs.length})</span>
+                <button
+                  onClick={fetchWebhookLogs}
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
+                >
+                  <RefreshCw className={cn("w-3 h-3", isLoadingWebhooks && "animate-spin")} />
+                  <span>Refresh</span>
+                </button>
               </div>
+
+              {isLoadingWebhooks ? (
+                <div className="p-8 text-center text-xs text-slate-400">Loading delivery stream...</div>
+              ) : webhookLogs.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-400">No webhook events logged yet. Send a test ping above.</div>
+              ) : (
+                <div className="space-y-2 text-xs">
+                  {webhookLogs.map((log) => (
+                    <div key={log.id} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white font-mono">{log.eventType}</span>
+                          <span className="text-[10px] text-slate-400">Source: {log.provider}</span>
+                        </div>
+                        {log.payloadSummary && (
+                          <p className="text-slate-400 text-[10px] mt-0.5 font-mono truncate max-w-lg">{log.payloadSummary}</p>
+                        )}
+                        <span className="text-[10px] text-slate-500">{new Date(log.receivedAt).toLocaleString()}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={cn(
+                          "px-2 py-0.5 rounded font-bold text-[10px]",
+                          log.status === 'PROCESSED' ? "bg-emerald-500/20 text-emerald-300" :
+                          log.status === 'FAILED' ? "bg-rose-500/20 text-rose-300" : "bg-amber-500/20 text-amber-300"
+                        )}>
+                          {log.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         )}
 
         {/* TAB: SYSTEM TELEMETRY */}
         {activeTab === 'telemetry' && (
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
-            <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-4">
-              <h4 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-white/10">
-                <Cpu className="w-4 h-4 text-emerald-400" />
-                <span>Backend JVM &amp; Container Health</span>
-              </h4>
-              <div className="space-y-3 text-xs text-slate-300">
-                <div className="flex justify-between p-3 rounded-xl bg-white/5">
-                  <span>Spring Boot Profile:</span>
-                  <span className="font-bold text-white">production</span>
-                </div>
-                <div className="flex justify-between p-3 rounded-xl bg-white/5">
-                  <span>Java Runtime Environment:</span>
-                  <span className="font-bold text-white">Java 21 LTS (64-bit)</span>
-                </div>
-                <div className="flex justify-between p-3 rounded-xl bg-white/5">
-                  <span>JVM Heap Allocation:</span>
-                  <span className="font-bold text-emerald-400">1.42 GB / 4.0 GB (35%)</span>
-                </div>
-                <div className="flex justify-between p-3 rounded-xl bg-white/5">
-                  <span>Active Thread Count:</span>
-                  <span className="font-bold text-white">48 Worker Threads</span>
-                </div>
+          <section className="space-y-6 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#141416] border border-white/10">
+              <div>
+                <h3 className="text-sm font-bold text-white">Live JVM &amp; Host Infrastructure Telemetry</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Real-time telemetry reported directly by Spring Boot JMX MXBeans.</p>
               </div>
+              <button
+                onClick={fetchDiagnostics}
+                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white flex items-center gap-1.5 cursor-pointer"
+              >
+                <RefreshCw className={cn("w-3.5 h-3.5", isLoadingDiagnostics && "animate-spin")} />
+                <span>Refresh Live</span>
+              </button>
             </div>
 
-            <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-4">
-              <h4 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-white/10">
-                <Database className="w-4 h-4 text-blue-400" />
-                <span>PostgreSQL 17 Connection Pool</span>
-              </h4>
-              <div className="space-y-3 text-xs text-slate-300">
-                <div className="flex justify-between p-3 rounded-xl bg-white/5">
-                  <span>Database JDBC Target:</span>
-                  <span className="font-bold text-white">jdbc:postgresql://localhost:5432/OHOTECH</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-4">
+                <h4 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-white/10">
+                  <Cpu className="w-4 h-4 text-emerald-400" />
+                  <span>Backend JVM &amp; Container Health</span>
+                </h4>
+                <div className="space-y-3 text-xs text-slate-300">
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>Active Spring Profiles:</span>
+                    <span className="font-bold text-white font-mono">
+                      {diagnostics?.springActiveProfiles && diagnostics.springActiveProfiles.length > 0
+                        ? diagnostics.springActiveProfiles.join(', ')
+                        : 'default'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>Java Runtime:</span>
+                    <span className="font-bold text-white font-mono">
+                      Java {diagnostics?.jvmVersion || '21'} ({diagnostics?.javaVendor || 'OpenJDK'})
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>Host Platform / OS:</span>
+                    <span className="font-bold text-white font-mono">
+                      {diagnostics?.osName || 'Host'} ({diagnostics?.osArch || 'x64'})
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>JVM Heap Allocation:</span>
+                    <span className="font-bold text-emerald-400 font-mono">
+                      {diagnostics?.heapUsedBytes ? (diagnostics.heapUsedBytes / (1024 * 1024)).toFixed(1) : 0} MB / {' '}
+                      {diagnostics?.heapMaxBytes ? (diagnostics.heapMaxBytes / (1024 * 1024)).toFixed(1) : 0} MB ({diagnostics?.heapUsedPercent ?? 0}%)
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>Active JVM Threads:</span>
+                    <span className="font-bold text-white font-mono">{diagnostics?.activeThreadCount ?? 0} Threads</span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>System Uptime:</span>
+                    <span className="font-bold text-white font-mono">
+                      {diagnostics?.systemUptimeMs ? Math.floor(diagnostics.systemUptimeMs / 60000) : 0} mins ({diagnostics?.systemUptimeMs ? (diagnostics.systemUptimeMs / 3600000).toFixed(1) : 0} hrs)
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between p-3 rounded-xl bg-white/5">
-                  <span>HikariCP Pool Size:</span>
-                  <span className="font-bold text-emerald-400">10 Active / 20 Max</span>
-                </div>
-                <div className="flex justify-between p-3 rounded-xl bg-white/5">
-                  <span>Connection Timeout:</span>
-                  <span className="font-bold text-white">30,000 ms</span>
-                </div>
-                <div className="flex justify-between p-3 rounded-xl bg-white/5">
-                  <span>JPA OpenInView:</span>
-                  <span className="font-bold text-emerald-400">Enabled</span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-4">
+                <h4 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-white/10">
+                  <Database className="w-4 h-4 text-blue-400" />
+                  <span>PostgreSQL 17 Connection Pool</span>
+                </h4>
+                <div className="space-y-3 text-xs text-slate-300">
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>Database JDBC Target:</span>
+                    <span className="font-bold text-white font-mono text-[11px] truncate max-w-[220px]">
+                      {diagnostics?.dbConnectionUrlMasked || 'jdbc:postgresql://localhost:5432/OHOTECH'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>HikariCP Pool Connections:</span>
+                    <span className="font-bold text-emerald-400 font-mono">
+                      {diagnostics?.dbActiveConnections ?? 0} Active / {diagnostics?.dbMaxConnections ?? 20} Max
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>Rate Limit Trackers:</span>
+                    <span className="font-bold text-white font-mono">{diagnostics?.rateLimitActiveTrackers ?? 0} Buckets</span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>Server Status:</span>
+                    <span className="font-bold text-emerald-400 font-mono">{diagnostics?.status || 'OPERATIONAL'}</span>
+                  </div>
+                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                    <span>Server Timestamp:</span>
+                    <span className="font-bold text-white font-mono text-[11px]">
+                      {diagnostics?.serverTimestamp ? new Date(diagnostics.serverTimestamp).toLocaleString() : 'Live'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -610,54 +836,91 @@ export default function DeveloperStudioPage() {
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <h4 className="text-sm font-bold text-white flex items-center gap-2">
                 <Shield className="w-4 h-4 text-purple-400" />
-                <span>Privilege Matrix &amp; Staff Access</span>
+                <span>Privilege Matrix &amp; Staff Access ({users.length})</span>
               </h4>
-              <span className="text-xs text-slate-400">{users.length} privileged staff accounts</span>
+              <button
+                onClick={fetchUsers}
+                className="text-xs text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
+              >
+                <RefreshCw className={cn("w-3 h-3", isLoadingUsers && "animate-spin")} />
+                <span>Refresh Accounts</span>
+              </button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              {users.map((u) => (
-                <div key={u.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <p className="font-bold text-white">{u.name}</p>
-                    <p className="text-[11px] text-slate-400">{u.email}</p>
-                  </div>
+            {isLoadingUsers ? (
+              <div className="p-8 text-center text-xs text-slate-400">Loading user accounts...</div>
+            ) : users.length === 0 ? (
+              <div className="p-8 text-center text-xs text-slate-400">No user accounts found.</div>
+            ) : (
+              <div className="space-y-3 text-xs">
+                {users.map((u) => (
+                  <div key={u.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <p className="font-bold text-white">{u.name}</p>
+                      <p className="text-[11px] text-slate-400">{u.email}</p>
+                      {u.officialEmail && (
+                        <p className="text-[10px] text-purple-400">Official: {u.officialEmail}</p>
+                      )}
+                    </div>
 
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-slate-400 uppercase">Assigned Role:</span>
-                    <select
-                      value={u.role}
-                      onChange={(e) => handleRoleChange(u.id, e.target.value as any)}
-                      className="px-3 py-1.5 rounded-xl bg-[#19191e] border border-white/15 text-purple-300 font-bold focus:outline-none"
-                    >
-                      <option value="ROLE_CUSTOMER">ROLE_CUSTOMER (Client)</option>
-                      <option value="ROLE_ADMIN">ROLE_ADMIN (Manager)</option>
-                      <option value="ROLE_DEVELOPER">ROLE_DEVELOPER (Full System Access)</option>
-                    </select>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] text-slate-400 uppercase">Assigned Role:</span>
+                      <select
+                        value={u.role}
+                        onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                        className="px-3 py-1.5 rounded-xl bg-[#19191e] border border-white/15 text-purple-300 font-bold focus:outline-none cursor-pointer text-xs"
+                      >
+                        <option value="ROLE_CUSTOMER">ROLE_CUSTOMER (Client)</option>
+                        <option value="ROLE_ADMIN">ROLE_ADMIN (Manager)</option>
+                        <option value="ROLE_DEVELOPER">ROLE_DEVELOPER (Full System Access)</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 
-        {/* TAB: DATABASE SEEDER */}
+        {/* TAB: DATABASE HEALTH & SEEDER */}
         {activeTab === 'seed' && (
           <section className="p-8 rounded-3xl bg-[#141416] border border-white/10 text-center space-y-4 max-w-xl mx-auto animate-in fade-in duration-300">
             <div className="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center mx-auto text-purple-400">
               <Database className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-black text-white">Automated Database Auto-Seeding Engine</h3>
+            <h3 className="text-xl font-black text-white">PostgreSQL 17 Database Health &amp; Catalog State</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Executes DataInitializer.java to seed 6 enterprise categories and 28 turnkey software products into your PostgreSQL database.
+              OHO TECH utilizes Spring Boot 4.0 and PostgreSQL 17. The database seeds initial categories and products idempotently via DataInitializer.java on startup.
             </p>
+
+            {dbStats && (
+              <div className="grid grid-cols-2 gap-3 text-left p-4 rounded-2xl bg-white/5 border border-white/10 text-xs">
+                <div>
+                  <span className="text-slate-400 text-[10px]">Catalog Products:</span>
+                  <p className="text-lg font-bold text-white">{dbStats.totalProducts}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400 text-[10px]">Customer Orders:</span>
+                  <p className="text-lg font-bold text-white">{dbStats.totalOrders}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400 text-[10px]">Registered Users:</span>
+                  <p className="text-lg font-bold text-white">{dbStats.totalUsers}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400 text-[10px]">Commercial Quotes:</span>
+                  <p className="text-lg font-bold text-white">{dbStats.totalQuotes}</p>
+                </div>
+              </div>
+            )}
+
             <button
-              onClick={triggerSeeding}
-              disabled={isExecuting}
+              onClick={checkDatabaseState}
+              disabled={isCheckingDb}
               className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs transition-all shadow-lg shadow-purple-950/40 flex items-center gap-2 mx-auto cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw className={cn("w-4 h-4", isExecuting && "animate-spin")} />
-              <span>{isExecuting ? 'Executing Seeding...' : 'Run Database Seeding Now'}</span>
+              <RefreshCw className={cn("w-4 h-4", isCheckingDb && "animate-spin")} />
+              <span>{isCheckingDb ? 'Querying PostgreSQL 17...' : 'Verify Database Catalog State'}</span>
             </button>
           </section>
         )}
@@ -681,14 +944,14 @@ export default function DeveloperStudioPage() {
                 placeholder="e.g. Verify PostgreSQL migrations, flush Redis cache, sync Resend webhook target..."
                 value={devAiPrompt}
                 onChange={(e) => setDevAiPrompt(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0d0d0e] border border-white/15 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 pr-36"
+                className="w-full px-4 py-3 bg-[#0d0d0e] border border-white/15 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 pr-36 font-mono"
               />
               <button
                 type="submit"
-                disabled={isExecuting}
+                disabled={isExecutingAi}
                 className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold cursor-pointer disabled:opacity-50"
               >
-                {isExecuting ? 'Running...' : 'Execute Script'}
+                {isExecutingAi ? 'Running...' : 'Execute Script'}
               </button>
             </form>
 

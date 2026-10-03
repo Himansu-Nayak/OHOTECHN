@@ -170,11 +170,20 @@ public class DeploymentService {
     }
 
     public DeploymentDto mapToDto(Deployment deployment) {
+        Long providerId = null;
+        String providerName = null;
+        if (deployment.getProduct() != null && deployment.getProduct().getProvider() != null) {
+            providerId = deployment.getProduct().getProvider().getId();
+            providerName = deployment.getProduct().getProvider().getName();
+        }
+
         return DeploymentDto.builder()
                 .id(deployment.getId())
                 .orderId(deployment.getOrder() != null ? deployment.getOrder().getId() : null)
                 .productId(deployment.getProduct() != null ? deployment.getProduct().getId() : null)
                 .productName(deployment.getProduct() != null ? deployment.getProduct().getName() : null)
+                .providerId(providerId)
+                .providerName(providerName)
                 .userId(deployment.getUser() != null ? deployment.getUser().getId() : null)
                 .userEmail(deployment.getUser() != null ? deployment.getUser().getEmail() : null)
                 .userName(deployment.getUser() != null ? deployment.getUser().getName() : null)
@@ -195,6 +204,8 @@ public class DeploymentService {
     public DeploymentDto mapToCustomerDto(Deployment deployment) {
         DeploymentDto dto = mapToDto(deployment);
         dto.setAdminNotes(null); // Customer must not see internal admin notes
+        dto.setProviderId(null); // Customer must never see provider identity
+        dto.setProviderName(null); // Customer must never see provider identity
         return dto;
     }
 }

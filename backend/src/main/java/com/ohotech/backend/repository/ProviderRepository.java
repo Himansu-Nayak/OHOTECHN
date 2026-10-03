@@ -13,4 +13,6 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
     Optional<Provider> findByNameIgnoreCase(String name);
     Page<Provider> findByActiveTrue(Pageable pageable);
     Page<Provider> findByNameContainingIgnoreCaseOrCompanyNameContainingIgnoreCase(String name, String companyName, Pageable pageable);
+    long countByActiveTrue();
+    long countByActiveFalse();
 }

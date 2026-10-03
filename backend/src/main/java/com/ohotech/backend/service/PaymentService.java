@@ -286,6 +286,69 @@ public class PaymentService {
         return mapPaymentToDto(payment);
     }
 
+    @Transactional
+    public PaymentResponseDto processDemoPayment(Long userId, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Order", "id", orderId);
+        }
+
+        if (order.getStatus() == OrderStatus.PAID || order.getStatus() == OrderStatus.CONFIRMED) {
+            Payment payment = paymentRepository.findByOrderId(orderId).orElse(null);
+            if (payment != null) {
+                return mapPaymentToDto(payment);
+            }
+        }
+
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElse(Payment.builder()
+                        .order(order)
+                        .amount(order.getTotalAmount())
+                        .build());
+
+        String demoTxnId = "DEMO-PAY-" + System.currentTimeMillis();
+        payment.setAmount(order.getTotalAmount());
+        payment.setProvider("DEMO_GATEWAY");
+        payment.setMethod("DEMO_INSTANT_PAY");
+        payment.setCurrency("INR");
+        payment.setTransactionReference(demoTxnId);
+        payment.setStatus(PaymentStatus.SUCCESSFUL);
+        payment.setVerifiedAt(LocalDateTime.now());
+        payment.setAdminNotes("Auto-verified via Demo Quick Pay & Instant Activation mode.");
+        payment = paymentRepository.save(payment);
+
+        order.setStatus(OrderStatus.PAID);
+        orderRepository.save(order);
+
+        // Process Idempotent Entitlements (Subscriptions & Licenses)
+        createEntitlementsForOrder(order);
+
+        // Clear cart now that payment is verified
+        try {
+            cartService.clearCart(order.getUser().getId());
+            logger.info("Cleared cart for user #{} after demo payment", order.getUser().getId());
+        } catch (Exception e) {
+            logger.warn("Could not clear cart for user #{}: {}", order.getUser().getId(), e.getMessage());
+        }
+
+        try {
+            notificationService.createNotification(
+                    order.getUser().getId(),
+                    "Software Purchased & Activated",
+                    "Your payment of ₹" + order.getTotalAmount() + " for Order #" + order.getId() + " was verified. Your license key is now generated.",
+                    NotificationType.SUCCESS,
+                    NotificationCategory.PAYMENT,
+                    "/my-products"
+            );
+        } catch (Exception e) {
+            logger.warn("Notification warning: {}", e.getMessage());
+        }
+
+        return mapPaymentToDto(payment);
+    }
+
     @Transactional(readOnly = true)
     public PaymentConfigDto getPaymentConfig() {
         return PaymentConfigDto.builder()
@@ -774,6 +837,7 @@ public class PaymentService {
         return PaymentResponseDto.builder()
                 .id(payment.getId())
                 .orderId(payment.getOrder() != null ? payment.getOrder().getId() : null)
+                .orderStatus(payment.getOrder() != null && payment.getOrder().getStatus() != null ? payment.getOrder().getStatus().name() : null)
                 .amount(payment.getAmount())
                 .status(payment.getStatus())
                 .provider(payment.getProvider())

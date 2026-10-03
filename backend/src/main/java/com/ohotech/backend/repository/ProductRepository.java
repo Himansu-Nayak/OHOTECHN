@@ -27,4 +27,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     java.util.Optional<Product> findBySlug(String slug);
     java.util.Optional<Product> findBySlugAndActiveTrue(String slug);
+    List<Product> findByProviderId(Long providerId);
+    long countByActiveTrue();
 }

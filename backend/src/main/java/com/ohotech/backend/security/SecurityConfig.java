@@ -114,7 +114,9 @@ public class SecurityConfig {
                     "/api/ai/classify",
                     "/api/ai/search",
                     "/api/ai/document/analyze",
-                    "/api/ai/image/analyze"
+                    "/api/ai/image/analyze",
+                    "/api/licenses/key/**",
+                    "/api/licenses/*/activate"
                 ).permitAll()
                 .requestMatchers("/api/products/my/**", "/api/products/my").authenticated()
                 .requestMatchers("/api/deployments/my/**", "/api/deployments/my", "/api/deployments/**").authenticated()

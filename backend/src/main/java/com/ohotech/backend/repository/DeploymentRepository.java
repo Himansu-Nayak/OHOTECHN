@@ -17,4 +17,5 @@ public interface DeploymentRepository extends JpaRepository<Deployment, Long> {
     Page<Deployment> findByStatusOrderByCreatedAtDesc(DeploymentStatus status, Pageable pageable);
     List<Deployment> findByProductId(Long productId);
     List<Deployment> findByOrderId(Long orderId);
+    long countByStatus(DeploymentStatus status);
 }

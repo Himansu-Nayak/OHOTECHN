@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { ApiResponse, Page, ProviderDto } from './types';
+import { ApiResponse, Page, ProviderDto, ProductDto } from './types';
 
 export async function getAdminProvidersApi(
   page = 0,
@@ -60,5 +60,11 @@ export async function toggleAdminProviderStatusApi(
 export async function deleteAdminProviderApi(id: number | string): Promise<ApiResponse<string>> {
   return apiClient<string>(`/api/admin/providers/${id}`, {
     method: 'DELETE',
+  });
+}
+
+export async function getAdminProviderProductsApi(id: number | string): Promise<ApiResponse<ProductDto[]>> {
+  return apiClient<ProductDto[]>(`/api/admin/providers/${id}/products`, {
+    method: 'GET',
   });
 }

@@ -29,6 +29,11 @@ public class AdminController {
     private final PaymentRepository paymentRepository;
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
+    private final DeploymentRepository deploymentRepository;
+    private final LicenseRepository licenseRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final DeviceActivationRepository deviceActivationRepository;
+    private final ProviderRepository providerRepository;
     private final UserService userService;
     private final ProductService productService;
     private final com.ohotech.backend.service.ContactService contactService;
@@ -38,22 +43,42 @@ public class AdminController {
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboardStats() {
         long totalProducts = productRepository.count();
+        long activeProducts = productRepository.countByActiveTrue();
         long totalOrders = orderRepository.count();
         long totalUsers = userRepository.count();
         long totalQuotes = contactRepository.count();
 
+        long activeLicenses = licenseRepository.countByStatus(LicenseStatus.ACTIVE);
+        long activeSubscriptions = subscriptionRepository.countByStatus(SubscriptionStatus.ACTIVE);
+        long pendingDeployments = deploymentRepository.countByStatus(DeploymentStatus.PENDING)
+                + deploymentRepository.countByStatus(DeploymentStatus.CONFIGURING);
+        long liveDeployments = deploymentRepository.countByStatus(DeploymentStatus.LIVE);
+        long failedPayments = paymentRepository.countByStatus(PaymentStatus.FAILED);
+        long activeProviders = providerRepository.countByActiveTrue();
+        long inactiveProviders = providerRepository.countByActiveFalse();
+
         List<Order> orders = orderRepository.findAll();
         BigDecimal totalRevenue = orders.stream()
-                .map(o -> o.getTotalAmount())
-                .filter(amt -> amt != null)
-                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+                .filter(o -> o.getStatus() == OrderStatus.PAID || o.getStatus() == OrderStatus.CONFIRMED || o.getStatus() == OrderStatus.DELIVERED)
+                .map(Order::getTotalAmount)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalProducts", totalProducts);
+        stats.put("activeProducts", activeProducts);
         stats.put("totalOrders", totalOrders);
         stats.put("totalUsers", totalUsers);
         stats.put("totalQuotes", totalQuotes);
         stats.put("totalRevenue", totalRevenue);
+        stats.put("activeLicenses", activeLicenses);
+        stats.put("activeSubscriptions", activeSubscriptions);
+        stats.put("pendingDeployments", pendingDeployments);
+        stats.put("liveDeployments", liveDeployments);
+        stats.put("failedPayments", failedPayments);
+        stats.put("activeProviders", activeProviders);
+        stats.put("inactiveProviders", inactiveProviders);
+        stats.put("providerIssues", inactiveProviders);
         stats.put("systemStatus", "OPERATIONAL_100");
 
         return ResponseEntity.ok(ApiResponse.success("Admin stats retrieved successfully", stats));
@@ -177,6 +202,73 @@ public class AdminController {
                     }
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 3.9 Reset / Clear All Orders & Associated Transactions (Demo Reset)
+    @DeleteMapping("/orders/clear-all")
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<ApiResponse<Map<String, Object>>> clearAllOrders(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.ohotech.backend.security.UserPrincipal adminUser) {
+        log.warn("ADMIN #{} INVOKED CLEAR ALL ORDERS ACTION", adminUser != null ? adminUser.getId() : "SYSTEM");
+
+        long deploymentCount = 0;
+        try {
+            deploymentCount = deploymentRepository.count();
+            deploymentRepository.deleteAll();
+        } catch (Exception e) {
+            log.warn("Deployments clear warning: {}", e.getMessage());
+        }
+
+        long deviceActivationCount = 0;
+        try {
+            deviceActivationCount = deviceActivationRepository.count();
+            deviceActivationRepository.deleteAll();
+        } catch (Exception e) {
+            log.warn("Device activations clear warning: {}", e.getMessage());
+        }
+
+        long licenseCount = 0;
+        try {
+            licenseCount = licenseRepository.count();
+            licenseRepository.deleteAll();
+        } catch (Exception e) {
+            log.warn("Licenses clear warning: {}", e.getMessage());
+        }
+
+        long subscriptionCount = 0;
+        try {
+            subscriptionCount = subscriptionRepository.count();
+            subscriptionRepository.deleteAll();
+        } catch (Exception e) {
+            log.warn("Subscriptions clear warning: {}", e.getMessage());
+        }
+
+        long paymentCount = 0;
+        try {
+            paymentCount = paymentRepository.count();
+            paymentRepository.deleteAll();
+        } catch (Exception e) {
+            log.warn("Payments clear warning: {}", e.getMessage());
+        }
+
+        long orderCount = 0;
+        try {
+            orderCount = orderRepository.count();
+            orderRepository.deleteAll();
+        } catch (Exception e) {
+            log.warn("Orders clear warning: {}", e.getMessage());
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("clearedOrders", orderCount);
+        result.put("clearedPayments", paymentCount);
+        result.put("clearedDeployments", deploymentCount);
+        result.put("clearedLicenses", licenseCount);
+        result.put("clearedSubscriptions", subscriptionCount);
+        result.put("clearedDeviceActivations", deviceActivationCount);
+
+        log.info("Successfully cleared all orders and associated transaction records: {}", result);
+        return ResponseEntity.ok(ApiResponse.success("All orders and associated transaction data cleared successfully", result));
     }
 
     // 4. View Commercial Quote Enquiries

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { ArrowRight, Check, Copy, ExternalLink, Key, Search, ShieldCheck, Sparkles, MonitorPlay, ShoppingBag, Loader2, AlertCircle, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { ArrowRight, Check, Copy, ExternalLink, Key, Search, ShieldCheck, Sparkles, MonitorPlay, ShoppingBag, Loader2, AlertCircle, ChevronLeft, ChevronRight, Eye, Zap } from 'lucide-react';
 import { softwareDemos } from '@/config/demos';
 import { cn } from '@/lib/utils';
 import { getProductsApi, getCategoriesApi } from '@/api/products';
@@ -398,11 +398,11 @@ export default function ProductsCatalogPage() {
 
                       <div className="grid grid-cols-2 gap-2">
                         <Link
-                          href={`/products/${product.id}`}
-                          className="py-2.5 px-3 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-[10px] uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1"
+                          href={`/products/${product.id}#amount-payment-section`}
+                          className="py-2.5 px-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-[10px] uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1 shadow-xs"
                         >
-                          <span>Select Plan</span>
-                          <ArrowRight className="w-3 h-3" />
+                          <Zap className="w-3 h-3" />
+                          <span>Buy Now (₹ INR)</span>
                         </Link>
 
                         <Link
