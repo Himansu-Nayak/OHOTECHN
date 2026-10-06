@@ -187,6 +187,7 @@ export function HeroExperience() {
           {/* ========================================== */}
           <div className="relative w-1/2 h-full overflow-hidden shrink-0">
             {/* High-Definition 4.5K Urban Billboard with Edge-to-Edge Coverage */}
+            {/* Scene 2 Image with zoom animation */}
             <Image
               src="/images/ohotechbg.1.jpg"
               alt="OHO TECH Turnkey Software Ecosystem"
@@ -195,7 +196,16 @@ export function HeroExperience() {
               quality={100}
               sizes="100vw"
               className="object-cover object-center contrast-[1.06] brightness-[1.0]"
+              style={{ animation: 'zoom 12s ease-in-out infinite' }}
             />
+            {/* Keyframes for zoom animation */}
+            <style>{`
+              @keyframes zoom {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+              }
+            `}</style>
 
             {/* Cinematic Gradient Overlays for High-Contrast Headline Legibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-black/35 pointer-events-none" />
