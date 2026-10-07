@@ -25,7 +25,7 @@ export interface ContactParams {
 }
 
 export async function submitContactApi(params: ContactParams): Promise<ApiResponse<ContactEnquiry>> {
-  // Runtime validation before network call
+  // 1. Runtime validation before network call
   const validation = validateContactForm({
     name: params.name,
     email: params.email,
@@ -51,10 +51,50 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
   const utmContent = params.utmContent || utmSession.utmContent;
   const landingPage = params.landingPage || utmSession.landingPage;
 
-  let emailSent = false;
-  let emailError = '';
+  let backendData: ContactEnquiry | undefined;
 
-  // 1. Send Email via Resend Next.js API Route (/api/quote) to kampainfraa@gmail.com
+  // 2. Persist to Spring Boot backend database & CRM lead pipeline FIRST
+  // This is the source of truth (PostgreSQL)
+  try {
+    const backendRes = await apiClient<ContactEnquiry>('/api/contact', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: params.name,
+        email: params.email,
+        phone: params.phone,
+        company: params.company,
+        subject: params.subject || params.serviceType,
+        message: params.message,
+        interestedProduct: params.interestedProduct || params.serviceType,
+        source: params.source,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        utmTerm,
+        utmContent,
+        landingPage,
+      }),
+    });
+
+    if (backendRes.success && backendRes.data) {
+      backendData = backendRes.data;
+    } else {
+      // If the backend actively rejected it, return failure
+      return {
+        success: false,
+        message: backendRes.message || 'Failed to securely save your enquiry. Please try again.',
+      };
+    }
+  } catch (backendErr: any) {
+    console.error('Spring Boot CRM backend save failed:', backendErr);
+    return {
+      success: false,
+      message: 'Failed to connect to our secure systems. Please try again later.',
+    };
+  }
+
+  // 3. Send Notification Email via Resend Next.js API Route (/api/quote)
+  // Email is supplemental; the lead is already safely stored in the CRM
   try {
     const resendRes = await fetch('/api/quote', {
       method: 'POST',
@@ -76,54 +116,25 @@ export async function submitContactApi(params: ContactParams): Promise<ApiRespon
 
     const resendData = await resendRes.json();
     if (resendRes.ok && resendData.success) {
-      emailSent = true;
       return {
         success: true,
         message: 'Your message has been received successfully! Our engineering team will contact you within 24 hours.',
-        data: resendData.data,
+        data: backendData,
       };
     } else {
-      emailError = resendData.error || 'Failed to send email notification.';
-    }
-  } catch (err: any) {
-    console.warn('Resend email fetch warning:', err);
-    emailError = err.message || 'Email service unreachable.';
-  }
-
-  // 2. Fallback to Spring Boot backend database & CRM lead pipeline if email route was unavailable
-  try {
-    const backendRes = await apiClient<ContactEnquiry>('/api/contact', {
-      method: 'POST',
-      body: JSON.stringify({
-        name: params.name,
-        email: params.email,
-        phone: params.phone,
-        company: params.company,
-        subject: params.subject || params.serviceType,
-        message: params.message,
-        interestedProduct: params.interestedProduct || params.serviceType,
-        source: params.source,
-        utmSource,
-        utmMedium,
-        utmCampaign,
-        utmTerm,
-        utmContent,
-        landingPage,
-      }),
-    });
-    if (backendRes.success) {
+      console.warn('Email notification dispatch failed, but lead was persisted:', resendData.error);
       return {
         success: true,
-        message: 'Your message has been received successfully! Our engineering team will contact you within 24 hours.',
-        data: backendRes.data,
+        message: 'Your enquiry was securely saved in our system, but the confirmation email was delayed.',
+        data: backendData,
       };
     }
-  } catch (backendErr) {
-    console.warn('Spring Boot CRM backend save skipped:', backendErr);
+  } catch (err: any) {
+    console.warn('Resend email fetch warning, but lead was persisted:', err);
+    return {
+      success: true,
+      message: 'Your enquiry was securely saved in our system, but the confirmation email was delayed.',
+      data: backendData,
+    };
   }
-
-  return {
-    success: false,
-    message: emailError || 'Failed to submit form. Please check your connection.',
-  };
 }

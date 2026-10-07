@@ -91,7 +91,7 @@ public class OtpService {
         String recipientName = user != null ? user.getName() : "User";
 
         logger.info("=================================================");
-        logger.info("[DEV AUTH OTP] Target: {} | Purpose: {} | Code: {}", normalizedTarget, actualPurpose, rawOtpCode);
+        logger.info("[DEV AUTH OTP] Target: {} | Purpose: {} | Code: [SECURELY_REDACTED]", normalizedTarget, actualPurpose);
         logger.info("=================================================");
 
         if (isEmail) {
