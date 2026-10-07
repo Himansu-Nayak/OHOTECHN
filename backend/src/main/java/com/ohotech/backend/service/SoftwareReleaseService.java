@@ -40,11 +40,8 @@ public class SoftwareReleaseService {
 
         if (hasActiveLicense) return true;
 
-        // 3. Check Order History (PAID / CONFIRMED / DELIVERED orders)
-        List<Order> orders = orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
-        return orders.stream().anyMatch(o ->
-                (o.getStatus() == OrderStatus.CONFIRMED || o.getStatus() == OrderStatus.PAID || o.getStatus() == OrderStatus.DELIVERED) &&
-                o.getItems().stream().anyMatch(item -> item.getProduct().getId().equals(productId)));
+        // Entitlement strictly requires an active License or active Subscription provisioned by Admin
+        return false;
     }
 
     public List<Product> getEntitledProducts(Long userId) {
@@ -59,10 +56,6 @@ public class SoftwareReleaseService {
                 .filter(l -> l.getStatus() == LicenseStatus.ACTIVE &&
                              (l.getExpiresAt() == null || l.getExpiresAt().isAfter(LocalDateTime.now())))
                 .forEach(l -> productIds.add(l.getProduct().getId()));
-
-        orderRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .filter(o -> o.getStatus() == OrderStatus.CONFIRMED || o.getStatus() == OrderStatus.PAID || o.getStatus() == OrderStatus.DELIVERED)
-                .forEach(o -> o.getItems().forEach(item -> productIds.add(item.getProduct().getId())));
 
         return productRepository.findAllById(productIds);
     }

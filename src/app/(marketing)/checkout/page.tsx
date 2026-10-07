@@ -189,8 +189,9 @@ export default function CheckoutPage() {
 
           if (verifyRes.success) {
             await clearCart();
-            showToast('Payment Verified! Your software license key has been generated.', 'success');
-            router.push(`/my-products?orderId=${createdOrderId}&newPurchase=true`);
+            showToast('Payment received! Your order is submitted for admin review.', 'success');
+            setSuccessOrderId(createdOrderId);
+            setIsSuccessSubmitted(true);
           } else {
             throw new Error(verifyRes.message || 'Payment signature verification failed.');
           }
@@ -322,10 +323,10 @@ export default function CheckoutPage() {
         payerUpiId: payerUpiId || 'demo@okhdfcbank',
         payerName: payerName || customerName || 'Demo Customer',
       });
-      await demoPayApi(upiOrderData.orderId).catch(() => {});
       await clearCart();
-      showToast('UPI Payment Confirmed! License key activated.', 'success');
-      router.push(`/my-products?orderId=${upiOrderData.orderId}&newPurchase=true`);
+      showToast('Payment reference submitted! Order is awaiting admin verification.', 'success');
+      setSuccessOrderId(upiOrderData.orderId);
+      setIsSuccessSubmitted(true);
     } catch (err: any) {
       showToast(err.message || 'Verification failed', 'error');
     } finally {
@@ -359,10 +360,7 @@ export default function CheckoutPage() {
       }
 
       await clearCart();
-      // Auto-activate license entitlements in demo mode
-      await demoPayApi(upiOrderData.orderId).catch(() => {});
-      showToast('Payment confirmed! Software license key activated.', 'success');
-      router.push(`/my-products?orderId=${upiOrderData.orderId}&newPurchase=true`);
+      showToast('Payment submitted! Awaiting admin approval.', 'success');
       setSuccessOrderId(upiOrderData.orderId);
       setIsSuccessSubmitted(true);
     } catch (err: any) {
@@ -411,11 +409,11 @@ export default function CheckoutPage() {
             </div>
             <p className="text-slate-600">
               {paymentMethod === 'UPI' ? (
-                <>Our administration team is verifying your payment with the banking ledger using UTR <span className="font-mono font-bold text-slate-900">{utrNumber}</span>. Your software licenses and subscriptions will be automatically activated upon confirmation.</>
+                <>Our administration team is verifying your payment with the banking ledger using UTR <span className="font-mono font-bold text-slate-900">{utrNumber}</span>. Your software licenses and subscriptions will be automatically activated upon admin approval.</>
               ) : paymentMethod === 'COD' ? (
                 <>Your order has been recorded for Cash on Delivery. Our dispatch and operations desk will reach out on <span className="font-mono font-bold text-slate-900">{contactPhone}</span>.</>
               ) : (
-                <>Your transaction has been processed and your account entitlements have been updated.</>
+                <>Your payment was recorded successfully. Software licenses, API keys, and download entitlements will be activated upon admin verification.</>
               )}
             </p>
           </div>

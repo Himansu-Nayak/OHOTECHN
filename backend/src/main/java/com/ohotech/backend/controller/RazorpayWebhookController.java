@@ -95,14 +95,13 @@ public class RazorpayWebhookController {
                                     paymentRepository.save(payment);
 
                                     if (order != null) {
-                                        order.setStatus(OrderStatus.PAID);
+                                        order.setStatus(OrderStatus.CONFIRMED);
                                         orderRepository.save(order);
-                                        paymentService.createEntitlementsForOrder(order);
 
                                         if (order.getUser() != null) {
                                             cartService.clearCart(order.getUser().getId());
                                         }
-                                        logger.info("Webhook successfully verified and activated Order #{}", order.getId());
+                                        logger.info("Webhook captured payment for Order #{}. Awaiting Admin Approval.", order.getId());
                                     }
                                 }
                             }

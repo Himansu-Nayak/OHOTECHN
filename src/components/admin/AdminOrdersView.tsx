@@ -3,12 +3,13 @@
 import * as React from 'react';
 import { 
   ShoppingCart, Search, Eye, Download, CheckCircle2, 
-  Clock, Package, X, RefreshCw, AlertCircle, Phone, MapPin
+  Clock, Package, X, RefreshCw, AlertCircle, Phone, MapPin, ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
 import { Order, OrderStatus } from '@/api/types';
 import { getAdminOrdersApi, updateAdminOrderStatusApi, downloadOrderInvoiceApi } from '@/api/orders';
+import { adminVerifyPaymentApi } from '@/api/payments';
 import { 
   AdminCard, AdminBadge, StatusBadge, AdminButton, 
   AdminEmptyState, AdminTableSkeleton, AdminModal 
@@ -25,6 +26,7 @@ export function AdminOrdersView() {
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(false);
+  const [isApprovingPayment, setIsApprovingPayment] = React.useState(false);
 
   const fetchOrders = React.useCallback(async () => {
     setIsLoading(true);
@@ -46,6 +48,26 @@ export function AdminOrdersView() {
   React.useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  const handleApproveOrderPayment = async (orderId: number, paymentId: number) => {
+    setIsApprovingPayment(true);
+    try {
+      const res = await adminVerifyPaymentApi(paymentId, { notes: 'Approved via Orders Console' });
+      if (res.success) {
+        showToast(`Payment #PAY-${paymentId} approved! License & software entitlements provisioned.`, 'success');
+        await fetchOrders();
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder((prev) => prev ? { ...prev, status: 'PAID' } : null);
+        }
+      } else {
+        showToast(res.message || 'Failed to approve payment', 'error');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Error executing payment approval', 'error');
+    } finally {
+      setIsApprovingPayment(false);
+    }
+  };
 
   const handleUpdateStatus = async (orderId: number, newStatus: string) => {
     setIsUpdatingStatus(true);
@@ -342,6 +364,19 @@ export function AdminOrdersView() {
                         <div className="flex justify-between text-slate-600">
                           <span>Payer UPI:</span>
                           <span className="font-mono text-slate-800">{p.payerUpiId}</span>
+                        </div>
+                      )}
+                      {p.status !== 'SUCCESSFUL' && (
+                        <div className="pt-2 flex justify-end">
+                          <AdminButton
+                            variant="primary"
+                            size="sm"
+                            onClick={() => handleApproveOrderPayment(selectedOrder.id, p.id)}
+                            icon={ShieldCheck}
+                            isLoading={isApprovingPayment}
+                          >
+                            Approve Payment &amp; Provision Licenses
+                          </AdminButton>
                         </div>
                       )}
                     </div>

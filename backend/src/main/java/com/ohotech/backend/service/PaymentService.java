@@ -249,13 +249,10 @@ public class PaymentService {
         payment.setStatus(PaymentStatus.SUCCESSFUL);
         paymentRepository.save(payment);
 
-        order.setStatus(OrderStatus.PAID);
+        order.setStatus(OrderStatus.CONFIRMED);
         orderRepository.save(order);
 
-        // Process Idempotent Entitlements (Subscriptions & Licenses)
-        createEntitlementsForOrder(order);
-
-        // Clear cart now that payment is verified and order is marked PAID
+        // Clear cart now that payment is verified and order is confirmed
         try {
             cartService.clearCart(order.getUser().getId());
             logger.info("Cleared cart for user #{} after verified payment", order.getUser().getId());
@@ -267,9 +264,9 @@ public class PaymentService {
         try {
             notificationService.createNotification(
                     order.getUser().getId(),
-                    "Payment Verified Successfully",
-                    "Your payment of ₹" + order.getTotalAmount() + " for Order #" + order.getId() + " was verified. Software access is now active.",
-                    NotificationType.SUCCESS,
+                    "Payment Received - Pending Verification",
+                    "Your payment of ₹" + order.getTotalAmount() + " for Order #" + order.getId() + " was received. Your software license and download access will be activated upon admin approval.",
+                    NotificationType.INFO,
                     NotificationCategory.PAYMENT,
                     "/my-products"
             );
@@ -277,7 +274,7 @@ public class PaymentService {
             if (order.getUser().getEmail() != null) {
                 String htmlBody = emailTemplateService.buildPaymentSuccessEmail(
                         order.getUser().getName(), request.getRazorpayPaymentId(), order.getId(), order.getTotalAmount());
-                emailService.sendHtmlEmail(order.getUser().getEmail(), "OHO TECHN - Payment Verified for Order #" + order.getId(), htmlBody);
+                emailService.sendHtmlEmail(order.getUser().getEmail(), "OHO TECHN - Payment Received for Order #" + order.getId(), htmlBody);
             }
         } catch (Exception e) {
             logger.warn("Notification/Email trigger warning on payment verify: {}", e.getMessage());
@@ -316,16 +313,13 @@ public class PaymentService {
         payment.setTransactionReference(demoTxnId);
         payment.setStatus(PaymentStatus.SUCCESSFUL);
         payment.setVerifiedAt(LocalDateTime.now());
-        payment.setAdminNotes("Auto-verified via Demo Quick Pay & Instant Activation mode.");
+        payment.setAdminNotes("Payment recorded via Demo Quick Pay mode (Pending Admin Approval).");
         payment = paymentRepository.save(payment);
 
-        order.setStatus(OrderStatus.PAID);
+        order.setStatus(OrderStatus.CONFIRMED);
         orderRepository.save(order);
 
-        // Process Idempotent Entitlements (Subscriptions & Licenses)
-        createEntitlementsForOrder(order);
-
-        // Clear cart now that payment is verified
+        // Clear cart now that payment is recorded
         try {
             cartService.clearCart(order.getUser().getId());
             logger.info("Cleared cart for user #{} after demo payment", order.getUser().getId());
@@ -336,9 +330,9 @@ public class PaymentService {
         try {
             notificationService.createNotification(
                     order.getUser().getId(),
-                    "Software Purchased & Activated",
-                    "Your payment of ₹" + order.getTotalAmount() + " for Order #" + order.getId() + " was verified. Your license key is now generated.",
-                    NotificationType.SUCCESS,
+                    "Payment Received (Pending Approval)",
+                    "Your payment of ₹" + order.getTotalAmount() + " for Order #" + order.getId() + " was received and is pending admin approval.",
+                    NotificationType.INFO,
                     NotificationCategory.PAYMENT,
                     "/my-products"
             );

@@ -307,6 +307,23 @@ class LicenseSubscriptionTests {
                         .content(objectMapper.writeValueAsString(verifyReq)))
                 .andExpect(status().isOk());
 
+        // Prior to admin approval, no entitlements should be active yet
+        List<Subscription> subsBeforeApproval = subscriptionRepository.findByUserIdAndProductId(customer.getId(), product.getId());
+        assertTrue(subsBeforeApproval.isEmpty());
+
+        // Admin approves the payment
+        User admin = createUser("Admin Approver", "admin_appr", Role.ROLE_ADMIN);
+        String adminToken = jwtTokenProvider.generateTokenFromUserId(admin.getId());
+        Payment payment = paymentRepository.findAll().stream()
+                .filter(p -> p.getOrder() != null && p.getOrder().getId().equals(orderId))
+                .findFirst().orElseThrow();
+
+        mockMvc.perform(put("/api/admin/payments/" + payment.getId() + "/verify")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"notes\":\"Approved by operations\"}"))
+                .andExpect(status().isOk());
+
         List<Subscription> subs = subscriptionRepository.findByUserIdAndProductId(customer.getId(), product.getId());
         assertFalse(subs.isEmpty());
         assertEquals(SubscriptionStatus.ACTIVE, subs.get(0).getStatus());
@@ -317,44 +334,64 @@ class LicenseSubscriptionTests {
     }
 
     @Test
-    @DisplayName("10. Duplicate payment verification does not duplicate subscription/license")
+    @DisplayName("10. Duplicate admin approval does not duplicate subscription/license")
     void testDuplicatePaymentVerificationDoesNotDuplicate() throws Exception {
         User customer = createUser("Dup Pay Cust", "dup_pay", Role.ROLE_CUSTOMER);
         String token = jwtTokenProvider.generateTokenFromUserId(customer.getId());
         Product product = createProduct("Single Sub Suite", new BigDecimal("70000.00"));
 
-        Order order = orderRepository.save(Order.builder()
-                .user(customer)
-                .totalAmount(new BigDecimal("70000.00"))
-                .status(OrderStatus.PENDING)
-                .build());
+        CartItemRequest addReq = new CartItemRequest();
+        addReq.setProductId(product.getId());
+        addReq.setQuantity(1);
 
-        paymentRepository.save(Payment.builder()
-                .order(order)
-                .amount(new BigDecimal("70000.00"))
-                .status(PaymentStatus.PENDING)
-                .razorpayOrderId("order_idem_777")
-                .build());
-
-        PaymentVerificationRequest verifyReq = new PaymentVerificationRequest();
-        verifyReq.setOrderId(order.getId());
-        verifyReq.setRazorpayOrderId("order_idem_777");
-        verifyReq.setRazorpayPaymentId("pay_idem_777");
-        verifyReq.setRazorpaySignature("sig_idem_777");
-
-        mockMvc.perform(post("/api/payments/verify")
+        mockMvc.perform(post("/api/cart/items")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(verifyReq)))
+                        .content(objectMapper.writeValueAsString(addReq)))
+                .andExpect(status().isOk());
+
+        OrderRequest orderReq = new OrderRequest();
+        orderReq.setShippingAddress("200 IT Park");
+        orderReq.setContactPhone("9990001113");
+
+        MvcResult orderResult = mockMvc.perform(post("/api/orders")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(orderReq)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Map<String, Object> orderResp = objectMapper.readValue(orderResult.getResponse().getContentAsString(), Map.class);
+        Long orderId = Long.valueOf(((Map<String, Object>) orderResp.get("data")).get("id").toString());
+
+        mockMvc.perform(post("/api/payments/create-order")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of("orderId", orderId))))
+                .andExpect(status().isOk());
+
+        Payment payment = paymentRepository.findAll().stream()
+                .filter(p -> p.getOrder() != null && p.getOrder().getId().equals(orderId))
+                .findFirst().orElseThrow();
+
+        User admin = createUser("Admin Idem", "admin_idem", Role.ROLE_ADMIN);
+        String adminToken = jwtTokenProvider.generateTokenFromUserId(admin.getId());
+
+        // 1st Admin Approval
+        mockMvc.perform(put("/api/admin/payments/" + payment.getId() + "/verify")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"notes\":\"First approval\"}"))
                 .andExpect(status().isOk());
 
         int initialSubCount = subscriptionRepository.findByUserIdAndProductId(customer.getId(), product.getId()).size();
+        assertTrue(initialSubCount > 0);
 
-        // 2nd Duplicate Callback
-        mockMvc.perform(post("/api/payments/verify")
-                        .header("Authorization", "Bearer " + token)
+        // 2nd Duplicate Approval
+        mockMvc.perform(put("/api/admin/payments/" + payment.getId() + "/verify")
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(verifyReq)))
+                        .content("{\"notes\":\"Duplicate approval\"}"))
                 .andExpect(status().isOk());
 
         int finalSubCount = subscriptionRepository.findByUserIdAndProductId(customer.getId(), product.getId()).size();
