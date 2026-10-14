@@ -22,6 +22,7 @@ import java.util.*;
 public class PaymentGatewayRegistry {
 
     private final RazorpayGateway razorpayGateway;
+    private final CashfreeGateway cashfreeGateway;
     private final DirectUpiGateway directUpiGateway;
     private final CashOnDeliveryGateway cashOnDeliveryGateway;
     private final PaymentRepository paymentRepository;
@@ -91,12 +92,17 @@ public class PaymentGatewayRegistry {
         populateGatewayStats(rzpDto, "RAZORPAY");
         list.add(rzpDto);
 
-        // 2. Direct Bank Transfer / UPI
+        // 2. Cashfree
+        PaymentGatewayDto cfDto = cashfreeGateway.toDto();
+        populateGatewayStats(cfDto, "CASHFREE");
+        list.add(cfDto);
+
+        // 3. Direct Bank Transfer / UPI
         PaymentGatewayDto upiDto = directUpiGateway.toDto();
         populateGatewayStats(upiDto, "BANK_TRANSFER");
         list.add(upiDto);
 
-        // 3. Cash on Delivery
+        // 4. Cash on Delivery
         PaymentGatewayDto codDto = cashOnDeliveryGateway.toDto();
         populateGatewayStats(codDto, "COD");
         list.add(codDto);
@@ -118,6 +124,10 @@ public class PaymentGatewayRegistry {
             if ("RAZORPAY".equals(providerKey)) {
                 matches = "RAZORPAY".equalsIgnoreCase(p.getProvider()) ||
                         (p.getRazorpayPaymentId() != null && !p.getRazorpayPaymentId().isBlank());
+            } else if ("CASHFREE".equals(providerKey)) {
+                matches = "CASHFREE".equalsIgnoreCase(p.getProvider()) ||
+                        (p.getCashfreePaymentId() != null && !p.getCashfreePaymentId().isBlank()) ||
+                        (p.getCashfreeOrderId() != null && !p.getCashfreeOrderId().isBlank());
             } else if ("BANK_TRANSFER".equals(providerKey)) {
                 matches = "BANK_TRANSFER".equalsIgnoreCase(p.getProvider()) ||
                         "UPI".equalsIgnoreCase(p.getMethod());
@@ -173,6 +183,7 @@ public class PaymentGatewayRegistry {
 
         int activeCount = 0;
         if (razorpayGateway.isEnabled() && razorpayGateway.isConfigured()) activeCount++;
+        if (cashfreeGateway.isEnabled() && cashfreeGateway.isConfigured()) activeCount++;
         if (directUpiGateway.isEnabled() && directUpiGateway.isConfigured()) activeCount++;
         if (cashOnDeliveryGateway.isEnabled()) activeCount++;
 
@@ -195,6 +206,8 @@ public class PaymentGatewayRegistry {
         String upper = providerId != null ? providerId.trim().toUpperCase() : "";
         if ("RAZORPAY".equals(upper)) {
             return razorpayGateway.healthCheck();
+        } else if ("CASHFREE".equals(upper)) {
+            return cashfreeGateway.healthCheck();
         } else if ("BANK_TRANSFER".equals(upper) || "UPI".equals(upper) || "UPI_DIRECT".equals(upper)) {
             return directUpiGateway.healthCheck();
         } else if ("COD".equals(upper)) {
@@ -216,6 +229,8 @@ public class PaymentGatewayRegistry {
         PaymentGateway target;
         if ("RAZORPAY".equals(upper)) {
             target = razorpayGateway;
+        } else if ("CASHFREE".equals(upper)) {
+            target = cashfreeGateway;
         } else if ("BANK_TRANSFER".equals(upper) || "UPI".equals(upper) || "UPI_DIRECT".equals(upper)) {
             target = directUpiGateway;
         } else if ("COD".equals(upper)) {

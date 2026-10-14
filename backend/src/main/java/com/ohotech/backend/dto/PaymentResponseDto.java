@@ -31,6 +31,8 @@ public class PaymentResponseDto {
     private LocalDateTime verifiedAt;
     private String razorpayOrderId;
     private String razorpayPaymentId;
+    private String cashfreeOrderId;
+    private String cashfreePaymentId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

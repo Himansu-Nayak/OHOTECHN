@@ -1,5 +1,7 @@
 import { apiClient } from './client';
-import { ApiResponse, AuthResponse, UserDto } from './types';
+import type { ApiResponse } from './types/common.types';
+import type { AuthResponse } from './types/auth.types';
+import type { UserDto } from './types/user.types';
 
 export interface LoginParams {
   username: string; // email or phone

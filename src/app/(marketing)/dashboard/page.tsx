@@ -126,27 +126,6 @@ export default function CustomerDashboardPage() {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="bg-[#f7f7f5] min-h-screen pb-16 pt-28 sm:pt-36 px-4">
-        <div className="max-w-md mx-auto bg-white border-2 border-slate-300 rounded-[32px] p-8 text-center shadow-sm">
-          <Package className="w-12 h-12 text-sky-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-black text-[#0d0d0e] mb-2">Sign In Required</h1>
-          <p className="text-xs text-slate-500 mb-6">Please sign in to access your platform dashboard.</p>
-          <Link href="/login" className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider inline-block hover:bg-slate-800 transition-colors">
-            Sign In
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const activeLicensesCount = licenses.filter(l => l.status === 'ACTIVE').length;
-  const activeSubsCount = subscriptions.filter(s => s.status === 'ACTIVE' || s.status === 'TRIAL').length;
-  const openTicketsCount = tickets.filter(t => t.status === 'NEW' || t.status === 'OPEN').length;
-  const inProgressTicketsCount = tickets.filter(t => t.status === 'IN_PROGRESS' || t.status === 'ON_HOLD').length;
-  const activeTicketsCount = openTicketsCount + inProgressTicketsCount;
-
   // Real Chronological Activity Derived From Actual Records
   const realActivities: ActivityItem[] = React.useMemo(() => {
     const list: ActivityItem[] = [];
@@ -193,6 +172,27 @@ export default function CustomerDashboardPage() {
 
     return list.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 5);
   }, [orders, licenses, tickets]);
+
+  if (!user) {
+    return (
+      <div className="bg-[#f7f7f5] min-h-screen pb-16 pt-28 sm:pt-36 px-4">
+        <div className="max-w-md mx-auto bg-white border-2 border-slate-300 rounded-[32px] p-8 text-center shadow-sm">
+          <Package className="w-12 h-12 text-sky-600 mx-auto mb-4" />
+          <h1 className="text-2xl font-black text-[#0d0d0e] mb-2">Sign In Required</h1>
+          <p className="text-xs text-slate-500 mb-6">Please sign in to access your platform dashboard.</p>
+          <Link href="/login" className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider inline-block hover:bg-slate-800 transition-colors">
+            Sign In
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const activeLicensesCount = licenses.filter(l => l.status === 'ACTIVE').length;
+  const activeSubsCount = subscriptions.filter(s => s.status === 'ACTIVE' || s.status === 'TRIAL').length;
+  const openTicketsCount = tickets.filter(t => t.status === 'NEW' || t.status === 'OPEN').length;
+  const inProgressTicketsCount = tickets.filter(t => t.status === 'IN_PROGRESS' || t.status === 'ON_HOLD').length;
+  const activeTicketsCount = openTicketsCount + inProgressTicketsCount;
 
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8">

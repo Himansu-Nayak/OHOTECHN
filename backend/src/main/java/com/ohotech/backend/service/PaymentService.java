@@ -846,6 +846,8 @@ public class PaymentService {
                 .verifiedAt(payment.getVerifiedAt())
                 .razorpayOrderId(payment.getRazorpayOrderId())
                 .razorpayPaymentId(payment.getRazorpayPaymentId())
+                .cashfreeOrderId(payment.getCashfreeOrderId())
+                .cashfreePaymentId(payment.getCashfreePaymentId())
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())
                 .build();

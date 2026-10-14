@@ -1,4 +1,4 @@
-import { ApiResponse } from './types';
+import type { ApiResponse } from './types/common.types';
 
 export function getApiBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_API_URL !== undefined && process.env.NEXT_PUBLIC_API_URL !== '') {

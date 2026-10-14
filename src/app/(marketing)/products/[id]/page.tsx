@@ -26,6 +26,9 @@ import { softwareDemos } from '@/config/demos';
 import { ProductQuickViewModal, isValidLiveDemoUrl } from '@/components/products/ProductQuickViewModal';
 import { Product } from '@/config/industries';
 import { formatInr } from '@/utils/cartUtils';
+import { ProductTechnicalTabs } from '@/components/products/ProductTechnicalTabs';
+import { ProductEngineeringCallout } from '@/components/products/ProductEngineeringCallout';
+import { ProductPurchaseSuccessSection } from '@/components/products/ProductPurchaseSuccessSection';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -43,9 +46,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = React.useState<number>(1);
   const [isProcessingTrial, setIsProcessingTrial] = React.useState<boolean>(false);
 
-  // Tab & Interactive State (5 authoritative product tabs)
-  const [activeTab, setActiveTab] = React.useState<'overview' | 'modules' | 'security' | 'deployment' | 'requirements'>('overview');
-  const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(0);
+  // Quick View / Demo Modal State
   const [activeQuickViewProduct, setActiveQuickViewProduct] = React.useState<Product | null>(null);
 
   // On-Page Amount & Demo Payment Section State
@@ -362,24 +363,6 @@ export default function ProductDetailPage() {
   const activePrice = selectedPlan ? selectedPlan.price : (product?.price || 0);
   const priceFormatted = formatInr(activePrice * quantity);
 
-  const faqs = [
-    {
-      q: 'Can we deploy this software on our own private VPS or AWS / Hostinger cloud?',
-      a: 'Yes. All OHO TECH commercial licenses and enterprise packages include single-tenant deployment packages with Docker Compose files, PostgreSQL migration scripts, and Nginx reverse proxy configurations.'
-    },
-    {
-      q: 'How does cryptographic hardware licensing work?',
-      a: 'Upon order confirmation, an authoritative license key (OHO-XXXX-XXXX-XXXX) is issued to your account. When the software boots on your server or desktop, it performs an activation handshake verifying your licensed seat limit.'
-    },
-    {
-      q: 'Can OHO TECH engineers build custom modules or integrate our legacy APIs?',
-      a: 'Absolutely. We offer tailored engineering sprints, third-party ERP/CRM integrations, custom payment gateway adapters, and dedicated SLA contracts through our Engineering Desk.'
-    },
-    {
-      q: 'What is included in the perpetual full ownership package?',
-      a: 'Perpetual Commercial Licenses provide lifetime production usage rights, complete source code access (frontend and backend), automated database schema migrations, and 12 months of standard SLA maintenance.'
-    }
-  ];
 
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8">
@@ -732,162 +715,22 @@ export default function ProductDetailPage() {
               className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-10 shadow-sm scroll-mt-24 transition-all"
             >
               {purchaseSuccess ? (
-                /* POST-PURCHASE SUCCESS & AUTO-GENERATED KEY DISPLAY */
-                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
-                  {/* Status Banner */}
-                  <div className="p-6 rounded-[28px] bg-gradient-to-r from-emerald-50 via-emerald-100/40 to-teal-50 border-2 border-emerald-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-600/30">
-                        <CheckCircle2 className="w-8 h-8" />
-                      </div>
-                      <div>
-                        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-200/80 text-emerald-900 font-mono text-[11px] font-bold uppercase tracking-wider mb-1">
-                          <Sparkles className="w-3 h-3 text-emerald-700" /> Payment Confirmed (₹ INR) &amp; Subscription Active
-                        </div>
-                        <h3 className="text-2xl font-black text-[#0d0d0e]">
-                          Congratulations! Your Software License is Generated
-                        </h3>
-                        <p className="text-xs text-slate-600 font-medium">
-                          Order #ORD-{purchasedOrderId} has been verified and settled in full. Your software seat is ready for immediate PC activation.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-2 text-xs font-mono font-bold shrink-0">
-                      <span className="px-3 py-1 rounded-full bg-emerald-600 text-white flex items-center gap-1">
-                        <ShieldCheck className="w-3.5 h-3.5" /> STATUS: ACTIVE
-                      </span>
-                      <span className="px-3 py-1 rounded-full bg-slate-900 text-emerald-400">
-                        SUBSCRIPTION: ACTIVE
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Cryptographic Key Box */}
-                  <div className="p-8 rounded-[32px] bg-slate-950 text-white border-2 border-emerald-500 shadow-xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-                    
-                    <div className="relative z-10 space-y-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
-                        <div>
-                          <span className="text-[11px] font-mono font-bold tracking-widest text-emerald-400 uppercase">
-                            AUTHORITATIVE CRYPTOGRAPHIC LICENSE KEY
-                          </span>
-                          <h4 className="text-xl font-black text-white">{product.name}</h4>
-                        </div>
-
-                        <div className="text-xs font-mono text-slate-400">
-                          Plan: <span className="text-white font-bold">{selectedPlan?.name || 'Commercial Perpetual'}</span> • Seats: <span className="text-emerald-400 font-bold">{selectedPlan?.activationLimit || 1} Device(s)</span>
-                        </div>
-                      </div>
-
-                      {/* Monospace Key Display */}
-                      <div className="p-5 rounded-2xl bg-black/70 border border-emerald-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="font-mono font-extrabold text-xl sm:text-2xl text-emerald-400 tracking-wider break-all select-all">
-                          {generatedKey}
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={handleCopyKey}
-                          className={`px-5 py-3 rounded-xl font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer shadow-md ${
-                            isCopiedKey
-                              ? 'bg-emerald-500 text-black shadow-emerald-500/30'
-                              : 'bg-white hover:bg-slate-100 text-slate-900'
-                          }`}
-                        >
-                          {isCopiedKey ? (
-                            <>
-                              <Check className="w-4 h-4" />
-                              <span>COPIED!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-4 h-4" />
-                              <span>COPY KEY</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-
-                      {/* Clear Step-by-Step Guide for PC Desktop Software Activation */}
-                      <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
-                        <div className="flex items-center gap-2 text-xs font-mono font-bold text-sky-400 uppercase tracking-wider">
-                          <Monitor className="w-4 h-4" />
-                          <span>How to Unlock &amp; Activate the Software on Your PC / Laptop:</span>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs font-sans">
-                          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
-                            <div className="text-[10px] font-mono font-bold text-slate-400 mb-1">STEP 1</div>
-                            <div className="font-bold text-white mb-1">Launch Software</div>
-                            <p className="text-[11px] text-slate-400 leading-normal">
-                              Open or launch your installed desktop software application on your PC.
-                            </p>
-                          </div>
-
-                          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
-                            <div className="text-[10px] font-mono font-bold text-slate-400 mb-1">STEP 2</div>
-                            <div className="font-bold text-white mb-1">Sign In at Startup</div>
-                            <p className="text-[11px] text-slate-400 leading-normal">
-                              Log in with your customer account email (<span className="text-emerald-400 font-mono">{demoCustomerEmail}</span>).
-                            </p>
-                          </div>
-
-                          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
-                            <div className="text-[10px] font-mono font-bold text-slate-400 mb-1">STEP 3</div>
-                            <div className="font-bold text-white mb-1">Enter License Key</div>
-                            <p className="text-[11px] text-slate-400 leading-normal">
-                              At the startup activation prompt, paste your generated key: <span className="text-emerald-400 font-mono">{generatedKey}</span>.
-                            </p>
-                          </div>
-
-                          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
-                            <div className="text-[10px] font-mono font-bold text-slate-400 mb-1">STEP 4</div>
-                            <div className="font-bold text-white mb-1">Subscription Active</div>
-                            <p className="text-[11px] text-slate-400 leading-normal">
-                              Hardware ID activates automatically, all features unlock, and your subscription is active!
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Action Links */}
-                      <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex flex-wrap items-center gap-3">
-                          <Link
-                            href="/my-products?newPurchase=true"
-                            className="py-3 px-6 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2"
-                          >
-                            <span>Open Customer Portal (/my-products)</span>
-                            <ArrowRight className="w-4 h-4" />
-                          </Link>
-
-                          <button
-                            type="button"
-                            onClick={handleDownloadInvoice}
-                            className="py-3 px-5 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                            <span>Download Tax Invoice (PDF)</span>
-                          </button>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPurchaseSuccess(false);
-                            setPurchasedOrderId(null);
-                            setGeneratedKey(null);
-                          }}
-                          className="text-xs font-mono font-bold text-slate-400 hover:text-white underline cursor-pointer"
-                        >
-                          + Purchase Another License / Package
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ProductPurchaseSuccessSection
+                  productName={product.name}
+                  planName={selectedPlan?.name}
+                  activationLimit={selectedPlan?.activationLimit}
+                  purchasedOrderId={purchasedOrderId}
+                  demoCustomerEmail={demoCustomerEmail}
+                  generatedKey={generatedKey}
+                  isCopiedKey={isCopiedKey}
+                  onCopyKey={handleCopyKey}
+                  onDownloadInvoice={handleDownloadInvoice}
+                  onResetPurchase={() => {
+                    setPurchaseSuccess(false);
+                    setPurchasedOrderId(null);
+                    setGeneratedKey(null);
+                  }}
+                />
               ) : (
                 /* IN-PAGE CHECKOUT FORM (ALL ₹ INR & DEMO DETAILS) */
                 <div className="space-y-8">
@@ -1208,393 +1051,14 @@ export default function ProductDetailPage() {
             </div>
 
             {/* INTERACTIVE SPECIFICATIONS & TECHNICAL ARCHITECTURE TABS */}
-            <div className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[40px] p-6 sm:p-10 shadow-sm">
-              
-              {/* Tab Navigation Buttons */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-4 border-b border-slate-200 mb-8 scrollbar-none">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('overview')}
-                  className={`px-4 sm:px-5 py-2.5 rounded-full text-xs font-mono font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
-                    activeTab === 'overview'
-                      ? 'bg-[#0d0d0e] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Overview</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('modules')}
-                  className={`px-4 sm:px-5 py-2.5 rounded-full text-xs font-mono font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
-                    activeTab === 'modules'
-                      ? 'bg-[#0d0d0e] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <Layers className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Core Modules</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('security')}
-                  className={`px-4 sm:px-5 py-2.5 rounded-full text-xs font-mono font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
-                    activeTab === 'security'
-                      ? 'bg-[#0d0d0e] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Security &amp; Licensing</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('deployment')}
-                  className={`px-4 sm:px-5 py-2.5 rounded-full text-xs font-mono font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
-                    activeTab === 'deployment'
-                      ? 'bg-[#0d0d0e] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <Server className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Deployment</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('requirements')}
-                  className={`px-4 sm:px-5 py-2.5 rounded-full text-xs font-mono font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
-                    activeTab === 'requirements'
-                      ? 'bg-[#0d0d0e] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <Cpu className="w-3.5 h-3.5 text-amber-400" />
-                  <span>System Requirements</span>
-                </button>
-              </div>
-
-              {/* Tab 1: Overview */}
-              {activeTab === 'overview' && (
-                <div className="space-y-6 animate-in fade-in duration-300">
-                  <div className="max-w-3xl">
-                    <h3 className="text-xl font-black text-[#0d0d0e] mb-2">{product.name} — Architecture Overview</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                      {product.description}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
-                      <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center mb-3">
-                        <ShieldCheck className="w-5 h-5" />
-                      </div>
-                      <h4 className="text-sm font-black text-[#0d0d0e] mb-1">Single-Tenant Isolation</h4>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Dedicated database schemas and isolated service runtime guaranteeing complete enterprise data sovereignty.
-                      </p>
-                    </div>
-
-                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
-                        <Key className="w-5 h-5" />
-                      </div>
-                      <h4 className="text-sm font-black text-[#0d0d0e] mb-1">Zero Royalty Lock-In</h4>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Commercial perpetual licenses grant permanent ownership of code and assets on your infrastructure without forced recurring fees.
-                      </p>
-                    </div>
-
-                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
-                      <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-3">
-                        <Zap className="w-5 h-5" />
-                      </div>
-                      <h4 className="text-sm font-black text-[#0d0d0e] mb-1">High-Throughput Core</h4>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Optimized database indexing and caching layers deliver sub-second response times under concurrent multi-user load.
-                      </p>
-                    </div>
-                  </div>
-
-                  {matchedDemo && (
-                    <div className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <Eye className="w-6 h-6 text-emerald-600 shrink-0" />
-                        <div>
-                          <div className="text-xs font-black text-[#0d0d0e]">Interactive Live Demo Ready</div>
-                          <div className="text-[11px] text-slate-500">Test-drive the administrator, staff, and customer portals with verified demo accounts.</div>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleOpenLiveDemo}
-                        className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors shrink-0 text-center cursor-pointer shadow-xs"
-                      >
-                        Launch Interactive Demo
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Tab 2: Core Modules */}
-              {activeTab === 'modules' && (
-                <div className="space-y-6 animate-in fade-in duration-300">
-                  <div className="max-w-2xl">
-                    <h3 className="text-xl font-black text-[#0d0d0e] mb-2">Turnkey Modules &amp; Subsystems</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Every module is tested for interoperability, automated billing integration, and audit trail compliance.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3">
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 text-sky-600 shrink-0">
-                        <Lock className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black text-[#0d0d0e] mb-1">Multi-Role RBAC &amp; Auth</h4>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          Preconfigured roles for Admin, Staff, Student/Patient/Client, and Finance Auditor with granular endpoint permissions.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3">
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 text-emerald-600 shrink-0">
-                        <CreditCard className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black text-[#0d0d0e] mb-1">Automated Invoicing &amp; GST</h4>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          Built-in UPI QR generation, bank reference UTR verification, and PDF tax invoice generation with company branding.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3">
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 text-purple-600 shrink-0">
-                        <Key className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black text-[#0d0d0e] mb-1">Cryptographic License Gate</h4>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          Machine ID hardware fingerprinting preventing unauthorized distribution while allowing one-click device seat reassignments.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3">
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 text-amber-600 shrink-0">
-                        <Headphones className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black text-[#0d0d0e] mb-1">Support Desk &amp; SLA Tracking</h4>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          Direct communication channel connecting customers with engineering staff, tracked by strict response SLAs.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 3: Security & Licensing */}
-              {activeTab === 'security' && (
-                <div className="space-y-6 animate-in fade-in duration-300">
-                  <div className="max-w-2xl">
-                    <h3 className="text-xl font-black text-[#0d0d0e] mb-2">Cryptographic Licensing &amp; Security Controls</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Rigorous node-locking algorithms and commercial protections designed for enterprise compliance.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                    <div className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200">
-                      <div className="font-mono font-bold text-sky-600 uppercase tracking-wider mb-2">Hardware-Bound Protection</div>
-                      <h4 className="text-sm font-black text-[#0d0d0e] mb-2">Machine ID Fingerprinting</h4>
-                      <ul className="space-y-2 text-slate-600">
-                        <li className="flex items-start gap-2">
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>Authoritative `OHO-XXXX-XXXX-XXXX` license verification</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>Hardware ID hashing prevents unauthorized clone deployment</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>Customer portal self-service device activation &amp; deactivation</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200">
-                      <div className="font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Data Protection</div>
-                      <h4 className="text-sm font-black text-[#0d0d0e] mb-2">Enterprise Encryption Standards</h4>
-                      <ul className="space-y-2 text-slate-600">
-                        <li className="flex items-start gap-2">
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>TLS 1.3 encrypted transport for all API and WebSocket endpoints</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>AES-256 encryption at rest for database credentials &amp; tokens</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>Granular Spring Security filters with BCrypt password hashing</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 4: Deployment */}
-              {activeTab === 'deployment' && (
-                <div className="space-y-6 animate-in fade-in duration-300">
-                  <div className="max-w-2xl">
-                    <h3 className="text-xl font-black text-[#0d0d0e] mb-2">Production Deployment Architecture</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Turnkey deployment templates compatible with leading cloud and on-premise infrastructure.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
-                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
-                      <div className="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center mb-3">
-                        <Terminal className="w-4 h-4" />
-                      </div>
-                      <div className="font-bold text-slate-900 mb-1">Docker Compose</div>
-                      <p className="text-[11px] text-slate-500 font-sans mb-3">Multi-container setup with automated networking and volume management.</p>
-                      <div className="p-2 rounded-lg bg-slate-900 text-emerald-400 text-[10px]">
-                        docker compose up -d
-                      </div>
-                    </div>
-
-                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
-                      <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-3">
-                        <Database className="w-4 h-4" />
-                      </div>
-                      <div className="font-bold text-slate-900 mb-1">Database Migrations</div>
-                      <p className="text-[11px] text-slate-500 font-sans mb-3">Automated Flyway version-controlled database schema generation.</p>
-                      <div className="p-2 rounded-lg bg-slate-900 text-purple-300 text-[10px]">
-                        PostgreSQL 16 Relational
-                      </div>
-                    </div>
-
-                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
-                      <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
-                        <Server className="w-4 h-4" />
-                      </div>
-                      <div className="font-bold text-slate-900 mb-1">Nginx Reverse Proxy</div>
-                      <p className="text-[11px] text-slate-500 font-sans mb-3">Automatic SSL certificate issuance with Let's Encrypt integration.</p>
-                      <div className="p-2 rounded-lg bg-slate-900 text-sky-300 text-[10px]">
-                        SSL/TLS Port 443
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 5: System Requirements */}
-              {activeTab === 'requirements' && (
-                <div className="space-y-6 animate-in fade-in duration-300">
-                  <div className="max-w-2xl">
-                    <h3 className="text-xl font-black text-[#0d0d0e] mb-2">System &amp; Hardware Requirements</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Minimum and recommended specifications for reliable production operation.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200">
-                      <div className="font-mono font-bold text-sky-600 uppercase tracking-wider mb-2">Server Environment</div>
-                      <h4 className="text-sm font-black text-[#0d0d0e] mb-3">Host Specifications</h4>
-                      <ul className="space-y-2 text-slate-600">
-                        <li className="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
-                          <span className="font-medium text-slate-500">Operating System</span>
-                          <span className="font-bold text-slate-900 font-mono">Ubuntu 22.04 LTS / Debian 12</span>
-                        </li>
-                        <li className="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
-                          <span className="font-medium text-slate-500">CPU Compute</span>
-                          <span className="font-bold text-slate-900 font-mono">2 vCPU (Min) / 4 vCPU (Rec)</span>
-                        </li>
-                        <li className="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
-                          <span className="font-medium text-slate-500">Memory (RAM)</span>
-                          <span className="font-bold text-slate-900 font-mono">4 GB (Min) / 8 GB (Rec)</span>
-                        </li>
-                        <li className="flex items-center justify-between">
-                          <span className="font-medium text-slate-500">Storage</span>
-                          <span className="font-bold text-slate-900 font-mono">20 GB NVMe SSD Storage</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="p-5 rounded-2xl bg-[#fafafa] border border-slate-200">
-                      <div className="font-mono font-bold text-emerald-600 uppercase tracking-wider mb-2">Client Compatibility</div>
-                      <h4 className="text-sm font-black text-[#0d0d0e] mb-3">User Devices &amp; Browsers</h4>
-                      <ul className="space-y-2 text-slate-600">
-                        <li className="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
-                          <span className="font-medium text-slate-500">Web Browsers</span>
-                          <span className="font-bold text-slate-900 font-mono">Chrome 120+, Safari 17+, Edge, Firefox</span>
-                        </li>
-                        <li className="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
-                          <span className="font-medium text-slate-500">Desktop Platforms</span>
-                          <span className="font-bold text-slate-900 font-mono">Windows 10/11, macOS, Linux</span>
-                        </li>
-                        <li className="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
-                          <span className="font-medium text-slate-500">Mobile Compatibility</span>
-                          <span className="font-bold text-slate-900 font-mono">Android 10+, iOS 16+ Responsive</span>
-                        </li>
-                        <li className="flex items-center justify-between">
-                          <span className="font-medium text-slate-500">Network Protocols</span>
-                          <span className="font-bold text-slate-900 font-mono">HTTPS (Port 443) &amp; WSS</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-            </div>
+            <ProductTechnicalTabs
+              product={product}
+              matchedDemo={matchedDemo}
+              onOpenLiveDemo={handleOpenLiveDemo}
+            />
 
             {/* ENGINEERING DESK BOTTOM CALLOUT */}
-            <div className="bg-[#0d0d0e] text-white rounded-[32px] sm:rounded-[40px] p-8 sm:p-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="max-w-xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-wider mb-3">
-                  <Sparkles className="w-3 h-3" /> DIRECT ARCHITECT ENGAGEMENT
-                </div>
-                <h3 className="text-2xl font-black tracking-tight mb-2">
-                  Need a customized enterprise rollout or data migration?
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Our core engineering team can configure dedicated VPS instances, integrate custom payment methods, or conduct an architecture review for your company.
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-                <Link
-                  href="/support"
-                  className="px-5 py-3 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors text-center shadow-sm flex items-center justify-center gap-1.5"
-                >
-                  <Headphones className="w-3.5 h-3.5" />
-                  <span>Support Desk</span>
-                </Link>
-                <Link
-                  href={`/get-quote?product=${encodeURIComponent(product.name)}`}
-                  className="px-5 py-3 rounded-full bg-white hover:bg-sky-50 text-slate-900 font-mono font-bold text-xs uppercase tracking-wider transition-colors text-center shadow-sm flex items-center justify-center gap-1.5"
-                >
-                  <span>Request Custom Quote</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
+            <ProductEngineeringCallout productName={product.name} />
 
           </div>
         )}

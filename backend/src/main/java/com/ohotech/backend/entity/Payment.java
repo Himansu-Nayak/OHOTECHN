@@ -34,6 +34,12 @@ public class Payment {
 
     private String razorpaySignature;
 
+    @Column(name = "cashfree_order_id")
+    private String cashfreeOrderId;
+
+    @Column(name = "cashfree_payment_id")
+    private String cashfreePaymentId;
+
     @Column(nullable = false)
     private BigDecimal amount;
 

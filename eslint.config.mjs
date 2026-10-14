@@ -22,6 +22,7 @@ const eslintConfig = defineConfig([
     "backend/**",
     "node_modules/**",
     ".qodo/**",
+    ".agents/**",
     "scratch/**",
     "scripts/**",
     "src/generated/**",

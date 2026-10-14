@@ -127,6 +127,7 @@ public class PaymentGatewaySecurityTests {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[?(@.providerId == 'RAZORPAY')].implemented").value(true))
+                .andExpect(jsonPath("$.data[?(@.providerId == 'CASHFREE')].implemented").value(true))
                 .andExpect(jsonPath("$.data[?(@.providerId == 'BANK_TRANSFER')].implemented").value(true))
                 .andExpect(jsonPath("$.data[?(@.providerId == 'COD')].implemented").value(true))
                 .andExpect(jsonPath("$.data[?(@.providerId == 'STRIPE')].implemented").value(false))
