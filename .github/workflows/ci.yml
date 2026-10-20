@@ -1,0 +1,73 @@
+name: OHO TECH — Continuous Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-ci:
+    name: Backend CI (Java 21 / Spring Boot 4.1)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up OpenJDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run Backend Regression & Email Tests
+        run: |
+          mvn test -Dtest=EmailTemplateServiceTest,AuthSecurityTests,ProductOrderInvoiceTests --batch-mode
+
+      - name: Package Backend Application JAR
+        run: |
+          mvn package -DskipTests --batch-mode
+
+      - name: Archive Surefire Test Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-surefire-reports
+          path: backend/target/surefire-reports/
+          retention-days: 14
+
+  frontend-ci:
+    name: Frontend CI (Next.js 16 / TypeScript 5)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: TypeScript Type Check
+        run: npx tsc --noEmit
+
+      - name: ESLint Code Quality
+        run: npm run lint -- --quiet
+
+      - name: Next.js Production Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_APP_URL: https://ohotechn.com
+          NEXT_PUBLIC_API_URL: https://api.ohotechn.com

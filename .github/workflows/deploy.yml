@@ -1,0 +1,113 @@
+name: OHO TECH — Hostinger VPS Production Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: 'Target Deployment Environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+      run_smoke_tests:
+        description: 'Run post-deployment smoke tests'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy-production:
+    name: Deploy to Hostinger VPS (srv2000528)
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://ohotechn.com
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Execute Verified Production Deployment via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOSTINGER_VPS_HOST }}
+          username: ${{ secrets.HOSTINGER_VPS_USER }}
+          key: ${{ secrets.HOSTINGER_VPS_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_VPS_PORT || 22 }}
+          script_stop: true
+          envs: GITHUB_SHA
+          script: |
+            set -euo pipefail
+            echo "=========================================================="
+            echo "  OHO TECH VPS DEPLOYMENT GATE — COMMIT: ${GITHUB_SHA}"
+            echo "=========================================================="
+            
+            # 1. PRE-DEPLOY DATABASE SNAPSHOT
+            echo "[1/6] Generating encrypted pre-deploy database dump..."
+            if [ -x /usr/local/sbin/ohotech-db-backup.sh ]; then
+              sudo /usr/local/sbin/ohotech-db-backup.sh || echo "WARN: Database backup script exited non-zero"
+            fi
+            
+            # 2. UPDATE CANONICAL CODE REPOSITORY
+            echo "[2/6] Checking out release commit ${GITHUB_SHA}..."
+            DEPLOY_DIR="/opt/ohotech"
+            SOURCE_DIR="/opt/oho-tech/source"
+            if [ ! -d "$SOURCE_DIR" ]; then
+              SOURCE_DIR="/home/ohotech/oho_tech"
+            fi
+            
+            cd "$SOURCE_DIR"
+            git fetch origin
+            git checkout "${GITHUB_SHA}"
+            
+            # 3. BUILD & RESTART SPRING BOOT BACKEND
+            echo "[3/6] Building Spring Boot application JAR..."
+            cd "$SOURCE_DIR/backend"
+            mvn clean package -DskipTests --batch-mode
+            
+            echo "[4/6] Restarting backend service..."
+            # Copy built JAR to target deployment directory if separate
+            if [ -f "$SOURCE_DIR/backend/target/backend-0.0.1-SNAPSHOT.jar" ]; then
+              sudo cp "$SOURCE_DIR/backend/target/backend-0.0.1-SNAPSHOT.jar" "$DEPLOY_DIR/backend/backend.jar" || true
+            fi
+            sudo systemctl restart ohotech-backend.service
+            
+            # Wait for backend health
+            sleep 8
+            sudo systemctl is-active --quiet ohotech-backend.service || {
+              echo "ERROR: ohotech-backend.service failed to activate!"
+              sudo journalctl -u ohotech-backend.service -n 50 --no-pager
+              exit 1
+            }
+            
+            # 4. BUILD & RESTART NEXT.JS FRONTEND
+            echo "[5/6] Building Next.js frontend..."
+            cd "$SOURCE_DIR"
+            npm ci --prefer-offline || npm install
+            npm run build
+            
+            echo "[6/6] Reloading PM2 frontend cluster..."
+            pm2 reload oho_tech --update-env || pm2 restart oho_tech
+            
+            echo "=========================================================="
+            echo "  DEPLOYMENT SUCCESSFUL — DEPLOYED COMMIT: ${GITHUB_SHA}"
+            echo "=========================================================="
+
+      - name: Verify Live Production Health & Smoke Checks
+        if: ${{ inputs.run_smoke_tests }}
+        run: |
+          echo "Running public HTTPS smoke checks against production..."
+          # Public Homepage Check
+          curl -f -s -I https://ohotechn.com | head -n 1
+          # Public API Catalog Check
+          curl -f -s https://api.ohotechn.com/api/products | head -c 200
+          echo ""
+          echo "All production smoke tests passed successfully!"
