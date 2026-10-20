@@ -70,6 +70,7 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject(subject);
             String plainText = htmlContent == null ? "" : htmlContent
+                    .replaceAll("(?is)<(style|script)\\b[^>]*>.*?</\\1>", " ")
                     .replaceAll("(?i)<br\\s*/?>", "\n")
                     .replaceAll("(?i)</(p|div|li|tr|h[1-6])>", "\n")
                     .replaceAll("<[^>]*>", " ")
