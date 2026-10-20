@@ -89,7 +89,7 @@ public class AuthService {
         try {
             notificationService.createNotification(
                     savedUser.getId(),
-                    "Welcome to OHO TECHN!",
+                    "Welcome to OHO TECH!",
                     "Your account has been created successfully. Explore our software catalog to activate free trials & licenses.",
                     com.ohotech.backend.entity.NotificationType.SUCCESS,
                     com.ohotech.backend.entity.NotificationCategory.SYSTEM,
@@ -98,7 +98,7 @@ public class AuthService {
 
             if (savedUser.getEmail() != null) {
                 String htmlBody = emailTemplateService.buildWelcomeEmail(savedUser.getName());
-                emailService.sendHtmlEmail(savedUser.getEmail(), "Welcome to OHO TECHN", htmlBody);
+                emailService.sendHtmlEmail(savedUser.getEmail(), "Welcome to OHO TECH", htmlBody);
             }
         } catch (Exception e) {
             // Non-blocking notification failure
@@ -451,7 +451,7 @@ public class AuthService {
             try {
                 notificationService.createNotification(
                         user.getId(),
-                        "Welcome to OHO TECHN!",
+                        "Welcome to OHO TECH!",
                         "Your account has been created successfully via Firebase Authentication.",
                         com.ohotech.backend.entity.NotificationType.SUCCESS,
                         com.ohotech.backend.entity.NotificationCategory.SYSTEM,
@@ -459,7 +459,7 @@ public class AuthService {
                 );
                 if (user.getEmail() != null) {
                     String htmlBody = emailTemplateService.buildWelcomeEmail(user.getName());
-                    emailService.sendHtmlEmail(user.getEmail(), "Welcome to OHO TECHN", htmlBody);
+                    emailService.sendHtmlEmail(user.getEmail(), "Welcome to OHO TECH", htmlBody);
                 }
             } catch (Exception e) {
                 // Non-blocking notification
