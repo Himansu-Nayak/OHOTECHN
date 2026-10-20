@@ -86,6 +86,8 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
+        // Keep in-app notification and welcome email independent: a notification failure
+        // must never prevent a newly registered customer from receiving their welcome email.
         try {
             notificationService.createNotification(
                     savedUser.getId(),
@@ -95,13 +97,19 @@ public class AuthService {
                     com.ohotech.backend.entity.NotificationCategory.SYSTEM,
                     "/products"
             );
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(AuthService.class)
+                    .warn("Could not create registration notification for user {}: {}", savedUser.getId(), e.getMessage());
+        }
 
-            if (savedUser.getEmail() != null) {
+        if (savedUser.getEmail() != null && !savedUser.getEmail().isBlank()) {
+            try {
                 String htmlBody = emailTemplateService.buildWelcomeEmail(savedUser.getName());
                 emailService.sendHtmlEmail(savedUser.getEmail(), "Welcome to OHO TECH", htmlBody);
+            } catch (Exception e) {
+                org.slf4j.LoggerFactory.getLogger(AuthService.class)
+                        .error("Could not queue welcome email for user {}: {}", savedUser.getId(), e.getMessage());
             }
-        } catch (Exception e) {
-            // Non-blocking notification failure
         }
 
         auditService.logUserEvent(savedUser, "USER_REGISTERED", "User", String.valueOf(savedUser.getId()),
