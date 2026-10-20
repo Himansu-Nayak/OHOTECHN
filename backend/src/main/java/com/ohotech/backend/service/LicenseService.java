@@ -1,6 +1,7 @@
 package com.ohotech.backend.service;
 
 import com.ohotech.backend.dto.DeviceActivationRequest;
+import com.ohotech.backend.dto.LicensePublicDto;
 import com.ohotech.backend.entity.*;
 import com.ohotech.backend.exception.BadRequestException;
 import com.ohotech.backend.exception.ResourceNotFoundException;
@@ -60,6 +61,28 @@ public class LicenseService {
                 .orElseThrow(() -> new ResourceNotFoundException("License", "licenseKey", licenseKey));
         checkAndUpdateExpiry(license);
         return license;
+    }
+
+    @Transactional
+    public LicensePublicDto getLicensePublicByKey(String licenseKey) {
+        License license = getLicenseByKey(licenseKey);
+        return mapToPublicDto(license);
+    }
+
+    public LicensePublicDto mapToPublicDto(License license) {
+        if (license == null) return null;
+        return LicensePublicDto.builder()
+                .licenseKey(license.getLicenseKey())
+                .productId(license.getProduct() != null ? license.getProduct().getId() : null)
+                .productName(license.getProduct() != null ? license.getProduct().getName() : null)
+                .productPlanId(license.getProductPlan() != null ? license.getProductPlan().getId() : null)
+                .productPlanName(license.getProductPlan() != null ? license.getProductPlan().getName() : null)
+                .status(license.getStatus())
+                .activationLimit(license.getActivationLimit())
+                .activationCount(license.getActivationCount())
+                .issuedAt(license.getIssuedAt())
+                .expiresAt(license.getExpiresAt())
+                .build();
     }
 
     @Transactional

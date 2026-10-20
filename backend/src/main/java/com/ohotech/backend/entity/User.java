@@ -1,5 +1,6 @@
 package com.ohotech.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class User {
     @Column(name = "firebase_uid", unique = true)
     private String firebaseUid;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String passwordHash;
 

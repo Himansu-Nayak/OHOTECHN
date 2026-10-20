@@ -61,10 +61,12 @@ export async function POST(request: Request) {
       );
     }
 
+    const recipientEmail = process.env.QUOTE_RECIPIENT_EMAIL || 'hello@ohotech.com';
+
     if (resend) {
       const { data, error } = await resend.emails.send({
         from: fromEmail,
-        to: ['kampainfraa@gmail.com'],
+        to: [recipientEmail],
         replyTo: email.trim(),
         subject: `[OHO TECH] ${escapeHtml(finalSubject)} from ${escapeHtml(name)}`,
         html: `

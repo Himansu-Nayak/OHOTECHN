@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, KeyRound, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, ShieldCheck, ArrowLeft, RefreshCw } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
 import { forgotPasswordApi, verifyResetOtpApi, resetPasswordApi } from '@/api/auth';
+import { Button, Card } from '@/components/ui';
 
 function ForgotPasswordContent() {
   const router = useRouter();
@@ -153,7 +154,7 @@ function ForgotPasswordContent() {
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
       <main className="max-w-md w-full mx-auto" id="forgot-password-main">
         
-        <div className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-10 shadow-sm relative overflow-hidden">
+        <Card className="p-8 sm:p-10 shadow-sm relative overflow-hidden">
           
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-[11px] font-bold uppercase tracking-wider mb-3">
@@ -203,14 +204,17 @@ function ForgotPasswordContent() {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                isLoading={isLoading}
+                variant="primary"
+                size="lg"
+                className="w-full"
+                rightIcon={<ArrowRight className="w-4 h-4" />}
               >
-                <span>{isLoading ? 'Sending Request...' : 'Send Password Reset OTP'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                Send Password Reset OTP
+              </Button>
             </form>
           )}
 
@@ -251,14 +255,17 @@ function ForgotPasswordContent() {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                isLoading={isLoading}
+                variant="primary"
+                size="lg"
+                className="w-full"
+                rightIcon={<ArrowRight className="w-4 h-4" />}
               >
-                <span>{isLoading ? 'Verifying...' : 'Verify OTP Code'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                Verify OTP Code
+              </Button>
 
               <div className="pt-2 text-center">
                 <button
@@ -329,14 +336,17 @@ function ForgotPasswordContent() {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                isLoading={isLoading}
+                variant="primary"
+                size="lg"
+                className="w-full"
+                rightIcon={<ArrowRight className="w-4 h-4" />}
               >
-                <span>{isLoading ? 'Updating Password...' : 'Set New Password'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                Set New Password
+              </Button>
             </form>
           )}
 
@@ -349,13 +359,15 @@ function ForgotPasswordContent() {
               <p className="text-xs text-slate-600 font-mono">
                 Your password has been changed successfully. You can now log in using your new credentials.
               </p>
-              <button
+              <Button
                 type="button"
                 onClick={() => router.push('/login')}
-                className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                variant="primary"
+                size="lg"
+                className="w-full"
               >
                 Return To Sign In
-              </button>
+              </Button>
             </div>
           )}
 
@@ -367,7 +379,7 @@ function ForgotPasswordContent() {
             </Link>
           </div>
 
-        </div>
+        </Card>
 
       </main>
     </div>

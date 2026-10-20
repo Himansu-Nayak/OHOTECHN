@@ -14,6 +14,7 @@ import { initiateUpiPaymentApi, submitUtrApi } from '@/api/payments';
 import { Order, OrderStatus, UpiInitiateResponse } from '@/api/types';
 import { cn } from '@/lib/utils';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { Card, Button, EmptyState, Dialog } from '@/components/ui';
 
 export default function OrdersPage() {
   const { user } = useAuth();
@@ -148,17 +149,16 @@ export default function OrdersPage() {
   if (!user) {
     return (
       <div className="bg-[#f7f7f5] min-h-screen pb-16 pt-28 sm:pt-36 px-4">
-        <div className="max-w-md mx-auto bg-white border-2 border-slate-300 rounded-[32px] p-8 text-center shadow-sm">
+        <Card className="max-w-md mx-auto p-8 text-center shadow-sm">
           <Package className="w-12 h-12 text-sky-600 mx-auto mb-4" />
           <h1 className="text-2xl font-black text-[#0d0d0e] mb-2">Login Required</h1>
           <p className="text-xs text-slate-500 mb-6">Please sign in to access your order history.</p>
-          <Link
-            href="/login"
-            className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider inline-block"
-          >
-            Sign In
+          <Link href="/login" className="inline-block">
+            <Button variant="primary" size="md">
+              Sign In
+            </Button>
           </Link>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -195,19 +195,16 @@ export default function OrdersPage() {
             ))}
           </div>
         ) : orders.length === 0 ? (
-          <div className="bg-white border-2 border-slate-300 rounded-[32px] p-12 text-center my-6 shadow-sm">
-            <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h2 className="text-xl font-extrabold text-[#0d0d0e] mb-2">No Orders Placed Yet</h2>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
-              You haven't placed any software orders yet. Browse our turnkey products catalog to get started.
-            </p>
-            <Link
-              href="/products"
-              className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider hover:bg-sky-600 transition-colors inline-block"
-            >
-              Explore Products
-            </Link>
-          </div>
+          <EmptyState
+            icon={<Package className="w-8 h-8 text-slate-400" />}
+            title="No Orders Placed Yet"
+            description="You haven't placed any software orders yet. Browse our turnkey products catalog to get started."
+            action={
+              <Link href="/products">
+                <Button variant="primary" size="sm">Explore Products</Button>
+              </Link>
+            }
+          />
         ) : (
           <div className="space-y-6">
             {orders.map((order) => {
@@ -225,9 +222,9 @@ export default function OrdersPage() {
               }).format(order.totalAmount || 0);
 
               return (
-                <div
+                <Card
                   key={order.id}
-                  className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm transition-all hover:border-sky-500"
+                  className="p-6 sm:p-8 shadow-sm transition-all hover:border-sky-500"
                 >
                   {/* Order Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
@@ -303,17 +300,20 @@ export default function OrdersPage() {
                     </div>
 
                     {order.status === 'PENDING' && (
-                      <button
+                      <Button
+                        type="button"
                         onClick={() => handleOpenPayModal(order)}
-                        className="w-full sm:w-auto min-h-[44px] py-2.5 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-sm cursor-pointer"
+                        variant="primary"
+                        size="md"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                        leftIcon={<QrCode className="w-4 h-4" />}
                       >
-                        <QrCode className="w-4 h-4" />
-                        <span>{order.payments?.[0]?.transactionReference ? 'Update Payment / UTR' : 'Complete Payment (UPI)'}</span>
-                      </button>
+                        {order.payments?.[0]?.transactionReference ? 'Update Payment / UTR' : 'Complete Payment (UPI)'}
+                      </Button>
                     )}
                   </div>
 
-                </div>
+                </Card>
               );
             })}
           </div>

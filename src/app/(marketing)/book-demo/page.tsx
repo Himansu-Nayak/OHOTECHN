@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
 import { submitContactApi } from '@/api/contact';
 import { useToast } from '@/context/ToastContext';
+import { Button, Card } from '@/components/ui';
 
 const industriesList = [
   'Healthcare & EMR', 'Education & Campus', 'Retail & POS', 'Financial & NBFC',
@@ -121,12 +122,15 @@ export default function BookDemoPage() {
                     Direct admin &amp; user login credentials available instantly.
                   </p>
                 </div>
-                <Link
-                  href="/products"
-                  className="w-full sm:w-auto px-5 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold text-xs uppercase tracking-wider transition-all shadow-md shrink-0 text-center inline-flex items-center justify-center gap-2"
-                >
-                  <span>Explore 28 Live Demos</span>
-                  <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                <Link href="/products" className="shrink-0">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-extrabold uppercase tracking-wider"
+                    rightIcon={<ArrowRight className="w-3.5 h-3.5 shrink-0" />}
+                  >
+                    Explore 28 Live Demos
+                  </Button>
                 </Link>
               </div>
 
@@ -192,14 +196,18 @@ export default function BookDemoPage() {
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   id="demo-submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg disabled:opacity-70"
+                  isLoading={isSubmitting}
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
                 >
-                  {isSubmitting ? 'Booking Demo...' : 'Confirm Demo Session →'}
-                </button>
+                  Confirm Demo Session
+                </Button>
               </form>
             </div>
 

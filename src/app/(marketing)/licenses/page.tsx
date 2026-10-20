@@ -8,6 +8,7 @@ import { useToast } from '@/context/ToastContext';
 import { getMyLicensesApi, activateDeviceApi, deactivateDeviceApi, getLicenseDevicesApi } from '@/api/licenses';
 import { License, DeviceActivation } from '@/api/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { Card, Button, EmptyState } from '@/components/ui';
 
 export default function LicensesPage() {
   const { user } = useAuth();
@@ -108,14 +109,16 @@ export default function LicensesPage() {
   if (!user) {
     return (
       <div className="bg-[#f7f7f5] min-h-screen pb-16 pt-28 sm:pt-36 px-4">
-        <div className="max-w-md mx-auto bg-white border-2 border-slate-300 rounded-[32px] p-8 text-center shadow-sm">
+        <Card className="max-w-md mx-auto p-8 text-center shadow-sm">
           <Key className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
           <h1 className="text-2xl font-black text-[#0d0d0e] mb-2">Sign In Required</h1>
           <p className="text-xs text-slate-500 mb-6">Please sign in to view your software licenses.</p>
-          <Link href="/login" className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider inline-block">
-            Sign In
+          <Link href="/login" className="inline-block">
+            <Button variant="primary" size="md">
+              Sign In
+            </Button>
           </Link>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -147,20 +150,20 @@ export default function LicensesPage() {
             ))}
           </div>
         ) : licenses.length === 0 ? (
-          <div className="bg-white border-2 border-slate-300 rounded-[32px] p-12 text-center my-6 shadow-sm">
-            <Key className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h2 className="text-xl font-extrabold text-[#0d0d0e] mb-2">No Active Licenses Found</h2>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
-              You do not have any active software license keys. Purchase a product or start a free trial.
-            </p>
-            <Link href="/products" className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider hover:bg-sky-600 transition-colors inline-block">
-              Browse Products
-            </Link>
-          </div>
+          <EmptyState
+            icon={<Key className="w-8 h-8 text-slate-400" />}
+            title="No Active Licenses Found"
+            description="You do not have any active software license keys. Purchase a product or start a free trial."
+            action={
+              <Link href="/products">
+                <Button variant="primary" size="sm">Browse Products</Button>
+              </Link>
+            }
+          />
         ) : (
           <div className="space-y-6">
             {licenses.map((license) => (
-              <div key={license.id} className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm">
+              <Card key={license.id} className="p-6 sm:p-8 shadow-sm">
                 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4">
                   <div className="min-w-0 flex-1">
@@ -186,14 +189,15 @@ export default function LicensesPage() {
                   <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-0 border-slate-100">
                     <StatusBadge status={license.status} showDot size="sm" />
 
-                    <button
+                    <Button
                       type="button"
+                      variant="primary"
+                      size="sm"
                       onClick={() => handleOpenDevices(license)}
-                      className="min-h-[44px] py-2.5 px-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-mono font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      leftIcon={<Laptop className="w-3.5 h-3.5" />}
                     >
-                      <Laptop className="w-3.5 h-3.5" />
-                      <span>Devices ({license.activationCount}/{license.activationLimit})</span>
-                    </button>
+                      Devices ({license.activationCount}/{license.activationLimit})
+                    </Button>
                   </div>
                 </div>
 
@@ -212,7 +216,7 @@ export default function LicensesPage() {
                   </div>
                 </div>
 
-              </div>
+              </Card>
             ))}
           </div>
         )}

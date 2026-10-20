@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { getMyEntitledProductsApi, getEntitledProductReleasesApi, downloadReleaseApi } from '@/api/releases';
 import { ProductDto, SoftwareReleaseDto, Platform } from '@/api/types';
+import { Card, Button, EmptyState } from '@/components/ui';
 
 export default function DownloadsPage() {
   const { user } = useAuth();
@@ -103,14 +104,16 @@ export default function DownloadsPage() {
   if (!user) {
     return (
       <div className="bg-[#f7f7f5] min-h-screen pb-16 pt-28 sm:pt-36 px-4">
-        <div className="max-w-md mx-auto bg-white border-2 border-slate-300 rounded-[32px] p-8 text-center shadow-sm">
+        <Card className="max-w-md mx-auto p-8 text-center shadow-sm">
           <Download className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
           <h1 className="text-2xl font-black text-[#0d0d0e] mb-2">Sign In Required</h1>
           <p className="text-xs text-slate-500 mb-6">Please sign in to access your authorized digital downloads.</p>
-          <Link href="/login" className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider inline-block">
-            Sign In
+          <Link href="/login" className="inline-block">
+            <Button variant="primary" size="md">
+              Sign In
+            </Button>
           </Link>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -138,16 +141,16 @@ export default function DownloadsPage() {
             <div className="h-4 bg-slate-100 rounded-lg w-1/2 mx-auto" />
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-white border-2 border-slate-300 rounded-[32px] p-12 text-center my-6 shadow-sm">
-            <Download className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h2 className="text-xl font-extrabold text-[#0d0d0e] mb-2">No Downloads Available</h2>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
-              You currently do not have an active subscription or valid license entitlement for any software products.
-            </p>
-            <Link href="/products" className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider hover:bg-sky-600 transition-colors inline-block">
-              Browse Products Catalog
-            </Link>
-          </div>
+          <EmptyState
+            icon={<Download className="w-8 h-8 text-slate-400" />}
+            title="No Downloads Available"
+            description="You currently do not have an active subscription or valid license entitlement for any software products."
+            action={
+              <Link href="/products">
+                <Button variant="primary" size="sm">Browse Products Catalog</Button>
+              </Link>
+            }
+          />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
@@ -208,7 +211,7 @@ export default function DownloadsPage() {
               ) : (
                 <div className="space-y-4">
                   {filteredReleases.map((release) => (
-                    <div key={release.id} className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm">
+                    <Card key={release.id} className="p-6 sm:p-8 shadow-sm">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -225,15 +228,18 @@ export default function DownloadsPage() {
                           </div>
                         </div>
 
-                        <button
+                        <Button
                           type="button"
                           onClick={() => handleDownload(selectedProductId!, release.id, release.fileName)}
                           disabled={downloadingReleaseId === release.id}
-                          className="w-full sm:w-auto min-h-[44px] py-2.5 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+                          isLoading={downloadingReleaseId === release.id}
+                          variant="primary"
+                          size="md"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold"
+                          leftIcon={<Download className="w-4 h-4" />}
                         >
-                          <Download className="w-4 h-4" />
-                          <span>{downloadingReleaseId === release.id ? 'Downloading...' : 'Download Installer'}</span>
-                        </button>
+                          Download Installer
+                        </Button>
                       </div>
 
                       {release.releaseNotes && (
@@ -242,7 +248,7 @@ export default function DownloadsPage() {
                           <p className="text-slate-600 leading-relaxed font-mono">{release.releaseNotes}</p>
                         </div>
                       )}
-                    </div>
+                    </Card>
                   ))}
                 </div>
               )}

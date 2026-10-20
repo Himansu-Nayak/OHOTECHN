@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { CheckCircle2, Sparkles, ArrowRight, Handshake, ShieldCheck, Users } from 'lucide-react';
+import { Card, Button } from '@/components/ui';
 import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
 
@@ -75,13 +76,15 @@ export default async function PartnerPage() {
             </p>
             
             <div className="mt-8 flex items-center justify-center gap-4">
-              <Link
-                href="/contact?subject=Partner Application"
-                id="partner-hero-cta"
-                className="px-8 py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg inline-flex items-center gap-2"
-              >
-                <span>Apply to Become a Partner</span>
-                <ArrowRight className="w-4 h-4" />
+              <Link href="/contact?subject=Partner Application" id="partner-hero-cta">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="rounded-full uppercase font-extrabold text-xs sm:text-sm tracking-wider"
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                >
+                  Apply to Become a Partner
+                </Button>
               </Link>
             </div>
           </div>
@@ -106,8 +109,9 @@ export default async function PartnerPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {partnerTypes.map((type, index) => (
-              <div
+              <Card
                 key={index}
+                variant="default"
                 className="p-8 bg-[#fafafa] border-2 border-slate-200 hover:border-sky-500 rounded-3xl transition-all duration-300 flex flex-col justify-between hover:shadow-lg group"
               >
                 <div>
@@ -136,13 +140,16 @@ export default async function PartnerPage() {
                   </div>
                 </div>
 
-                <Link
-                  href="/contact?subject=Partner Application"
-                  className="w-full py-3.5 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all text-center"
-                >
-                  Apply for {type.name.split(' ')[0]}
+                <Link href="/contact?subject=Partner Application" className="w-full">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className="w-full uppercase font-extrabold text-xs tracking-wider"
+                  >
+                    Apply for {type.name.split(' ')[0]}
+                  </Button>
                 </Link>
-              </div>
+              </Card>
             ))}
           </div>
 
@@ -155,12 +162,15 @@ export default async function PartnerPage() {
             <p className="text-sm sm:text-base text-slate-300 mb-8 max-w-xl mx-auto">
               Fill out our partner inquiry form and our partnership lead will contact you within 24 hours.
             </p>
-            <Link
-              href="/contact?subject=Partner Application"
-              className="px-8 py-4 rounded-full bg-white hover:bg-sky-400 text-[#0d0d0e] font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg inline-flex items-center gap-2"
-            >
-              <span>Submit Partner Inquiry</span>
-              <ArrowRight className="w-4 h-4" />
+            <Link href="/contact?subject=Partner Application">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="rounded-full uppercase font-extrabold text-xs sm:text-sm tracking-wider"
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+              >
+                Submit Partner Inquiry
+              </Button>
             </Link>
           </div>
         </section>

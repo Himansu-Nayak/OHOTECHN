@@ -2,6 +2,7 @@ package com.ohotech.backend.controller;
 
 import com.ohotech.backend.dto.ApiResponse;
 import com.ohotech.backend.dto.DeviceActivationRequest;
+import com.ohotech.backend.dto.LicensePublicDto;
 import com.ohotech.backend.entity.DeviceActivation;
 import com.ohotech.backend.entity.License;
 import com.ohotech.backend.entity.LicenseStatus;
@@ -40,8 +41,8 @@ public class LicenseController {
     }
 
     @GetMapping("/licenses/key/{licenseKey}")
-    public ResponseEntity<ApiResponse<License>> getLicenseByKey(@PathVariable String licenseKey) {
-        License license = licenseService.getLicenseByKey(licenseKey);
+    public ResponseEntity<ApiResponse<LicensePublicDto>> getLicenseByKey(@PathVariable String licenseKey) {
+        LicensePublicDto license = licenseService.getLicensePublicByKey(licenseKey);
         return ResponseEntity.ok(ApiResponse.success("License details retrieved", license));
     }
 

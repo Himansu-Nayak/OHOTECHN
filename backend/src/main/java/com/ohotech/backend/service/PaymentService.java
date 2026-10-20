@@ -71,6 +71,9 @@ public class PaymentService {
     @Value("${app.payment.razorpay-enabled:true}")
     private boolean razorpayEnabled;
 
+    @Value("${app.payment.demo-payment-enabled:false}")
+    private boolean demoPaymentEnabled;
+
     public boolean razorpayConfigured() {
         return razorpayKeyId != null && razorpayKeyId.startsWith("rzp_")
                 && razorpayKeySecret != null && !razorpayKeySecret.isBlank()
@@ -285,6 +288,11 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponseDto processDemoPayment(Long userId, Long orderId) {
+        if (!demoPaymentEnabled) {
+            logger.warn("Security Alert: User #{} attempted to use disabled demo payment endpoint for Order #{}", userId, orderId);
+            throw new BadRequestException("Demo payment gateway is disabled in this environment. Please choose a real payment method.");
+        }
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 

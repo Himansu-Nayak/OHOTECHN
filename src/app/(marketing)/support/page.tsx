@@ -10,6 +10,7 @@ import {
   Building2, Phone, Mail, AlertTriangle, Check, ShieldCheck,
   FileText, ExternalLink, HelpCircle, Lock, UserCheck
 } from 'lucide-react';
+import { Card, Button, Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
@@ -293,63 +294,66 @@ export default function SupportPanelPage() {
           </div>
 
           <div className="flex items-center gap-2.5 shrink-0">
-            <button
+            <Button
+              variant="primary"
+              size="sm"
               onClick={() => setIsCreateModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-2 cursor-pointer"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               <span>{isStaff ? 'New Ticket' : 'Raise Support Ticket'}</span>
-            </button>
+            </Button>
 
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={fetchData}
               disabled={isLoading}
-              className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 transition-colors cursor-pointer"
+              className="p-2.5"
               title="Refresh Data"
             >
               <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Staff KPI Dashboard Cards */}
         {isStaff && stats && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
+            <Card variant="default" className="p-4 rounded-2xl border-2 border-slate-200 shadow-xs">
               <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 uppercase">
                 <span>Open Queue</span>
                 <Clock className="w-4 h-4 text-sky-600" />
               </div>
               <div className="text-2xl font-black text-slate-900 mt-1">{stats.openTickets}</div>
               <p className="text-[10px] text-slate-400 mt-0.5">Awaiting agent response</p>
-            </div>
+            </Card>
 
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
+            <Card variant="default" className="p-4 rounded-2xl border-2 border-slate-200 shadow-xs">
               <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 uppercase">
                 <span>In Progress</span>
                 <Headphones className="w-4 h-4 text-amber-600" />
               </div>
               <div className="text-2xl font-black text-slate-900 mt-1">{stats.inProgressTickets}</div>
               <p className="text-[10px] text-slate-400 mt-0.5">Under active engineering review</p>
-            </div>
+            </Card>
 
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
+            <Card variant="default" className="p-4 rounded-2xl border-2 border-slate-200 shadow-xs">
               <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 uppercase">
                 <span>Urgent Issues</span>
                 <AlertTriangle className="w-4 h-4 text-rose-600" />
               </div>
               <div className="text-2xl font-black text-rose-600 mt-1">{stats.urgentTickets}</div>
               <p className="text-[10px] text-rose-500 mt-0.5">High-priority SLA alerts</p>
-            </div>
+            </Card>
 
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
+            <Card variant="default" className="p-4 rounded-2xl border-2 border-slate-200 shadow-xs">
               <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 uppercase">
                 <span>Resolved Today</span>
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="text-2xl font-black text-emerald-600 mt-1">{stats.resolvedToday}</div>
               <p className="text-[10px] text-slate-400 mt-0.5">Successfully closed queries</p>
-            </div>
+            </Card>
           </div>
         )}
 
@@ -523,13 +527,15 @@ export default function SupportPanelPage() {
                           </td>
 
                           <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                            <button
+                            <Button
                               type="button"
+                              size="sm"
+                              variant="primary"
                               onClick={() => handleOpenTicket(t.id)}
-                              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] transition-colors cursor-pointer shadow-xs"
+                              className="text-[11px] py-1.5 px-3"
                             >
                               Open Thread
-                            </button>
+                            </Button>
                           </td>
                         </tr>
                       ))}
@@ -577,14 +583,16 @@ export default function SupportPanelPage() {
                     </div>
 
                     <div className="shrink-0 flex items-center gap-2">
-                      <button
+                      <Button
                         type="button"
+                        size="sm"
+                        variant="primary"
                         onClick={() => handleConvertEnquiry(enq.id)}
-                        className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                        leftIcon={<Headphones className="w-3.5 h-3.5" />}
+                        className="bg-sky-600 hover:bg-sky-700 text-white"
                       >
-                        <Headphones className="w-3.5 h-3.5" />
                         <span>Convert to Support Ticket</span>
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))
@@ -727,14 +735,17 @@ export default function SupportPanelPage() {
                   required
                 />
 
-                <button
+                <Button
                   type="submit"
+                  size="md"
+                  variant="primary"
                   disabled={isSubmittingReply || !replyMessage.trim()}
-                  className="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
+                  isLoading={isSubmittingReply}
+                  rightIcon={<Send className="w-4 h-4" />}
+                  className="px-5 py-3 rounded-2xl uppercase tracking-wider shrink-0"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Send</span>
-                </button>
+                  Send
+                </Button>
               </div>
             </form>
 
@@ -825,20 +836,25 @@ export default function SupportPanelPage() {
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 font-bold"
+                  className="rounded-xl font-bold"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
+                  variant="primary"
+                  size="sm"
                   disabled={isSubmittingCreate}
-                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold uppercase tracking-wider shadow-xs cursor-pointer"
+                  isLoading={isSubmittingCreate}
+                  className="rounded-xl uppercase tracking-wider"
                 >
-                  {isSubmittingCreate ? 'Registering...' : 'Register Ticket'}
-                </button>
+                  Register Ticket
+                </Button>
               </div>
             </form>
           </div>

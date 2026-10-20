@@ -21,6 +21,19 @@ export interface License {
   updatedAt?: string;
 }
 
+export interface LicensePublicDto {
+  licenseKey: string;
+  productId?: number;
+  productName?: string;
+  productPlanId?: number;
+  productPlanName?: string;
+  status: LicenseStatus;
+  activationLimit: number;
+  activationCount: number;
+  issuedAt?: string;
+  expiresAt?: string;
+}
+
 export interface DeviceActivation {
   id: number;
   licenseId?: number;

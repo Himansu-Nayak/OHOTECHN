@@ -7,6 +7,7 @@ import { ArrowRight, KeyRound, Mail, AlertCircle, CheckCircle2, ShieldCheck, Arr
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { sendOtpApi, verifyEmailOtpApi } from '@/api/auth';
+import { Button, Card } from '@/components/ui';
 
 function VerifyEmailContent() {
   const router = useRouter();
@@ -104,7 +105,7 @@ function VerifyEmailContent() {
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
       <main className="max-w-md w-full mx-auto" id="verify-email-main">
         
-        <div className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-10 shadow-sm relative overflow-hidden">
+        <Card className="p-8 sm:p-10 shadow-sm relative overflow-hidden">
           
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-[11px] font-bold uppercase tracking-wider mb-3">
@@ -154,14 +155,17 @@ function VerifyEmailContent() {
             </div>
 
             {!otpSent ? (
-              <button
+              <Button
                 type="button"
                 onClick={handleSendOtp}
                 disabled={isResending}
-                className="w-full py-3.5 rounded-full bg-slate-900 hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer disabled:opacity-50"
+                isLoading={isResending}
+                variant="primary"
+                size="md"
+                className="w-full"
               >
-                {isResending ? 'Sending OTP...' : 'Send Verification OTP'}
-              </button>
+                Send Verification OTP
+              </Button>
             ) : (
               <>
                 <div>
@@ -188,14 +192,17 @@ function VerifyEmailContent() {
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  isLoading={isLoading}
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
                 >
-                  <span>{isLoading ? 'Verifying OTP...' : 'Verify Email Address'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                  Verify Email Address
+                </Button>
 
                 <div className="pt-2 text-center">
                   <button
@@ -225,7 +232,7 @@ function VerifyEmailContent() {
             </Link>
           </div>
 
-        </div>
+        </Card>
 
       </main>
     </div>

@@ -2,6 +2,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { CheckCircle2, Sparkles, ArrowRight, ShieldCheck, Code2, Layers, TrendingUp } from 'lucide-react';
+import { Card, Button } from '@/components/ui';
 import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
 
@@ -137,12 +138,13 @@ export default async function PricingPage() {
               const Icon = model.icon;
 
               return (
-                <div
+                <Card
                   key={model.id}
+                  variant={model.highlighted ? 'dark' : 'default'}
                   className={`p-8 rounded-3xl border-2 flex flex-col justify-between transition-all duration-300 ${
                     model.highlighted
-                      ? 'bg-[#0d0d0e] text-white border-slate-700 shadow-2xl ring-2 ring-sky-400/30'
-                      : 'bg-[#fafafa] text-[#0d0d0e] border-slate-200 hover:border-sky-500 hover:shadow-lg'
+                      ? 'border-slate-700 shadow-2xl ring-2 ring-sky-400/30'
+                      : 'border-slate-200 hover:border-sky-500 hover:shadow-lg'
                   }`}
                 >
                   <div>
@@ -182,18 +184,17 @@ export default async function PricingPage() {
                   </div>
 
                   {/* CTA Link */}
-                  <Link
-                    href={model.href}
-                    className={`w-full py-4 rounded-full text-center font-extrabold text-xs uppercase tracking-wider transition-all shadow-md inline-flex items-center justify-center gap-2 ${
-                      model.highlighted
-                        ? 'bg-white hover:bg-sky-400 text-[#0d0d0e]'
-                        : 'bg-[#0d0d0e] hover:bg-sky-600 text-white'
-                    }`}
-                  >
-                    <span>{model.cta}</span>
-                    <ArrowRight className="w-4 h-4" />
+                  <Link href={model.href} className="w-full">
+                    <Button
+                      variant={model.highlighted ? 'secondary' : 'primary'}
+                      size="lg"
+                      className="w-full uppercase font-extrabold text-xs tracking-wider"
+                      rightIcon={<ArrowRight className="w-4 h-4" />}
+                    >
+                      {model.cta}
+                    </Button>
                   </Link>
-                </div>
+                </Card>
               );
             })}
           </div>
@@ -214,10 +215,10 @@ export default async function PricingPage() {
 
             <div className="space-y-6">
               {faqs.map((faq, index) => (
-                <div key={index} className="p-7 bg-[#fafafa] border-2 border-slate-200 rounded-3xl">
+                <Card key={index} variant="default" className="p-7 bg-[#fafafa] border-2 border-slate-200 rounded-3xl">
                   <h3 className="text-lg font-bold text-[#0d0d0e] mb-2">{faq.question}</h3>
                   <p className="text-xs text-slate-600 leading-relaxed">{faq.answer}</p>
-                </div>
+                </Card>
               ))}
             </div>
           </div>

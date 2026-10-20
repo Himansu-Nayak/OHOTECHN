@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { ApiResponse, DeviceActivation, License, LicenseStatus } from './types';
+import { ApiResponse, DeviceActivation, License, LicensePublicDto, LicenseStatus } from './types';
 
 export async function getMyLicensesApi(): Promise<ApiResponse<License[]>> {
   return apiClient<License[]>('/api/licenses/my', {
@@ -13,8 +13,8 @@ export async function getLicenseByIdApi(id: number | string): Promise<ApiRespons
   });
 }
 
-export async function getLicenseByKeyApi(licenseKey: string): Promise<ApiResponse<License>> {
-  return apiClient<License>(`/api/licenses/key/${encodeURIComponent(licenseKey)}`, {
+export async function getLicenseByKeyApi(licenseKey: string): Promise<ApiResponse<LicensePublicDto>> {
+  return apiClient<LicensePublicDto>(`/api/licenses/key/${encodeURIComponent(licenseKey)}`, {
     method: 'GET',
   });
 }

@@ -51,11 +51,11 @@ export default function ProductDetailPage() {
 
   // On-Page Amount & Demo Payment Section State
   const amountSectionRef = React.useRef<HTMLDivElement>(null);
-  const [demoCustomerName, setDemoCustomerName] = React.useState('Demo Customer');
-  const [demoCustomerEmail, setDemoCustomerEmail] = React.useState('customer@demo.ohotech.com');
-  const [demoContactPhone, setDemoContactPhone] = React.useState('+91 98765 43210');
-  const [demoShippingAddress, setDemoShippingAddress] = React.useState('Demo Software Hub, Block 4, Tech Enclave, Bhubaneswar, Odisha - 751024');
-  const [paymentMethod, setPaymentMethod] = React.useState<'DEMO' | 'UPI' | 'RAZORPAY'>('DEMO');
+  const [demoCustomerName, setDemoCustomerName] = React.useState(user?.name || '');
+  const [demoCustomerEmail, setDemoCustomerEmail] = React.useState(user?.email || '');
+  const [demoContactPhone, setDemoContactPhone] = React.useState(user?.phone || '');
+  const [demoShippingAddress, setDemoShippingAddress] = React.useState('');
+  const [paymentMethod, setPaymentMethod] = React.useState<'DEMO' | 'UPI' | 'RAZORPAY'>('UPI');
 
   const [isProcessingPayment, setIsProcessingPayment] = React.useState(false);
   const [paymentError, setPaymentError] = React.useState<string | null>(null);
@@ -228,8 +228,8 @@ export default function ProductDetailPage() {
 
       // 3. Create Order
       const orderRes = await createOrderApi({
-        shippingAddress: demoShippingAddress.trim() || 'Demo Software Hub, Bhubaneswar, Odisha',
-        contactPhone: demoContactPhone.trim() || '+91 98765 43210',
+        shippingAddress: demoShippingAddress.trim() || 'Enterprise Digital Deployment License',
+        contactPhone: demoContactPhone.trim() || (user?.phone || '+91 00000 00000'),
       });
 
       if (!orderRes.success || !orderRes.data) {
@@ -835,20 +835,20 @@ export default function ProductDetailPage() {
                         <div className="flex items-center justify-between">
                           <div className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                             <Building2 className="w-3.5 h-3.5 text-sky-600" />
-                            <span>Demo Customer Details (Pre-filled for Testing)</span>
+                            <span>Customer &amp; Delivery Details</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => {
-                              setDemoCustomerName('Demo Customer');
-                              setDemoCustomerEmail('customer@demo.ohotech.com');
-                              setDemoContactPhone('+91 98765 43210');
-                              setDemoShippingAddress('Demo Software Hub, Block 4, Tech Enclave, Bhubaneswar, Odisha - 751024');
-                              showToast('Demo details reset', 'info');
+                              setDemoCustomerName(user?.name || 'Enterprise Client');
+                              setDemoCustomerEmail(user?.email || 'client@ohotech.com');
+                              setDemoContactPhone(user?.phone || '+91 98765 43210');
+                              setDemoShippingAddress('OHO TECH Enterprise Suite, Technology Corridor, Bhubaneswar, Odisha - 751024');
+                              showToast('Sample delivery details loaded', 'info');
                             }}
                             className="text-[10px] font-mono font-bold text-sky-600 hover:underline flex items-center gap-1 cursor-pointer"
                           >
-                            <RefreshCw className="w-3 h-3" /> Reset Demo Info
+                            <RefreshCw className="w-3 h-3" /> Fill Sample Info
                           </button>
                         </div>
 
