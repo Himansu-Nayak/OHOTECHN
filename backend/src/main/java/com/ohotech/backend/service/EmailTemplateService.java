@@ -1,6 +1,7 @@
 package com.ohotech.backend.service;
 
 import com.ohotech.backend.entity.OtpPurpose;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -10,8 +11,23 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class EmailTemplateService {
 
-    private static final String BRAND_COLOR = "#0d0d0e";
-    private static final String ACCENT_COLOR = "#0284c7";
+    private static final String BRAND_COLOR = "#11112b";
+    private static final String ACCENT_COLOR = "#8b5cf6";
+
+    @Value("${app.frontend.url:https://ohotechn.com}")
+    private String frontendUrl;
+
+    private String safeName(String value) {
+        if (value == null || value.isBlank()) return "there";
+        return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                .replace("\"", "&quot;").replace("'", "&#39;");
+    }
+
+    private String siteUrl(String path) {
+        String base = frontendUrl == null || frontendUrl.isBlank() ? "https://ohotechn.com" : frontendUrl.trim();
+        while (base.endsWith("/")) base = base.substring(0, base.length() - 1);
+        return base + path;
+    }
 
     private String wrapTemplate(String title, String contentHtml) {
         return """
@@ -20,22 +36,22 @@ public class EmailTemplateService {
                 <head>
                   <meta charset="utf-8">
                   <style>
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f7f5; margin: 0; padding: 20px; color: #0d0d0e; }
-                    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 24px; border: 2px solid #e2e8f0; overflow: hidden; }
-                    .header { background: %s; color: #ffffff; padding: 30px 20px; text-align: center; }
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0b18; margin: 0; padding: 20px 10px; color: #f3f4f6; }
+                    .container { max-width: 600px; margin: 0 auto; background: #11112b; border-radius: 18px; border: 1px solid #292947; overflow: hidden; }
+                    .header { background: #171733; color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 1px solid #2b2b4a; }
                     .header h1 { margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
                     .header p { margin: 5px 0 0 0; font-size: 11px; opacity: 0.8; font-family: monospace; text-transform: uppercase; }
-                    .content { padding: 30px; font-size: 14px; line-height: 1.6; }
+                    .content { padding: 28px 24px; font-size: 14px; line-height: 1.7; color: #e5e7eb; }
                     .button { display: inline-block; padding: 14px 28px; background-color: %s; color: #ffffff !important; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0; }
-                    .box { background: #fafafa; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin: 15px 0; }
-                    .footer { background: #f1f5f9; padding: 20px; text-align: center; font-size: 11px; color: #64748b; font-family: monospace; }
+                    .box { background: #191a36; border: 1px solid #343452; border-radius: 16px; padding: 20px; margin: 15px 0; }
+                    .footer { background: #0d0d20; padding: 20px; text-align: center; font-size: 11px; color: #9a9ab6; border-top: 1px solid #292947; font-family: monospace; }
                   </style>
                 </head>
                 <body>
                   <div class="container">
                     <div class="header">
-                      <h1>OHO TECHN</h1>
-                      <p>Turnkey Enterprise Cloud & Licensing Systems</p>
+                      <h1>OHO TECH</h1>
+                      <p>BUILD. INNOVATE. SCALE.</p>
                     </div>
                     <div class="content">
                       <h2 style="margin-top: 0; font-size: 20px; font-weight: 800;">%s</h2>
@@ -43,7 +59,7 @@ public class EmailTemplateService {
                     </div>
                     <div class="footer">
                       &copy; %d OHO TECHN. All Rights Reserved.<br>
-                      Need assistance? Contact support@ohotech.com
+                      Need assistance? Visit ohotechn.com
                     </div>
                   </div>
                 </body>
@@ -76,22 +92,27 @@ public class EmailTemplateService {
     }
 
     public String buildWelcomeEmail(String userName) {
-        String title = "Welcome to OHO TECHN!";
+        String title = "Welcome to OHO TECH!";
+        String name = safeName(userName);
+        String productsUrl = siteUrl("/products");
         String content = """
-                <p>Hello <strong>%s</strong>,</p>
-                <p>Thank you for creating your account on OHO TECHN. We are thrilled to welcome you to our enterprise platform.</p>
-                <div class="box">
-                  <strong>What's Next?</strong>
-                  <ul>
-                    <li>Browse our Turnkey Software Catalog</li>
-                    <li>Evaluate software with 14-Day Free Trials</li>
-                    <li>Provision perpetual licenses & subscriptions</li>
-                  </ul>
-                </div>
-                <p style="text-align: center;">
-                  <a href="http://localhost:3000/products" class="button">Explore Products Catalog</a>
-                </p>
-                """.formatted(userName);
+                <p style="margin:0 0 18px;color:#e5e7eb;font-size:16px;line-height:1.65;">Hi <strong style="color:#ffffff;">%s</strong>,</p>
+                <p style="margin:0 0 22px;color:#c7c8df;font-size:15px;line-height:1.75;">Welcome to OHO TECH. Your account is ready to explore software, digital products, and practical technology solutions built to help you work smarter.</p>
+                <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#191a36;border:1px solid #343452;border-radius:14px;margin:22px 0;">
+                  <tr><td style="padding:20px 22px;">
+                    <p style="margin:0 0 14px;color:#a78bfa;font-size:12px;font-weight:800;letter-spacing:1.6px;">YOUR NEXT STEPS</p>
+                    <p style="margin:0 0 13px;color:#f3f4f6;font-size:14px;line-height:1.6;"><strong style="color:#c4b5fd;">01&nbsp; Explore the catalog</strong><br><span style="color:#b8bad3;">Discover products, plans, and available trials.</span></p>
+                    <p style="margin:0 0 13px;color:#f3f4f6;font-size:14px;line-height:1.6;"><strong style="color:#c4b5fd;">02&nbsp; Manage your account</strong><br><span style="color:#b8bad3;">Keep your purchases and services in one place.</span></p>
+                    <p style="margin:0;color:#f3f4f6;font-size:14px;line-height:1.6;"><strong style="color:#c4b5fd;">03&nbsp; Get support</strong><br><span style="color:#b8bad3;">Our team can help if you need a hand.</span></p>
+                  </td></tr>
+                </table>
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px auto 12px;">
+                  <tr><td align="center" bgcolor="#8b5cf6" style="border-radius:10px;background-color:#8b5cf6;">
+                    <a href="%s" style="display:inline-block;padding:15px 28px;border-radius:10px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:800;letter-spacing:.2px;">Explore OHO TECH &#8594;</a>
+                  </td></tr>
+                </table>
+                <p style="margin:18px 0 0;text-align:center;color:#a5a6c3;font-size:12px;line-height:1.6;">Need help? Visit <a href="%s" style="color:#c4b5fd;text-decoration:underline;">ohotechn.com</a> and contact our support team.</p>
+                """.formatted(name, productsUrl, siteUrl("/"));
         return wrapTemplate(title, content);
     }
 
