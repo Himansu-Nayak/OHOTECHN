@@ -70,12 +70,12 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject(subject);
             String plainText = htmlContent == null ? "" : htmlContent
-                    .replaceAll("(?i)<br\\s*/?>", "\\n")
-                    .replaceAll("(?i)</(p|div|li|tr|h[1-6])>", "\\n")
+                    .replaceAll("(?i)<br\\s*/?>", "\n")
+                    .replaceAll("(?i)</(p|div|li|tr|h[1-6])>", "\n")
                     .replaceAll("<[^>]*>", " ")
                     .replace("&nbsp;", " ")
                     .replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-                    .replaceAll("[ \\t]+", " ").replaceAll("\\n{3,}", "\\n\\n").trim();
+                    .replaceAll("[ \\t]+", " ").replaceAll("\\n{3,}", "\n\n").trim();
             helper.setText(plainText, htmlContent);
 
             mailSender.send(message);
