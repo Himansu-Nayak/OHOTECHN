@@ -34,7 +34,7 @@ public class EmailTemplateService {
                 <!DOCTYPE html>
                 <html>
                 <head>
-                  <meta charset="utf-8">
+                  <meta charset="utf-8">\n                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
                   <style>
                     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0b18; margin: 0; padding: 20px 10px; color: #f3f4f6; }
                     .container { max-width: 600px; margin: 0 auto; background: #11112b; border-radius: 18px; border: 1px solid #292947; overflow: hidden; }
@@ -44,7 +44,7 @@ public class EmailTemplateService {
                     .content { padding: 28px 24px; font-size: 14px; line-height: 1.7; color: #e5e7eb; }
                     .button { display: inline-block; padding: 14px 28px; background-color: %s; color: #ffffff !important; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0; }
                     .box { background: #191a36; border: 1px solid #343452; border-radius: 16px; padding: 20px; margin: 15px 0; }
-                    .footer { background: #0d0d20; padding: 20px; text-align: center; font-size: 11px; color: #9a9ab6; border-top: 1px solid #292947; font-family: monospace; }
+                    @media only screen and (max-width: 600px) { .content { padding: 22px 16px !important; } .container { width: 100% !important; border-radius: 12px !important; } .header { padding: 24px 16px !important; } }\n                    .footer { background: #0d0d20; padding: 20px; text-align: center; font-size: 11px; color: #9a9ab6; border-top: 1px solid #292947; font-family: monospace; }
                   </style>
                 </head>
                 <body>
