@@ -25,6 +25,7 @@ import {
 import { siteConfig } from '@/config/site';
 import { submitContactApi } from '@/api/contact';
 import { useToast } from '@/context/ToastContext';
+import { Button } from '@/components/ui';
 
 const PROJECT_TYPES = [
   { id: 'custom-software', label: 'Custom Enterprise Software / SaaS' },
@@ -285,13 +286,15 @@ export default function ContactPage() {
                   </div>
 
                   <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
-                    <button
+                    <Button
                       onClick={handleReset}
-                      className="px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg cursor-pointer button-tactile glow-focus"
+                      variant="primary"
+                      size="md"
+                      className="bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold uppercase tracking-wider"
+                      leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
                     >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Send Another Request</span>
-                    </button>
+                      Send Another Request
+                    </Button>
                     <Link
                       href="/work"
                       className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/15 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all border border-white/10 button-tactile glow-focus"
@@ -489,24 +492,18 @@ export default function ContactPage() {
                   </div>
 
                   {/* Submit Button */}
-                  <button
+                  <Button
                     type="submit"
                     id="contact-submit"
                     disabled={isSubmitting}
-                    className="w-full py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer group button-tactile glow-focus"
+                    isLoading={isSubmitting}
+                    variant="primary"
+                    size="lg"
+                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold uppercase tracking-wider shadow-xl"
+                    rightIcon={<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
                   >
-                    {isSubmitting ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Dispatching Encrypted Transmission...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Submit Architecture Discovery Request</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform arrow-slide" />
-                      </>
-                    )}
-                  </button>
+                    Submit Architecture Discovery Request
+                  </Button>
 
                   <div className="flex items-center justify-center gap-2 text-[11px] font-mono text-slate-500 pt-2">
                     <Lock className="w-3.5 h-3.5 text-emerald-400" />

@@ -26,6 +26,7 @@ import { PaymentConfigDto, UpiInitiateResponse } from '@/api/types';
 import { getSafeCartItemUnitPrice, formatInr } from '@/utils/cartUtils';
 import { PaymentStatusFeedback } from '@/components/ui/PaymentStatusFeedback';
 import { CheckoutAmountBreakdown } from '@/components/checkout/CheckoutAmountBreakdown';
+import { Button, Input, Textarea, Card } from '@/components/ui';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -33,11 +34,11 @@ export default function CheckoutPage() {
   const { cart, totalAmount, clearCart } = useCart();
   const { showToast } = useToast();
 
-  const [shippingAddress, setShippingAddress] = React.useState('Demo Tech Park, Block B-402, Outer Ring Road, Bengaluru, Karnataka - 560103');
-  const [customerName, setCustomerName] = React.useState(user?.name || 'Demo Customer');
-  const [customerEmail, setCustomerEmail] = React.useState(user?.email || 'demo.customer@ohotech.com');
-  const [contactPhone, setContactPhone] = React.useState(user?.phone || '+91 98765 43210');
-  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO'>('DEMO');
+  const [shippingAddress, setShippingAddress] = React.useState('');
+  const [customerName, setCustomerName] = React.useState(user?.name || '');
+  const [customerEmail, setCustomerEmail] = React.useState(user?.email || '');
+  const [contactPhone, setContactPhone] = React.useState(user?.phone || '');
+  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO'>('UPI');
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
@@ -109,18 +110,18 @@ export default function CheckoutPage() {
   }, []);
 
   const fillDemoDetails = () => {
-    setCustomerName(user?.name || 'Demo Customer');
-    setCustomerEmail(user?.email || 'demo.customer@ohotech.com');
+    setCustomerName(user?.name || 'Authorized Buyer');
+    setCustomerEmail(user?.email || 'buyer@ohotech.com');
     setContactPhone(user?.phone || '+91 98765 43210');
-    setShippingAddress('Demo Tech Park, Block B-402, Outer Ring Road, Bengaluru, Karnataka - 560103');
-    showToast('Demo contact and deployment details populated', 'info');
+    setShippingAddress('OHO TECH Enterprise Suite, Technology Corridor, Bengaluru, Karnataka - 560103');
+    showToast('Sample contact and deployment details populated', 'info');
   };
 
   React.useEffect(() => {
     if (user) {
-      if (user.name && customerName === 'Demo Customer') setCustomerName(user.name);
-      if (user.email && customerEmail === 'demo.customer@ohotech.com') setCustomerEmail(user.email);
-      if (user.phone && contactPhone === '+91 98765 43210') setContactPhone(user.phone);
+      if (user.name && !customerName) setCustomerName(user.name);
+      if (user.email && !customerEmail) setCustomerEmail(user.email);
+      if (user.phone && !contactPhone) setContactPhone(user.phone);
     }
   }, [user]);
 
@@ -323,7 +324,7 @@ export default function CheckoutPage() {
         orderId: upiOrderData.orderId,
         utr: randomUtr,
         payerUpiId: payerUpiId || 'demo@okhdfcbank',
-        payerName: payerName || customerName || 'Demo Customer',
+        payerName: payerName || customerName || user?.name || 'Customer',
       });
       await clearCart();
       showToast('Payment reference submitted! Order is awaiting admin verification.', 'success');
@@ -376,14 +377,16 @@ export default function CheckoutPage() {
   if (!user) {
     return (
       <div className="bg-[#f7f7f5] min-h-screen pb-16 pt-28 sm:pt-36 px-4">
-        <div className="max-w-md mx-auto bg-white border-2 border-slate-300 rounded-[32px] p-8 text-center shadow-sm">
+        <Card className="max-w-md mx-auto p-8 text-center shadow-sm">
           <Lock className="w-12 h-12 text-sky-600 mx-auto mb-4" />
           <h1 className="text-2xl font-black text-[#0d0d0e] mb-2">Login Required</h1>
           <p className="text-xs text-slate-500 mb-6">Please log in to complete your checkout process.</p>
-          <Link href="/login" className="px-6 py-3 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider inline-block">
-            Go to Login
+          <Link href="/login" className="inline-block">
+            <Button variant="primary" size="md">
+              Go to Login
+            </Button>
           </Link>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -535,65 +538,45 @@ export default function CheckoutPage() {
                     </span>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      12-Digit UTR / Transaction Reference <span className="text-rose-500">*</span>
-                    </label>
-                    <input
+                  <Input
+                    label="12-Digit UTR / Transaction Reference *"
+                    type="text"
+                    value={utrNumber}
+                    onChange={(e) => setUtrNumber(e.target.value.trim())}
+                    placeholder="e.g. 423589123456"
+                    className="font-mono font-bold uppercase tracking-wider"
+                    required
+                  />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Input
+                      label="Your UPI ID / Phone (Optional)"
                       type="text"
-                      value={utrNumber}
-                      onChange={(e) => setUtrNumber(e.target.value.trim())}
-                      placeholder="e.g. 423589123456"
-                      className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-mono font-bold text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors uppercase tracking-wider"
-                      required
+                      value={payerUpiId}
+                      onChange={(e) => setPayerUpiId(e.target.value)}
+                      placeholder="e.g. user@okhdfcbank"
+                    />
+
+                    <Input
+                      label="Payer / Bank Account Name (Optional)"
+                      type="text"
+                      value={payerName}
+                      onChange={(e) => setPayerName(e.target.value)}
+                      placeholder="e.g. Rahul Sharma"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
-                        Your UPI ID / Phone (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={payerUpiId}
-                        onChange={(e) => setPayerUpiId(e.target.value)}
-                        placeholder="e.g. user@okhdfcbank"
-                        className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
-                        Payer / Bank Account Name (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={payerName}
-                        onChange={(e) => setPayerName(e.target.value)}
-                        placeholder="e.g. Rahul Sharma"
-                        className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <button
+                  <Button
                     type="submit"
                     disabled={isSubmittingUtr || !utrNumber.trim()}
-                    className="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 mt-4 cursor-pointer"
+                    isLoading={isSubmittingUtr}
+                    variant="primary"
+                    size="lg"
+                    className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 text-white"
+                    leftIcon={<CheckCircle2 className="w-4 h-4" />}
                   >
-                    {isSubmittingUtr ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Submitting UTR Reference...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>Confirm Payment &amp; Submit UTR</span>
-                      </>
-                    )}
-                  </button>
+                    Confirm Payment &amp; Submit UTR
+                  </Button>
 
                   <div className="pt-2 text-center">
                     <button
@@ -612,19 +595,21 @@ export default function CheckoutPage() {
               /* Step 1: Customer Contact + Payment Method Selection Form */
               <div className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm">
                 
-                {/* Demo Basis Pre-fill Notice Banner */}
+                {/* Sample Pre-fill Notice Banner */}
                 <div className="mb-6 p-4 bg-sky-50 border border-sky-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2 text-sky-900 font-medium">
                     <Sparkles className="w-4 h-4 text-sky-600 shrink-0" />
-                    <span>Demo Basis: Test contact and shipping details are pre-loaded for instant testing.</span>
+                    <span>Quick Fill: Pre-populate sample deployment details or enter your real contact info below.</span>
                   </div>
-                  <button
+                  <Button
                     type="button"
                     onClick={fillDemoDetails}
-                    className="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] uppercase tracking-wider transition-colors shrink-0 shadow-2xs cursor-pointer"
+                    variant="secondary"
+                    size="sm"
+                    className="text-[11px] font-bold uppercase tracking-wider shrink-0"
                   >
-                    Reset Demo Details
-                  </button>
+                    Fill Sample Details
+                  </Button>
                 </div>
 
                 <h2 className="text-lg font-black text-[#0d0d0e] mb-6 pb-4 border-b border-slate-100 flex items-center gap-2">
@@ -633,59 +618,39 @@ export default function CheckoutPage() {
                 </h2>
 
                 <form onSubmit={handleCreateOrder} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      Customer Name
-                    </label>
-                    <input
-                      type="text"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      placeholder="Enter customer name"
-                      className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors"
-                    />
-                  </div>
+                  <Input
+                    label="Customer Name"
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Enter customer name"
+                  />
 
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      placeholder="name@company.com"
-                      className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors"
-                    />
-                  </div>
+                  <Input
+                    label="Email Address"
+                    type="email"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    placeholder="name@company.com"
+                  />
 
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      Contact Phone Number <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      value={contactPhone}
-                      onChange={(e) => setContactPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
-                      className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors"
-                      required
-                    />
-                  </div>
+                  <Input
+                    label="Contact Phone Number *"
+                    type="tel"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    placeholder="+91 98765 43210"
+                    required
+                  />
 
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      Shipping / Deployment Address <span className="text-rose-500">*</span>
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={shippingAddress}
-                      onChange={(e) => setShippingAddress(e.target.value)}
-                      placeholder="Enter full office/delivery address with Pincode..."
-                      className="w-full px-4 py-3 rounded-2xl bg-[#fafafa] border-2 border-slate-200 text-xs font-medium text-[#0d0d0e] placeholder:text-slate-400 focus:outline-none focus:border-sky-500 transition-colors"
-                      required
-                    />
-                  </div>
+                  <Textarea
+                    label="Shipping / Deployment Address *"
+                    rows={3}
+                    value={shippingAddress}
+                    onChange={(e) => setShippingAddress(e.target.value)}
+                    placeholder="Enter full office/delivery address with Pincode..."
+                    required
+                  />
 
                   {/* Payment Method Selector */}
                   <div className="pt-4 border-t border-slate-100">
@@ -767,31 +732,23 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     type="submit"
                     disabled={isLoading || !cart?.items?.length || totalAmount <= 0}
-                    className="w-full py-4 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 mt-6 cursor-pointer"
+                    isLoading={isLoading}
+                    variant="primary"
+                    size="lg"
+                    className="w-full mt-6 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs uppercase tracking-wider shadow-md"
+                    leftIcon={<CheckCircle2 className="w-4 h-4" />}
                   >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Initializing Payment...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>
-                          {paymentMethod === 'DEMO'
-                            ? `⚡ Demo One-Click Pay & Activate Software (${formattedTotal})`
-                            : paymentMethod === 'UPI'
-                            ? `Generate UPI QR Code (${formattedTotal})`
-                            : paymentMethod === 'COD'
-                            ? `Place Cash on Delivery Order (${formattedTotal})`
-                            : `Pay with Razorpay (${formattedTotal})`}
-                        </span>
-                      </>
-                    )}
-                  </button>
+                    {paymentMethod === 'DEMO'
+                      ? `⚡ Demo One-Click Pay & Activate Software (${formattedTotal})`
+                      : paymentMethod === 'UPI'
+                      ? `Generate UPI QR Code (${formattedTotal})`
+                      : paymentMethod === 'COD'
+                      ? `Place Cash on Delivery Order (${formattedTotal})`
+                      : `Pay with Razorpay (${formattedTotal})`}
+                  </Button>
                 </form>
               </div>
             )}

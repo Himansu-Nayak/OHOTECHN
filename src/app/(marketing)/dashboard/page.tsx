@@ -17,6 +17,7 @@ import { getMyOrdersApi, downloadOrderInvoiceApi } from '@/api/orders';
 import { getMyCustomerTicketsApi } from '@/api/support';
 import { ProductDto, License, Subscription, Order, SupportTicketDto, OrderStatus, TicketStatus } from '@/api/types';
 import { formatInr } from '@/utils/cartUtils';
+import { Card, Button, Badge } from '@/components/ui';
 
 interface ActivityItem {
   id: string;
@@ -214,16 +215,20 @@ export default function CustomerDashboardPage() {
           </div>
 
           <div className="flex items-center flex-wrap gap-2 shrink-0">
-            <Link href="/support" className="px-4 py-2.5 rounded-full bg-amber-500 text-white text-xs font-bold uppercase tracking-wider hover:bg-amber-600 transition-colors flex items-center gap-1.5 shadow-xs">
-              <Headphones className="w-3.5 h-3.5" />
-              Support Desk
+            <Link href="/support">
+              <Button variant="secondary" size="sm" leftIcon={<Headphones className="w-3.5 h-3.5 text-amber-500" />}>
+                Support Desk
+              </Button>
             </Link>
-            <Link href="/my-products" className="px-4 py-2.5 rounded-full bg-[#0d0d0e] text-white text-xs font-bold uppercase tracking-wider hover:bg-sky-600 transition-colors">
-              My Products
+            <Link href="/my-products">
+              <Button variant="primary" size="sm">
+                My Products
+              </Button>
             </Link>
-            <Link href="/downloads" className="px-4 py-2.5 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-emerald-700 transition-colors flex items-center gap-1.5 shadow-xs">
-              <Download className="w-3.5 h-3.5" />
-              Downloads
+            <Link href="/downloads">
+              <Button variant="secondary" size="sm" leftIcon={<Download className="w-3.5 h-3.5 text-emerald-600" />}>
+                Downloads
+              </Button>
             </Link>
           </div>
         </div>

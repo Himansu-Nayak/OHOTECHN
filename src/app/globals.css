@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "@astryxdesign/core/reset.css";
+@import "@astryxdesign/core/astryx.css";
+@import "@astryxdesign/theme-neutral/theme.css";
+@import "@astryxdesign/core/tailwind-theme.css";
 
 @theme inline {
   --color-studio-bg: #f7f7f5;
@@ -9,7 +13,7 @@
   --color-accent-indigo: #4f46e5;
   --color-accent-sapphire: #2563eb;
   --color-accent-emerald: #059669;
-  --color-accent-[#e11d48]: #e11d48;
+  --color-accent-rose: #e11d48;
 
   --font-sans: var(--font-inter);
   --font-mono: var(--font-mono);

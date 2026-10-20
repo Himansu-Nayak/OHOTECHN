@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     qualities: [75, 85, 100],
   },
-  reactCompiler: true,
+  reactCompiler: false,
   poweredByHeader: false,
   compress: true,
   experimental: {

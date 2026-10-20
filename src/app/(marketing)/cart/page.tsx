@@ -26,6 +26,7 @@ import {
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { getSafeCartItemUnitPrice, formatInr } from '@/utils/cartUtils';
+import { EmptyState, Card, Button, Badge } from '@/components/ui';
 
 const POPULAR_CATEGORIES = [
   {
@@ -177,30 +178,25 @@ export default function CartPage() {
         ) : !cart || !cart.items || cart.items.length === 0 ? (
           /* Empty Cart State */
           <div className="space-y-12">
-            <div className="bg-white border-2 border-slate-300 rounded-[32px] p-8 sm:p-14 text-center shadow-sm">
-              <div className="w-20 h-20 rounded-3xl bg-slate-50 text-slate-400 flex items-center justify-center mx-auto mb-5 border border-slate-200">
-                <ShoppingBag className="w-10 h-10 text-slate-300" />
-              </div>
-              <h2 className="text-2xl font-black text-[#0d0d0e] mb-2">Your Cart is Currently Empty</h2>
-              <p className="text-xs text-slate-600 max-w-md mx-auto mb-8 leading-relaxed">
-                You haven't added any turnkey software applications, enterprise licenses, or single-tenant cloud deployments to your order yet.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Link
-                  href="/products"
-                  className="px-8 py-3.5 rounded-full bg-[#0d0d0e] text-white text-xs font-extrabold uppercase tracking-wider hover:bg-sky-600 transition-colors shadow-sm inline-flex items-center gap-2"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Browse Products Catalog</span>
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="px-8 py-3.5 rounded-full border border-slate-300 text-slate-800 text-xs font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors"
-                >
-                  Go to Dashboard
-                </Link>
-              </div>
-            </div>
+            <EmptyState
+              title="Your Cart is Currently Empty"
+              description="You haven't added any turnkey software applications, enterprise licenses, or single-tenant cloud deployments to your order yet."
+              icon={<ShoppingBag className="w-8 h-8 text-slate-400" />}
+              actions={
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Link href="/products">
+                    <Button variant="primary" size="lg" leftIcon={<Sparkles className="w-4 h-4" />}>
+                      Browse Products Catalog
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard">
+                    <Button variant="secondary" size="lg">
+                      Go to Dashboard
+                    </Button>
+                  </Link>
+                </div>
+              }
+            />
 
             {/* Turnkey Features Banner */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -420,12 +416,10 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Link
-                  href="/checkout"
-                  className="w-full py-4 px-6 rounded-2xl bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 group min-h-[48px]"
-                >
-                  <span>Proceed to Checkout</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <Link href="/checkout" className="block w-full">
+                  <Button variant="primary" size="lg" className="w-full" rightIcon={<ArrowRight className="w-4 h-4" />}>
+                    Proceed to Checkout
+                  </Button>
                 </Link>
 
                 {/* Payment Options Trust Badges */}

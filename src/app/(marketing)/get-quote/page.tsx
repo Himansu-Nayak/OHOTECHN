@@ -6,6 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Key } from 'lucide-react';
 import { submitContactApi } from '@/api/contact';
 import { useToast } from '@/context/ToastContext';
+import { siteConfig } from '@/config/site';
+import { Button, Input, Textarea, Card } from '@/components/ui';
 
 function QuoteFormContent() {
   const searchParams = useSearchParams();
@@ -73,7 +75,7 @@ function QuoteFormContent() {
       }
 
       setSubmitStatus('success');
-      showToast('Quote request submitted successfully to kampainfraa@gmail.com!', 'success');
+      showToast('Quote request submitted successfully! Our enterprise team will contact you shortly.', 'success');
       setFormData({
         name: '',
         email: '',
@@ -118,114 +120,95 @@ function QuoteFormContent() {
           <div className="mb-8 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono flex items-center gap-3">
             <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             <div>
-              <span className="font-bold">Step 3 of Buyer Journey:</span> Requesting Commercial Quote for <strong className="underline">{productParam}</strong>. Our team will email full source code license &amp; deployment details to kampainfraa@gmail.com.
+              <span className="font-bold">Step 3 of Buyer Journey:</span> Requesting Commercial Quote for <strong className="underline">{productParam}</strong>. Our team will email full source code license &amp; deployment details directly to your email address.
             </div>
           </div>
         )}
 
         {submitStatus === 'success' ? (
-          <div className="p-8 rounded-3xl bg-emerald-50 border-2 border-emerald-200 text-center space-y-4">
+          <Card className="p-8 text-center space-y-4 bg-emerald-50/50 border-emerald-200">
             <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
             <h3 className="text-2xl font-bold text-emerald-900">Quote Request Submitted!</h3>
             <p className="text-sm text-emerald-700 max-w-md mx-auto">
               Thank you for reaching out. We have received your project details and sent a confirmation to your email. Our enterprise team will respond within 2 to 4 business hours.
             </p>
             <div className="pt-4">
-              <Link
-                href="/products"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0d0d0e] text-white font-extrabold text-xs uppercase tracking-wider hover:bg-emerald-600 transition-colors"
-              >
-                <span>Browse All Live Demos</span>
-                <ArrowRight className="w-4 h-4" />
+              <Link href="/products" className="inline-block">
+                <Button variant="primary" size="md" rightIcon={<ArrowRight className="w-4 h-4" />}>
+                  Browse All Live Demos
+                </Button>
               </Link>
             </div>
-          </div>
+          </Card>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="quote-name" className={labelClass}>
-                  Your Name <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  id="quote-name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="e.g. Rahul Sharma"
-                  required
-                  className={inputClass}
-                />
-              </div>
+              <Input
+                label="Your Name *"
+                type="text"
+                name="name"
+                id="quote-name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="e.g. Rahul Sharma"
+                required
+              />
 
-              <div>
-                <label htmlFor="quote-email" className={labelClass}>
-                  Work Email <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="quote-email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="rahul@company.com"
-                  required
-                  className={inputClass}
-                />
-              </div>
+              <Input
+                label="Work Email *"
+                type="email"
+                name="email"
+                id="quote-email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="rahul@company.com"
+                required
+              />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="quote-phone" className={labelClass}>Phone Number</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  id="quote-phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+91 98765 43210"
-                  className={inputClass}
-                />
-              </div>
+              <Input
+                label="Phone Number"
+                type="tel"
+                name="phone"
+                id="quote-phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+91 98765 43210"
+              />
 
-              <div>
-                <label htmlFor="quote-company" className={labelClass}>Company / Organization</label>
-                <input
-                  type="text"
-                  name="company"
-                  id="quote-company"
-                  value={formData.company}
-                  onChange={handleChange}
-                  placeholder="Company Name"
-                  className={inputClass}
-                />
-              </div>
+              <Input
+                label="Company / Organization"
+                type="text"
+                name="company"
+                id="quote-company"
+                value={formData.company}
+                onChange={handleChange}
+                placeholder="Company Name"
+              />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="quote-service-type" className={labelClass}>Service / Product Type</label>
-                <input
-                  type="text"
-                  name="serviceType"
-                  id="quote-service-type"
-                  value={formData.serviceType}
-                  onChange={handleChange}
-                  placeholder="e.g. Custom Software, Hospital EMR, School ERP"
-                  className={inputClass}
-                />
-              </div>
+              <Input
+                label="Service / Product Type"
+                type="text"
+                name="serviceType"
+                id="quote-service-type"
+                value={formData.serviceType}
+                onChange={handleChange}
+                placeholder="e.g. Custom Software, Hospital EMR, School ERP"
+              />
 
               <div>
-                <label htmlFor="quote-budget-range" className={labelClass}>Estimated Budget Range</label>
+                <label htmlFor="quote-budget-range" className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Estimated Budget Range
+                </label>
                 <select
                   name="budgetRange"
                   id="quote-budget-range"
                   value={formData.budgetRange}
                   onChange={handleChange}
-                  className={inputClass}
+                  className="w-full rounded-xl bg-white border border-black/10 focus:border-black focus:ring-black/5 px-3.5 py-2.5 text-sm text-[#0d0d0e] focus:outline-none focus:ring-2 transition-all duration-200"
                 >
                   <option value="">Select Budget Range</option>
                   <option value="₹25,000 - ₹50,000">₹25,000 - ₹50,000</option>
@@ -236,30 +219,28 @@ function QuoteFormContent() {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="quote-project-description" className={labelClass}>
-                Project Details / Requirements <span className="text-rose-500">*</span>
-              </label>
-              <textarea
-                name="projectDescription"
-                id="quote-project-description"
-                value={formData.projectDescription}
-                onChange={handleChange}
-                rows={5}
-                placeholder="Describe your software requirements, desired features, integration needs, or target users..."
-                required
-                className={`${inputClass} resize-none`}
-              />
-            </div>
+            <Textarea
+              label="Project Details / Requirements *"
+              name="projectDescription"
+              id="quote-project-description"
+              value={formData.projectDescription}
+              onChange={handleChange}
+              rows={5}
+              placeholder="Describe your software requirements, desired features, integration needs, or target users..."
+              required
+            />
 
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-lg flex items-center justify-center gap-2 group hover:scale-[1.01] disabled:opacity-50 cursor-pointer"
+              isLoading={isSubmitting}
+              variant="primary"
+              size="lg"
+              className="w-full"
+              rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              <span>{isSubmitting ? 'Submitting Quote Request...' : 'Submit Commercial Quote Request'}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
+              Submit Commercial Quote Request
+            </Button>
           </form>
         )}
       </div>
@@ -296,7 +277,7 @@ function QuoteFormContent() {
           </div>
 
           <div className="pt-6 border-t border-white/10 mt-6 text-xs text-slate-400 font-mono">
-            Direct Email Delivery: <span className="text-emerald-400 font-bold">kampainfraa@gmail.com</span>
+            Direct Email Delivery: <span className="text-emerald-400 font-bold">{siteConfig.contact.email}</span>
           </div>
         </div>
       </div>

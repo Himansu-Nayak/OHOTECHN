@@ -7,6 +7,7 @@ import { ArrowRight, KeyRound, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { sendOtpApi } from '@/api/auth';
+import { Button, Card } from '@/components/ui';
 import { auth, googleProvider } from '@/lib/firebase';
 import {
   signInWithPopup,
@@ -413,7 +414,7 @@ function LoginContent() {
         {/* Invisible container for Firebase reCAPTCHA */}
         <div id="recaptcha-container"></div>
 
-        <div className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-10 shadow-sm relative overflow-hidden">
+        <Card className="p-8 sm:p-10 shadow-sm relative overflow-hidden">
           
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-[11px] font-bold uppercase tracking-wider mb-3">
@@ -576,14 +577,17 @@ function LoginContent() {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading || isGoogleLoading || isPhoneLoading}
-                className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                isLoading={isLoading}
+                variant="primary"
+                size="lg"
+                className="w-full"
+                rightIcon={<ArrowRight className="w-4 h-4" />}
               >
-                <span>{isLoading ? 'Signing In...' : 'Sign In To Account'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                Sign In To Account
+              </Button>
             </form>
           )}
 
@@ -622,21 +626,18 @@ function LoginContent() {
                     />
                   </div>
 
-                  <button
+                  <Button
                     type="button"
                     onClick={handleSendPhoneOtp}
                     disabled={isPhoneLoading || phoneNumber.length < 10 || !isRecaptchaSolved}
-                    className="w-full mt-2 py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    isLoading={isPhoneLoading}
+                    variant="primary"
+                    size="lg"
+                    className="w-full mt-2"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
                   >
-                    <span>
-                      {isPhoneLoading
-                        ? 'Sending SMS...'
-                        : !isRecaptchaSolved
-                        ? 'Verify "I\'m not a robot" above'
-                        : 'Send Phone OTP'}
-                    </span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                    {!isRecaptchaSolved ? 'Verify "I\'m not a robot" above' : 'Send Phone OTP'}
+                  </Button>
                 </div>
               ) : (
                 <form onSubmit={handleVerifyPhoneOtpAndLogin} className="space-y-5">
@@ -662,14 +663,17 @@ function LoginContent() {
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     type="submit"
                     disabled={isPhoneLoading || phoneOtp.length < 6}
-                    className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    isLoading={isPhoneLoading}
+                    variant="primary"
+                    size="lg"
+                    className="w-full"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
                   >
-                    <span>{isPhoneLoading ? 'Verifying OTP...' : 'Verify OTP & Sign In'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                    Verify OTP &amp; Sign In
+                  </Button>
 
                   <div className="flex items-center justify-between pt-2 text-xs font-mono">
                     <button
@@ -722,14 +726,17 @@ function LoginContent() {
               </div>
 
               {!otpSent ? (
-                <button
+                <Button
                   type="button"
                   onClick={handleSendEmailOtp}
                   disabled={isLoading}
-                  className="w-full py-3.5 rounded-full bg-slate-900 hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer disabled:opacity-50"
+                  isLoading={isLoading}
+                  variant="primary"
+                  size="md"
+                  className="w-full"
                 >
-                  {isLoading ? 'Sending OTP...' : 'Send Email OTP Code'}
-                </button>
+                  Send Email OTP Code
+                </Button>
               ) : (
                 <>
                   <div>
@@ -748,14 +755,17 @@ function LoginContent() {
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-4 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    isLoading={isLoading}
+                    variant="primary"
+                    size="lg"
+                    className="w-full"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
                   >
-                    <span>{isLoading ? 'Verifying...' : 'Verify OTP & Login'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                    Verify OTP &amp; Login
+                  </Button>
 
                   <div className="text-center pt-2">
                     <button
@@ -779,7 +789,7 @@ function LoginContent() {
             </Link>
           </div>
 
-        </div>
+        </Card>
 
       </main>
     </div>

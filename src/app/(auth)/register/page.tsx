@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Mail, User, Phone, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
+import { Button, Card } from '@/components/ui';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -93,7 +94,7 @@ export default function RegisterPage() {
   return (
     <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-28 sm:pt-36 px-3 sm:px-6 lg:px-8 selection:bg-[#0d0d0e] selection:text-white">
       <main className="max-w-md w-full mx-auto" id="register-main">
-        <div className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-10 shadow-sm relative overflow-hidden">
+        <Card className="p-8 sm:p-10 shadow-sm relative overflow-hidden">
           
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-[11px] font-bold uppercase tracking-wider mb-3">
@@ -219,14 +220,17 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="w-full py-4 px-6 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer mt-2"
+              isLoading={isLoading}
+              variant="primary"
+              size="lg"
+              className="w-full mt-2"
+              rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              <span>{isLoading ? 'Creating Account...' : 'Register Account'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              Register Account
+            </Button>
           </form>
 
           <div className="mt-8 pt-6 border-t border-slate-200 text-center font-mono text-xs text-slate-500 flex items-center justify-between">
@@ -235,7 +239,7 @@ export default function RegisterPage() {
               Sign In To Account
             </Link>
           </div>
-        </div>
+        </Card>
       </main>
     </div>
   );
