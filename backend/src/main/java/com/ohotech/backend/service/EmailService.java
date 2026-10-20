@@ -29,7 +29,7 @@ public class EmailService {
     @Value("${app.mail.from-email:${SPRING_MAIL_FROM_ADDRESS:}}")
     private String configuredFromEmail;
 
-    @Value("${app.mail.from-name:${MAIL_FROM_NAME:OHO TECHN Notification}}")
+    @Value("${app.mail.from-name:${MAIL_FROM_NAME:OHO TECH Notification}}")
     private String fromName;
 
     private String getFromEmail() {
@@ -69,7 +69,15 @@ public class EmailService {
             helper.setFrom(senderAddress, fromName);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(htmlContent, true);
+            String plainText = htmlContent == null ? "" : htmlContent
+                    .replaceAll("(?is)<(style|script)\\b[^>]*>.*?</\\1>", " ")
+                    .replaceAll("(?i)<br\\s*/?>", "\n")
+                    .replaceAll("(?i)</(p|div|li|tr|h[1-6])>", "\n")
+                    .replaceAll("<[^>]*>", " ")
+                    .replace("&nbsp;", " ")
+                    .replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+                    .replaceAll("[ \\t]+", " ").replaceAll("\\n{3,}", "\n\n").trim();
+            helper.setText(plainText, htmlContent);
 
             mailSender.send(message);
             logger.info("Async HTML email successfully delivered to {}", to);
