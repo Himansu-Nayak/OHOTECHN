@@ -29,7 +29,7 @@ public class EmailService {
     @Value("${app.mail.from-email:${SPRING_MAIL_FROM_ADDRESS:}}")
     private String configuredFromEmail;
 
-    @Value("${app.mail.from-name:${MAIL_FROM_NAME:OHO TECHN Notification}}")
+    @Value("${app.mail.from-name:${MAIL_FROM_NAME:OHO TECH Notification}}")
     private String fromName;
 
     private String getFromEmail() {
