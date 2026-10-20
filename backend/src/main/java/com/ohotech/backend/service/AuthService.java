@@ -86,22 +86,30 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
+        // Keep in-app notification and welcome email independent: a notification failure
+        // must never prevent a newly registered customer from receiving their welcome email.
         try {
             notificationService.createNotification(
                     savedUser.getId(),
-                    "Welcome to OHO TECHN!",
+                    "Welcome to OHO TECH!",
                     "Your account has been created successfully. Explore our software catalog to activate free trials & licenses.",
                     com.ohotech.backend.entity.NotificationType.SUCCESS,
                     com.ohotech.backend.entity.NotificationCategory.SYSTEM,
                     "/products"
             );
-
-            if (savedUser.getEmail() != null) {
-                String htmlBody = emailTemplateService.buildWelcomeEmail(savedUser.getName());
-                emailService.sendHtmlEmail(savedUser.getEmail(), "Welcome to OHO TECHN", htmlBody);
-            }
         } catch (Exception e) {
-            // Non-blocking notification failure
+            org.slf4j.LoggerFactory.getLogger(AuthService.class)
+                    .warn("Could not create registration notification for user {}: {}", savedUser.getId(), e.getMessage());
+        }
+
+        if (savedUser.getEmail() != null && !savedUser.getEmail().isBlank()) {
+            try {
+                String htmlBody = emailTemplateService.buildWelcomeEmail(savedUser.getName());
+                emailService.sendHtmlEmail(savedUser.getEmail(), "Welcome to OHO TECH", htmlBody);
+            } catch (Exception e) {
+                org.slf4j.LoggerFactory.getLogger(AuthService.class)
+                        .error("Could not queue welcome email for user {}: {}", savedUser.getId(), e.getMessage());
+            }
         }
 
         auditService.logUserEvent(savedUser, "USER_REGISTERED", "User", String.valueOf(savedUser.getId()),
@@ -448,21 +456,30 @@ public class AuthService {
 
             user = userRepository.save(newUser);
 
+            // Keep in-app notification and welcome email independent: a notification failure
+            // must never prevent a newly registered customer from receiving their welcome email.
             try {
                 notificationService.createNotification(
                         user.getId(),
-                        "Welcome to OHO TECHN!",
+                        "Welcome to OHO TECH!",
                         "Your account has been created successfully via Firebase Authentication.",
                         com.ohotech.backend.entity.NotificationType.SUCCESS,
                         com.ohotech.backend.entity.NotificationCategory.SYSTEM,
                         "/products"
                 );
-                if (user.getEmail() != null) {
-                    String htmlBody = emailTemplateService.buildWelcomeEmail(user.getName());
-                    emailService.sendHtmlEmail(user.getEmail(), "Welcome to OHO TECHN", htmlBody);
-                }
             } catch (Exception e) {
-                // Non-blocking notification
+                org.slf4j.LoggerFactory.getLogger(AuthService.class)
+                        .warn("Could not create Firebase registration notification for user {}: {}", user.getId(), e.getMessage());
+            }
+
+            if (user.getEmail() != null && !user.getEmail().isBlank()) {
+                try {
+                    String htmlBody = emailTemplateService.buildWelcomeEmail(user.getName());
+                    emailService.sendHtmlEmail(user.getEmail(), "Welcome to OHO TECH", htmlBody);
+                } catch (Exception e) {
+                    org.slf4j.LoggerFactory.getLogger(AuthService.class)
+                            .error("Could not queue Firebase welcome email for user {}: {}", user.getId(), e.getMessage());
+                }
             }
 
             auditService.logUserEvent(user, "USER_FIREBASE_REGISTERED", "User", String.valueOf(user.getId()),
