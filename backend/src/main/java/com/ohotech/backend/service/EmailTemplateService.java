@@ -58,13 +58,13 @@ public class EmailTemplateService {
                       %s
                     </div>
                     <div class="footer">
-                      &copy; %d OHO TECHN. All Rights Reserved.<br>
+                      &copy; %d OHO TECH. All Rights Reserved.<br>
                       Need assistance? Visit ohotechn.com
                     </div>
                   </div>
                 </body>
                 </html>
-                """.formatted(BRAND_COLOR, ACCENT_COLOR, title, contentHtml, LocalDateTime.now().getYear());
+                """.formatted(ACCENT_COLOR, title, contentHtml, LocalDateTime.now().getYear());
     }
 
     public String buildOtpEmail(String userName, String otpCode, OtpPurpose purpose) {
