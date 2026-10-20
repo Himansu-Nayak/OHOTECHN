@@ -69,7 +69,14 @@ public class EmailService {
             helper.setFrom(senderAddress, fromName);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(htmlContent, true);
+            String plainText = htmlContent == null ? "" : htmlContent
+                    .replaceAll("(?i)<br\\s*/?>", "\\n")
+                    .replaceAll("(?i)</(p|div|li|tr|h[1-6])>", "\\n")
+                    .replaceAll("<[^>]*>", " ")
+                    .replace("&nbsp;", " ")
+                    .replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+                    .replaceAll("[ \\t]+", " ").replaceAll("\\n{3,}", "\\n\\n").trim();
+            helper.setText(plainText, htmlContent);
 
             mailSender.send(message);
             logger.info("Async HTML email successfully delivered to {}", to);
