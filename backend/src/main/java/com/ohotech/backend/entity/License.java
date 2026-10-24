@@ -1,5 +1,6 @@
 package com.ohotech.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class License {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"passwordHash", "officialEmail", "firebaseUid"})
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)

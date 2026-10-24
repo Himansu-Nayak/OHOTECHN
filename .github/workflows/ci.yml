@@ -51,14 +51,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 20 LTS
+      - name: Set up Node.js 22 LTS
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Generate Next.js Route Types
+        run: npx next typegen
 
       - name: TypeScript Type Check
         run: npx tsc --noEmit
@@ -67,7 +70,14 @@ jobs:
         run: npm run lint -- --quiet
 
       - name: Next.js Production Build
-        run: npm run build
+        run: |
+          if ! npm run build 2>&1 | tee /tmp/build.log; then
+            echo "### Next.js Build Failure Diagnostics" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 100 /tmp/build.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
         env:
           NEXT_PUBLIC_APP_URL: https://ohotechn.com
           NEXT_PUBLIC_API_URL: https://api.ohotechn.com

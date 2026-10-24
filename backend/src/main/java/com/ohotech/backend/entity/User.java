@@ -1,5 +1,7 @@
 package com.ohotech.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -32,8 +34,15 @@ public class User {
     @Column(name = "firebase_uid", unique = true)
     private String firebaseUid;
 
+    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String passwordHash;
+
+    @JsonIgnore
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
