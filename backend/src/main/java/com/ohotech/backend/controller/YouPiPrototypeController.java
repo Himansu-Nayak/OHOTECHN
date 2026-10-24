@@ -1,7 +1,6 @@
 package com.ohotech.backend.controller;
 
 import com.ohotech.backend.dto.ApiResponse;
-import com.ohotech.backend.entity.Order;
 import com.ohotech.backend.entity.OrderStatus;
 import com.ohotech.backend.entity.Payment;
 import com.ohotech.backend.entity.PaymentStatus;
@@ -16,6 +15,7 @@ import com.ohotech.backend.service.payment.YouPiPrototypeService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +54,7 @@ public class YouPiPrototypeController {
     }
 
     @PostMapping(value = "/webhook", consumes = "application/json")
+    @Transactional
     public ResponseEntity<ApiResponse<String>> webhook(
             @RequestBody byte[] rawBody,
             @RequestHeader(value = "X-Gateway-Signature", required = false) String signature,
@@ -73,10 +74,6 @@ public class YouPiPrototypeController {
             }
             if (!MessageDigest.isEqual(expected, supplied)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Invalid webhook signature."));
-            }
-
-            if (webhookEventRepository.existsByProviderAndExternalEventId("YOUPI_PG", deliveryId)) {
-                return ResponseEntity.ok(ApiResponse.success("Duplicate webhook acknowledged", "ALREADY_PROCESSED"));
             }
 
             JSONObject event = new JSONObject(new String(rawBody, StandardCharsets.UTF_8));
@@ -146,6 +143,8 @@ public class YouPiPrototypeController {
             savedEvent.setProcessedAt(LocalDateTime.now());
             webhookEventRepository.save(savedEvent);
             return ResponseEntity.ok(ApiResponse.success("YouPI webhook processed", "OK"));
+        } catch (org.springframework.dao.DataIntegrityViolationException duplicate) {
+            return ResponseEntity.ok(ApiResponse.success("Duplicate webhook acknowledged", "ALREADY_PROCESSED"));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Webhook rejected or could not be processed."));
         }
