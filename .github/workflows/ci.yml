@@ -70,7 +70,7 @@ jobs:
         run: npm run lint -- --quiet
 
       - name: Next.js Production Build
-        run: npm run build || npm run build
+        run: npm run build
         env:
           NEXT_PUBLIC_APP_URL: https://ohotechn.com
           NEXT_PUBLIC_API_URL: https://api.ohotechn.com
