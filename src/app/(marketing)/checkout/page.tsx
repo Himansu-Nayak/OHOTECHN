@@ -19,6 +19,7 @@ import {
   demoPayApi,
   getPaymentConfigApi,
   initiateUpiPaymentApi,
+  createYouPiPaymentApi,
   submitUtrApi,
   initiateCodApi 
 } from '@/api/payments';
@@ -37,7 +38,7 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = React.useState(user?.name || 'Demo Customer');
   const [customerEmail, setCustomerEmail] = React.useState(user?.email || 'demo.customer@ohotech.com');
   const [contactPhone, setContactPhone] = React.useState(user?.phone || '+91 98765 43210');
-  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO'>('DEMO');
+  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO' | 'YOUPI'>('DEMO');
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
@@ -289,6 +290,20 @@ export default function CheckoutPage() {
         }
         setUpiOrderData(upiRes.data);
         setIsLoading(false);
+      } else if (paymentMethod === 'YOUPI') {
+        if (process.env.NEXT_PUBLIC_YOUPI_PROTOTYPE_ENABLED !== 'true') {
+          throw new Error('YouPI prototype checkout is disabled. Choose Razorpay or Direct UPI.');
+        }
+        const youpiRes = await createYouPiPaymentApi(createdOrder.id);
+        if (!youpiRes.success || !youpiRes.data?.checkoutUrl) {
+          throw new Error(youpiRes.message || 'Could not create YouPI checkout session.');
+        }
+        const checkoutUrl = new URL(youpiRes.data.checkoutUrl);
+        if (checkoutUrl.protocol !== 'https:' && !(checkoutUrl.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(checkoutUrl.hostname))) {
+          throw new Error('YouPI returned an insecure checkout URL. Payment was not opened.');
+        }
+        window.location.assign(checkoutUrl.toString());
+        return;
       } else if (paymentMethod === 'COD') {
         const codRes = await initiateCodApi(createdOrder.id);
         if (!codRes.success) {
@@ -731,6 +746,21 @@ export default function CheckoutPage() {
                         </div>
                       </button>
 
+                      {/* Option: YouPI prototype; hidden unless explicitly enabled for isolated testing */}
+                      {process.env.NEXT_PUBLIC_YOUPI_PROTOTYPE_ENABLED === 'true' && (
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('YOUPI')}
+                          className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${paymentMethod === 'YOUPI' ? 'border-violet-600 bg-violet-50/50 shadow-sm' : 'border-slate-200 hover:border-slate-300 bg-white'}`}
+                        >
+                          <QrCode className={`w-5 h-5 mb-2 ${paymentMethod === 'YOUPI' ? 'text-violet-600' : 'text-slate-500'}`} />
+                          <div className="text-xs font-bold text-slate-900">YouPI Hosted UPI (Prototype)</div>
+                          <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
+                            Experimental; disabled in production by default
+                          </div>
+                        </button>
+                      )}
+
                       {/* Option 3: Razorpay Online Gateway */}
                       <button
                         type="button"
@@ -787,6 +817,8 @@ export default function CheckoutPage() {
                             ? `Generate UPI QR Code (${formattedTotal})`
                             : paymentMethod === 'COD'
                             ? `Place Cash on Delivery Order (${formattedTotal})`
+                            : paymentMethod === 'YOUPI'
+                            ? `Continue to YouPI UPI Checkout (${formattedTotal})`
                             : `Pay with Razorpay (${formattedTotal})`}
                         </span>
                       </>
