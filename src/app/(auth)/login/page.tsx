@@ -28,7 +28,7 @@ const RecaptchaWidget = React.memo(function RecaptchaWidget({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current || typeof window === 'undefined') return;
+    if (!containerRef.current || typeof window === 'undefined' || !auth) return;
 
     let verifier: RecaptchaVerifier | null = null;
     let isMounted = true;
@@ -206,6 +206,7 @@ function LoginContent() {
     setUnverifiedEmail(null);
 
     try {
+      if (!auth) throw new Error('Firebase authentication is not configured. Use email/password or email OTP until Firebase is configured.');
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
       
@@ -348,6 +349,7 @@ function LoginContent() {
     setSuccessMsg('');
 
     try {
+      if (!auth) throw new Error('Firebase authentication is not configured. Use email/password or email OTP until Firebase is configured.');
       const confirmation = await signInWithPhoneNumber(auth, formattedNumber, verifier);
       setConfirmationResult(confirmation);
       setPhoneOtpSent(true);
