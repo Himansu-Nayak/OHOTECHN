@@ -13,7 +13,6 @@ import com.ohotech.backend.repository.WebhookEventRepository;
 import com.ohotech.backend.security.UserPrincipal;
 import com.ohotech.backend.service.CartService;
 import com.ohotech.backend.service.payment.YouPiPrototypeService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -82,6 +81,9 @@ public class YouPiPrototypeController {
 
             JSONObject event = new JSONObject(new String(rawBody, StandardCharsets.UTF_8));
             String eventType = event.optString("event", eventHeader == null ? "" : eventHeader);
+            if (eventHeader != null && !eventHeader.isBlank() && !eventHeader.equalsIgnoreCase(eventType)) {
+                return ResponseEntity.badRequest().body(ApiResponse.error("Webhook event header does not match payload."));
+            }
             String externalOrderId = event.optString("orderId", "");
             String paymentId = event.optString("paymentId", "");
             if (!externalOrderId.matches("OHO-[1-9][0-9]*") || paymentId.isBlank()) {
@@ -106,13 +108,14 @@ public class YouPiPrototypeController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error("Webhook amount or currency mismatch."));
             }
 
+            String rawText = new String(rawBody, StandardCharsets.UTF_8);
             WebhookEvent savedEvent = webhookEventRepository.save(WebhookEvent.builder()
                     .provider("YOUPI_PG")
                     .externalEventId(deliveryId)
                     .externalLeadId(externalOrderId)
                     .eventType(eventType)
                     .status(WebhookEventStatus.RECEIVED)
-                    .payloadSummary(new String(rawBody, StandardCharsets.UTF_8).substring(0, Math.min(rawBody.length, 500)))
+                    .payloadSummary(rawText.substring(0, Math.min(rawText.length(), 500)))
                     .build());
 
             if ("SUCCESS".equalsIgnoreCase(eventType)) {
