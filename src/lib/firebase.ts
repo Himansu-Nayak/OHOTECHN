@@ -13,16 +13,24 @@ const firebaseConfig = {
     : {}),
 };
 
-// Initialize Firebase App singleton safely for client-side execution
-const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+const isFirebaseConfigured = Boolean(
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.projectId &&
+  firebaseConfig.appId
+);
 
-// Initialize Firebase Auth
-export const auth: Auth = getAuth(app);
-if (typeof window !== 'undefined') {
+const app: FirebaseApp | null = isFirebaseConfigured
+  ? (getApps().length > 0 ? getApp() : initializeApp(firebaseConfig))
+  : null;
+
+// Avoid crashing Next.js static prerender when public Firebase config is not provided.
+// Auth-dependent flows should handle a missing configuration explicitly.
+export const auth: Auth | null = app ? getAuth(app) : null;
+if (auth && typeof window !== 'undefined') {
   auth.useDeviceLanguage();
 }
 
-// Providers
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: 'select_account',
