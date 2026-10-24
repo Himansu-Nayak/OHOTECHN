@@ -44,8 +44,6 @@ public class YouPiPrototypeService {
     private String frontendUrl;
     @Value("${app.youpi.checkout-base-url:}")
     private String checkoutBaseUrl;
-    @Value("${app.youpi.checkout-base-url:}")
-    private String checkoutBaseUrl;
 
     public boolean isEnabled() {
         return enabled && hasRequiredConfiguration();
