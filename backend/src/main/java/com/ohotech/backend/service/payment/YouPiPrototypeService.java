@@ -88,6 +88,7 @@ public class YouPiPrototypeService {
             Map<String, Object> existingResponse = new LinkedHashMap<>();
             existingResponse.put("orderId", order.getId());
             existingResponse.put("paymentId", existing.getYoupiPaymentId());
+            existingResponse.put("checkoutUrl", baseUrl.replaceAll("/+$", "") + "/checkout/" + existing.getYoupiPaymentId());
             existingResponse.put("status", existing.getStatus().name());
             existingResponse.put("amountPaise", amountPaise);
             existingResponse.put("message", "A YouPI session is already associated with this order. Check its state before retrying.");
