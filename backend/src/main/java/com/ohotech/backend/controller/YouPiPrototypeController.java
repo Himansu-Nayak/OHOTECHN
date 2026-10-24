@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -144,8 +143,6 @@ public class YouPiPrototypeController {
             savedEvent.setProcessedAt(LocalDateTime.now());
             webhookEventRepository.save(savedEvent);
             return ResponseEntity.ok(ApiResponse.success("YouPI webhook processed", "OK"));
-        } catch (org.springframework.dao.DataIntegrityViolationException duplicate) {
-            return ResponseEntity.ok(ApiResponse.success("Duplicate webhook acknowledged", "ALREADY_PROCESSED"));
         } catch (org.springframework.dao.DataIntegrityViolationException duplicate) {
             return ResponseEntity.ok(ApiResponse.success("Duplicate webhook acknowledged", "ALREADY_PROCESSED"));
         } catch (Exception ex) {
