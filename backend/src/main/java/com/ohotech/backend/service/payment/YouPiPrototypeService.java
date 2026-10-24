@@ -77,6 +77,12 @@ public class YouPiPrototypeService {
                 .setScale(0, RoundingMode.UNNECESSARY).longValueExact();
 
         Payment existing = paymentRepository.findByOrderId(orderId).orElse(null);
+        if (existing != null && existing.getStatus() == PaymentStatus.PENDING
+                && !"YOUPI_PG".equalsIgnoreCase(existing.getProvider())
+                && (existing.getRazorpayOrderId() != null || existing.getCashfreeOrderId() != null
+                || existing.getTransactionReference() != null)) {
+            throw new BadRequestException("This order already has another pending payment attempt. Resolve it before starting YouPI.");
+        }
         if (existing != null && "YOUPI_PG".equalsIgnoreCase(existing.getProvider())
                 && existing.getYoupiPaymentId() != null && !existing.getYoupiPaymentId().isBlank()) {
             Map<String, Object> existingResponse = new LinkedHashMap<>();
@@ -89,6 +95,12 @@ public class YouPiPrototypeService {
         }
 
         try {
+            URI configuredBase = URI.create(baseUrl);
+            boolean localHttp = "http".equalsIgnoreCase(configuredBase.getScheme())
+                    && ("localhost".equalsIgnoreCase(configuredBase.getHost()) || "127.0.0.1".equals(configuredBase.getHost()));
+            if (!"https".equalsIgnoreCase(configuredBase.getScheme()) && !localHttp) {
+                throw new BadRequestException("YouPI base URL must use HTTPS outside localhost.");
+            }
             URI apiUri = URI.create(baseUrl.replaceAll("/+$", "") + "/api/v1/payments");
             JSONObject payload = new JSONObject()
                     .put("orderId", externalOrderId)
@@ -119,14 +131,14 @@ public class YouPiPrototypeService {
                 throw new BadRequestException("YouPI response did not include a payment ID and checkout URL.");
             }
             URI checkoutUri = URI.create(checkoutUrl);
-            URI configuredBase = URI.create(baseUrl);
             if (!"https".equalsIgnoreCase(checkoutUri.getScheme())
                     && !("http".equalsIgnoreCase(checkoutUri.getScheme())
                     && ("localhost".equalsIgnoreCase(checkoutUri.getHost()) || "127.0.0.1".equals(checkoutUri.getHost())))) {
                 throw new BadRequestException("YouPI returned a non-HTTPS checkout URL.");
             }
-            if (checkoutUri.getHost() == null) {
-                throw new BadRequestException("YouPI returned an invalid checkout URL.");
+            if (checkoutUri.getHost() == null || configuredBase.getHost() == null
+                    || !checkoutUri.getHost().equalsIgnoreCase(configuredBase.getHost())) {
+                throw new BadRequestException("YouPI returned a checkout URL outside the configured gateway host.");
             }
 
             Payment payment = existing != null ? existing : Payment.builder()
