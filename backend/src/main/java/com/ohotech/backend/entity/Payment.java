@@ -40,6 +40,9 @@ public class Payment {
     @Column(name = "cashfree_payment_id")
     private String cashfreePaymentId;
 
+    @Column(name = "youpi_payment_id", unique = true, length = 100)
+    private String youpiPaymentId;
+
     @Column(nullable = false)
     private BigDecimal amount;
 

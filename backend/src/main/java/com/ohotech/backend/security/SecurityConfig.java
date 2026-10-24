@@ -107,6 +107,7 @@ public class SecurityConfig {
                     "/api/support/public/**",
                     "/api/webhooks/**",
                     "/api/payments/webhook",
+                    "/api/payments/youpi/webhook",
                     "/api/ai/chat",
                     "/api/ai/support",
                     "/api/ai/health",

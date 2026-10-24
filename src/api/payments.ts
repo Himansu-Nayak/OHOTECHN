@@ -47,6 +47,22 @@ export async function demoPayApi(orderId: number): Promise<ApiResponse<Payment>>
   });
 }
 
+export interface YouPiCreatePaymentResponse {
+  orderId: number;
+  paymentId: string;
+  checkoutUrl: string;
+  status: string;
+  amountPaise: number;
+  currency: string;
+}
+
+export async function createYouPiPaymentApi(orderId: number): Promise<ApiResponse<YouPiCreatePaymentResponse>> {
+  return apiClient<YouPiCreatePaymentResponse>('/api/payments/youpi/create-order', {
+    method: 'POST',
+    body: JSON.stringify({ orderId }),
+  });
+}
+
 export async function initiateUpiPaymentApi(orderId: number): Promise<ApiResponse<UpiInitiateResponse>> {
   return apiClient<UpiInitiateResponse>('/api/payments/initiate-upi', {
     method: 'POST',
