@@ -17,7 +17,8 @@ This integration calls the separately deployed YouPI-PG merchant REST API. It do
 Set these environment variables only in an isolated development environment:
 
 - `YOUPI_ENABLED=false`
-- `YOUPI_BASE_URL=https://your-isolated-youpi-host.example`
+- `YOUPI_BASE_URL=https://your-isolated-youpi-api.example`
+- `YOUPI_CHECKOUT_BASE_URL=https://your-isolated-youpi-checkout.example`
 - `YOUPI_MERCHANT_ID=`
 - `YOUPI_MERCHANT_API_KEY=`
 - `YOUPI_WEBHOOK_SECRET=`
