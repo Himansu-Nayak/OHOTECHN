@@ -1,6 +1,7 @@
 package com.ohotech.backend.controller;
 
 import com.ohotech.backend.dto.ApiResponse;
+import com.ohotech.backend.entity.Order;
 import com.ohotech.backend.entity.OrderStatus;
 import com.ohotech.backend.entity.Payment;
 import com.ohotech.backend.entity.PaymentStatus;
