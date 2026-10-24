@@ -42,6 +42,8 @@ public class YouPiPrototypeService {
     private String webhookSecret;
     @Value("${app.frontend.url:https://ohotechn.com}")
     private String frontendUrl;
+    @Value("${app.youpi.checkout-base-url:}")
+    private String checkoutBaseUrl;
 
     public boolean isEnabled() {
         return enabled && hasRequiredConfiguration();
@@ -49,6 +51,7 @@ public class YouPiPrototypeService {
 
     private boolean hasRequiredConfiguration() {
         return baseUrl != null && !baseUrl.isBlank()
+                && checkoutBaseUrl != null && !checkoutBaseUrl.isBlank()
                 && merchantId != null && !merchantId.isBlank()
                 && merchantApiKey != null && !merchantApiKey.isBlank()
                 && webhookSecret != null && !webhookSecret.isBlank();
@@ -88,7 +91,7 @@ public class YouPiPrototypeService {
             Map<String, Object> existingResponse = new LinkedHashMap<>();
             existingResponse.put("orderId", order.getId());
             existingResponse.put("paymentId", existing.getYoupiPaymentId());
-            existingResponse.put("checkoutUrl", baseUrl.replaceAll("/+$", "") + "/checkout/" + existing.getYoupiPaymentId());
+            existingResponse.put("checkoutUrl", checkoutBaseUrl.replaceAll("/+$", "") + "/checkout/" + existing.getYoupiPaymentId());
             existingResponse.put("status", existing.getStatus().name());
             existingResponse.put("amountPaise", amountPaise);
             existingResponse.put("message", "A YouPI session is already associated with this order. Check its state before retrying.");
@@ -132,14 +135,19 @@ public class YouPiPrototypeService {
                 throw new BadRequestException("YouPI response did not include a payment ID and checkout URL.");
             }
             URI checkoutUri = URI.create(checkoutUrl);
+            URI configuredCheckoutBase = URI.create(checkoutBaseUrl);
+            boolean checkoutLocalHttp = "http".equalsIgnoreCase(configuredCheckoutBase.getScheme())
+                    && ("localhost".equalsIgnoreCase(configuredCheckoutBase.getHost()) || "127.0.0.1".equals(configuredCheckoutBase.getHost()));
             if (!"https".equalsIgnoreCase(checkoutUri.getScheme())
                     && !("http".equalsIgnoreCase(checkoutUri.getScheme())
                     && ("localhost".equalsIgnoreCase(checkoutUri.getHost()) || "127.0.0.1".equals(checkoutUri.getHost())))) {
                 throw new BadRequestException("YouPI returned a non-HTTPS checkout URL.");
             }
-            if (checkoutUri.getHost() == null || configuredBase.getHost() == null
-                    || !checkoutUri.getHost().equalsIgnoreCase(configuredBase.getHost())) {
-                throw new BadRequestException("YouPI returned a checkout URL outside the configured gateway host.");
+            if (checkoutUri.getHost() == null || configuredCheckoutBase.getHost() == null
+                    || !checkoutUri.getHost().equalsIgnoreCase(configuredCheckoutBase.getHost())
+                    || !java.util.Objects.equals(checkoutUri.getPort(), configuredCheckoutBase.getPort())
+                    || (!checkoutLocalHttp && !"https".equalsIgnoreCase(checkoutUri.getScheme()))) {
+                throw new BadRequestException("YouPI returned a checkout URL outside the configured checkout host.");
             }
 
             Payment payment = existing != null ? existing : Payment.builder()
