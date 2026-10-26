@@ -7,6 +7,7 @@ import {
   TicketStatusUpdateRequest,
   SupportStatsDto,
   ContactEnquiry,
+  SupportAiSummaryDto,
 } from './types';
 
 export interface TicketFilterParams {
@@ -127,5 +128,11 @@ export async function createPublicTicketApi(data: CreateTicketRequest): Promise<
   return apiClient<SupportTicketDto>('/api/support/public/ticket', {
     method: 'POST',
     body: JSON.stringify(data),
+  });
+}
+
+export async function getTicketAiSummaryApi(id: number): Promise<ApiResponse<SupportAiSummaryDto>> {
+  return apiClient<SupportAiSummaryDto>(`/api/support/tickets/${id}/ai-summary`, {
+    method: 'GET',
   });
 }

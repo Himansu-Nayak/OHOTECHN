@@ -6,7 +6,7 @@ import {
   Headphones, Search, Filter, Plus, Clock, CheckCircle2, 
   AlertCircle, MessageSquare, Send, User, ChevronRight, X, 
   Tag, ShieldAlert, ArrowRight, CornerDownRight, RefreshCw,
-  Building2, Phone, Mail, AlertTriangle, ExternalLink
+  Building2, Phone, Mail, AlertTriangle, ExternalLink, Sparkles, Bot
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
@@ -15,14 +15,16 @@ import {
   SupportTicketDto, 
   TicketDepartment, 
   TicketPriority, 
-  TicketStatus 
+  TicketStatus,
+  SupportAiSummaryDto
 } from '@/api/types';
 import { 
   getStaffTicketsApi, 
   getStaffTicketDetailsApi, 
   postStaffReplyApi, 
   updateTicketStatusApi, 
-  createCustomerTicketApi 
+  createCustomerTicketApi,
+  getTicketAiSummaryApi
 } from '@/api/support';
 
 export function AdminSupportDeskView() {
@@ -38,6 +40,8 @@ export function AdminSupportDeskView() {
   const [isSubmittingReply, setIsSubmittingReply] = React.useState(false);
 
   const [tickets, setTickets] = React.useState<SupportTicketDto[]>([]);
+  const [aiSummary, setAiSummary] = React.useState<SupportAiSummaryDto | null>(null);
+  const [isLoadingAi, setIsLoadingAi] = React.useState(false);
 
   const [newTicketForm, setNewTicketForm] = React.useState({
     subject: '',
@@ -73,6 +77,7 @@ export function AdminSupportDeskView() {
   }, [fetchTickets]);
 
   const handleSelectTicket = async (ticketId: number) => {
+    setAiSummary(null);
     try {
       const res = await getStaffTicketDetailsApi(ticketId);
       if (res.success && res.data) {
@@ -80,6 +85,24 @@ export function AdminSupportDeskView() {
       }
     } catch (e) {
       showToast('Could not load ticket details', 'error');
+    }
+  };
+
+  const handleFetchAiTriage = async () => {
+    if (!selectedTicket) return;
+    setIsLoadingAi(true);
+    try {
+      const res = await getTicketAiSummaryApi(selectedTicket.id);
+      if (res.success && res.data) {
+        setAiSummary(res.data);
+        showToast('AI analysis & response drafted', 'success');
+      } else {
+        showToast(res.message || 'AI summary currently unavailable', 'error');
+      }
+    } catch {
+      showToast('Failed to generate AI triage', 'error');
+    } finally {
+      setIsLoadingAi(false);
     }
   };
 
@@ -402,6 +425,95 @@ export function AdminSupportDeskView() {
                   <p className="whitespace-pre-wrap">{msg.message}</p>
                 </div>
               ))}
+            </div>
+
+            {/* AI Smart Triage & Draft Reply Assistance */}
+            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-50/70 via-purple-50/40 to-white border border-indigo-200/80 shadow-xs space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-indigo-950 text-xs">AI Smart Triage &amp; Copilot</span>
+                    <span className="ml-2 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
+                      Gemini 2.5
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleFetchAiTriage}
+                  disabled={isLoadingAi}
+                  className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  <Sparkles className={cn("w-3 h-3", isLoadingAi && "animate-spin")} />
+                  <span>{isLoadingAi ? "Analyzing..." : aiSummary ? "Re-analyze" : "Analyze Ticket"}</span>
+                </button>
+              </div>
+
+              {aiSummary && (
+                <div className="space-y-2 pt-2 border-t border-indigo-100 animate-in fade-in duration-200">
+                  <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                    <span className="font-semibold text-slate-500">Category:</span>
+                    <span className="font-mono font-bold px-2 py-0.5 rounded bg-white text-indigo-900 border border-indigo-100">
+                      {aiSummary.detectedIssueCategory}
+                    </span>
+                    <span className="font-semibold text-slate-500 ml-1">Sentiment:</span>
+                    <span className={cn(
+                      "font-mono font-bold px-2 py-0.5 rounded uppercase",
+                      aiSummary.customerSentiment?.toUpperCase().includes('URGENT') || aiSummary.customerSentiment?.toUpperCase().includes('FRUSTRAT') ? "bg-rose-100 text-rose-800" :
+                      aiSummary.customerSentiment?.toUpperCase().includes('POSITIVE') ? "bg-emerald-100 text-emerald-800" :
+                      "bg-amber-100 text-amber-800"
+                    )}>
+                      {aiSummary.customerSentiment}
+                    </span>
+                    <span className="font-semibold text-slate-500 ml-1">Suggested Priority:</span>
+                    <span className="font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-800">
+                      {aiSummary.suggestedPriority}
+                    </span>
+                  </div>
+
+                  <div className="bg-white/80 p-2.5 rounded-xl border border-indigo-100 space-y-1">
+                    <div className="font-bold text-[10px] uppercase text-indigo-900 tracking-wider">Executive Summary:</div>
+                    <p className="text-slate-700 text-xs leading-relaxed">{aiSummary.executiveSummary}</p>
+                  </div>
+
+                  {aiSummary.recommendedNextActions && aiSummary.recommendedNextActions.length > 0 && (
+                    <div className="bg-white/80 p-2.5 rounded-xl border border-indigo-100 space-y-1">
+                      <div className="font-bold text-[10px] uppercase text-indigo-900 tracking-wider">Recommended Next Actions:</div>
+                      <ul className="list-disc list-inside space-y-0.5 text-slate-700 text-xs">
+                        {aiSummary.recommendedNextActions.map((action, idx) => (
+                          <li key={idx} className="leading-relaxed">{action}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {aiSummary.draftedAgentReply && (
+                    <div className="bg-white/90 p-2.5 rounded-xl border border-indigo-200 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[10px] uppercase text-indigo-900 tracking-wider">AI Drafted Reply:</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyMessage(aiSummary.draftedAgentReply);
+                            setIsInternalNote(false);
+                            showToast('AI draft inserted into reply box', 'info');
+                          }}
+                          className="px-2 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[10px] transition-colors cursor-pointer border border-indigo-200"
+                        >
+                          Use This Reply
+                        </button>
+                      </div>
+                      <p className="text-slate-700 text-xs leading-relaxed italic bg-slate-50/80 p-2 rounded-lg border border-slate-100 whitespace-pre-wrap">
+                        {aiSummary.draftedAgentReply}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Quick Reply Form */}

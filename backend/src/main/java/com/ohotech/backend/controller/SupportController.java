@@ -149,4 +149,11 @@ public class SupportController {
         SupportTicketDto ticket = supportTicketService.getTicketByCode(code);
         return ResponseEntity.ok(ApiResponse.success("Ticket details retrieved", ticket));
     }
+
+    @GetMapping("/tickets/{id}/ai-summary")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN', 'DEVELOPER')")
+    public ResponseEntity<ApiResponse<SupportAiSummaryDto>> getTicketAiSummary(@PathVariable Long id) {
+        SupportAiSummaryDto summary = supportTicketService.generateAiTicketSummary(id);
+        return ResponseEntity.ok(ApiResponse.success("AI ticket summary generated", summary));
+    }
 }

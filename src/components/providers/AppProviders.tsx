@@ -7,6 +7,7 @@ import { CartProvider } from '@/context/CartContext';
 import { NavigationProgress } from '@/components/ui/NavigationProgress';
 import { ScrollProvider } from './ScrollProvider';
 import { ExperienceProvider } from '@/components/experience/ExperienceProvider';
+import { SupportChatWidget } from '@/components/support/SupportChatWidget';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -19,6 +20,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                 <NavigationProgress />
               </Suspense>
               {children}
+              <SupportChatWidget />
             </ExperienceProvider>
           </ScrollProvider>
         </CartProvider>

@@ -8,7 +8,7 @@ import {
   AlertCircle, MessageSquare, Send, User, ChevronRight, X, 
   Tag, ShieldAlert, ArrowRight, CornerDownRight, RefreshCw,
   Building2, Phone, Mail, AlertTriangle, Check, ShieldCheck,
-  FileText, ExternalLink, HelpCircle, Lock, UserCheck
+  FileText, ExternalLink, HelpCircle, Lock, UserCheck, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
@@ -20,7 +20,8 @@ import {
   ContactEnquiry,
   TicketDepartment,
   TicketPriority,
-  TicketStatus
+  TicketStatus,
+  SupportAiSummaryDto
 } from '@/api/types';
 import { 
   getStaffTicketsApi, 
@@ -33,7 +34,8 @@ import {
   createCustomerTicketApi,
   getMyCustomerTicketsApi,
   getMyCustomerTicketDetailsApi,
-  postCustomerReplyApi
+  postCustomerReplyApi,
+  getTicketAiSummaryApi
 } from '@/api/support';
 
 export default function SupportPanelPage() {
@@ -65,6 +67,8 @@ export default function SupportPanelPage() {
   const [replyMessage, setReplyMessage] = React.useState('');
   const [isInternalNote, setIsInternalNote] = React.useState(false);
   const [isSubmittingReply, setIsSubmittingReply] = React.useState(false);
+  const [aiSummary, setAiSummary] = React.useState<SupportAiSummaryDto | null>(null);
+  const [isLoadingAi, setIsLoadingAi] = React.useState(false);
 
   // Create Ticket Modal
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
@@ -140,6 +144,7 @@ export default function SupportPanelPage() {
 
   // Open ticket thread
   const handleOpenTicket = async (ticketId: number) => {
+    setAiSummary(null);
     try {
       const res = isStaff 
         ? await getStaffTicketDetailsApi(ticketId)
@@ -150,6 +155,24 @@ export default function SupportPanelPage() {
       }
     } catch (err: any) {
       showToast('Failed to load ticket thread details', 'error');
+    }
+  };
+
+  const handleFetchAiTriage = async () => {
+    if (!selectedTicket) return;
+    setIsLoadingAi(true);
+    try {
+      const res = await getTicketAiSummaryApi(selectedTicket.id);
+      if (res.success && res.data) {
+        setAiSummary(res.data);
+        showToast('AI analysis & response drafted', 'success');
+      } else {
+        showToast(res.message || 'AI summary unavailable', 'error');
+      }
+    } catch {
+      showToast('Error requesting AI triage', 'error');
+    } finally {
+      setIsLoadingAi(false);
     }
   };
 
@@ -696,6 +719,81 @@ export default function SupportPanelPage() {
                 </div>
               ))}
             </div>
+
+            {/* AI Assistant for Staff */}
+            {isStaff && (
+              <div className="px-6 py-3 bg-gradient-to-r from-indigo-50/80 via-purple-50/50 to-white border-t border-indigo-100 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-indigo-600" />
+                    <span className="text-xs font-bold text-indigo-950">AI Copilot &amp; Triage (Gemini 2.5)</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleFetchAiTriage}
+                    disabled={isLoadingAi}
+                    className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <Sparkles className={cn("w-3 h-3", isLoadingAi && "animate-spin")} />
+                    <span>{isLoadingAi ? "Analyzing..." : aiSummary ? "Re-run Triage" : "AI Smart Triage"}</span>
+                  </button>
+                </div>
+
+                {aiSummary && (
+                  <div className="space-y-2 pt-1 text-xs">
+                    <div className="flex flex-wrap items-center gap-2 text-[10px]">
+                      <span className="font-semibold text-slate-500">Category:</span>
+                      <span className="font-mono font-bold px-2 py-0.5 rounded bg-white text-indigo-900 border border-indigo-200">
+                        {aiSummary.detectedIssueCategory}
+                      </span>
+                      <span className="font-semibold text-slate-500">Sentiment:</span>
+                      <span className="font-mono font-bold px-2 py-0.5 rounded bg-white text-amber-900 border border-amber-200">
+                        {aiSummary.customerSentiment}
+                      </span>
+                      <span className="font-semibold text-slate-500">Suggested Priority:</span>
+                      <span className="font-mono font-bold px-2 py-0.5 rounded bg-white text-slate-900 border border-slate-200">
+                        {aiSummary.suggestedPriority}
+                      </span>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-white border border-indigo-100 text-[11px] text-slate-700">
+                      <strong>AI Summary:</strong> {aiSummary.executiveSummary}
+                    </div>
+
+                    {aiSummary.recommendedNextActions && aiSummary.recommendedNextActions.length > 0 && (
+                      <div className="p-2 rounded-xl bg-white border border-indigo-100 text-[11px] text-slate-700 space-y-1">
+                        <strong>Next Actions:</strong>
+                        <ul className="list-disc list-inside space-y-0.5">
+                          {aiSummary.recommendedNextActions.map((act, i) => (
+                            <li key={i}>{act}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {aiSummary.draftedAgentReply && (
+                      <div className="p-2 rounded-xl bg-indigo-50/80 border border-indigo-200 space-y-1">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <strong className="text-indigo-950">Drafted Customer Reply:</strong>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReplyMessage(aiSummary.draftedAgentReply);
+                              setIsInternalNote(false);
+                              showToast('AI reply inserted into composer', 'info');
+                            }}
+                            className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer"
+                          >
+                            Use this drafted reply
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-slate-700 italic">{aiSummary.draftedAgentReply}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Reply Composer Form */}
             <form onSubmit={handleSendReply} className="p-4 sm:p-5 border-t border-slate-200 bg-white shrink-0 space-y-3">

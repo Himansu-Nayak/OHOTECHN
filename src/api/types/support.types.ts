@@ -86,3 +86,15 @@ export interface SupportStatsDto {
   totalEnquiries: number;
   pendingEnquiries: number;
 }
+
+export interface SupportAiSummaryDto {
+  ticketId: number;
+  ticketCode: string;
+  executiveSummary: string;
+  detectedIssueCategory: string;
+  customerSentiment: string;
+  suggestedPriority: string;
+  recommendedNextActions: string[];
+  draftedAgentReply: string;
+  fallbackGenerated: boolean;
+}

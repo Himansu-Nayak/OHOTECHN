@@ -5,6 +5,9 @@ import com.ohotech.backend.entity.*;
 import com.ohotech.backend.exception.BadRequestException;
 import com.ohotech.backend.exception.ResourceNotFoundException;
 import com.ohotech.backend.repository.*;
+import com.ohotech.backend.service.ai.GeminiService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,8 @@ public class SupportTicketService {
     private final NotificationService notificationService;
     private final EmailService emailService;
     private final AuditService auditService;
+    private final GeminiService geminiService;
+    private final ObjectMapper objectMapper;
 
     private final Random random = new Random();
 
@@ -589,5 +594,91 @@ public class SupportTicketService {
         if (o.contains("INFRA")) return "INFRASTRUCTURE";
         if (o.contains("CUSTOMER") || o.contains("CLIENT")) return "CUSTOMER_CONFIG";
         return "OHO_TECH";
+    }
+
+    public SupportAiSummaryDto generateAiTicketSummary(Long ticketId) {
+        SupportTicket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("SupportTicket", "id", ticketId));
+
+        List<SupportTicketMessage> messages = messageRepository.findByTicketIdOrderByCreatedAtAsc(ticketId);
+        StringBuilder convoBuilder = new StringBuilder();
+        convoBuilder.append("Ticket Code: ").append(ticket.getTicketCode()).append("\n");
+        convoBuilder.append("Subject: ").append(ticket.getSubject()).append("\n");
+        convoBuilder.append("Department: ").append(ticket.getDepartment()).append("\n");
+        convoBuilder.append("Current Priority: ").append(ticket.getPriority()).append("\n");
+        convoBuilder.append("Description: ").append(ticket.getDescription()).append("\n\nConversation Thread:\n");
+
+        for (SupportTicketMessage m : messages) {
+            convoBuilder.append("[").append(m.getSenderRole())
+                    .append(m.isInternalNote() ? " (INTERNAL NOTE)" : "")
+                    .append("]: ")
+                    .append(m.getMessage()).append("\n");
+        }
+
+        String prompt = "You are OHO TECH Senior Enterprise Technical Support Specialist. Analyze the following support ticket thread and generate a concise structured JSON assessment for the engineering team.\n"
+                + "Return ONLY valid JSON with keys: executiveSummary (1-2 sentences), detectedIssueCategory (e.g. DATABASE, AUTH, BILLING, INTEGRATION), "
+                + "customerSentiment (e.g. FRUSTRATED, URGENT, SATISFIED, NEUTRAL), suggestedPriority (LOW, MEDIUM, HIGH, URGENT), "
+                + "recommendedNextActions (array of 2-3 short bullet steps), draftedAgentReply (professional, empathetic, highly technical solution or diagnostic request).\n\n"
+                + convoBuilder.toString();
+
+        try {
+            if (geminiService != null) {
+                String aiRaw = geminiService.generateText(prompt, null);
+                if (aiRaw != null && !aiRaw.isBlank()) {
+                    String cleanedJson = aiRaw.trim();
+                    if (cleanedJson.startsWith("`json")) {
+                        cleanedJson = cleanedJson.substring(7);
+                    } else if (cleanedJson.startsWith("`")) {
+                        cleanedJson = cleanedJson.substring(3);
+                    }
+                    if (cleanedJson.endsWith("`")) {
+                        cleanedJson = cleanedJson.substring(0, cleanedJson.length() - 3);
+                    }
+                    cleanedJson = cleanedJson.trim();
+
+                    try {
+                        var node = objectMapper.readTree(cleanedJson);
+                        List<String> nextActions = new ArrayList<>();
+                        if (node.has("recommendedNextActions") && node.get("recommendedNextActions").isArray()) {
+                            for (var actNode : node.get("recommendedNextActions")) {
+                                nextActions.add(actNode.asText());
+                            }
+                        }
+
+                        return SupportAiSummaryDto.builder()
+                                .ticketId(ticket.getId())
+                                .ticketCode(ticket.getTicketCode())
+                                .executiveSummary(node.path("executiveSummary").asText("Issue logged regarding " + ticket.getSubject()))
+                                .detectedIssueCategory(node.path("detectedIssueCategory").asText(ticket.getDepartment()))
+                                .customerSentiment(node.path("customerSentiment").asText("NEUTRAL"))
+                                .suggestedPriority(node.path("suggestedPriority").asText(ticket.getPriority()))
+                                .recommendedNextActions(nextActions.isEmpty() ? List.of("Investigate logs and stacktrace", "Follow up with client via portal reply") : nextActions)
+                                .draftedAgentReply(node.path("draftedAgentReply").asText("Hello " + ticket.getClientName() + ", thank you for contacting OHO TECH Support. Our engineering team is currently investigating your ticket " + ticket.getTicketCode() + "."))
+                                .fallbackGenerated(false)
+                                .build();
+                    } catch (Exception parseEx) {
+                        logger.warn("Failed to parse Gemini JSON output for ticket {}, returning structured fallback", ticket.getTicketCode());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Gemini AI summary generation threw exception for ticket {}: {}", ticket.getTicketCode(), e.getMessage());
+        }
+
+        return SupportAiSummaryDto.builder()
+                .ticketId(ticket.getId())
+                .ticketCode(ticket.getTicketCode())
+                .executiveSummary("Client " + ticket.getClientName() + " reported: " + ticket.getSubject() + ". Awaiting lead architect triage.")
+                .detectedIssueCategory(ticket.getDepartment())
+                .customerSentiment("NEUTRAL")
+                .suggestedPriority(ticket.getPriority())
+                .recommendedNextActions(List.of(
+                        "Review client inquiry details and deployment logs",
+                        "Verify SLA resolution window (" + (ticket.getSlaDueAt() != null ? ticket.getSlaDueAt().toString() : "Standard 24h") + ")",
+                        "Reply to customer or reassign to specialized department"
+                ))
+                .draftedAgentReply("Hello " + ticket.getClientName() + ",\n\nThank you for reaching out to OHO TECH Technical Support regarding ticket [" + ticket.getTicketCode() + "].\n\nOur engineering team has reviewed your query and is actively working on the resolution. We will update you shortly.\n\nBest regards,\nOHO TECH Support Operations")
+                .fallbackGenerated(true)
+                .build();
     }
 }
