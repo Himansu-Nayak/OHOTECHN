@@ -22,7 +22,7 @@
     "lenis": "^1.1.20",
     "lucide-react": "^1.31.0",
     "motion": "^13.4.0",
-    "next": "16.3.0",
+    "next": "16.4.3",
     "prisma": "^7.9.1",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
@@ -38,7 +38,7 @@
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.3.0",
+    "eslint-config-next": "16.4.3",
     "puppeteer": "^25.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"
