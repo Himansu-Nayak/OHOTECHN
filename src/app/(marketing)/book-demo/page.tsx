@@ -118,7 +118,7 @@ export default function BookDemoPage() {
                     Want to test our 28 Live Software Products now?
                   </h4>
                   <p className="text-xs text-slate-400 mt-1">
-                    Direct admin &amp; user login credentials available instantly.
+                    Verified staging environments and interactive sandbox modules.
                   </p>
                 </div>
                 <Link

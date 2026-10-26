@@ -49,6 +49,10 @@ next-env.d.ts
 
 /src/generated/prisma
 
+# OmniRoute Local Gateway Data & Encryption Keys
+/data/omniroute/
+
+
 # AI coding tool artifacts
 .claude/
 .agents/

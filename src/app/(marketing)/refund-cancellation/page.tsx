@@ -69,7 +69,7 @@ export default function RefundCancellationPage() {
           <div className="pt-6 border-t border-slate-100">
             <h2 className="text-lg font-bold text-[#0d0d0e] mb-2">Billing Inquiries</h2>
             <p>
-              For questions regarding invoice statements or refund requests, please contact <strong className="text-[#0d0d0e]">hello@ohotech.com</strong>.
+              For questions regarding invoice statements or refund requests, please contact <strong className="text-[#0d0d0e]">hello@ohotechn.com</strong>.
             </p>
           </div>
         </div>

@@ -93,7 +93,7 @@ export function AdminAppointmentsView() {
   });
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText('https://ohotech.com/book/enterprise-demo');
+    navigator.clipboard.writeText('https://ohotechn.com/book/enterprise-demo');
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };

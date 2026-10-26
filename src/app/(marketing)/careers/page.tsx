@@ -63,7 +63,7 @@ export default function CareersPage() {
               </h2>
             </div>
             <p className="text-xs font-mono text-slate-500">
-              Noida &amp; Remote Positions
+              Bhubaneswar, Odisha &amp; Remote Positions
             </p>
           </div>
 
@@ -99,7 +99,7 @@ export default function CareersPage() {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">Want to join OHO TECH?</h2>
             <p className="text-sm sm:text-base text-slate-300 mb-8 max-w-xl mx-auto">
-              Send your resume and portfolio directly to our engineering lead at <strong className="text-sky-400">hello@ohotech.com</strong>.
+              Send your resume and portfolio directly to our engineering lead at <strong className="text-sky-400">hello@ohotechn.com</strong>.
             </p>
             <Link
               href="/contact?subject=Career Application"

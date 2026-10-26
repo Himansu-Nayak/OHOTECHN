@@ -21,7 +21,7 @@ const REAL_PROJECTS: ProjectData[] = [
       'IPD / OPD Ward Bed Grid',
       'Automated Diagnostic Lab Dispatch'
     ],
-    technologies: ['Next.js App Router', 'Go Microservices', 'PostgreSQL Core', 'HL7 / FHIR Adapters', 'Redis'],
+    technologies: ['Next.js App Router', 'Spring Boot (Java 21)', 'PostgreSQL 17', 'HL7 / FHIR Adapters', 'Redis'],
     image: '/images/work/3d-healthcare-emr.jpg',
     href: '/work/healthcare-emr',
     accent: '#10b981',
@@ -101,7 +101,7 @@ const REAL_PROJECTS: ProjectData[] = [
       'EMI Amortization Schedules',
       'Field Loan Officer Companion'
     ],
-    technologies: ['Go Microservices', 'PostgreSQL Vault', 'Distributed Lock Manager', 'Redis Streams', 'Docker'],
+    technologies: ['Spring Boot (Java 21)', 'PostgreSQL 17 Vault', 'Distributed Lock Manager', 'Redis Streams', 'Docker'],
     image: '/images/work/3d-fintech-ledger.jpg',
     href: '/work/fintech-ledger',
     accent: '#8b5cf6',

@@ -3,7 +3,7 @@ import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Contact Engineering & Direct Architect Discovery | OHO TECH',
+  title: 'Contact Engineering & Direct Architect Discovery',
   description: 'Directly connect with Founder & Director Japabandhu Kampa and lead system architects. SLA-backed 24-hour response on enterprise software discovery.',
   path: '/contact',
 });

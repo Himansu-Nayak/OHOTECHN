@@ -149,13 +149,13 @@ spring.jpa.hibernate.ddl-auto=${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
 ```
-- **Mandatory Production Value:** `NEXT_PUBLIC_API_URL=https://ohotech.com` (WITHOUT `/api` suffix).
+- **Mandatory Production Value:** `NEXT_PUBLIC_API_URL=https://ohotechn.com` (WITHOUT `/api` suffix).
 - **Endpoint Concatenation:**
-  - Auth: `/api/auth/login` → `https://ohotech.com/api/auth/login`
-  - Products: `/api/products` → `https://ohotech.com/api/products`
-  - Orders: `/api/orders` → `https://ohotech.com/api/orders`
-  - Payments: `/api/payments/create-order` → `https://ohotech.com/api/payments/create-order`
-  - Admin: `/api/admin/metrics` → `https://ohotech.com/api/admin/metrics`
+  - Auth: `/api/auth/login` → `https://ohotechn.com/api/auth/login`
+  - Products: `/api/products` → `https://ohotechn.com/api/products`
+  - Orders: `/api/orders` → `https://ohotechn.com/api/orders`
+  - Payments: `/api/payments/create-order` → `https://ohotechn.com/api/payments/create-order`
+  - Admin: `/api/admin/metrics` → `https://ohotechn.com/api/admin/metrics`
 - **Path Collision / Duplication:** Zero occurrences of `/api/api/...`.
 
 ---
@@ -217,7 +217,7 @@ location / {
 - **Architecture:** Stateless JWT Bearer Authentication with HMAC-SHA512.
 - **Token Expiry:** Access Token: 24h (`86400000ms`); Refresh Token: 7 days (`604800000ms`).
 - **Password Encoder:** `BCryptPasswordEncoder` (strength 10).
-- **CORS Configuration:** `SecurityConfig.java` allows `http://localhost:*`, `http://127.0.0.1:*`, and `${app.frontend.url}` (set to `https://ohotech.com` in production). Credentials allowed.
+- **CORS Configuration:** `SecurityConfig.java` allows `http://localhost:*`, `http://127.0.0.1:*`, and `${app.frontend.url}` (set to `https://ohotechn.com` in production). Credentials allowed.
 - **CSRF:** Disabled for stateless REST APIs using JWT Bearer tokens.
 - **Headers:** HSTS enabled (max-age 31536000 with subdomains), Frame Options set to SAMEORIGIN, Content-Type Options NOSNIFF.
 - **Rate Limiting:** `RateLimitingFilter` active before authentication filter (protects auth and API endpoints against brute force).
@@ -283,18 +283,18 @@ location / {
 | `SPRING_DATASOURCE_PASSWORD` | Backend | Yes | Yes | Runtime | `[GENERATED_SECURE_PASSWORD]` | NO |
 | `SPRING_JPA_HIBERNATE_DDL_AUTO` | Backend | Yes | No | Runtime | `update` (first boot), then `validate` | NO |
 | `JWT_SECRET` | Backend | Yes | Yes | Runtime | `[GENERATED_512_BIT_SECRET]` | NO |
-| `APP_FRONTEND_URL` | Backend | Yes | No | Runtime | `https://ohotech.com` | NO |
-| `INITIAL_ADMIN_EMAIL` | Backend | First Boot | No | Runtime | `admin@ohotech.com` | NO |
+| `APP_FRONTEND_URL` | Backend | Yes | No | Runtime | `https://ohotechn.com` | NO |
+| `INITIAL_ADMIN_EMAIL` | Backend | First Boot | No | Runtime | `admin@ohotechn.com` | NO |
 | `INITIAL_ADMIN_PASSWORD` | Backend | First Boot | Yes | Runtime | `[SECURE_INITIAL_PASSWORD]` | NO |
 | `RAZORPAY_KEY_ID` | Backend | Yes | No | Runtime | `rzp_live_...` | NO |
 | `RAZORPAY_KEY_SECRET` | Backend | Yes | Yes | Runtime | `[RAZORPAY_LIVE_SECRET]` | NO |
 | `GEMINI_API_KEY` | Backend | Yes | Yes | Runtime | `[GEMINI_API_KEY]` | NO |
 | `SPRING_MAIL_HOST` | Backend | Yes | No | Runtime | `smtp.hostinger.com` | NO |
 | `SPRING_MAIL_PORT` | Backend | Yes | No | Runtime | `587` | NO |
-| `SPRING_MAIL_USERNAME` | Backend | Yes | No | Runtime | `contact@ohotech.com` | NO |
+| `SPRING_MAIL_USERNAME` | Backend | Yes | No | Runtime | `contact@ohotechn.com` | NO |
 | `SPRING_MAIL_PASSWORD` | Backend | Yes | Yes | Runtime | `[EMAIL_ACCOUNT_PASSWORD]` | NO |
-| `SPRING_MAIL_FROM_ADDRESS` | Backend | Yes | No | Runtime | `contact@ohotech.com` | NO |
-| `NEXT_PUBLIC_API_URL` | Frontend | Yes | No | Build & Runtime | `https://ohotech.com` | **YES** |
+| `SPRING_MAIL_FROM_ADDRESS` | Backend | Yes | No | Runtime | `contact@ohotechn.com` | NO |
+| `NEXT_PUBLIC_API_URL` | Frontend | Yes | No | Build & Runtime | `https://ohotechn.com` | **YES** |
 | `RESEND_API_KEY` | Frontend | Optional | Yes | Runtime | `re_...` | NO |
 | `PORT` | Frontend | Yes | No | Runtime | `3000` | NO |
 
@@ -377,7 +377,7 @@ location / {
 2. **Automated Migration Tooling:** Introduce Flyway or Liquibase for declarative versioned database migrations in future releases.
 
 ### EXTERNAL VALIDATION (Requires live infrastructure):
-1. Hostinger DNS A records pointing `ohotech.com` and `www.ohotech.com` to VPS IP.
+1. Hostinger DNS A records pointing `ohotechn.com` and `www.ohotechn.com` to VPS IP.
 2. Certbot Let's Encrypt SSL certificate issuance.
 3. Razorpay live payment settlement end-to-end verification.
 

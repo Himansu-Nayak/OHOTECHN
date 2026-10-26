@@ -3,12 +3,12 @@ export const siteConfig = {
   tagline: 'Software, Digital Platforms & Business Growth',
   description:
     'OHO TECH designs and develops custom software applications, web platforms, mobile apps, ERP systems, and data-driven digital growth strategies for businesses.',
-  url: 'https://ohotech.com',
+  url: 'https://ohotechn.com',
 
   contact: {
-    email: 'hello@ohotech.com',
+    email: 'hello@ohotechn.com',
     phone: '+91 98765 43210',
-    address: 'Noida, Uttar Pradesh, India',
+    address: 'Bhubaneswar, Odisha, India',
     hours: 'Mon – Sat, 9:00 AM – 7:00 PM IST',
   },
 

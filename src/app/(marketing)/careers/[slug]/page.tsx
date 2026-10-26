@@ -66,7 +66,7 @@ export default async function CareerDetailPage({ params }: CareerDetailProps) {
               Engineering Position
             </span>
             <span className="text-xs font-mono text-slate-500 flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" /> Noida, India / Remote
+              <MapPin className="w-3.5 h-3.5" /> Bhubaneswar, Odisha, India / Remote
             </span>
             <span className="text-xs font-mono text-slate-500 flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" /> Full-time
@@ -82,7 +82,7 @@ export default async function CareerDetailPage({ params }: CareerDetailProps) {
           </p>
 
           <a
-            href="mailto:careers@ohotech.com?subject=Application for Position"
+            href="mailto:careers@ohotechn.com?subject=Application for Position"
             className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-[#0d0d0e] hover:bg-sky-600 text-white font-extrabold text-xs uppercase tracking-wider transition-colors shadow-md"
           >
             Apply for this Role →
@@ -112,7 +112,7 @@ export default async function CareerDetailPage({ params }: CareerDetailProps) {
           <div className="pt-6 border-t border-slate-100">
             <h2 className="text-xl font-bold text-[#0d0d0e] mb-4">How to Apply</h2>
             <p className="text-sm text-slate-600 leading-relaxed mb-4">
-              Send an email to <strong className="text-[#0d0d0e]">careers@ohotech.com</strong> with your resume, GitHub profile or portfolio link, and a brief description of key technical projects you have built.
+              Send an email to <strong className="text-[#0d0d0e]">careers@ohotechn.com</strong> with your resume, GitHub profile or portfolio link, and a brief description of key technical projects you have built.
             </p>
           </div>
         </div>

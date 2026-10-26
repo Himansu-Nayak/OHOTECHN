@@ -235,7 +235,7 @@ export function AdminHeader({
                 {user?.name || 'Administrator'}
               </span>
               <span className="text-[10px] text-slate-500 truncate max-w-[120px]">
-                {user?.email || 'admin@ohotech.com'}
+                {user?.email || 'admin@ohotechn.com'}
               </span>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />

@@ -4,13 +4,24 @@ import * as React from 'react';
 import { 
   ShoppingCart, DollarSign, Users, Package, KeyRound, Layers, 
   ArrowRight, RefreshCw, CheckCircle2, ShieldCheck, Clock,
-  ExternalLink, Server, Database, Sparkles, Inbox, AlertTriangle, CreditCard, Building2, HardDrive
+  ExternalLink, Server, Database, Sparkles, Inbox, AlertTriangle, 
+  CreditCard, Building2, HardDrive, TrendingUp, Calendar as CalendarIcon,
+  Activity, Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AdminTabKey } from './AdminSidebar';
 import { AnalyticsDashboardDto, Order, AdminStatsDto } from '@/api/types';
-import { getAdminOrdersApi, clearAllAdminOrdersApi } from '@/api/orders';
+import { getAdminOrdersApi } from '@/api/orders';
 import { AdminCard, AdminBadge, StatusBadge, AdminButton, AdminEmptyState } from './AdminUiPrimitives';
+import { 
+  V15MetricCard, 
+  V15Card, 
+  V15Sparkline, 
+  V15BarChart, 
+  V15CalendarWidget, 
+  V15ActivityTimeline, 
+  V15ActivityItem 
+} from '@/components/dashboard/V15DashboardPrimitives';
 
 interface AdminDashboardViewProps {
   stats: AdminStatsDto;
@@ -77,53 +88,73 @@ export function AdminDashboardView({
   const activeProviders = stats.activeProviders ?? 0;
   const providerIssues = stats.providerIssues ?? stats.inactiveProviders ?? 0;
 
-  const [isClearingOrders, setIsClearingOrders] = React.useState<boolean>(false);
+  // Real chronological activity events from actual recent orders
+  const activityItems: V15ActivityItem[] = React.useMemo(() => {
+    return recentOrders.slice(0, 5).map((order) => {
+      const formattedAmount = new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+      }).format(Number(order.totalAmount || 0));
 
-  const handleClearAllOrders = async () => {
-    if (!window.confirm('Are you sure you want to clear all orders and related transaction records? This will reset the order ledger for testing/demo.')) {
-      return;
+      return {
+        id: order.id,
+        title: `Order #${order.id} - ${order.user?.name || 'Customer'}`,
+        subtitle: `${formattedAmount} · Payment status: ${order.status}`,
+        timestamp: order.createdAt
+          ? new Date(order.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
+          : 'Recent',
+        icon: ShoppingCart,
+        iconColor: order.status === 'PAID' ? 'text-emerald-600' : 'text-orange-500',
+        badge: <StatusBadge status={order.status} />,
+      };
+    });
+  }, [recentOrders]);
+
+  // Sparkline data representing authentic order volume distribution across recent slots
+  const revenueTrendPoints = React.useMemo(() => {
+    if (recentOrders.length >= 2) {
+      return recentOrders.map((o) => Number(o.totalAmount || 0)).reverse();
     }
-    setIsClearingOrders(true);
-    try {
-      const res = await clearAllAdminOrdersApi();
-      if (res.success) {
-        alert('All orders and associated transactions have been successfully cleared.');
-        handleRefreshAll();
-      } else {
-        alert(res.message || 'Failed to clear orders');
-      }
-    } catch (e: any) {
-      alert(e.message || 'Error clearing orders');
-    } finally {
-      setIsClearingOrders(false);
-    }
-  };
+    return [0, grossRevenue > 0 ? grossRevenue : 1000];
+  }, [recentOrders, grossRevenue]);
+
+  // Bar chart breakdown: Confirmed vs Pending vs Cancelled
+  const orderBreakdownData = React.useMemo(() => {
+    const confirmed = analyticsData?.orderMetrics?.confirmedOrders ?? 0;
+    const pending = analyticsData?.orderMetrics?.pendingOrders ?? 0;
+    const cancelled = analyticsData?.orderMetrics?.cancelledOrders ?? 0;
+
+    return [
+      { label: 'Confirmed', value: confirmed },
+      { label: 'Pending', value: pending },
+      { label: 'Cancelled', value: cancelled },
+    ];
+  }, [analyticsData]);
 
   return (
     <div className="space-y-6">
-      {/* 1. Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      {/* 1. Page Header with V15 Refinement */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Operational Dashboard
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Real-time business status, order telemetry, and system authority.
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Operational Command Center
+            </h1>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-orange-50 text-orange-700 border border-orange-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+              Live PostgreSQL 17
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+            Real-time business status, verified ledger transactions, software licenses, and cloud deployment authority.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] text-slate-400 hidden sm:inline">
+        <div className="flex items-center gap-2.5 shrink-0">
+          <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
             Updated {lastRefreshed}
           </span>
-          <AdminButton
-            variant="danger"
-            size="sm"
-            onClick={handleClearAllOrders}
-            disabled={isClearingOrders}
-          >
-            {isClearingOrders ? 'Clearing...' : 'Clear All Orders'}
-          </AdminButton>
           <AdminButton
             variant="secondary"
             size="sm"
@@ -135,87 +166,120 @@ export function AdminDashboardView({
         </div>
       </div>
 
-      {/* 2. Primary Commercial KPIs */}
+      {/* 2. Primary Commercial KPIs (V15 Card Component with Orange Accents) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Gross Revenue */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Gross Platform Revenue</span>
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
-              <DollarSign className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">
-              {formattedRevenue}
-            </span>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Verified payment transactions in PostgreSQL
-            </p>
-          </div>
-        </div>
+        <V15MetricCard
+          label="Platform Gross Revenue"
+          value={formattedRevenue}
+          subvalue="Reconciled PostgreSQL transaction volume"
+          icon={DollarSign}
+          accentColor="orange"
+          onClick={() => onNavigateTab('payments')}
+        />
 
         {/* Orders Placed */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Orders Processed</span>
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
-              <ShoppingCart className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">
-              {totalOrders}
-            </span>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Total commerce orders recorded
-            </p>
-          </div>
-        </div>
+        <V15MetricCard
+          label="Orders Processed"
+          value={totalOrders}
+          subvalue="Authoritative commerce order ledger"
+          icon={ShoppingCart}
+          accentColor="blue"
+          onClick={() => onNavigateTab('orders')}
+        />
 
         {/* Registered Customers */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Registered Clients</span>
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
-              <Users className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">
-              {totalCustomers}
-            </span>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Active user accounts in directory
-            </p>
-          </div>
-        </div>
+        <V15MetricCard
+          label="Registered Clients"
+          value={totalCustomers}
+          subvalue="Active user accounts in directory"
+          icon={Users}
+          accentColor="emerald"
+          onClick={() => onNavigateTab('customers')}
+        />
 
         {/* Active Entitlements */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-all hover:border-slate-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Active Entitlements</span>
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
-              <KeyRound className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">
-              {activeEntitlements}
-            </span>
-            <p className="text-[11px] text-slate-500 mt-1">
-              {activeSubs} subscriptions &bull; {activeLicenses} license keys
-            </p>
-          </div>
-        </div>
+        <V15MetricCard
+          label="Active Entitlements"
+          value={activeEntitlements}
+          subvalue={`${activeSubs} subscriptions · ${activeLicenses} licenses`}
+          icon={KeyRound}
+          accentColor="purple"
+          onClick={() => onNavigateTab('licenses')}
+        />
       </div>
 
-      {/* 2b. Reseller Operations Live Telemetry Strip */}
+      {/* 3. V15 Visual Analytics Strip: Sparkline Revenue Velocity & Order Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Revenue Velocity Card with Mini Sparkline */}
+        <V15Card
+          title="Revenue Velocity"
+          subtitle="Recent payment settlement sequence"
+          actions={
+            <span className="text-xs font-mono font-bold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full">
+              INR
+            </span>
+          }
+        >
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <div>
+                <span className="text-2xl font-black text-slate-900 tracking-tight">
+                  {formattedRevenue}
+                </span>
+                <p className="text-[11px] text-slate-500 mt-0.5">Verified settlements</p>
+              </div>
+              <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                100% ACID
+              </span>
+            </div>
+
+            <div className="pt-2">
+              <V15Sparkline data={revenueTrendPoints} color="#ea580c" />
+            </div>
+          </div>
+        </V15Card>
+
+        {/* Order Fulfillment Breakdown Bar Chart */}
+        <V15Card
+          title="Fulfillment Distribution"
+          subtitle="Orders by current processing lifecycle"
+          actions={
+            <button
+              onClick={() => onNavigateTab('orders')}
+              className="text-xs font-semibold text-orange-600 hover:text-orange-700 hover:underline cursor-pointer"
+            >
+              Details →
+            </button>
+          }
+        >
+          <div className="space-y-2">
+            <V15BarChart data={orderBreakdownData} activeColor="#ea580c" />
+            <div className="flex items-center justify-between pt-2 text-[11px] text-slate-500 border-t border-slate-100">
+              <span>Total recorded: <strong className="text-slate-800">{totalOrders}</strong></span>
+              <span className="font-mono text-emerald-600 font-bold">
+                {analyticsData?.orderMetrics?.confirmedOrders ?? 0} confirmed
+              </span>
+            </div>
+          </div>
+        </V15Card>
+
+        {/* Live Operational Calendar Widget */}
+        <V15CalendarWidget
+          selectedDate={new Date()}
+          events={recentOrders.map((o) => ({
+            day: o.createdAt ? new Date(o.createdAt).getDate() : new Date().getDate(),
+            count: 1,
+          }))}
+        />
+      </div>
+
+      {/* 4. Reseller Operations Live Telemetry Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Active Products */}
         <div 
           onClick={() => onNavigateTab('products')}
-          className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all cursor-pointer flex items-center justify-between"
+          className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xs hover:border-slate-300 transition-all cursor-pointer flex items-center justify-between"
         >
           <div className="space-y-0.5">
             <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Active Products</span>
@@ -223,7 +287,7 @@ export function AdminDashboardView({
               {activeProducts} <span className="text-xs font-normal text-slate-400">/ {totalProducts} in catalog</span>
             </div>
           </div>
-          <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+          <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
             <Package className="w-4 h-4" />
           </div>
         </div>
@@ -232,7 +296,7 @@ export function AdminDashboardView({
         <div 
           onClick={() => onNavigateTab('deployments')}
           className={cn(
-            "rounded-xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
+            "rounded-2xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
             pendingDeployments > 0 
               ? "bg-amber-50/40 border-amber-200/80 hover:border-amber-300" 
               : "bg-white border-slate-200/80 hover:border-slate-300"
@@ -245,7 +309,7 @@ export function AdminDashboardView({
             </div>
           </div>
           <div className={cn(
-            "p-2 rounded-lg border",
+            "p-2 rounded-xl border",
             pendingDeployments > 0 ? "bg-amber-100 text-amber-800 border-amber-200" : "bg-slate-50 text-slate-600 border-slate-100"
           )}>
             <HardDrive className="w-4 h-4" />
@@ -256,7 +320,7 @@ export function AdminDashboardView({
         <div 
           onClick={() => onNavigateTab('payments')}
           className={cn(
-            "rounded-xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
+            "rounded-2xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
             failedPayments > 0 
               ? "bg-rose-50/40 border-rose-200/80 hover:border-rose-300" 
               : "bg-white border-slate-200/80 hover:border-slate-300"
@@ -269,7 +333,7 @@ export function AdminDashboardView({
             </div>
           </div>
           <div className={cn(
-            "p-2 rounded-lg border",
+            "p-2 rounded-xl border",
             failedPayments > 0 ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-slate-50 text-slate-600 border-slate-100"
           )}>
             <CreditCard className="w-4 h-4" />
@@ -280,7 +344,7 @@ export function AdminDashboardView({
         <div 
           onClick={() => onNavigateTab('providers')}
           className={cn(
-            "rounded-xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
+            "rounded-2xl p-4 shadow-xs transition-all cursor-pointer flex items-center justify-between border",
             providerIssues > 0 
               ? "bg-amber-50/40 border-amber-200/80 hover:border-amber-300" 
               : "bg-white border-slate-200/80 hover:border-slate-300"
@@ -293,7 +357,7 @@ export function AdminDashboardView({
             </div>
           </div>
           <div className={cn(
-            "p-2 rounded-lg border",
+            "p-2 rounded-xl border",
             providerIssues > 0 ? "bg-amber-100 text-amber-800 border-amber-200" : "bg-slate-50 text-slate-600 border-slate-100"
           )}>
             <Building2 className="w-4 h-4" />
@@ -301,13 +365,13 @@ export function AdminDashboardView({
         </div>
       </div>
 
-      {/* 3. Operational Sections: Recent Orders & System Authority */}
+      {/* 5. Operational Sections: Recent Orders & System Authority */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Recent Orders Table */}
         <div className="lg:col-span-2">
           <AdminCard
             title="Recent Customer Orders"
-            subtitle="Most recent transactions needing processing or delivery"
+            subtitle="Authoritative transaction ledger records awaiting delivery"
             actions={
               <AdminButton
                 variant="ghost"
@@ -379,7 +443,7 @@ export function AdminDashboardView({
                           <td className="px-5 py-3.5 text-right">
                             <button
                               onClick={() => onNavigateTab('orders')}
-                              className="text-xs font-semibold text-slate-700 hover:text-slate-900 cursor-pointer"
+                              className="text-xs font-semibold text-orange-600 hover:text-orange-700 cursor-pointer"
                             >
                               Manage
                             </button>
@@ -394,60 +458,15 @@ export function AdminDashboardView({
           </AdminCard>
         </div>
 
-        {/* Right 1 Col: Platform Authority & Direct Shortcuts */}
+        {/* Right 1 Col: Platform Authority & Activity Feed */}
         <div className="space-y-6">
-          {/* Quick Administrative Actions */}
-          <AdminCard title="Quick Management" subtitle="Frequent administrative operations">
-            <div className="space-y-2">
-              <button
-                onClick={() => onNavigateTab('products')}
-                className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200/80 hover:bg-slate-50 transition-colors text-left group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-slate-100 text-slate-700">
-                    <Package className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-semibold text-slate-900 block">Catalog Inventory</span>
-                    <span className="text-[11px] text-slate-500">{activeProducts} Active of {totalProducts} Total</span>
-                  </div>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all" />
-              </button>
-
-              <button
-                onClick={() => onNavigateTab('leads')}
-                className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200/80 hover:bg-slate-50 transition-colors text-left group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-slate-100 text-slate-700">
-                    <Inbox className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-semibold text-slate-900 block">Inquiries &amp; Quotes</span>
-                    <span className="text-[11px] text-slate-500">{stats.totalQuotes} Leads Recorded</span>
-                  </div>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all" />
-              </button>
-
-              <button
-                onClick={() => onNavigateTab('customer-360')}
-                className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200/80 hover:bg-slate-50 transition-colors text-left group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-slate-100 text-slate-700">
-                    <Users className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-semibold text-slate-900 block">Customer 360</span>
-                    <span className="text-[11px] text-slate-500">Comprehensive CRM View</span>
-                  </div>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all" />
-              </button>
-            </div>
-          </AdminCard>
+          {/* V15 Chronological Activity Timeline */}
+          <V15Card
+            title="Activity Feed"
+            subtitle="Real transaction & entitlement telemetry"
+          >
+            <V15ActivityTimeline items={activityItems} />
+          </V15Card>
 
           {/* System Authority Status */}
           <AdminCard title="Integration Services" subtitle="Production platform components">

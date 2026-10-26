@@ -66,7 +66,7 @@ const ESTIMATE_MATRIX: Record<ProjectType, Record<ScaleLevel, EstimateSpec>> = {
     },
     growth: {
       timeline: '6 - 9 Weeks',
-      recommendedStack: 'Next.js + Go Microservices + PostgreSQL + Redis + BullMQ',
+      recommendedStack: 'Next.js 16 + Spring Boot (Java 21) + PostgreSQL 17 + Redis',
       architectureTier: 'High-Concurrency Multi-Branch ERP',
       includedFeatures: ['Custom Inventory & Ledger Sync', 'Payment Gateway Integration', 'Automated WhatsApp & SMS Gateway', 'Real-Time Telemetry Dashboard']
     },

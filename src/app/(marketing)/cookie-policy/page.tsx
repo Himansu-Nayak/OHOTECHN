@@ -61,7 +61,7 @@ export default function CookiePolicyPage() {
           <div className="pt-6 border-t border-slate-100">
             <h2 className="text-lg font-bold text-[#0d0d0e] mb-2">Questions</h2>
             <p>
-              Contact <strong className="text-[#0d0d0e]">hello@ohotech.com</strong> for questions about our cookie usage.
+              Contact <strong className="text-[#0d0d0e]">hello@ohotechn.com</strong> for questions about our cookie usage.
             </p>
           </div>
         </div>

@@ -7,7 +7,7 @@ import {
   Terminal, Shield, Key, Database, Cpu, Bot, CheckCircle2, 
   AlertTriangle, RefreshCw, Zap, Server, Smartphone, 
   Activity, ExternalLink, Copy, Check, Plus, Trash2, 
-  Send, Layers, ShieldCheck
+  Send, Layers, ShieldCheck, Clock, ArrowRight, Laptop, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
@@ -32,6 +32,11 @@ import {
 import { getAdminUsersApi, updateAdminUserRoleApi } from '@/api/users';
 import { getAdminStatsApi } from '@/api/admin';
 import { AdminDeploymentsView } from '@/components/admin/AdminDeploymentsView';
+import { 
+  V15MetricCard, 
+  V15Card, 
+  V15CalendarWidget 
+} from '@/components/dashboard/V15DashboardPrimitives';
 
 export default function DeveloperStudioPage() {
   const router = useRouter();
@@ -154,7 +159,7 @@ export default function DeveloperStudioPage() {
   };
 
   // --- 4. Webhooks Simulator State ---
-  const [webhookTargetUrl, setWebhookTargetUrl] = React.useState('https://api.ohotech.com/webhooks/listener');
+  const [webhookTargetUrl, setWebhookTargetUrl] = React.useState('https://api.ohotechn.com/webhooks/listener');
   const [webhookEvent, setWebhookEvent] = React.useState('order.completed');
   const [webhookLogs, setWebhookLogs] = React.useState<WebhookEventDto[]>([]);
   const [isLoadingWebhooks, setIsLoadingWebhooks] = React.useState(false);
@@ -303,39 +308,37 @@ export default function DeveloperStudioPage() {
   }, [activeTab, startDateStr, endDateStr, fetchAnalytics, fetchApiKeys, fetchWebhookLogs, fetchDiagnostics, fetchUsers]);
 
   return (
-    <div className="bg-[#0a0a0c] text-[#f1f1f3] min-h-screen selection:bg-purple-500 selection:text-white pb-16 font-sans">
-      {/* Dev Top Bar */}
-      <header className="sticky top-0 z-40 w-full bg-[#0d0d0e]/95 backdrop-blur-xl border-b border-white/10 shadow-lg">
-        <div className="px-4 lg:px-8 py-3 flex items-center justify-between gap-4">
+    <div className="bg-[#f8f9fa] text-slate-900 min-h-screen selection:bg-orange-500 selection:text-white pb-16 font-sans">
+      {/* Dev Top Bar - V15 Aesthetic */}
+      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-xs">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 p-0.5 flex items-center justify-center shadow-lg shadow-purple-950/40">
-              <div className="w-full h-full bg-[#0d0d0e] rounded-[10px] flex items-center justify-center">
-                <Terminal className="w-4 h-4 text-purple-400" />
-              </div>
+            <div className="w-9 h-9 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-xs">
+              <Terminal className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-black tracking-tight text-white uppercase font-mono">DEVELOPER STUDIO</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-500/20 border border-purple-500/30 text-purple-300">
+                <span className="text-sm font-extrabold tracking-tight text-slate-900 font-mono">DEVELOPER STUDIO</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-orange-50 border border-orange-200 text-orange-700">
                   SYSTEM CORE
                 </span>
               </div>
-              <p className="text-[10px] font-mono text-slate-400">Node v21 · Spring Boot 4.0 · PostgreSQL 17</p>
+              <p className="text-[11px] font-mono text-slate-500">Node v25 · Spring Boot 4.0 · PostgreSQL 17</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-slate-300 hover:text-white transition-all flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 text-xs font-semibold text-slate-700 transition-all flex items-center gap-1.5 shadow-xs"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <ShieldCheck className="w-3.5 h-3.5 text-orange-600" />
               <span>Admin Console</span>
               <ExternalLink className="w-3 h-3 text-slate-400 ml-0.5" />
             </Link>
 
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-mono font-semibold text-emerald-700">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>LIVE SYSTEM: {diagnostics?.status || 'OPERATIONAL'}</span>
             </div>
           </div>
@@ -343,42 +346,40 @@ export default function DeveloperStudioPage() {
       </header>
 
       {/* Main Dev Container */}
-      <main className="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8 font-mono">
-        {/* Banner Section */}
-        <section className="bg-[#141416] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+      <main className="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+        {/* Banner Section with V15 Aesthetics */}
+        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-xs relative overflow-hidden">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase">
-                  INFRASTRUCTURE CONTROL
-                </span>
-                <span className="text-xs text-slate-400">ROLE_DEVELOPER FULL SYSTEM VAULT</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 font-mono text-xs font-bold uppercase tracking-wider mb-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                INFRASTRUCTURE CONTROL &amp; API VAULT
               </div>
-              <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-                System Infrastructure &amp; API Vault Studio
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                System Infrastructure &amp; Engineering Operations
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
                 Generate programmatic API keys, dispatch simulated webhooks, audit real-time JVM telemetry, and execute DevOps operations.
               </p>
             </div>
 
             {/* Mode Selector */}
-            <div className="p-1.5 rounded-2xl bg-[#19191d] border border-white/10 flex items-center shrink-0">
+            <div className="p-1 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center shrink-0">
               <button
                 onClick={() => setControlMode('manual')}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-                  controlMode === 'manual' ? "bg-purple-600 text-white shadow-md" : "text-slate-400 hover:text-white"
+                  "px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer",
+                  controlMode === 'manual' ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
                 )}
               >
-                <Cpu className="w-3.5 h-3.5" />
+                <Cpu className="w-3.5 h-3.5 text-orange-600" />
                 <span>Manual Console</span>
               </button>
               <button
                 onClick={() => setControlMode('ai')}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-                  controlMode === 'ai' ? "bg-emerald-500 text-black shadow-md font-black" : "text-slate-400 hover:text-white"
+                  "px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer",
+                  controlMode === 'ai' ? "bg-orange-600 text-white shadow-xs font-bold" : "text-slate-600 hover:text-slate-900"
                 )}
               >
                 <Bot className="w-3.5 h-3.5" />
@@ -389,17 +390,17 @@ export default function DeveloperStudioPage() {
         </section>
 
         {/* Tab Navigation */}
-        <section className="bg-[#141416] border border-white/10 rounded-2xl p-2 shadow-lg">
-          <div className="flex items-center gap-1.5 overflow-x-auto text-xs font-bold">
+        <section className="bg-white border border-slate-200/90 rounded-2xl p-1.5 shadow-xs overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-1.5 text-xs font-semibold min-w-max">
             {[
-              { key: 'deployments', label: '🚀 Deployments & Provisioning', icon: Layers },
-              { key: 'analytics', label: '📱 Telemetry & Downloads', icon: Smartphone },
-              { key: 'vault', label: '🔐 API Keys & Vault', icon: Key },
-              { key: 'webhooks', label: '⚡ Webhook Simulator', icon: Zap },
-              { key: 'telemetry', label: '🖥️ System Telemetry', icon: Server },
-              { key: 'rbac', label: '👥 RBAC Manager', icon: Shield },
-              { key: 'seed', label: '🗄️ Database Health', icon: Database },
-              { key: 'ai', label: '🤖 Dev AI Terminal', icon: Bot, isAi: true },
+              { key: 'deployments', label: 'Deployments & Provisioning', icon: Layers },
+              { key: 'analytics', label: 'Telemetry & Downloads', icon: Smartphone },
+              { key: 'vault', label: 'API Keys & Vault', icon: Key },
+              { key: 'webhooks', label: 'Webhook Simulator', icon: Zap },
+              { key: 'telemetry', label: 'System Telemetry', icon: Server },
+              { key: 'rbac', label: 'RBAC Manager', icon: Shield },
+              { key: 'seed', label: 'Database Health', icon: Database },
+              { key: 'ai', label: 'Dev AI Terminal', icon: Bot, isAi: true },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.key;
@@ -408,15 +409,13 @@ export default function DeveloperStudioPage() {
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key as any)}
                   className={cn(
-                    "px-4 py-2.5 rounded-xl transition-all whitespace-nowrap cursor-pointer flex items-center gap-2",
+                    "px-3.5 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer flex items-center gap-2",
                     isActive
-                      ? tab.isAi
-                        ? "bg-purple-600 text-white shadow-lg shadow-purple-950/50"
-                        : "bg-white/10 text-white border border-white/15"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
                   )}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className={cn("w-3.5 h-3.5", isActive ? (tab.isAi ? "text-orange-400" : "text-orange-400") : "text-slate-500")} />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -434,85 +433,91 @@ export default function DeveloperStudioPage() {
         {/* TAB: ANALYTICS & DOWNLOADS */}
         {activeTab === 'analytics' && (
           <section className="space-y-6 animate-in fade-in duration-300">
-            <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Smartphone className="w-4 h-4 text-purple-400" />
-                  <span>Developer Device &amp; Download Telemetry</span>
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Real-time hardware activations, download metrics, and system audit trails.</p>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs">
+            <V15Card
+              title="Developer Device & Download Telemetry"
+              subtitle="Real-time hardware activations, download metrics, and system audit trails."
+              actions={
                 <button
                   onClick={() => fetchAnalytics(startDateStr || undefined, endDateStr || undefined)}
-                  className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
                 >
                   <RefreshCw className={cn("w-3.5 h-3.5", isLoadingAnalytics && "animate-spin")} />
                   <span>Refresh Telemetry</span>
                 </button>
-              </div>
-            </div>
-
-            {isLoadingAnalytics ? (
-              <div className="p-12 text-center text-xs text-slate-400 bg-[#141416] border border-white/10 rounded-2xl">
-                Loading telemetry data...
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="p-5 rounded-2xl bg-[#141416] border border-emerald-500/30">
-                    <span className="text-slate-400 text-xs">Active Devices</span>
-                    <p className="text-3xl font-black text-white mt-1">{analytics?.deviceMetrics?.activeDevices ?? 0}</p>
-                    <p className="text-[10px] text-emerald-400 mt-1">Total: {analytics?.deviceMetrics?.totalActivations ?? 0} activations</p>
-                  </div>
-                  <div className="p-5 rounded-2xl bg-[#141416] border border-purple-500/30">
-                    <span className="text-slate-400 text-xs">Activations Today</span>
-                    <p className="text-3xl font-black text-white mt-1">{analytics?.deviceMetrics?.activationsToday ?? 0}</p>
-                    <p className="text-[10px] text-purple-400 mt-1">This month: {analytics?.deviceMetrics?.activationsThisMonth ?? 0}</p>
-                  </div>
-                  <div className="p-5 rounded-2xl bg-[#141416] border border-blue-500/30">
-                    <span className="text-slate-400 text-xs">Release Downloads</span>
-                    <p className="text-3xl font-black text-white mt-1">{analytics?.downloadMetrics?.totalDownloads ?? 0}</p>
-                    <p className="text-[10px] text-blue-400 mt-1">Today: {analytics?.downloadMetrics?.downloadsToday ?? 0}</p>
-                  </div>
-                  <div className="p-5 rounded-2xl bg-[#141416] border border-amber-500/30">
-                    <span className="text-slate-400 text-xs">Platforms Monitored</span>
-                    <p className="text-3xl font-black text-white mt-1">{analytics?.platformStats?.length ?? 5} OS Targets</p>
-                    <p className="text-[10px] text-amber-400 mt-1">Win, Mac, Linux, Android, Web</p>
-                  </div>
+              }
+            >
+              {isLoadingAnalytics ? (
+                <div className="p-12 text-center text-xs text-slate-500">
+                  Loading telemetry data...
                 </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <V15MetricCard
+                      label="Active Devices"
+                      value={analytics?.deviceMetrics?.activeDevices ?? 0}
+                      trend={{ direction: 'up', value: 'Live' }}
+                      subvalue={`Total: ${analytics?.deviceMetrics?.totalActivations ?? 0} activations`}
+                      accentColor="emerald"
+                      icon={Smartphone}
+                    />
+                    <V15MetricCard
+                      label="Activations Today"
+                      value={analytics?.deviceMetrics?.activationsToday ?? 0}
+                      trend={{ direction: 'up', value: 'Today' }}
+                      subvalue={`This month: ${analytics?.deviceMetrics?.activationsThisMonth ?? 0}`}
+                      accentColor="purple"
+                      icon={Activity}
+                    />
+                    <V15MetricCard
+                      label="Release Downloads"
+                      value={analytics?.downloadMetrics?.totalDownloads ?? 0}
+                      trend={{ direction: 'neutral', value: 'All-time' }}
+                      subvalue={`Today: ${analytics?.downloadMetrics?.downloadsToday ?? 0}`}
+                      accentColor="blue"
+                      icon={Layers}
+                    />
+                    <V15MetricCard
+                      label="Platforms Monitored"
+                      value={`${analytics?.platformStats?.length ?? 5} OS Targets`}
+                      trend={{ direction: 'neutral', value: 'Supported' }}
+                      subvalue="Win, Mac, Linux, Android, Web"
+                      accentColor="orange"
+                      icon={Server}
+                    />
+                  </div>
 
-                <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-3">
-                  <h4 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-white/10">
-                    <Activity className="w-4 h-4 text-emerald-400" />
-                    <span>Recent Technical Event Trace</span>
-                  </h4>
-                  <div className="space-y-2 text-xs">
-                    {(analytics?.recentActivity && analytics.recentActivity.length > 0) ? (
-                      analytics.recentActivity.map((item, idx) => (
-                        <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold text-[10px]">
-                                {item.action}
-                              </span>
-                              <span className="font-bold text-white">{item.actorEmail || 'System'}</span>
+                  <div className="border-t border-slate-100 pt-5">
+                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <Activity className="w-3.5 h-3.5 text-orange-600" />
+                      <span>Recent Technical Event Trace</span>
+                    </h4>
+                    <div className="space-y-2 text-xs">
+                      {(analytics?.recentActivity && analytics.recentActivity.length > 0) ? (
+                        analytics.recentActivity.map((item, idx) => (
+                          <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-200/60 flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded bg-orange-50 text-orange-700 font-bold text-[10px] border border-orange-200">
+                                  {item.action}
+                                </span>
+                                <span className="font-bold text-slate-800">{item.actorEmail || 'System'}</span>
+                              </div>
+                              <p className="text-slate-500 text-[11px] mt-1">{item.description}</p>
                             </div>
-                            <p className="text-slate-400 text-[11px] mt-1">{item.description}</p>
+                            <span className="text-slate-400 text-[11px] shrink-0 font-mono">
+                              {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                           </div>
-                          <span className="text-slate-400 text-[11px] shrink-0 font-mono">
-                            {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-slate-500 text-xs py-3 text-center">No recent telemetry events recorded.</p>
-                    )}
+                        ))
+                      ) : (
+                        <p className="text-slate-400 text-xs py-4 text-center">No recent telemetry events recorded.</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </>
-            )}
+              )}
+            </V15Card>
           </section>
         )}
 
@@ -520,89 +525,92 @@ export default function DeveloperStudioPage() {
         {activeTab === 'vault' && (
           <section className="space-y-6 animate-in fade-in duration-300">
             {/* Generate Key Form */}
-            <form onSubmit={handleGenerateApiKey} className="p-5 rounded-2xl bg-[#141416] border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex-1">
-                <label className="block text-xs text-slate-400 mb-1">Generate Programmatic Secret API Key</label>
-                <input
-                  type="text"
-                  placeholder="Key description (e.g. Analytics Pipeline Token)..."
-                  value={newKeyName}
-                  onChange={(e) => setNewKeyName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={isCreatingKey || !newKeyName.trim()}
-                className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer self-end sm:self-auto disabled:opacity-50"
-              >
-                <Plus className="w-4 h-4" />
-                <span>{isCreatingKey ? 'Creating...' : 'Create Key'}</span>
-              </button>
-            </form>
+            <V15Card
+              title="Generate Programmatic Secret API Key"
+              subtitle="Issue scoped API keys for automated integrations and background daemons."
+            >
+              <form onSubmit={handleGenerateApiKey} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder="Key description (e.g. Analytics Pipeline Token)..."
+                    value={newKeyName}
+                    onChange={(e) => setNewKeyName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-orange-500"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isCreatingKey || !newKeyName.trim()}
+                  className="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs flex items-center gap-2 cursor-pointer self-end sm:self-auto disabled:opacity-50 shadow-xs transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>{isCreatingKey ? 'Creating...' : 'Create Key'}</span>
+                </button>
+              </form>
 
-            {/* Secret key banner (if newly generated) */}
-            {newCreatedSecret && (
-              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-2">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="flex items-center gap-1.5 text-amber-400">
-                    <AlertTriangle className="w-4 h-4" />
-                    Copy Secret Key Now
-                  </span>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(newCreatedSecret);
-                      showToast('Secret key copied to clipboard!', 'success');
-                    }}
-                    className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 rounded-lg text-amber-300 flex items-center gap-1 cursor-pointer font-mono"
-                  >
-                    <Copy className="w-3.5 h-3.5" /> Copy Secret
-                  </button>
+              {/* Secret key banner (if newly generated) */}
+              {newCreatedSecret && (
+                <div className="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+                  <div className="flex items-center justify-between font-bold">
+                    <span className="flex items-center gap-1.5 text-amber-800">
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      Copy Secret Key Now
+                    </span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(newCreatedSecret);
+                        showToast('Secret key copied to clipboard!', 'success');
+                      }}
+                      className="px-3 py-1 bg-amber-100 hover:bg-amber-200 rounded-lg text-amber-900 flex items-center gap-1 cursor-pointer font-mono font-semibold"
+                    >
+                      <Copy className="w-3.5 h-3.5" /> Copy Secret
+                    </button>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white border border-amber-200 font-mono text-[11px] text-amber-950 break-all select-all">
+                    {newCreatedSecret}
+                  </div>
+                  <p className="text-[10px] text-amber-700">
+                    This secret is shown only once and cannot be retrieved later. Store it in your secure secrets manager.
+                  </p>
                 </div>
-                <div className="p-2.5 rounded-xl bg-black/40 font-mono text-[11px] text-amber-300 break-all select-all">
-                  {newCreatedSecret}
-                </div>
-                <p className="text-[10px] text-slate-400">
-                  This secret is shown only once and cannot be retrieved later. Store it in your secure secrets manager.
-                </p>
-              </div>
-            )}
+              )}
+            </V15Card>
 
             {/* Keys Table */}
-            <div className="bg-[#141416] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
-              <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-                  <Key className="w-4 h-4 text-purple-400" /> Active API Keys ({apiKeys.length})
-                </span>
+            <V15Card
+              title={`Active API Keys (${apiKeys.length})`}
+              subtitle="Inspect and manage active authentication tokens."
+              actions={
                 <button
                   onClick={fetchApiKeys}
-                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
+                  className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer"
                 >
-                  <RefreshCw className={cn("w-3 h-3", isLoadingApiKeys && "animate-spin")} />
+                  <RefreshCw className={cn("w-3.5 h-3.5", isLoadingApiKeys && "animate-spin")} />
                   <span>Refresh</span>
                 </button>
-              </div>
-
+              }
+            >
               {isLoadingApiKeys ? (
                 <div className="p-8 text-center text-xs text-slate-400">Loading API keys...</div>
               ) : apiKeys.length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-400">No active API keys found. Generate one above.</div>
               ) : (
-                <div className="divide-y divide-white/5 text-xs">
+                <div className="divide-y divide-slate-100 text-xs">
                   {apiKeys.map((key) => (
-                    <div key={key.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/5 transition-colors">
+                    <div key={key.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/50 transition-colors">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-white">{key.name}</span>
+                          <span className="font-bold text-slate-900">{key.name}</span>
                           <span className={cn(
-                            "px-2 py-0.5 rounded text-[10px] font-bold",
-                            key.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
+                            "px-2 py-0.5 rounded text-[10px] font-bold border",
+                            key.active ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"
                           )}>
                             {key.active ? 'ACTIVE' : 'REVOKED'}
                           </span>
                         </div>
-                        <p className="text-purple-400 font-mono text-[11px] mt-0.5">{key.keyPrefix}••••••••</p>
-                        <p className="text-slate-400 text-[10px] mt-0.5">
+                        <p className="text-orange-600 font-mono text-[11px] mt-0.5">{key.keyPrefix}••••••••</p>
+                        <p className="text-slate-500 text-[10px] mt-0.5">
                           Created: {new Date(key.createdAt).toLocaleDateString()} • Scope: {key.scope} • By: {key.createdByEmail || 'Developer'}
                         </p>
                       </div>
@@ -611,7 +619,7 @@ export default function DeveloperStudioPage() {
                         {key.active && (
                           <button
                             onClick={() => handleRevokeApiKey(key.id)}
-                            className="px-3 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-[11px] cursor-pointer"
+                            className="px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-semibold cursor-pointer transition-colors"
                           >
                             Revoke
                           </button>
@@ -621,78 +629,77 @@ export default function DeveloperStudioPage() {
                   ))}
                 </div>
               )}
-            </div>
+            </V15Card>
           </section>
         )}
 
         {/* TAB: WEBHOOKS SIMULATOR */}
         {activeTab === 'webhooks' && (
           <section className="space-y-6 animate-in fade-in duration-300">
-            <form onSubmit={handleTriggerWebhookTest} className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-cyan-400" /> Outbound Webhook Test Simulator
-                </span>
-                <span className="text-[10px] text-slate-400 font-mono">Live HTTP POST Dispatcher</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">Destination Webhook URL</label>
-                  <input
-                    type="text"
-                    value={webhookTargetUrl}
-                    onChange={(e) => setWebhookTargetUrl(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500 font-mono text-xs"
-                  />
+            <V15Card
+              title="Outbound Webhook Test Simulator"
+              subtitle="Dispatch test payloads to external endpoints to verify delivery hooks."
+            >
+              <form onSubmit={handleTriggerWebhookTest} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <label className="block text-slate-600 font-medium text-[11px] mb-1">Destination Webhook URL</label>
+                    <input
+                      type="text"
+                      value={webhookTargetUrl}
+                      onChange={(e) => setWebhookTargetUrl(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-orange-500 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-600 font-medium text-[11px] mb-1">Simulated Trigger Event</label>
+                    <select
+                      value={webhookEvent}
+                      onChange={(e) => setWebhookEvent(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none text-xs font-mono"
+                    >
+                      <option value="order.completed">order.completed</option>
+                      <option value="license.activated">license.activated</option>
+                      <option value="deployment.live">deployment.live</option>
+                      <option value="lead.created">lead.created</option>
+                      <option value="subscription.renewed">subscription.renewed</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">Simulated Trigger Event</label>
-                  <select
-                    value={webhookEvent}
-                    onChange={(e) => setWebhookEvent(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#19191d] border border-white/10 rounded-xl text-white focus:outline-none text-xs font-mono"
+
+                {lastPingResult && (
+                  <div className="p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs font-mono text-sky-900">
+                    {lastPingResult}
+                  </div>
+                )}
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    disabled={isPingingWebhook}
+                    className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-xs transition-colors"
                   >
-                    <option value="order.completed">order.completed</option>
-                    <option value="license.activated">license.activated</option>
-                    <option value="deployment.live">deployment.live</option>
-                    <option value="lead.created">lead.created</option>
-                    <option value="subscription.renewed">subscription.renewed</option>
-                  </select>
+                    <Send className={cn("w-3.5 h-3.5", isPingingWebhook && "animate-spin")} />
+                    <span>{isPingingWebhook ? 'Pinging Endpoint...' : 'Send Live Test Ping'}</span>
+                  </button>
                 </div>
-              </div>
-
-              {lastPingResult && (
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-cyan-300">
-                  {lastPingResult}
-                </div>
-              )}
-
-              <div className="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  disabled={isPingingWebhook}
-                  className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  <Send className={cn("w-3.5 h-3.5", isPingingWebhook && "animate-spin")} />
-                  <span>{isPingingWebhook ? 'Pinging Endpoint...' : 'Send Live Test Ping'}</span>
-                </button>
-              </div>
-            </form>
+              </form>
+            </V15Card>
 
             {/* Webhook Delivery Logs */}
-            <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                <span className="text-xs font-bold uppercase text-white">Delivery History Stream ({webhookLogs.length})</span>
+            <V15Card
+              title={`Delivery History Stream (${webhookLogs.length})`}
+              subtitle="Audit log of dispatched webhook events and HTTP return codes."
+              actions={
                 <button
                   onClick={fetchWebhookLogs}
-                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
+                  className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer"
                 >
-                  <RefreshCw className={cn("w-3 h-3", isLoadingWebhooks && "animate-spin")} />
+                  <RefreshCw className={cn("w-3.5 h-3.5", isLoadingWebhooks && "animate-spin")} />
                   <span>Refresh</span>
                 </button>
-              </div>
-
+              }
+            >
               {isLoadingWebhooks ? (
                 <div className="p-8 text-center text-xs text-slate-400">Loading delivery stream...</div>
               ) : webhookLogs.length === 0 ? (
@@ -700,22 +707,22 @@ export default function DeveloperStudioPage() {
               ) : (
                 <div className="space-y-2 text-xs">
                   {webhookLogs.map((log) => (
-                    <div key={log.id} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+                    <div key={log.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200/60 flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-white font-mono">{log.eventType}</span>
-                          <span className="text-[10px] text-slate-400">Source: {log.provider}</span>
+                          <span className="font-bold text-slate-900 font-mono">{log.eventType}</span>
+                          <span className="text-[10px] text-slate-500">Source: {log.provider}</span>
                         </div>
                         {log.payloadSummary && (
-                          <p className="text-slate-400 text-[10px] mt-0.5 font-mono truncate max-w-lg">{log.payloadSummary}</p>
+                          <p className="text-slate-500 text-[10px] mt-0.5 font-mono truncate max-w-lg">{log.payloadSummary}</p>
                         )}
-                        <span className="text-[10px] text-slate-500">{new Date(log.receivedAt).toLocaleString()}</span>
+                        <span className="text-[10px] text-slate-400">{new Date(log.receivedAt).toLocaleString()}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className={cn(
-                          "px-2 py-0.5 rounded font-bold text-[10px]",
-                          log.status === 'PROCESSED' ? "bg-emerald-500/20 text-emerald-300" :
-                          log.status === 'FAILED' ? "bg-rose-500/20 text-rose-300" : "bg-amber-500/20 text-amber-300"
+                          "px-2 py-0.5 rounded font-bold text-[10px] border",
+                          log.status === 'PROCESSED' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                          log.status === 'FAILED' ? "bg-rose-50 text-rose-700 border-rose-200" : "bg-amber-50 text-amber-700 border-amber-200"
                         )}>
                           {log.status}
                         </span>
@@ -724,21 +731,21 @@ export default function DeveloperStudioPage() {
                   ))}
                 </div>
               )}
-            </div>
+            </V15Card>
           </section>
         )}
 
         {/* TAB: SYSTEM TELEMETRY */}
         {activeTab === 'telemetry' && (
           <section className="space-y-6 animate-in fade-in duration-300">
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#141416] border border-white/10">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
               <div>
-                <h3 className="text-sm font-bold text-white">Live JVM &amp; Host Infrastructure Telemetry</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Real-time telemetry reported directly by Spring Boot JMX MXBeans.</p>
+                <h3 className="text-sm font-bold text-slate-900">Live JVM &amp; Host Infrastructure Telemetry</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Real-time telemetry reported directly by Spring Boot JMX MXBeans.</p>
               </div>
               <button
                 onClick={fetchDiagnostics}
-                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
               >
                 <RefreshCw className={cn("w-3.5 h-3.5", isLoadingDiagnostics && "animate-spin")} />
                 <span>Refresh Live</span>
@@ -746,223 +753,227 @@ export default function DeveloperStudioPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-4">
-                <h4 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-white/10">
-                  <Cpu className="w-4 h-4 text-emerald-400" />
-                  <span>Backend JVM &amp; Container Health</span>
-                </h4>
-                <div className="space-y-3 text-xs text-slate-300">
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+              <V15Card
+                title="Backend JVM & Container Health"
+                subtitle="Memory allocations, active threads, and platform specifications."
+              >
+                <div className="space-y-2.5 text-xs text-slate-600">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>Active Spring Profiles:</span>
-                    <span className="font-bold text-white font-mono">
+                    <span className="font-bold text-slate-900 font-mono">
                       {diagnostics?.springActiveProfiles && diagnostics.springActiveProfiles.length > 0
                         ? diagnostics.springActiveProfiles.join(', ')
                         : 'default'}
                     </span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>Java Runtime:</span>
-                    <span className="font-bold text-white font-mono">
+                    <span className="font-bold text-slate-900 font-mono">
                       Java {diagnostics?.jvmVersion || '21'} ({diagnostics?.javaVendor || 'OpenJDK'})
                     </span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>Host Platform / OS:</span>
-                    <span className="font-bold text-white font-mono">
+                    <span className="font-bold text-slate-900 font-mono">
                       {diagnostics?.osName || 'Host'} ({diagnostics?.osArch || 'x64'})
                     </span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>JVM Heap Allocation:</span>
-                    <span className="font-bold text-emerald-400 font-mono">
+                    <span className="font-bold text-orange-600 font-mono">
                       {diagnostics?.heapUsedBytes ? (diagnostics.heapUsedBytes / (1024 * 1024)).toFixed(1) : 0} MB / {' '}
                       {diagnostics?.heapMaxBytes ? (diagnostics.heapMaxBytes / (1024 * 1024)).toFixed(1) : 0} MB ({diagnostics?.heapUsedPercent ?? 0}%)
                     </span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>Active JVM Threads:</span>
-                    <span className="font-bold text-white font-mono">{diagnostics?.activeThreadCount ?? 0} Threads</span>
+                    <span className="font-bold text-slate-900 font-mono">{diagnostics?.activeThreadCount ?? 0} Threads</span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>System Uptime:</span>
-                    <span className="font-bold text-white font-mono">
+                    <span className="font-bold text-slate-900 font-mono">
                       {diagnostics?.systemUptimeMs ? Math.floor(diagnostics.systemUptimeMs / 60000) : 0} mins ({diagnostics?.systemUptimeMs ? (diagnostics.systemUptimeMs / 3600000).toFixed(1) : 0} hrs)
                     </span>
                   </div>
                 </div>
-              </div>
+              </V15Card>
 
-              <div className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-4">
-                <h4 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-white/10">
-                  <Database className="w-4 h-4 text-blue-400" />
-                  <span>PostgreSQL 17 Connection Pool</span>
-                </h4>
-                <div className="space-y-3 text-xs text-slate-300">
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+              <V15Card
+                title="PostgreSQL 17 Connection Pool"
+                subtitle="HikariCP connection states and JDBC target status."
+              >
+                <div className="space-y-2.5 text-xs text-slate-600">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>Database JDBC Target:</span>
-                    <span className="font-bold text-white font-mono text-[11px] truncate max-w-[220px]">
+                    <span className="font-bold text-slate-900 font-mono text-[11px] truncate max-w-[220px]">
                       {diagnostics?.dbConnectionUrlMasked || 'jdbc:postgresql://localhost:5432/OHOTECH'}
                     </span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>HikariCP Pool Connections:</span>
-                    <span className="font-bold text-emerald-400 font-mono">
+                    <span className="font-bold text-emerald-600 font-mono">
                       {diagnostics?.dbActiveConnections ?? 0} Active / {diagnostics?.dbMaxConnections ?? 20} Max
                     </span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>Rate Limit Trackers:</span>
-                    <span className="font-bold text-white font-mono">{diagnostics?.rateLimitActiveTrackers ?? 0} Buckets</span>
+                    <span className="font-bold text-slate-900 font-mono">{diagnostics?.rateLimitActiveTrackers ?? 0} Buckets</span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>Server Status:</span>
-                    <span className="font-bold text-emerald-400 font-mono">{diagnostics?.status || 'OPERATIONAL'}</span>
+                    <span className="font-bold text-emerald-600 font-mono">{diagnostics?.status || 'OPERATIONAL'}</span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-xl bg-white/5">
+                  <div className="flex justify-between p-3 rounded-xl bg-slate-50">
                     <span>Server Timestamp:</span>
-                    <span className="font-bold text-white font-mono text-[11px]">
+                    <span className="font-bold text-slate-900 font-mono text-[11px]">
                       {diagnostics?.serverTimestamp ? new Date(diagnostics.serverTimestamp).toLocaleString() : 'Live'}
                     </span>
                   </div>
                 </div>
-              </div>
+              </V15Card>
             </div>
           </section>
         )}
 
         {/* TAB: RBAC ROLE MANAGER */}
         {activeTab === 'rbac' && (
-          <section className="p-5 rounded-2xl bg-[#141416] border border-white/10 space-y-4 animate-in fade-in duration-300">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                <Shield className="w-4 h-4 text-purple-400" />
-                <span>Privilege Matrix &amp; Staff Access ({users.length})</span>
-              </h4>
-              <button
-                onClick={fetchUsers}
-                className="text-xs text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
-              >
-                <RefreshCw className={cn("w-3 h-3", isLoadingUsers && "animate-spin")} />
-                <span>Refresh Accounts</span>
-              </button>
-            </div>
+          <section className="space-y-6 animate-in fade-in duration-300">
+            <V15Card
+              title={`Privilege Matrix & Staff Access (${users.length})`}
+              subtitle="Assign granular platform roles to internal personnel."
+              actions={
+                <button
+                  onClick={fetchUsers}
+                  className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer"
+                >
+                  <RefreshCw className={cn("w-3.5 h-3.5", isLoadingUsers && "animate-spin")} />
+                  <span>Refresh Accounts</span>
+                </button>
+              }
+            >
+              {isLoadingUsers ? (
+                <div className="p-8 text-center text-xs text-slate-400">Loading user accounts...</div>
+              ) : users.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-400">No user accounts found.</div>
+              ) : (
+                <div className="space-y-3 text-xs">
+                  {users.map((u) => (
+                    <div key={u.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <p className="font-bold text-slate-900">{u.name}</p>
+                        <p className="text-[11px] text-slate-500">{u.email}</p>
+                        {u.officialEmail && (
+                          <p className="text-[10px] text-orange-600 font-mono">Official: {u.officialEmail}</p>
+                        )}
+                      </div>
 
-            {isLoadingUsers ? (
-              <div className="p-8 text-center text-xs text-slate-400">Loading user accounts...</div>
-            ) : users.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400">No user accounts found.</div>
-            ) : (
-              <div className="space-y-3 text-xs">
-                {users.map((u) => (
-                  <div key={u.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <p className="font-bold text-white">{u.name}</p>
-                      <p className="text-[11px] text-slate-400">{u.email}</p>
-                      {u.officialEmail && (
-                        <p className="text-[10px] text-purple-400">Official: {u.officialEmail}</p>
-                      )}
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-slate-400 uppercase font-semibold">Assigned Role:</span>
+                        <select
+                          value={u.role}
+                          onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                          className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-900 font-semibold focus:outline-none focus:border-orange-500 cursor-pointer text-xs"
+                        >
+                          <option value="ROLE_CUSTOMER">ROLE_CUSTOMER (Client)</option>
+                          <option value="ROLE_ADMIN">ROLE_ADMIN (Manager)</option>
+                          <option value="ROLE_DEVELOPER">ROLE_DEVELOPER (Full System Access)</option>
+                        </select>
+                      </div>
                     </div>
-
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] text-slate-400 uppercase">Assigned Role:</span>
-                      <select
-                        value={u.role}
-                        onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                        className="px-3 py-1.5 rounded-xl bg-[#19191e] border border-white/15 text-purple-300 font-bold focus:outline-none cursor-pointer text-xs"
-                      >
-                        <option value="ROLE_CUSTOMER">ROLE_CUSTOMER (Client)</option>
-                        <option value="ROLE_ADMIN">ROLE_ADMIN (Manager)</option>
-                        <option value="ROLE_DEVELOPER">ROLE_DEVELOPER (Full System Access)</option>
-                      </select>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </V15Card>
           </section>
         )}
 
         {/* TAB: DATABASE HEALTH & SEEDER */}
         {activeTab === 'seed' && (
-          <section className="p-8 rounded-3xl bg-[#141416] border border-white/10 text-center space-y-4 max-w-xl mx-auto animate-in fade-in duration-300">
-            <div className="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center mx-auto text-purple-400">
-              <Database className="w-8 h-8" />
-            </div>
-            <h3 className="text-xl font-black text-white">PostgreSQL 17 Database Health &amp; Catalog State</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              OHO TECH utilizes Spring Boot 4.0 and PostgreSQL 17. The database seeds initial categories and products idempotently via DataInitializer.java on startup.
-            </p>
-
-            {dbStats && (
-              <div className="grid grid-cols-2 gap-3 text-left p-4 rounded-2xl bg-white/5 border border-white/10 text-xs">
-                <div>
-                  <span className="text-slate-400 text-[10px]">Catalog Products:</span>
-                  <p className="text-lg font-bold text-white">{dbStats.totalProducts}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px]">Customer Orders:</span>
-                  <p className="text-lg font-bold text-white">{dbStats.totalOrders}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px]">Registered Users:</span>
-                  <p className="text-lg font-bold text-white">{dbStats.totalUsers}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 text-[10px]">Commercial Quotes:</span>
-                  <p className="text-lg font-bold text-white">{dbStats.totalQuotes}</p>
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={checkDatabaseState}
-              disabled={isCheckingDb}
-              className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs transition-all shadow-lg shadow-purple-950/40 flex items-center gap-2 mx-auto cursor-pointer disabled:opacity-50"
+          <section className="max-w-xl mx-auto space-y-4 animate-in fade-in duration-300">
+            <V15Card
+              title="PostgreSQL 17 Database Health & Catalog State"
+              subtitle="Spring Boot 4.0 and PostgreSQL 17 verification."
             >
-              <RefreshCw className={cn("w-4 h-4", isCheckingDb && "animate-spin")} />
-              <span>{isCheckingDb ? 'Querying PostgreSQL 17...' : 'Verify Database Catalog State'}</span>
-            </button>
+              <div className="text-center space-y-4 py-2">
+                <div className="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center mx-auto text-orange-600 shadow-xs">
+                  <Database className="w-7 h-7" />
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  OHO TECH utilizes Spring Boot 4.0 and PostgreSQL 17. The database seeds initial categories and products idempotently via DataInitializer.java on startup.
+                </p>
+
+                {dbStats && (
+                  <div className="grid grid-cols-2 gap-3 text-left p-4 rounded-xl bg-slate-50 border border-slate-200/60 text-xs">
+                    <div>
+                      <span className="text-slate-500 text-[10px]">Catalog Products:</span>
+                      <p className="text-lg font-bold text-slate-900">{dbStats.totalProducts}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 text-[10px]">Customer Orders:</span>
+                      <p className="text-lg font-bold text-slate-900">{dbStats.totalOrders}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 text-[10px]">Registered Users:</span>
+                      <p className="text-lg font-bold text-slate-900">{dbStats.totalUsers}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 text-[10px]">Commercial Quotes:</span>
+                      <p className="text-lg font-bold text-slate-900">{dbStats.totalQuotes}</p>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={checkDatabaseState}
+                  disabled={isCheckingDb}
+                  className="px-6 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs transition-colors shadow-xs flex items-center gap-2 mx-auto cursor-pointer disabled:opacity-50"
+                >
+                  <RefreshCw className={cn("w-3.5 h-3.5", isCheckingDb && "animate-spin")} />
+                  <span>{isCheckingDb ? 'Querying PostgreSQL 17...' : 'Verify Database Catalog State'}</span>
+                </button>
+              </div>
+            </V15Card>
           </section>
         )}
 
         {/* TAB: DEVELOPER AI EXECUTION SANDBOX */}
         {(activeTab === 'ai' || controlMode === 'ai') && (
-          <section className="p-6 rounded-3xl bg-[#141416] border border-white/10 space-y-4 shadow-2xl animate-in fade-in duration-300">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <div className="flex items-center gap-2.5">
-                <Terminal className="w-5 h-5 text-purple-400" />
-                <h3 className="text-base font-bold text-white">Developer AI Natural Language Terminal</h3>
+          <section className="space-y-4 animate-in fade-in duration-300">
+            <V15Card
+              title="Developer AI Natural Language Terminal"
+              subtitle="Direct natural language operational interface to infrastructure and background tasks."
+              actions={
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+                  ONLINE
+                </span>
+              }
+            >
+              <form onSubmit={handleDevAiSubmit} className="relative mt-2">
+                <input
+                  type="text"
+                  placeholder="e.g. Verify PostgreSQL migrations, flush Redis cache, sync Resend webhook target..."
+                  value={devAiPrompt}
+                  onChange={(e) => setDevAiPrompt(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 pr-36 font-mono"
+                />
+                <button
+                  type="submit"
+                  disabled={isExecutingAi}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold cursor-pointer disabled:opacity-50 transition-colors"
+                >
+                  {isExecutingAi ? 'Running...' : 'Execute Script'}
+                </button>
+              </form>
+
+              <div className="mt-4 p-4 rounded-xl bg-slate-950 border border-slate-900 text-xs text-emerald-400 space-y-1.5 max-h-64 overflow-y-auto font-mono">
+                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-2">Dev Console Output</p>
+                {devAiLogs.map((logStr, idx) => (
+                  <div key={idx} className="leading-relaxed">
+                    {logStr}
+                  </div>
+                ))}
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                ACTIVE
-              </span>
-            </div>
-
-            <form onSubmit={handleDevAiSubmit} className="relative">
-              <input
-                type="text"
-                placeholder="e.g. Verify PostgreSQL migrations, flush Redis cache, sync Resend webhook target..."
-                value={devAiPrompt}
-                onChange={(e) => setDevAiPrompt(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0d0d0e] border border-white/15 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 pr-36 font-mono"
-              />
-              <button
-                type="submit"
-                disabled={isExecutingAi}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold cursor-pointer disabled:opacity-50"
-              >
-                {isExecutingAi ? 'Running...' : 'Execute Script'}
-              </button>
-            </form>
-
-            <div className="p-4 rounded-2xl bg-[#09090b] border border-white/10 text-xs text-slate-300 space-y-1.5 max-h-64 overflow-y-auto">
-              <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-2">Dev Console Output</p>
-              {devAiLogs.map((logStr, idx) => (
-                <div key={idx} className="leading-relaxed font-mono">
-                  {logStr}
-                </div>
-              ))}
-            </div>
+            </V15Card>
           </section>
         )}
       </main>

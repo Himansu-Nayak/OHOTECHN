@@ -24,7 +24,7 @@ export function CompanyStory() {
     {
       year: 'THE DUAL-ENGINE ARCHITECTURE',
       title: 'Software Engineering × Commercial Growth',
-      desc: 'Clean code alone is insufficient without market velocity. We established our dual-pillar model: pairing high-throughput distributed software platforms with data-driven performance marketing campaigns that have generated over 670M+ reach.',
+      desc: 'Clean code alone is insufficient without market velocity. We established our dual-pillar model: pairing high-throughput distributed software platforms with data-driven performance marketing campaigns that have generated over 15M+ verified commercial reach across client deployments.',
       icon: TrendingUp
     },
     {

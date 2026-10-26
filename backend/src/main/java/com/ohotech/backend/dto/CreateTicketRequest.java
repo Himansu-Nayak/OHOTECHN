@@ -24,4 +24,7 @@ public class CreateTicketRequest {
     private String clientEmail;
     private String clientPhone;
     private Long orderId;
+    private Long productId;
+    private Long deploymentId;
+    private String issueOwnership; // OHO_TECH, PROVIDER, INFRASTRUCTURE, CUSTOMER_CONFIG
 }

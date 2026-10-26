@@ -175,7 +175,7 @@ function formatAiErrorMessage(error: any): string {
   if (msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch')) {
     return 'Our AI advisor is temporarily unavailable. Please try again in a moment.';
   }
-  return "I couldn't complete that request. You can also contact the OHO TECH team for assistance at hello@ohotech.com.";
+  return "I couldn't complete that request. You can also contact the OHO TECH team for assistance at hello@ohotechn.com.";
 }
 
 export function AIChatWidget() {

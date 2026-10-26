@@ -5,7 +5,7 @@ import { WORK_PROJECTS } from '@/config/work';
 import { INSIGHT_ARTICLES } from '@/config/insights';
 import { siteConfig } from '@/config/site';
 
-const BASE_URL = siteConfig.url || 'https://ohotech.com';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || siteConfig.url || 'https://ohotechn.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date();

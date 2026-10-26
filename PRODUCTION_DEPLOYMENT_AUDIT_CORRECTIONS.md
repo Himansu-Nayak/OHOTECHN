@@ -94,7 +94,7 @@ The following critical discrepancies between the previous report and the actual 
   - **Correction:** Supplying `DB_HOST` or `DB_NAME` will fail to configure the database. The exact production environment variables are `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD`.
 
 ### C. Razorpay Webhook Existence Corrected
-- **Previous Claim:** `"Register webhook URL in Razorpay Dashboard: https://ohotech.com/api/webhooks/razorpay"`.
+- **Previous Claim:** `"Register webhook URL in Razorpay Dashboard: https://ohotechn.com/api/webhooks/razorpay"`.
 - **Actual Codebase Truth:**
   - Search across all backend controllers and services revealed: **NO Razorpay webhook endpoint exists**.
   - `PaymentController.java` only exposes:
@@ -115,18 +115,18 @@ The following critical discrepancies between the previous report and the actual 
   - **Correction:** The backend has **zero disk storage requirements** for user uploads or software releases. The path `/var/www/ohotech/releases` was an unsupported assumption.
 
 ### E. Frontend API URL Configuration (`NEXT_PUBLIC_API_URL`) Corrected
-- **Previous Claim:** Recommended `NEXT_PUBLIC_API_URL=https://ohotech.com/api`.
+- **Previous Claim:** Recommended `NEXT_PUBLIC_API_URL=https://ohotechn.com/api`.
 - **Actual Codebase Truth:**
   - In `src/api/client.ts` line 45: `const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;`
   - Every API service function (in `auth.ts`, `products.ts`, `orders.ts`, etc.) prepends `/api/` (e.g. `/api/products`, `/api/auth/login`).
-  - If `NEXT_PUBLIC_API_URL` was set to `https://ohotech.com/api`, the request URL would become `https://ohotech.com/api/api/products` (a broken double `/api/api` path).
-  - **Correction:** When hosting frontend and backend under the same domain (`https://ohotech.com`), `NEXT_PUBLIC_API_URL` must be set to `https://ohotech.com` (WITHOUT `/api`) or left empty (`""`) to issue relative requests.
+  - If `NEXT_PUBLIC_API_URL` was set to `https://ohotechn.com/api`, the request URL would become `https://ohotechn.com/api/api/products` (a broken double `/api/api` path).
+  - **Correction:** When hosting frontend and backend under the same domain (`https://ohotechn.com`), `NEXT_PUBLIC_API_URL` must be set to `https://ohotechn.com` (WITHOUT `/api`) or left empty (`""`) to issue relative requests.
 
 ### F. DataInitializer Security Vulnerability Identified as Production Blocker
 - **Previous Claim:** Handled initialization safely.
 - **Actual Codebase Truth:**
   - `DataInitializer.java` lines 36–82 contains hardcoded password `"Admin@12345"`:
-    - Overwrites `admin@ohotech.com`, `admin@ohotechn.com`, and `himansu@ohotechn.com` passwords to `"Admin@12345"` on **every single boot** of Spring Boot.
+    - Overwrites `admin@ohotechn.com`, `admin@ohotechn.com`, and `himansu@ohotechn.com` passwords to `"Admin@12345"` on **every single boot** of Spring Boot.
     - If an admin changes their password in production, restarting the backend automatically reverts it back to `"Admin@12345"`.
   - **Correction:** Classified as a **CRITICAL PRODUCTION BLOCKER**. This hardcoded password override must be disabled or parameterized before live deployment.
 
@@ -173,7 +173,7 @@ Definitive build and dependency details:
   1. Hibernate inspects 18 JPA entities and generates tables: `users`, `roles`, `categories`, `products`, `product_plans`, `product_features`, `product_faqs`, `orders`, `order_items`, `payments`, `subscriptions`, `licenses`, `license_activations`, `software_releases`, `leads`, `quotes`, `notifications`, `webhook_events`, `audit_logs`.
   2. Hibernate creates primary keys, unique constraints (e.g. `users.email`, `licenses.license_key`), and foreign keys.
   3. `DataInitializer.java` executes on startup:
-     - Checks if `admin@ohotech.com` exists; if not, creates admin account.
+     - Checks if `admin@ohotechn.com` exists; if not, creates admin account.
      - Checks if `productRepository.count() > 0`; if 0, seeds 6 categories and 28 turnkey products.
 * **Production Recommendation:**
   - For the initial bootstrap on an empty PostgreSQL database: `SPRING_JPA_HIBERNATE_DDL_AUTO=update`.
@@ -195,7 +195,7 @@ Programmatically extracted from all `${...}` references in `backend/src/main/res
 | `JWT_SECRET` | Backend | **YES** | **YES** | Runtime | `defaultSecretKeyForDevelopmentPhase...` | High-entropy 256-bit+ secret key |
 | `JWT_EXPIRATION_MS` | Backend | NO | NO | Runtime | `86400000` (24h) | Access token expiration |
 | `JWT_REFRESH_EXPIRATION_MS` | Backend | NO | NO | Runtime | `604800000` (7d) | Refresh token expiration |
-| `app.frontend.url` (`APP_FRONTEND_URL`)| Backend | **YES** | NO | Runtime | `http://localhost:3000` | `https://ohotech.com` |
+| `app.frontend.url` (`APP_FRONTEND_URL`)| Backend | **YES** | NO | Runtime | `http://localhost:3000` | `https://ohotechn.com` |
 | `RAZORPAY_KEY_ID` | Backend | **YES** | NO | Runtime | `""` | Live Razorpay Key ID |
 | `RAZORPAY_KEY_SECRET` | Backend | **YES** | **YES** | Runtime | `""` | Live Razorpay Key Secret |
 | `GEMINI_API_KEY` | Backend | **YES** | **YES** | Runtime | `""` | Google AI Studio API Key |
@@ -211,7 +211,7 @@ Programmatically extracted from all `${...}` references in `backend/src/main/res
 | `LINKEDIN_WEBHOOK_SECRET` | Backend | NO | **YES** | Runtime | `""` | LinkedIn Webhook secret |
 | `FIREBASE_CREDENTIALS_PATH` | Backend | NO | NO | Runtime | `""` | Path to Firebase JSON credentials |
 | `FIREBASE_CREDENTIALS_JSON` | Backend | NO | **YES** | Runtime | `""` | Raw Firebase JSON credentials |
-| `NEXT_PUBLIC_API_URL` | Frontend | **YES** | NO | Build/Runtime | `http://localhost:8080` | `https://ohotech.com` (WITHOUT `/api`) |
+| `NEXT_PUBLIC_API_URL` | Frontend | **YES** | NO | Build/Runtime | `http://localhost:8080` | `https://ohotechn.com` (WITHOUT `/api`) |
 | `RESEND_API_KEY` | Frontend | **YES** | **YES** | Runtime | `""` | Resend API Key for Next.js quote route |
 | `NEXT_PUBLIC_RAZORPAY_KEY_ID` | Frontend | NO | NO | Build | `""` | Client-side Razorpay Key ID fallback |
 | `NEXT_PUBLIC_FIREBASE_*` | Frontend | NO | NO | Build | `""` | Firebase Web Client config (optional) |
@@ -298,7 +298,7 @@ The system uses **two independent email mechanisms**:
 
 Based on actual repository code analysis, **Architecture A** is the single recommended architecture:
 
-* **Domain:** `https://ohotech.com`
+* **Domain:** `https://ohotechn.com`
 * **Nginx Reverse Proxy:**
   - Listens on `443` (HTTPS) with Let's Encrypt SSL.
   - Exception rule for Next.js internal API:
@@ -336,7 +336,7 @@ Based on actual repository code analysis, **Architecture A** is the single recom
     ```
 * **Why Architecture A is Recommended:**
   1. Completely eliminates CORS preflight requests (`OPTIONS`) for user browsers.
-  2. Single SSL certificate covering `ohotech.com` and `www.ohotech.com`.
+  2. Single SSL certificate covering `ohotechn.com` and `www.ohotechn.com`.
   3. Seamless cookie and authentication token handling.
   4. The `/api/quote` Nginx exception ensures the Next.js server route functions without conflicting with Spring Boot's `/api/*` routes.
 
@@ -355,7 +355,7 @@ Before proceeding to any VPS provisioning, the following conditions must be sati
    - Production Resend API Key.
    - Valid SMTP credentials for backend email dispatch.
 3. **Domain & DNS Pointing:**
-   - A records for `ohotech.com` and `www.ohotech.com` pointing to the VPS IPv4 address.
+   - A records for `ohotechn.com` and `www.ohotechn.com` pointing to the VPS IPv4 address.
 4. **Hostinger VPS Verification:**
    - Confirm active instance specifications in Hostinger hPanel.
 
@@ -364,7 +364,7 @@ Before proceeding to any VPS provisioning, the following conditions must be sati
 ## 15. Final Deployment Recommendation
 
 * **CODEBASE STATUS:** **VALIDATED WITH CONDITIONS** (All 134 backend tests pass; Next.js 117-page build succeeds; 1 critical security blocker in `DataInitializer.java` identified).
-* **DEPLOYMENT ARCHITECTURE STATUS:** **DEFINED & FROZEN** (Architecture A — Single Domain `https://ohotech.com` with Nginx path routing and `/api/quote` exception).
+* **DEPLOYMENT ARCHITECTURE STATUS:** **DEFINED & FROZEN** (Architecture A — Single Domain `https://ohotechn.com` with Nginx path routing and `/api/quote` exception).
 * **OPERATIONAL STATUS:** **PENDING PRE-DEPLOYMENT FIX** (Fix hardcoded admin credentials; prepare production environment file).
 * **EXTERNAL VALIDATION STATUS:** **USER-PROVIDED TARGET** (Hostinger KVM 2 VPS specifications and live third-party keys pending verification).
 

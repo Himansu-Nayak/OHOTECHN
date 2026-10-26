@@ -18,7 +18,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ohotech.com'),
+  metadataBase: new URL('https://ohotechn.com'),
   title: {
     default: 'OHO TECH — Software & Digital Technology Company Platform',
     template: '%s | OHO TECH',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     'Cloud Infrastructure',
     'AI & Automation',
   ],
-  authors: [{ name: 'OHO TECH', url: 'https://ohotech.com' }],
+  authors: [{ name: 'OHO TECH', url: 'https://ohotechn.com' }],
   creator: 'OHO TECH',
   publisher: 'OHO TECH',
   alternates: {
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     title: 'OHO TECH — Software & Digital Technology Company Platform',
     description:
       'Building Tomorrow\'s Technology Today. OHO TECH designs and builds innovative software products, enterprise systems, custom software, and digital growth platforms.',
-    url: 'https://ohotech.com',
+    url: 'https://ohotechn.com',
     siteName: 'OHO TECH',
     images: [
       {

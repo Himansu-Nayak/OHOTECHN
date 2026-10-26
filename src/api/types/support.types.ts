@@ -40,6 +40,9 @@ export interface SupportTicketDto {
   assignedToName?: string;
   assignedToEmail?: string;
   orderId?: number;
+  productId?: number;
+  deploymentId?: number;
+  issueOwnership?: string;
   slaDueAt?: string;
   slaHoursRemaining?: number;
   createdAt: string;
@@ -58,6 +61,9 @@ export interface CreateTicketRequest {
   clientEmail?: string;
   clientPhone?: string;
   orderId?: number;
+  productId?: number;
+  deploymentId?: number;
+  issueOwnership?: string;
 }
 
 export interface TicketReplyRequest {

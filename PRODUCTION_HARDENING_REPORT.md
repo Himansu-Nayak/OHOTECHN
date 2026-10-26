@@ -27,7 +27,7 @@ Previously, `DataInitializer.java` contained:
 admin.setPassword(passwordEncoder.encode("Admin@12345"));
 userRepository.save(admin);
 ```
-On every application restart, this unconditionally reset any existing account with email `admin@ohotech.com` back to `Admin@12345`, destroying custom administrator passwords and re-opening a well-known vulnerability vector.
+On every application restart, this unconditionally reset any existing account with email `admin@ohotechn.com` back to `Admin@12345`, destroying custom administrator passwords and re-opening a well-known vulnerability vector.
 
 ### 2. Surgical Remediation
 In `backend/src/main/java/com/ohotech/backend/config/DataInitializer.java`:
@@ -89,9 +89,9 @@ Inspected:
 ### Findings:
 1. **Base URL Resolution**: `client.ts` resolves `API_BASE_URL` from `process.env.NEXT_PUBLIC_API_URL` (or falls back to `http://localhost:8080`).
 2. **No Double `/api`**:
-   - `NEXT_PUBLIC_API_URL` in production should be set to `https://ohotech.com` (without trailing `/api`).
+   - `NEXT_PUBLIC_API_URL` in production should be set to `https://ohotechn.com` (without trailing `/api`).
    - Frontend API endpoints specify paths such as `/api/auth/login`, `/api/products`, `/api/orders`.
-   - Concatenation resolves to `https://ohotech.com/api/products`.
+   - Concatenation resolves to `https://ohotechn.com/api/products`.
    - No path duplication occurs.
 
 ---
@@ -107,16 +107,16 @@ Inspected:
 | `SPRING_DATASOURCE_USERNAME` | Yes | `ohotech_app` | PostgreSQL database user |
 | `SPRING_DATASOURCE_PASSWORD` | Yes | `[SECURE_DB_PASSWORD]` | PostgreSQL user password |
 | `JWT_SECRET` | Yes | `[MIN_64_CHAR_HEX_OR_BASE64]` | HMAC-SHA512 signing secret |
-| `INITIAL_ADMIN_EMAIL` | Recommended | `admin@ohotech.com` | Used only on clean DB initial bootstrap |
+| `INITIAL_ADMIN_EMAIL` | Recommended | `admin@ohotechn.com` | Used only on clean DB initial bootstrap |
 | `INITIAL_ADMIN_PASSWORD` | Recommended | `[SECURE_INITIAL_PASSWORD]` | Used only on clean DB initial bootstrap |
 | `RAZORPAY_KEY_ID` | Yes | `rzp_live_...` | Razorpay Live API Key ID |
 | `RAZORPAY_KEY_SECRET` | Yes | `[LIVE_KEY_SECRET]` | Razorpay Live Key Secret |
 | `RAZORPAY_WEBHOOK_SECRET` | Optional | `[WEBHOOK_SECRET]` | Razorpay Webhook signature verification |
 | `SPRING_MAIL_HOST` | Yes | `smtp.hostinger.com` | Mail submission server |
 | `SPRING_MAIL_PORT` | Yes | `587` (or `465`) | Mail port |
-| `SPRING_MAIL_USERNAME` | Yes | `contact@ohotech.com` | Mail auth username |
+| `SPRING_MAIL_USERNAME` | Yes | `contact@ohotechn.com` | Mail auth username |
 | `SPRING_MAIL_PASSWORD` | Yes | `[MAIL_PASSWORD]` | Mail auth password |
-| `NEXT_PUBLIC_API_URL` | Yes | `https://ohotech.com` | Base frontend API target |
+| `NEXT_PUBLIC_API_URL` | Yes | `https://ohotechn.com` | Base frontend API target |
 | `PORT` | Yes | `3000` | Next.js server port |
 
 ---

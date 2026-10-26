@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 
-const BASE_URL = siteConfig.url || 'https://ohotech.com';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || siteConfig.url || 'https://ohotechn.com';
 
 interface MetadataOptions {
   title: string;
@@ -32,8 +32,11 @@ export function buildMetadata({
   const fullUrl = `${BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
   const imageUrl = image.startsWith('http') ? image : `${BASE_URL}${image.startsWith('/') ? image : `/${image}`}`;
 
+  // Strip trailing site name if present so the layout title template ('%s | OHO TECH') appends it exactly once
+  const cleanTitle = title.replace(/\s*\|\s*OHO\s*TECH.*$/i, '').trim();
+
   return {
-    title,
+    title: cleanTitle,
     description,
     alternates: {
       canonical: fullUrl,
@@ -52,7 +55,7 @@ export function buildMetadata({
           },
         },
     openGraph: {
-      title: `${title} | OHO TECH`,
+      title: `${cleanTitle} | OHO TECH`,
       description,
       url: fullUrl,
       siteName: siteConfig.name,
@@ -63,7 +66,7 @@ export function buildMetadata({
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `${title} — OHO TECH`,
+          alt: `${cleanTitle} — OHO TECH`,
         },
       ],
       ...(publishedTime && { publishedTime }),
@@ -72,7 +75,7 @@ export function buildMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} | OHO TECH`,
+      title: `${cleanTitle} | OHO TECH`,
       description,
       creator: '@ohotech',
       site: '@ohotech',

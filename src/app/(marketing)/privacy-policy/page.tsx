@@ -76,7 +76,7 @@ export default function PrivacyPolicyPage() {
           <div className="pt-6 border-t border-slate-100">
             <h2 className="text-lg font-bold text-[#0d0d0e] mb-2">Contact Us Regarding Privacy</h2>
             <p>
-              If you have questions regarding this Privacy Policy or wish to exercise data access or removal rights, please contact us at <strong className="text-[#0d0d0e]">hello@ohotech.com</strong>.
+              If you have questions regarding this Privacy Policy or wish to exercise data access or removal rights, please contact us at <strong className="text-[#0d0d0e]">hello@ohotechn.com</strong>.
             </p>
           </div>
         </div>

@@ -40,8 +40,9 @@ public class SupportTicketService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", customerId));
 
         String ticketCode = generateUniqueTicketCode();
-        String priority = request.getPriority() != null ? request.getPriority().toUpperCase() : "MEDIUM";
-        String department = request.getDepartment() != null ? request.getDepartment().toUpperCase() : "TECHNICAL";
+        String priority = normalizePriority(request.getPriority());
+        String department = normalizeDepartment(request.getDepartment());
+        String issueOwnership = normalizeIssueOwnership(request.getIssueOwnership());
 
         // Determine reliable contact identity from customer record with fallback to request
         String clientName = customer.getName();
@@ -79,6 +80,9 @@ public class SupportTicketService {
                 .clientEmail(clientEmail)
                 .clientPhone(clientPhone)
                 .orderId(request.getOrderId())
+                .productId(request.getProductId())
+                .deploymentId(request.getDeploymentId())
+                .issueOwnership(issueOwnership)
                 .build();
 
         ticket = ticketRepository.save(ticket);
@@ -123,8 +127,9 @@ public class SupportTicketService {
     @Transactional
     public SupportTicketDto createGuestTicket(CreateTicketRequest request) {
         String ticketCode = generateUniqueTicketCode();
-        String priority = request.getPriority() != null ? request.getPriority().toUpperCase() : "MEDIUM";
-        String department = request.getDepartment() != null ? request.getDepartment().toUpperCase() : "GENERAL";
+        String priority = normalizePriority(request.getPriority());
+        String department = normalizeDepartment(request.getDepartment());
+        String issueOwnership = normalizeIssueOwnership(request.getIssueOwnership());
 
         String clientName = request.getClientName() != null ? request.getClientName().trim() : null;
         if (clientName == null || clientName.isBlank()) {
@@ -151,6 +156,9 @@ public class SupportTicketService {
                 .clientEmail(clientEmail)
                 .clientPhone(clientPhone)
                 .orderId(request.getOrderId())
+                .productId(request.getProductId())
+                .deploymentId(request.getDeploymentId())
+                .issueOwnership(issueOwnership)
                 .build();
 
         ticket = ticketRepository.save(ticket);
@@ -528,6 +536,9 @@ public class SupportTicketService {
                 .assignedToName(ticket.getAssignedTo() != null ? ticket.getAssignedTo().getName() : null)
                 .assignedToEmail(ticket.getAssignedTo() != null ? ticket.getAssignedTo().getEmail() : null)
                 .orderId(ticket.getOrderId())
+                .productId(ticket.getProductId())
+                .deploymentId(ticket.getDeploymentId())
+                .issueOwnership(ticket.getIssueOwnership() != null ? ticket.getIssueOwnership() : "OHO_TECH")
                 .slaDueAt(ticket.getSlaDueAt())
                 .slaHoursRemaining(slaHoursRemaining)
                 .createdAt(ticket.getCreatedAt())
@@ -549,5 +560,34 @@ public class SupportTicketService {
                 .internalNote(msg.isInternalNote())
                 .createdAt(msg.getCreatedAt())
                 .build();
+    }
+
+    private String normalizeDepartment(String dept) {
+        if (dept == null || dept.isBlank()) return "TECHNICAL";
+        String d = dept.trim().toUpperCase();
+        if (d.contains("TECH") || d.contains("BUG")) return "TECHNICAL";
+        if (d.contains("BILL") || d.contains("TAX") || d.contains("GST")) return "BILLING";
+        if (d.contains("LICENS")) return "LICENSING";
+        if (d.contains("SALE") || d.contains("UPGRADE")) return "SALES";
+        if (d.contains("GEN")) return "GENERAL";
+        return d.length() > 50 ? d.substring(0, 50) : d;
+    }
+
+    private String normalizePriority(String prio) {
+        if (prio == null || prio.isBlank()) return "MEDIUM";
+        String p = prio.trim().toUpperCase();
+        if (p.contains("URGENT")) return "URGENT";
+        if (p.contains("HIGH")) return "HIGH";
+        if (p.contains("LOW")) return "LOW";
+        return "MEDIUM";
+    }
+
+    private String normalizeIssueOwnership(String ownership) {
+        if (ownership == null || ownership.isBlank()) return "OHO_TECH";
+        String o = ownership.trim().toUpperCase();
+        if (o.contains("PROVIDER")) return "PROVIDER";
+        if (o.contains("INFRA")) return "INFRASTRUCTURE";
+        if (o.contains("CUSTOMER") || o.contains("CLIENT")) return "CUSTOMER_CONFIG";
+        return "OHO_TECH";
     }
 }

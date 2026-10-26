@@ -17,6 +17,8 @@ const engagementModels = [
     id: 'custom-project',
     name: 'Custom Project Engineering',
     tag: 'FIXED SCOPE & MILESTONES',
+    startingPrice: '₹45,000',
+    billingCycle: 'Starting milestone',
     description: 'Ideal for building bespoke software applications, web portals, mobile apps, or enterprise ERP systems with clear specifications.',
     badge: 'Popular for Software',
     icon: Code2,
@@ -35,6 +37,8 @@ const engagementModels = [
     id: 'dedicated-pod',
     name: 'Dedicated Developer Pod',
     tag: 'LONG-TERM PLATFORM TEAM',
+    startingPrice: '₹65,000',
+    billingCycle: 'per month / developer',
     description: 'Full-time dedicated software developers, mobile engineers, and lead architects acting as an extension of your team.',
     badge: 'Best for Scaling Apps',
     icon: Layers,
@@ -53,6 +57,8 @@ const engagementModels = [
     id: 'growth-retainer',
     name: 'Managed Digital Growth',
     tag: 'MONTHLY PERFORMANCE RETAINER',
+    startingPrice: '₹25,000',
+    billingCycle: 'per month',
     description: 'Strategic search engine optimization, Google & Meta advertising campaign management, and conversion rate optimization.',
     badge: 'Best for Customer Reach',
     icon: TrendingUp,
@@ -160,7 +166,22 @@ export default async function PricingPage() {
                       </div>
                     </div>
 
-                    <h3 className="text-2xl font-black mb-3">{model.name}</h3>
+                    <h3 className="text-2xl font-black mb-2">{model.name}</h3>
+
+                    {/* Transparent Starting Price */}
+                    <div className="mb-4 pb-3 border-b border-slate-200/40">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className={`text-3xl font-black ${model.highlighted ? 'text-sky-400' : 'text-[#0d0d0e]'}`}>
+                          {model.startingPrice}
+                        </span>
+                        <span className={`text-[11px] font-mono ${model.highlighted ? 'text-slate-400' : 'text-slate-500'}`}>
+                          {model.billingCycle}
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono text-emerald-500 font-bold">
+                        Transparent milestone scope • No hidden fees
+                      </span>
+                    </div>
                     <p className={`text-xs leading-relaxed mb-6 ${model.highlighted ? 'text-slate-300' : 'text-slate-600'}`}>
                       {model.description}
                     </p>

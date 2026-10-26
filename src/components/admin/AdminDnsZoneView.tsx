@@ -26,12 +26,12 @@ export function AdminDnsZoneView() {
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
 
   const [records, setRecords] = React.useState<DnsRecord[]>([
-    { id: 1, type: 'A', name: 'ohotech.com', content: '104.21.58.112', ttl: 'Auto', proxied: true },
-    { id: 2, type: 'A', name: 'api.ohotech.com', content: '172.67.142.89', ttl: 'Auto', proxied: true },
-    { id: 3, type: 'CNAME', name: 'www.ohotech.com', content: 'ohotech.com', ttl: 'Auto', proxied: true },
-    { id: 4, type: 'CNAME', name: 'admin.ohotech.com', content: 'cname.vercel-dns.com', ttl: 'Auto', proxied: true },
-    { id: 5, type: 'MX', name: 'ohotech.com', content: 'aspmx.l.google.com (Pri: 1)', ttl: 'Auto', proxied: false },
-    { id: 6, type: 'TXT', name: 'ohotech.com', content: 'v=spf1 include:_spf.google.com ~all', ttl: 'Auto', proxied: false },
+    { id: 1, type: 'A', name: 'ohotechn.com', content: '104.21.58.112', ttl: 'Auto', proxied: true },
+    { id: 2, type: 'A', name: 'api.ohotechn.com', content: '172.67.142.89', ttl: 'Auto', proxied: true },
+    { id: 3, type: 'CNAME', name: 'www.ohotechn.com', content: 'ohotechn.com', ttl: 'Auto', proxied: true },
+    { id: 4, type: 'CNAME', name: 'admin.ohotechn.com', content: 'cname.vercel-dns.com', ttl: 'Auto', proxied: true },
+    { id: 5, type: 'MX', name: 'ohotechn.com', content: 'aspmx.l.google.com (Pri: 1)', ttl: 'Auto', proxied: false },
+    { id: 6, type: 'TXT', name: 'ohotechn.com', content: 'v=spf1 include:_spf.google.com ~all', ttl: 'Auto', proxied: false },
   ]);
 
   const [newRecordForm, setNewRecordForm] = React.useState({
@@ -94,7 +94,7 @@ export function AdminDnsZoneView() {
             </span>
             <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-              Zone: ohotech.com (Active)
+              Zone: ohotechn.com (Active)
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">

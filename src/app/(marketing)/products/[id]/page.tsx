@@ -52,7 +52,7 @@ export default function ProductDetailPage() {
   // On-Page Amount & Demo Payment Section State
   const amountSectionRef = React.useRef<HTMLDivElement>(null);
   const [demoCustomerName, setDemoCustomerName] = React.useState('Demo Customer');
-  const [demoCustomerEmail, setDemoCustomerEmail] = React.useState('customer@demo.ohotech.com');
+  const [demoCustomerEmail, setDemoCustomerEmail] = React.useState('customer@demo.ohotechn.com');
   const [demoContactPhone, setDemoContactPhone] = React.useState('+91 98765 43210');
   const [demoShippingAddress, setDemoShippingAddress] = React.useState('Demo Software Hub, Block 4, Tech Enclave, Bhubaneswar, Odisha - 751024');
   const [paymentMethod, setPaymentMethod] = React.useState<'DEMO' | 'UPI' | 'RAZORPAY'>('DEMO');
@@ -159,7 +159,7 @@ export default function ProductDetailPage() {
         'GST & Invoicing Suite',
       ],
       adminCredentials: {
-        email: matchedDemo?.accounts?.[0]?.email || 'admin@demo.ohotech.com',
+        email: matchedDemo?.accounts?.[0]?.email || 'admin@demo.ohotechn.com',
         password: matchedDemo?.accounts?.[0]?.password || 'Admin@12345',
       },
     };
@@ -215,7 +215,7 @@ export default function ProductDetailPage() {
       if (!user) {
         try {
           await login({
-            username: demoCustomerEmail.trim() || 'customer@demo.ohotech.com',
+            username: demoCustomerEmail.trim() || 'customer@demo.ohotechn.com',
             password: 'Demo@12345',
           });
         } catch (authErr) {
@@ -841,7 +841,7 @@ export default function ProductDetailPage() {
                             type="button"
                             onClick={() => {
                               setDemoCustomerName('Demo Customer');
-                              setDemoCustomerEmail('customer@demo.ohotech.com');
+                              setDemoCustomerEmail('customer@demo.ohotechn.com');
                               setDemoContactPhone('+91 98765 43210');
                               setDemoShippingAddress('Demo Software Hub, Block 4, Tech Enclave, Bhubaneswar, Odisha - 751024');
                               showToast('Demo details reset', 'info');

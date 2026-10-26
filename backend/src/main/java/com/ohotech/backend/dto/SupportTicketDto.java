@@ -27,6 +27,9 @@ public class SupportTicketDto {
     private String assignedToName;
     private String assignedToEmail;
     private Long orderId;
+    private Long productId;
+    private Long deploymentId;
+    private String issueOwnership;
     private LocalDateTime slaDueAt;
     private Double slaHoursRemaining;
     private LocalDateTime createdAt;

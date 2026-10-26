@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { siteConfig } from '@/config/site';
 
-const BASE_URL = siteConfig.url || 'https://ohotech.com';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || siteConfig.url || 'https://ohotechn.com';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,18 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/admin/',
-          '/api/',
-          '/dashboard/',
-          '/cart/',
-          '/checkout/',
-          '/orders/',
-          '/profile/',
-          '/subscriptions/',
-          '/my-products/',
-          '/notifications/',
-        ],
       },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,

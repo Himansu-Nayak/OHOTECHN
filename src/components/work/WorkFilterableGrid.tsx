@@ -149,7 +149,7 @@ export function WorkFilterableGrid({ projects }: WorkFilterableGridProps) {
 
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-slate-300 px-3 py-1.5 bg-black/85 backdrop-blur-sm border border-white/10">
                     <span className="truncate">{project.clientArchetype}</span>
-                    <span className="text-emerald-400 font-bold ml-2 shrink-0">PRODUCTION VERIFIED</span>
+                    <span className="text-emerald-400 font-bold ml-2 shrink-0">SIMULATION VERIFIED</span>
                   </div>
                 </Link>
 

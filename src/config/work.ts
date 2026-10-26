@@ -330,7 +330,7 @@ export const WORK_PROJECTS: WorkProject[] = [
         'Idempotent Payment Settlement Banking Protocols',
         'Role-Based RBAC Governance for Academic Audits'
       ],
-      targetSla: '99.98% uptime during semester result publication peaks'
+      targetSla: '99.95% uptime during semester result publication peaks'
     },
     solution: {
       title: 'Decoupled Multi-Branch Campus ERP & Edge Portal',
@@ -421,7 +421,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     metrics: [
       { label: 'Fee Sync Rate', value: 'Real-Time', detail: 'Instantaneous ledger update upon webhook ack' },
       { label: 'Grade Compile', value: '< 2.4s', detail: 'Batch compilation across 15,000 students' },
-      { label: 'Availability', value: '99.98%', detail: 'Continuous uptime during exam publication' }
+      { label: 'Availability', value: '99.95%', detail: 'Continuous uptime during exam publication' }
     ],
     verifiedOutcomes: [
       'Automated bank webhook reconciliation eliminated manual challan matching delays',

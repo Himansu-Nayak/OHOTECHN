@@ -32,15 +32,15 @@ export default function ProductsCatalogPage() {
   const { addToCart, loading: cartLoading } = useCart();
   const { showToast } = useToast();
 
-  const [products, setProducts] = React.useState<ProductDto[]>([]);
+  const [products, setProducts] = React.useState<ProductDto[]>(() => getFallbackProducts());
   const [categories, setCategories] = React.useState<CategoryFilterItem[]>(DEFAULT_CATEGORIES);
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
   
   // Pagination & Search
   const [page, setPage] = React.useState<number>(0);
-  const [totalPages, setTotalPages] = React.useState<number>(0);
-  const [totalElements, setTotalElements] = React.useState<number>(0);
+  const [totalPages, setTotalPages] = React.useState<number>(1);
+  const [totalElements, setTotalElements] = React.useState<number>(() => getFallbackProducts().length);
   const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [debouncedSearch, setDebouncedSearch] = React.useState<string>('');
   const [selectedCategory, setSelectedCategory] = React.useState<number | 'all'>('all');
@@ -91,7 +91,13 @@ export default function ProductsCatalogPage() {
     setError(null);
     try {
       const catParam = selectedCategory !== 'all' ? selectedCategory : undefined;
-      const res = await getProductsApi(page, 9, debouncedSearch, catParam);
+      const timeoutPromise = new Promise<{ success: false }>((_, reject) =>
+        setTimeout(() => reject(new Error('Network timeout')), 4000)
+      );
+      const res = (await Promise.race([
+        getProductsApi(page, 9, debouncedSearch, catParam),
+        timeoutPromise,
+      ])) as any;
       if (res.success && res.data && res.data.content && res.data.content.length > 0) {
         setProducts(res.data.content);
         setTotalPages(res.data.totalPages || 0);
@@ -161,7 +167,7 @@ export default function ProductsCatalogPage() {
       demoUrl: validDemoUrl,
       features: matchedDemo?.features || ['Admin & User Role Portals', 'Automated Database Workflows', 'RESTful API Integration', '24/7 SLA Support'],
       adminCredentials: {
-        email: matchedDemo?.accounts?.[0]?.email || 'admin@demo.ohotech.com',
+        email: matchedDemo?.accounts?.[0]?.email || 'admin@demo.ohotechn.com',
         password: matchedDemo?.accounts?.[0]?.password || 'Admin@12345',
       },
     };
@@ -271,8 +277,23 @@ export default function ProductsCatalogPage() {
 
         </section>
 
+        {error && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-mono flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>{error}</span>
+            </div>
+            <button
+              onClick={() => fetchProducts()}
+              className="px-3 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold transition-colors cursor-pointer"
+            >
+              Retry Sync
+            </button>
+          </div>
+        )}
+
         {/* Loading Skeletons */}
-        {loading ? (
+        {loading && products.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((idx) => (
               <div

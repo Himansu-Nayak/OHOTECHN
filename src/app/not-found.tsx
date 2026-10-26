@@ -15,7 +15,7 @@ import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
 export const metadata = {
-  title: '404 - Route Not Resolved | OHO TECH',
+  title: '404 - Route Not Resolved',
   description: 'The requested page could not be located in the OHO TECH architecture directory.',
 };
 

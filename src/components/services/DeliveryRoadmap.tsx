@@ -44,7 +44,7 @@ const steps: PhaseStep[] = [
   {
     step: '03',
     title: 'Deterministic Agile Execution',
-    desc: 'Building high-throughput services with Next.js 16, Go microservices, strict ACID persistence, and automated test pipelines.',
+    desc: 'Building high-throughput services with Next.js 16, Spring Boot 4.1 (Java 21), PostgreSQL 17 ACID persistence, and automated test pipelines.',
     timeframe: 'Phase 03 • Weeks 4 - 6',
     deliverables: 'Full-Stack Production Builds & APIs',
     icon: Code2,

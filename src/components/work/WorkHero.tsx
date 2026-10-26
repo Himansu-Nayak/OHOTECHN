@@ -156,7 +156,7 @@ export function WorkHero({ project }: WorkHeroProps) {
 
         <div className="absolute bottom-4 right-4 font-mono text-[10px] text-slate-300 px-3 py-1.5 bg-black/80 backdrop-blur-sm border border-white/10 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-bold uppercase tracking-wider">PRODUCTION VERIFIED</span>
+          <span className="font-bold uppercase tracking-wider">ARCHITECTURE VALIDATED (SIMULATED LOAD TEST)</span>
         </div>
       </div>
 

@@ -9,7 +9,7 @@ export function isValidLiveDemoUrl(url?: string): boolean {
   if (!url || typeof url !== 'string') return false;
   const trimmed = url.trim();
   if (!trimmed || trimmed === '#' || trimmed === 'about:blank') return false;
-  if (trimmed.includes('demo.ohotech.com') || trimmed.includes('example.com')) return false;
+  if (trimmed.includes('demo.ohotechn.com') || trimmed.includes('example.com')) return false;
   return trimmed.startsWith('http://') || trimmed.startsWith('https://');
 }
 
@@ -22,6 +22,9 @@ interface ProductQuickViewModalProps {
 export function ProductQuickViewModal({ product, industrySlug, onClose }: ProductQuickViewModalProps) {
   const [copiedField, setCopiedField] = React.useState<string | null>(null);
   const [demoNotice, setDemoNotice] = React.useState<string | null>(null);
+  const [sandboxEmail, setSandboxEmail] = React.useState('');
+  const [isSandboxUnlocked, setIsSandboxUnlocked] = React.useState(false);
+  const [unlockError, setUnlockError] = React.useState('');
 
   // Keyboard Escape listener
   React.useEffect(() => {
@@ -42,8 +45,18 @@ export function ProductQuickViewModal({ product, industrySlug, onClose }: Produc
 
   const hasValidDemo = isValidLiveDemoUrl(product.demoUrl);
   const demoUrl = hasValidDemo ? product.demoUrl : undefined;
-  const adminEmail = product.adminCredentials?.email || `admin@${product.slug}.ohotech.com`;
-  const adminPassword = product.adminCredentials?.password || 'Admin@12345';
+  const adminEmail = product.adminCredentials?.email || `admin@${product.slug}.ohotechn.com`;
+  const adminPassword = product.adminCredentials?.password || 'Sandbox@2026';
+
+  const handleUnlockSandbox = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!sandboxEmail.trim() || !sandboxEmail.includes('@')) {
+      setUnlockError('Please provide a valid business or work email address.');
+      return;
+    }
+    setUnlockError('');
+    setIsSandboxUnlocked(true);
+  };
 
   const handleTestDriveClick = (e: React.MouseEvent) => {
     if (!hasValidDemo) {
@@ -137,70 +150,112 @@ export function ProductQuickViewModal({ product, industrySlug, onClose }: Produc
           </div>
         </div>
 
-        {/* Live Admin Demo Credentials Box */}
+        {/* Gated Admin Sandbox Credentials Box */}
         {hasValidDemo && (
           <div className="relative z-10 bg-[#141416] border border-white/15 rounded-2xl p-5 mb-6 space-y-3">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
                 <Key className="w-4 h-4 text-emerald-400" />
-                <span>TEST-DRIVE ADMIN ACCESS CREDENTIALS</span>
+                <span>EPHEMERAL SANDBOX ADMINISTRATOR ACCESS</span>
               </div>
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                1-Click Copy
+                {isSandboxUnlocked ? 'Session Active' : 'Email Verification Required'}
               </span>
             </div>
 
-            {/* Admin Email */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
-              <div className="flex items-center gap-2.5 text-slate-300 truncate">
-                <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                <span className="text-slate-400">Email:</span>
-                <span className="text-white font-bold truncate">{adminEmail}</span>
-              </div>
-
-              <button
-                onClick={() => copyToClipboard(adminEmail, 'email')}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-[#0d0d0e] text-slate-200 text-[11px] font-mono font-bold transition-all shrink-0 ml-2 cursor-pointer"
-              >
-                {copiedField === 'email' ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copy</span>
-                  </>
+            {!isSandboxUnlocked ? (
+              <form onSubmit={handleUnlockSandbox} className="space-y-3 pt-1">
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  To protect multi-tenant infrastructure integrity, administrator demo credentials are authenticated per work email.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="email"
+                    value={sandboxEmail}
+                    onChange={(e) => setSandboxEmail(e.target.value)}
+                    placeholder="Enter work email (e.g. dev@company.com)"
+                    className="flex-1 px-3.5 py-2 rounded-xl bg-white/5 border border-white/15 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#0d0d0e] font-mono font-extrabold text-xs uppercase tracking-wider transition-all shrink-0 cursor-pointer"
+                  >
+                    Unlock Sandbox Access
+                  </button>
+                </div>
+                {unlockError && (
+                  <p className="text-[11px] font-mono text-rose-400">{unlockError}</p>
                 )}
-              </button>
-            </div>
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[10px] font-mono text-slate-400">Need a guided architectural evaluation?</span>
+                  <Link
+                    href={`/book-demo?product=${encodeURIComponent(product.name)}`}
+                    className="text-[10px] font-mono text-emerald-400 hover:underline flex items-center gap-1"
+                  >
+                    Book 1-on-1 Session <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Ephemeral staging sandbox granted for: <span className="font-bold text-white">{sandboxEmail}</span>
+                </div>
 
-            {/* Admin Password */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
-              <div className="flex items-center gap-2.5 text-slate-300 truncate">
-                <Lock className="w-4 h-4 text-slate-400 shrink-0" />
-                <span className="text-slate-400">Password:</span>
-                <span className="text-white font-bold truncate">{adminPassword}</span>
+                {/* Admin Email */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
+                  <div className="flex items-center gap-2.5 text-slate-300 truncate">
+                    <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span className="text-slate-400">Sandbox User:</span>
+                    <span className="text-white font-bold truncate">{adminEmail}</span>
+                  </div>
+
+                  <button
+                    onClick={() => copyToClipboard(adminEmail, 'email')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-[#0d0d0e] text-slate-200 text-[11px] font-mono font-bold transition-all shrink-0 ml-2 cursor-pointer"
+                  >
+                    {copiedField === 'email' ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-300" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Admin Password */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
+                  <div className="flex items-center gap-2.5 text-slate-300 truncate">
+                    <Lock className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span className="text-slate-400">Sandbox Key:</span>
+                    <span className="text-white font-bold truncate">{adminPassword}</span>
+                  </div>
+
+                  <button
+                    onClick={() => copyToClipboard(adminPassword, 'password')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-[#0d0d0e] text-slate-200 text-[11px] font-mono font-bold transition-all shrink-0 ml-2 cursor-pointer"
+                  >
+                    {copiedField === 'password' ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-300" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-
-              <button
-                onClick={() => copyToClipboard(adminPassword, 'password')}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-[#0d0d0e] text-slate-200 text-[11px] font-mono font-bold transition-all shrink-0 ml-2 cursor-pointer"
-              >
-                {copiedField === 'password' ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copy</span>
-                  </>
-                )}
-              </button>
-            </div>
+            )}
           </div>
         )}
 

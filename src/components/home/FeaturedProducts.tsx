@@ -165,7 +165,7 @@ export function FeaturedProducts() {
         'Automated Invoice Generation',
       ],
       adminCredentials: {
-        email: matchedDemo?.accounts?.[0]?.email || 'admin@demo.ohotech.com',
+        email: matchedDemo?.accounts?.[0]?.email || 'admin@demo.ohotechn.com',
         password: matchedDemo?.accounts?.[0]?.password || 'Admin@12345',
       },
     };

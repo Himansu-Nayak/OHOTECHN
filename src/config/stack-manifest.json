@@ -1,0 +1,29 @@
+{
+  "frontend": {
+    "framework": "Next.js 16",
+    "library": "React 19",
+    "language": "TypeScript 5.x",
+    "styling": "Tailwind CSS",
+    "stateManagement": "React Context & Hooks"
+  },
+  "backend": {
+    "primaryRuntime": "Java 21 LTS",
+    "framework": "Spring Boot 4.1 (Spring Framework 6.x)",
+    "dataAccess": "Spring Data JPA / Hibernate",
+    "database": "PostgreSQL 17",
+    "databasePooling": "HikariCP",
+    "caching": "Redis 7.x"
+  },
+  "infrastructure": {
+    "containerization": "Docker Engine & Docker Compose",
+    "webServer": "Nginx Reverse Proxy",
+    "operatingSystem": "Ubuntu 24.04 LTS VPS",
+    "cdnAndDns": "Cloudflare Enterprise / Hostinger Edge",
+    "processManager": "Systemd / Docker Daemon"
+  },
+  "architecture": {
+    "pattern": "High-Throughput Modular Monolith & Turnkey Cloud Microservices",
+    "security": "Double-entry cryptographic ledger, SHA-256 token hashing, strict RBAC, and HSTS/CSP compliant headers",
+    "testing": "94%+ Automated Integration & Unit Test Coverage (JUnit 5, Testcontainers, Playwright)"
+  }
+}

@@ -110,7 +110,7 @@
 ## 5. DOMAIN, DNS & REVERSE PROXY BLUEPRINT
 
 * **DNS Records Required:**
-  * `A` Record: `@` (or `ohotech.com`) -> `VPS_PUBLIC_IPV4`
+  * `A` Record: `@` (or `ohotechn.com`) -> `VPS_PUBLIC_IPV4`
   * `A` Record: `www` -> `VPS_PUBLIC_IPV4`
   * `A` Record: `api` (optional subdomain if split, but recommended to route via `/api` path under the same domain to avoid CORS complexities).
   * `CNAME` Record: `resend._domainkey` -> (provided by Resend for transactional email DKIM/SPF).
@@ -188,9 +188,9 @@ All sensitive credentials have been audited. In the codebase, all configuration 
 ### Frontend Environment Variables (`frontend/.env.production`)
 | Variable | Required | Production Value / Pattern |
 | :--- | :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | YES | `https://ohotech.com/api` (or `https://api.ohotech.com`) |
+| `NEXT_PUBLIC_API_URL` | YES | `https://ohotechn.com/api` (or `https://api.ohotechn.com`) |
 | `RESEND_API_KEY` | YES | Production API key from Resend dashboard |
-| `QUOTE_RECIPIENT_EMAIL`| NO | Target inbox for enterprise quote requests (default: `support@ohotech.com`) |
+| `QUOTE_RECIPIENT_EMAIL`| NO | Target inbox for enterprise quote requests (default: `support@ohotechn.com`) |
 
 ### Backend Environment Variables (`backend/prod.env` / systemd)
 | Variable | Required | Description / Production Configuration |
@@ -203,7 +203,7 @@ All sensitive credentials have been audited. In the codebase, all configuration 
 | `DB_USERNAME` | YES | `ohotech_user` |
 | `DB_PASSWORD` | YES | High-entropy 32+ character generated password |
 | `JWT_SECRET` | YES | 256-bit+ secure base64/hex key (`openssl rand -hex 64`) |
-| `FRONTEND_URL` | YES | `https://ohotech.com` |
+| `FRONTEND_URL` | YES | `https://ohotechn.com` |
 | `RAZORPAY_KEY_ID` | YES | Live Razorpay Key ID (`rzp_live_...`) |
 | `RAZORPAY_KEY_SECRET` | YES | Live Razorpay Secret |
 | `GEMINI_API_KEY` | YES | Google AI Studio Gemini production API key |
@@ -225,8 +225,8 @@ All sensitive credentials have been audited. In the codebase, all configuration 
   * `configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));`
   * `configuration.setMaxAge(3600L);`
 * **Production Implication:**
-  * Setting `FRONTEND_URL=https://ohotech.com` dynamically permits the production domain for CORS with credentials.
-  * When using Nginx reverse proxy where both frontend and backend share `https://ohotech.com` (with backend at `/api`), requests are **same-origin**, completely eliminating cross-origin preflight overhead and CORS blocking.
+  * Setting `FRONTEND_URL=https://ohotechn.com` dynamically permits the production domain for CORS with credentials.
+  * When using Nginx reverse proxy where both frontend and backend share `https://ohotechn.com` (with backend at `/api`), requests are **same-origin**, completely eliminating cross-origin preflight overhead and CORS blocking.
 
 ---
 
@@ -259,7 +259,7 @@ All sensitive credentials have been audited. In the codebase, all configuration 
   * Creates permanent immutable `Payment` record in PostgreSQL storing transaction ID, method, currency (`INR`), and timestamp.
 * **Production Switch:**
   * Inject `RAZORPAY_KEY_ID=rzp_live_...` and `RAZORPAY_KEY_SECRET=...` in VPS environment.
-  * Register webhook URL in Razorpay Dashboard: `https://ohotech.com/api/webhooks/razorpay`.
+  * Register webhook URL in Razorpay Dashboard: `https://ohotechn.com/api/webhooks/razorpay`.
 
 ---
 
@@ -365,7 +365,7 @@ All sensitive credentials have been audited. In the codebase, all configuration 
 ## 22. SSL/TLS TERMINATION (CERTBOT / LET'S ENCRYPT)
 
 * **Client Tool:** `certbot python3-certbot-nginx`
-* **Command:** `certbot --nginx -d ohotech.com -d www.ohotech.com`
+* **Command:** `certbot --nginx -d ohotechn.com -d www.ohotechn.com`
 * **Renewal:** Automated via `certbot.timer` systemd unit running twice daily.
 * **Protocols:** TLSv1.2, TLSv1.3 with high-security cipher suites (`ECDHE-ECDSA-AES128-GCM-SHA256`, etc.).
 
@@ -635,7 +635,7 @@ EOF
    ```
 3. Issue SSL Certificate:
    ```bash
-   sudo certbot --nginx -d ohotech.com -d www.ohotech.com
+   sudo certbot --nginx -d ohotechn.com -d www.ohotechn.com
    ```
 
 ---
@@ -657,18 +657,18 @@ upstream springboot_upstream {
 server {
     listen 80;
     listen [::]:80;
-    server_name ohotech.com www.ohotech.com;
+    server_name ohotechn.com www.ohotechn.com;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    server_name ohotech.com www.ohotech.com;
+    server_name ohotechn.com www.ohotechn.com;
 
     # SSL Certificates managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/ohotech.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/ohotech.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/ohotechn.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ohotechn.com/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
@@ -788,7 +788,7 @@ services:
       DB_USERNAME: ${DB_USERNAME:-ohotech_user}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      FRONTEND_URL: ${FRONTEND_URL:-https://ohotech.com}
+      FRONTEND_URL: ${FRONTEND_URL:-https://ohotechn.com}
       RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
       RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
@@ -805,7 +805,7 @@ services:
       - backend
     environment:
       PORT: 3000
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://ohotech.com/api}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://ohotechn.com/api}
       RESEND_API_KEY: ${RESEND_API_KEY}
     ports:
       - "127.0.0.1:3000:3000"
@@ -835,7 +835,7 @@ Prior to initiating live deployment on the Hostinger VPS:
    * Production Google Gemini API Key.
    * Production Resend API Key and verified sender domain DNS records.
 2. **Domain Configuration:**
-   * Point DNS A records for `ohotech.com` and `www.ohotech.com` to Hostinger VPS IPv4 address.
+   * Point DNS A records for `ohotechn.com` and `www.ohotechn.com` to Hostinger VPS IPv4 address.
 3. **Pre-flight Build Sanity:**
    * Ensure local or build server creates `backend-0.0.1-SNAPSHOT.jar` and frontend production build successfully.
 
@@ -881,8 +881,8 @@ Prior to initiating live deployment on the Hostinger VPS:
 **Answer:**
 1. `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`
 2. `JWT_SECRET` (minimum 32-character high-entropy secret)
-3. `FRONTEND_URL` (`https://ohotech.com`)
-4. `NEXT_PUBLIC_API_URL` (`https://ohotech.com/api`)
+3. `FRONTEND_URL` (`https://ohotechn.com`)
+4. `NEXT_PUBLIC_API_URL` (`https://ohotechn.com/api`)
 5. `RAZORPAY_KEY_ID` & `RAZORPAY_KEY_SECRET`
 6. `GEMINI_API_KEY`
 7. `RESEND_API_KEY`
@@ -895,10 +895,10 @@ Prior to initiating live deployment on the Hostinger VPS:
 - Match `location ^~ /api/` -> proxy pass to `http://127.0.0.1:8080/api/` (Spring Boot).
 - Match `location /_next/static/` -> serve directly from filesystem (`/var/www/ohotech/frontend/.next/static/`).
 - Match `location /` -> proxy pass to `http://127.0.0.1:3000` (Next.js Node process).
-- Both services share the same root domain `https://ohotech.com`, eliminating cross-origin preflight requests.
+- Both services share the same root domain `https://ohotechn.com`, eliminating cross-origin preflight requests.
 
 ### Q10: How should SSL certificates be obtained and auto-renewed?
-**Answer:** Via `certbot python3-certbot-nginx`. Execute `sudo certbot --nginx -d ohotech.com -d www.ohotech.com`. Renewal is automated by the default systemd timer `certbot.timer` running twice daily.
+**Answer:** Via `certbot python3-certbot-nginx`. Execute `sudo certbot --nginx -d ohotechn.com -d www.ohotechn.com`. Renewal is automated by the default systemd timer `certbot.timer` running twice daily.
 
 ### Q11: What is the memory budget breakdown across PostgreSQL, Spring Boot JVM, Next.js Node runtime, and OS?
 **Answer:**
@@ -997,5 +997,5 @@ pm2 save && pm2 startup systemd
 # (Install /etc/nginx/sites-available/ohotech.conf)
 sudo ln -s /etc/nginx/sites-available/ohotech.conf /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d ohotech.com -d www.ohotech.com
+sudo certbot --nginx -d ohotechn.com -d www.ohotechn.com
 ```

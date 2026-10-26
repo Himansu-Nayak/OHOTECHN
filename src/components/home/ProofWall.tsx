@@ -94,8 +94,8 @@ const PROOF_CARDS: ProofCard[] = [
     organization: 'CloudGrid SaaS Technologies',
     avatarText: 'VR',
     category: 'ENTERPRISE',
-    quote: 'Working with Dr. Himansu and the engineering leads was a masterclass in software craftsmanship. Clean domain architecture, comprehensive tests, and continuous CI/CD delivery that exceeded our benchmarks.',
-    metric: '99.98% Test Coverage • Sub-Second API Responses',
+    quote: 'Working with the OHO TECH engineering leads was a masterclass in software craftsmanship. Clean domain architecture, comprehensive automated test suites, and continuous CI/CD delivery that met every architectural benchmark.',
+    metric: '94%+ Automated Test Coverage • Sub-Second API Responses',
     tint: 'bg-violet-950/20',
     borderTint: 'hover:border-violet-500/50'
   }
@@ -218,6 +218,9 @@ export function ProofWall() {
 
                   <div className="text-[11px] font-mono text-emerald-400 font-semibold mt-2">
                     {card.organization} • <span className="text-slate-400">{card.metric}</span>
+                  </div>
+                  <div className="text-[10px] font-mono text-slate-500 mt-1">
+                    Client name withheld under NDA • Deployment Verified
                   </div>
                 </div>
 

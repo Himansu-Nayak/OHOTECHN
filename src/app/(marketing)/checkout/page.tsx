@@ -36,7 +36,7 @@ export default function CheckoutPage() {
 
   const [shippingAddress, setShippingAddress] = React.useState('Demo Tech Park, Block B-402, Outer Ring Road, Bengaluru, Karnataka - 560103');
   const [customerName, setCustomerName] = React.useState(user?.name || 'Demo Customer');
-  const [customerEmail, setCustomerEmail] = React.useState(user?.email || 'demo.customer@ohotech.com');
+  const [customerEmail, setCustomerEmail] = React.useState(user?.email || 'demo.customer@ohotechn.com');
   const [contactPhone, setContactPhone] = React.useState(user?.phone || '+91 98765 43210');
   const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO' | 'YOUPI'>('DEMO');
 
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
 
   const fillDemoDetails = () => {
     setCustomerName(user?.name || 'Demo Customer');
-    setCustomerEmail(user?.email || 'demo.customer@ohotech.com');
+    setCustomerEmail(user?.email || 'demo.customer@ohotechn.com');
     setContactPhone(user?.phone || '+91 98765 43210');
     setShippingAddress('Demo Tech Park, Block B-402, Outer Ring Road, Bengaluru, Karnataka - 560103');
     showToast('Demo contact and deployment details populated', 'info');
@@ -120,7 +120,7 @@ export default function CheckoutPage() {
   React.useEffect(() => {
     if (user) {
       if (user.name && customerName === 'Demo Customer') setCustomerName(user.name);
-      if (user.email && customerEmail === 'demo.customer@ohotech.com') setCustomerEmail(user.email);
+      if (user.email && customerEmail === 'demo.customer@ohotechn.com') setCustomerEmail(user.email);
       if (user.phone && contactPhone === '+91 98765 43210') setContactPhone(user.phone);
     }
   }, [user]);

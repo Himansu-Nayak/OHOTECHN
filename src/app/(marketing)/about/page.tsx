@@ -22,7 +22,7 @@ import { buildMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = buildMetadata({
-  title: 'About Us & Leadership | OHO TECH Enterprise Platforms',
+  title: 'About Us & Leadership',
   description: 'Learn about OHO TECH, Founder & Director Japabandhu Kampa, our engineering methodology, core values, and digital infrastructure capabilities.',
   path: '/about',
   image: '/hero_workspace_editorial.jpg',

@@ -113,6 +113,9 @@ public class SupportTicket {
         if (department == null) {
             department = "TECHNICAL";
         }
+        if (issueOwnership == null || issueOwnership.isBlank()) {
+            issueOwnership = "OHO_TECH";
+        }
         if (slaDueAt == null) {
             // Default SLA: 24 hours for medium, 4 hours for urgent, 8 hours for high
             int hours = "URGENT".equalsIgnoreCase(priority) ? 4 : "HIGH".equalsIgnoreCase(priority) ? 8 : 24;

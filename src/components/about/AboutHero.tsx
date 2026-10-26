@@ -25,7 +25,7 @@ const STATS = [
   { label: 'Years of Technical Innovation', value: '5+', detail: 'Proven track record of engineering delivery' },
   { label: 'Enterprise Systems Engineered', value: '100+', detail: 'Production EMR, ERP, POS & cloud platforms' },
   { label: 'Specialized Industry Verticals', value: '13', detail: 'Tailored domain architectures across sectors' },
-  { label: 'Audience & Commercial Reach', value: '670M+', detail: 'High-impact organic & performance campaigns' },
+  { label: 'Audience & Commercial Reach', value: '15M+', detail: 'Verified API calls & digital reach across client deployments' },
 ];
 
 export function AboutHero() {

@@ -42,7 +42,7 @@ Output: ARCHITECTURAL_BLUEPRINT_SPEC.v1.0`
       desc: 'We design schema-level tenant isolation, atomic transaction boundaries, Protocol Buffer schemas, and fluid 120 FPS design systems tailored to clinician, cashier, or executive workflows.',
       icon: Layers,
       deliverables: [
-        'PostgreSQL 16 Normalized Relational Schemas',
+        'PostgreSQL 17 Normalized Relational Schemas',
         'gRPC Protocol Buffers & REST API Contracts',
         'High-Density Spatial UI Wireframes & Design System',
         'Zero-Trust Cryptographic RBAC Role Definitions'
@@ -57,19 +57,19 @@ UI Component Library: Tailwind CSS 4 + React 19 Server Tree`
       step: '03',
       title: 'High-Concurrency Engineering',
       subtitle: 'SUB-SECOND EXECUTION',
-      desc: 'Our engineering core builds asynchronous Go/Node microservices, Next.js 16 SSR pipelines, WebSocket synchronization daemons, and offline SQLite edge caches with zero technical debt.',
+      desc: 'Our engineering core builds Spring Boot 4.1 (Java 21) backend microservices, Next.js 16 SSR pipelines, WebSocket synchronization daemons, and PostgreSQL 17 ACID persistence with a zero-tolerance debt policy (strict linters & gates).',
       icon: Cpu,
       deliverables: [
-        'Go Microservices with Asynchronous AMQP Queues',
+        'Spring Boot 4.1 (Java 21) Microservices with Asynchronous Messaging',
         'Next.js 16 App Router SSR with Streaming Buffers',
         'Offline-First Local Terminal Daemons & Print Spoolers',
         'Automated CI/CD Multi-Arch Container Pipelines'
       ],
       terminalSpec: `[PHASE-03: BUILD] Compiling Runtimes...
-Service Core: Go (Golang) High-Throughput HTTP/gRPC
+Service Core: Java 21 LTS + Spring Boot 4.1 High-Throughput HTTP
 Frontend SSR: Next.js 16 + React 19 Turbopack
-Local Cache: SQLite Embedded Edge DB with Offline Queue
-Status: 100% REGRESSION TEST COVERAGE`
+Persistence: PostgreSQL 17 ACID Relational Ledger
+Status: 94%+ AUTOMATED REGRESSION TEST COVERAGE`
     },
     {
       step: '04',
@@ -205,7 +205,7 @@ Status: DEPLOYED TO CLIENT PRIVATE CLOUD`
 
               <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400">
                 <span>EXECUTION CERTAINTY: 100%</span>
-                <span className="text-emerald-400 font-bold">ZERO TECHNICAL DEBT</span>
+                <span className="text-emerald-400 font-bold">ZERO-TOLERANCE DEBT POLICY</span>
               </div>
             </div>
           </div>
