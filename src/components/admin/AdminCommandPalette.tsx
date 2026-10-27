@@ -446,7 +446,7 @@ export function AdminCommandPalette({
                     onClick={item.onSelect}
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={cn(
-                      'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left transition-all cursor-pointer',
+                      'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left transition-colors duration-150 cursor-pointer active:scale-[0.99]',
                       isSelected 
                         ? 'bg-indigo-50/80 text-indigo-950 border border-indigo-200/60 shadow-xs' 
                         : 'text-slate-700 hover:bg-slate-50'

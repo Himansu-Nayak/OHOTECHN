@@ -129,8 +129,8 @@ export function V15MetricCard({
     <div
       onClick={onClick}
       className={cn(
-        'group relative bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all duration-300',
-        onClick && 'cursor-pointer hover:border-slate-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)]',
+        'group relative bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,0,0,0.02),inset_0_1px_0_rgba(255,255,255,0.7)] transition-[box-shadow,border-color,transform] duration-200 ease-out',
+        onClick && 'cursor-pointer hover:border-slate-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)] active:scale-[0.98]',
         className
       )}
     >
@@ -222,7 +222,7 @@ export function V15AccentActionCard({
   const cardContent = (
     <div
       className={cn(
-        'relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#FF6B4A] to-[#FF8E53] p-5 sm:p-6 text-white shadow-[0_10px_30px_rgba(255,107,74,0.25)] flex flex-col justify-between transition-all duration-300 hover:shadow-[0_16px_40px_rgba(255,107,74,0.36)] group',
+        'relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#FF6B4A] to-[#FF8E53] p-5 sm:p-6 text-white shadow-[0_10px_30px_rgba(255,107,74,0.25)] flex flex-col justify-between transition-[box-shadow,transform] duration-200 ease-out hover:shadow-[0_16px_40px_rgba(255,107,74,0.36)] group',
         className
       )}
     >
@@ -316,7 +316,7 @@ export function V15Card({
   return (
     <div
       className={cn(
-        'bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden transition-all duration-200',
+        'bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] shadow-[0_4px_20px_rgba(0,0,0,0.02),inset_0_1px_0_rgba(255,255,255,0.7)] overflow-hidden transition-[box-shadow,border-color] duration-200 ease-out',
         className
       )}
     >

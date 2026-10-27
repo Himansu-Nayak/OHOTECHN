@@ -233,7 +233,7 @@ export function AdminSidebar({
       {/* Desktop Persistent Sidebar */}
       <aside
         className={cn(
-          'hidden lg:flex flex-col bg-white border-r border-slate-200/90 transition-all duration-300 select-none z-20 shrink-0 sticky top-[65px] h-[calc(100vh-65px)]',
+          'hidden lg:flex flex-col bg-white border-r border-slate-200/90 transition-[width] duration-200 ease-out select-none z-20 shrink-0 sticky top-[65px] h-[calc(100vh-65px)]',
           isCollapsed ? 'w-16' : 'w-64'
         )}
       >
