@@ -180,6 +180,18 @@ export default function CustomerDashboardPage() {
   }, [orders, licenses, tickets]);
 
   // Order spending trend sparkline points
+  const orderSpendLabels = React.useMemo(() => {
+    if (orders.length >= 2) {
+      return orders
+        .map((o) =>
+          o.createdAt
+            ? new Date(o.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric" })
+            : "Order"
+        )
+        .reverse();
+    }
+    return ["Initial", "Setup", "Expansion", "Enterprise"];
+  }, [orders]);
   const orderSpendPoints = React.useMemo(() => {
     if (orders.length >= 2) {
       return orders.map((o) => Number(o.totalAmount || 0)).reverse();
@@ -388,6 +400,7 @@ export default function CustomerDashboardPage() {
               subtitle="Chronological transaction amounts across licensed software modules"
               primaryData={orderSpendPoints.length >= 2 ? orderSpendPoints : [0, 500, 1200, 2400]}
               secondaryData={[0, 400, 800, 1500]}
+              labels={orderSpendLabels}
               activeTimeframe="Overview"
               timeframes={['30 Days', 'Quarter', 'Yearly', 'Overview']}
             />

@@ -356,6 +356,7 @@ export interface V15PerformanceChartProps {
   subtitle?: string;
   primaryData: number[];
   secondaryData?: number[];
+  labels?: string[];
   timeframes?: string[];
   activeTimeframe?: string;
   onTimeframeChange?: (tf: string) => void;
@@ -363,19 +364,22 @@ export interface V15PerformanceChartProps {
 }
 
 export function V15PerformanceChart({
-  title = 'Performance Chart',
-  subtitle = 'Velocity & transaction completion metrics',
+  title = "Performance Chart",
+  subtitle = "Velocity & transaction completion metrics",
   primaryData,
   secondaryData,
-  timeframes = ['Weekly', 'Monthly', 'Yearly'],
-  activeTimeframe = 'Monthly',
+  labels,
+  timeframes = ["Weekly", "Monthly", "Yearly"],
+  activeTimeframe = "Monthly",
   onTimeframeChange,
   className,
 }: V15PerformanceChartProps) {
+  const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+
   const width = 500;
   const height = 180;
   const paddingX = 20;
-  const paddingTop = 25;
+  const paddingTop = 28;
   const paddingBottom = 25;
   const effectiveWidth = width - paddingX * 2;
   const effectiveHeight = height - paddingTop - paddingBottom;
@@ -386,7 +390,7 @@ export function V15PerformanceChart({
   const range = max - min || 1;
 
   const buildPath = (data: number[]) => {
-    if (!data || data.length < 2) return { path: '', area: '', points: [] };
+    if (!data || data.length < 2) return { path: "", area: "", points: [] };
     const pts = data.map((v, i) => {
       const x = paddingX + (i / (data.length - 1)) * effectiveWidth;
       const y = height - paddingBottom - ((v - min) / range) * effectiveHeight;
@@ -409,6 +413,32 @@ export function V15PerformanceChart({
   const primary = buildPath(primaryData);
   const secondary = secondaryData ? buildPath(secondaryData) : null;
 
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!primary.points || primary.points.length === 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const svgX = (clientX / rect.width) * width;
+
+    let nearest = 0;
+    let minDiff = Infinity;
+    for (let i = 0; i < primary.points.length; i++) {
+      const diff = Math.abs(primary.points[i].x - svgX);
+      if (diff < minDiff) {
+        minDiff = diff;
+        nearest = i;
+      }
+    }
+    setHoveredIndex(nearest);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredIndex(null);
+  };
+
+  const activePt = hoveredIndex !== null && primary.points[hoveredIndex] ? primary.points[hoveredIndex] : null;
+  const activeSecPt = hoveredIndex !== null && secondary?.points?.[hoveredIndex] ? secondary.points[hoveredIndex] : null;
+  const activeLabel = hoveredIndex !== null ? (labels?.[hoveredIndex] || `${activeTimeframe} #${hoveredIndex + 1}`) : null;
+
   return (
     <V15Card
       title={title}
@@ -421,10 +451,10 @@ export function V15PerformanceChart({
               type="button"
               onClick={() => onTimeframeChange && onTimeframeChange(tf)}
               className={cn(
-                'px-3 py-1 text-[11px] font-bold rounded-full transition-all cursor-pointer',
+                "px-3 py-1 text-[11px] font-bold rounded-full transition-all cursor-pointer",
                 activeTimeframe === tf
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? "bg-white text-slate-900 shadow-2xs"
+                  : "text-slate-500 hover:text-slate-800"
               )}
             >
               {tf}
@@ -437,8 +467,10 @@ export function V15PerformanceChart({
       <div className="relative w-full">
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          className="w-full h-44 sm:h-52 overflow-visible"
+          className="w-full h-44 sm:h-52 overflow-visible cursor-crosshair select-none"
           preserveAspectRatio="none"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
           <defs>
             {/* Primary Gradient (Lavender / Violet) */}
@@ -495,7 +527,7 @@ export function V15PerformanceChart({
                 strokeWidth="3"
                 strokeLinecap="round"
               />
-              {/* Highlight peak point */}
+              {/* Highlight points */}
               {primary.points.length > 0 && (
                 <g>
                   {primary.points.map((pt, i) => (
@@ -513,6 +545,82 @@ export function V15PerformanceChart({
               )}
             </>
           )}
+
+          {/* Interactive Hover Guide & Tooltip (Matching Reference Frame 00:01) */}
+          {activePt && (
+            <g className="transition-opacity duration-150 pointer-events-none">
+              {/* Vertical dotted guide line */}
+              <line
+                x1={activePt.x}
+                y1={paddingTop - 12}
+                x2={activePt.x}
+                y2={height - paddingBottom}
+                stroke="#ea580c"
+                strokeWidth="1.5"
+                strokeDasharray="3 3"
+                opacity="0.75"
+              />
+
+              {/* Secondary point indicator */}
+              {activeSecPt && (
+                <circle
+                  cx={activeSecPt.x}
+                  cy={activeSecPt.y}
+                  r="4.5"
+                  fill="#8b5cf6"
+                  stroke="#ffffff"
+                  strokeWidth="2"
+                />
+              )}
+
+              {/* Primary point pulsing outer glow & highlighted inner dot */}
+              <circle
+                cx={activePt.x}
+                cy={activePt.y}
+                r="8"
+                fill="#ea580c"
+                opacity="0.3"
+              />
+              <circle
+                cx={activePt.x}
+                cy={activePt.y}
+                r="5.5"
+                fill="#ea580c"
+                stroke="#ffffff"
+                strokeWidth="2.5"
+              />
+
+              {/* Floating Pill Tooltip */}
+              <g
+                transform={`translate(${Math.max(65, Math.min(width - 65, activePt.x))}, ${Math.max(16, activePt.y - 20)})`}
+                className="select-none"
+              >
+                <rect
+                  x="-60"
+                  y="-12"
+                  width="120"
+                  height="24"
+                  rx="12"
+                  fill="#0f172a"
+                  fillOpacity="0.94"
+                  stroke="#ea580c"
+                  strokeWidth="1.2"
+                />
+                <text
+                  x="0"
+                  y="1"
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill="#ffffff"
+                  fontSize="9.5"
+                  fontWeight="700"
+                  fontFamily="sans-serif"
+                >
+                  {activePt.v.toLocaleString()} • {activeLabel}
+                </text>
+              </g>
+            </g>
+          )}
         </svg>
 
         {/* Legend */}
@@ -529,15 +637,24 @@ export function V15PerformanceChart({
               </span>
             )}
           </div>
-          <span className="text-[11px] font-mono text-slate-400">
-            Real-time PostgreSQL Feed
-          </span>
+          {hoveredIndex !== null && activePt ? (
+            <div className="flex items-center gap-2 font-mono text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200 text-[11px]">
+              <span className="font-bold">Point #{hoveredIndex + 1}:</span>
+              <span>{activePt.v.toLocaleString()}</span>
+              {activeSecPt && (
+                <span className="text-purple-600">/ Baseline {activeSecPt.v.toLocaleString()}</span>
+              )}
+            </div>
+          ) : (
+            <span className="text-[11px] font-mono text-slate-400">
+              Real-time PostgreSQL Feed
+            </span>
+          )}
         </div>
       </div>
     </V15Card>
   );
 }
-
 /* ==========================================================================
    7. MINI SVG TREND SPARKLINE
    ========================================================================== */

@@ -125,6 +125,18 @@ export function AdminDashboardView({
     return [0, grossRevenue > 0 ? grossRevenue : 1500, grossRevenue > 0 ? grossRevenue * 1.2 : 2400];
   }, [recentOrders, grossRevenue]);
 
+  const performanceLabels = React.useMemo(() => {
+    if (recentOrders.length >= 2) {
+      return recentOrders
+        .map((o) =>
+          o.createdAt
+            ? new Date(o.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric" })
+            : "Order"
+        )
+        .reverse();
+    }
+    return ["Base", "Target", "Peak Velocity"];
+  }, [recentOrders]);
   const secondaryPerformanceData = React.useMemo(() => {
     const avg = primaryPerformanceData.reduce((a, b) => a + b, 0) / (primaryPerformanceData.length || 1);
     return primaryPerformanceData.map((v) => Math.round((v + avg) / 2));
@@ -239,6 +251,7 @@ export function AdminDashboardView({
             subtitle="Order spending trajectory vs baseline server throughput"
             primaryData={primaryPerformanceData}
             secondaryData={secondaryPerformanceData}
+            labels={performanceLabels}
             activeTimeframe={chartTimeframe}
             onTimeframeChange={setChartTimeframe}
           />

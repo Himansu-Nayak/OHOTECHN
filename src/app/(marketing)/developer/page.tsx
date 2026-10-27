@@ -454,6 +454,7 @@ export default function DeveloperStudioPage() {
               subtitle="Programmatic API transactions vs internal background scheduler tasks"
               primaryData={[12, 19, 15, 28, 24, 38, 42, 55]}
               secondaryData={[10, 14, 18, 20, 22, 26, 30, 32]}
+              labels={['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00']}
               activeTimeframe="Live"
               timeframes={['1h', '6h', '24h', 'Live']}
             />
