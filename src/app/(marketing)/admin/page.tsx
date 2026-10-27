@@ -18,6 +18,7 @@ import {
 } from '@/api/admin';
 
 // Modular Production Admin Components
+import { DashboardShell } from '@/components/dashboard/V15DashboardPrimitives';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { AdminSidebar, AdminTabKey } from '@/components/admin/AdminSidebar';
 import { AdminDashboardView } from '@/components/admin/AdminDashboardView';
@@ -198,7 +199,7 @@ export default function AdminConsolePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] text-slate-900 flex flex-col antialiased selection:bg-slate-200 selection:text-slate-900 font-sans">
+    <DashboardShell className="flex flex-col font-sans">
       {/* Top Administrative Header */}
       <AdminHeader
         activeTab={activeTab}
@@ -338,6 +339,6 @@ export default function AdminConsolePage() {
           )}
         </main>
       </div>
-    </div>
+    </DashboardShell>
   );
 }

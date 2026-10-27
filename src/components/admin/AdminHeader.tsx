@@ -97,7 +97,7 @@ export function AdminHeader({
   const breadcrumbs = getBreadcrumbs(activeTab);
 
   return (
-    <header className="sticky top-0 z-30 w-full h-[65px] bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between transition-colors">
+    <header className="sticky top-0 z-30 w-full h-[65px] bg-white/80 backdrop-blur-md border-b border-slate-200/70 shadow-[0_1px_10px_rgba(0,0,0,0.02)] px-4 sm:px-6 flex items-center justify-between transition-colors">
       {/* Left: Mobile Toggle + Logo + Breadcrumbs */}
       <div className="flex items-center gap-3 sm:gap-4">
         {onOpenMobileSidebar && (
@@ -132,7 +132,7 @@ export function AdminHeader({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search records across platform..."
-            className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition-colors"
+            className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-100/70 border border-slate-200/70 rounded-full text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition-all"
           />
           {searchQuery && (
             <button

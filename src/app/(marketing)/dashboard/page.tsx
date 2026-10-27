@@ -18,7 +18,10 @@ import { getMyCustomerTicketsApi } from '@/api/support';
 import { ProductDto, License, Subscription, Order, SupportTicketDto, OrderStatus } from '@/api/types';
 import { formatInr } from '@/utils/cartUtils';
 import { 
+  DashboardShell,
   V15MetricCard, 
+  V15AccentActionCard,
+  V15PerformanceChart,
   V15Card, 
   V15Sparkline, 
   V15CalendarWidget, 
@@ -202,7 +205,7 @@ export default function CustomerDashboardPage() {
   const activeTicketsCount = openTicketsCount + inProgressTicketsCount;
 
   return (
-    <div className="bg-[#f8f9fa] text-slate-900 min-h-screen pb-16 pt-24 sm:pt-28 px-3 sm:px-6 lg:px-8 font-sans">
+    <DashboardShell className="pb-16 pt-24 sm:pt-28 px-3 sm:px-6 lg:px-8 font-sans">
       <main className="max-w-7xl w-full mx-auto" id="customer-dashboard-main">
         
         {/* Welcome Header with V15 Aesthetics */}
@@ -246,7 +249,7 @@ export default function CustomerDashboardPage() {
         </div>
 
         {/* Quick Actions Filter Toolbar */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 mb-6 shadow-xs flex items-center gap-2 overflow-x-auto scrollbar-none">
+        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/80 rounded-[20px] p-2 sm:p-2.5 mb-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex items-center gap-2 overflow-x-auto scrollbar-none">
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 shrink-0">
             Shortcuts:
           </span>
@@ -326,6 +329,31 @@ export default function CustomerDashboardPage() {
           />
         </div>
 
+                {/* V15 Dual Column: Customer Spending Trajectory + Vibrant Orange Action Accent Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2">
+            <V15PerformanceChart
+              title="Procurement & Spending Velocity"
+              subtitle="Chronological transaction amounts across licensed software modules"
+              primaryData={orderSpendPoints.length >= 2 ? orderSpendPoints : [0, 500, 1200, 2400]}
+              secondaryData={[0, 400, 800, 1500]}
+              activeTimeframe="Overview"
+              timeframes={['30 Days', 'Quarter', 'Yearly', 'Overview']}
+            />
+          </div>
+
+          <V15AccentActionCard
+            title="Dedicated Support Desk"
+            subtitle="Need engineering assistance or deployment troubleshooting? Reach certified engineers directly."
+            buttonText="Open Support Query"
+            badge="Engineering Support"
+            icon={Headphones}
+            onAction={() => {
+              window.location.href = '/support';
+            }}
+          />
+        </div>
+
         {/* Visual Analytics & Velocity Strip */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Order Spend Velocity Sparkline */}
@@ -375,7 +403,7 @@ export default function CustomerDashboardPage() {
         </div>
 
         {/* Active Software Licenses Snippet */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs mb-8">
+        <div className="bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] mb-8">
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
             <div>
               <div className="flex items-center gap-2">
@@ -458,7 +486,7 @@ export default function CustomerDashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           
           {/* Recent Orders Section with Direct Invoice Download */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <div className="bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
               <div>
                 <div className="flex items-center gap-2">
@@ -534,7 +562,7 @@ export default function CustomerDashboardPage() {
           </div>
 
           {/* Support Queries Section */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <div className="bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
               <div>
                 <div className="flex items-center gap-2">
@@ -589,6 +617,6 @@ export default function CustomerDashboardPage() {
         </div>
 
       </main>
-    </div>
+    </DashboardShell>
   );
 }

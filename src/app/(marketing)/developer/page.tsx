@@ -33,9 +33,13 @@ import { getAdminUsersApi, updateAdminUserRoleApi } from '@/api/users';
 import { getAdminStatsApi } from '@/api/admin';
 import { AdminDeploymentsView } from '@/components/admin/AdminDeploymentsView';
 import { 
+  DashboardShell,
   V15MetricCard, 
+  V15AccentActionCard,
+  V15PerformanceChart,
   V15Card, 
-  V15CalendarWidget 
+  V15CalendarWidget,
+  V15PillTabs 
 } from '@/components/dashboard/V15DashboardPrimitives';
 
 export default function DeveloperStudioPage() {
@@ -308,9 +312,9 @@ export default function DeveloperStudioPage() {
   }, [activeTab, startDateStr, endDateStr, fetchAnalytics, fetchApiKeys, fetchWebhookLogs, fetchDiagnostics, fetchUsers]);
 
   return (
-    <div className="bg-[#f8f9fa] text-slate-900 min-h-screen selection:bg-orange-500 selection:text-white pb-16 font-sans">
+    <DashboardShell className="pb-16 font-sans">
       {/* Dev Top Bar - V15 Aesthetic */}
-      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-xs">
+      <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/70 shadow-[0_1px_10px_rgba(0,0,0,0.02)]">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-xs">
@@ -348,7 +352,7 @@ export default function DeveloperStudioPage() {
       {/* Main Dev Container */}
       <main className="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
         {/* Banner Section with V15 Aesthetics */}
-        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-xs relative overflow-hidden">
+        <section className="bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-6 sm:p-7 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 font-mono text-xs font-bold uppercase tracking-wider mb-2">
@@ -364,11 +368,12 @@ export default function DeveloperStudioPage() {
             </div>
 
             {/* Mode Selector */}
-            <div className="p-1 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center shrink-0">
+            <div className="p-1 rounded-2xl bg-slate-100/80 border border-slate-200/80 flex items-center shrink-0 shadow-2xs">
               <button
+                type="button"
                 onClick={() => setControlMode('manual')}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer",
+                  "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
                   controlMode === 'manual' ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
                 )}
               >
@@ -376,10 +381,11 @@ export default function DeveloperStudioPage() {
                 <span>Manual Console</span>
               </button>
               <button
+                type="button"
                 onClick={() => setControlMode('ai')}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer",
-                  controlMode === 'ai' ? "bg-orange-600 text-white shadow-xs font-bold" : "text-slate-600 hover:text-slate-900"
+                  "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+                  controlMode === 'ai' ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-xs font-bold" : "text-slate-600 hover:text-slate-900"
                 )}
               >
                 <Bot className="w-3.5 h-3.5" />
@@ -389,39 +395,80 @@ export default function DeveloperStudioPage() {
           </div>
         </section>
 
-        {/* Tab Navigation */}
-        <section className="bg-white border border-slate-200/90 rounded-2xl p-1.5 shadow-xs overflow-x-auto scrollbar-none">
-          <div className="flex items-center gap-1.5 text-xs font-semibold min-w-max">
-            {[
-              { key: 'deployments', label: 'Deployments & Provisioning', icon: Layers },
-              { key: 'analytics', label: 'Telemetry & Downloads', icon: Smartphone },
-              { key: 'vault', label: 'API Keys & Vault', icon: Key },
-              { key: 'webhooks', label: 'Webhook Simulator', icon: Zap },
-              { key: 'telemetry', label: 'System Telemetry', icon: Server },
-              { key: 'rbac', label: 'RBAC Manager', icon: Shield },
-              { key: 'seed', label: 'Database Health', icon: Database },
-              { key: 'ai', label: 'Dev AI Terminal', icon: Bot, isAi: true },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key as any)}
-                  className={cn(
-                    "px-3.5 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer flex items-center gap-2",
-                    isActive
-                      ? "bg-slate-900 text-white shadow-xs"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-                  )}
-                >
-                  <Icon className={cn("w-3.5 h-3.5", isActive ? (tab.isAi ? "text-orange-400" : "text-orange-400") : "text-slate-500")} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
+        {/* V15 Developer KPI Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <V15MetricCard
+            label="System Health"
+            value={diagnostics?.status || 'HEALTHY'}
+            subvalue="PostgreSQL 17 + JVM 21"
+            icon={Server}
+            accentColor="emerald"
+            trend={{ value: '100% UP', direction: 'up' }}
+          />
+          <V15MetricCard
+            label="Active API Keys"
+            value={apiKeys.length}
+            subvalue="Cryptographic HMAC Vault"
+            icon={Key}
+            accentColor="purple"
+            onClick={() => setActiveTab('vault')}
+          />
+          <V15MetricCard
+            label="Staff Accounts"
+            value={users.length}
+            subvalue="RBAC Access Matrix"
+            icon={Shield}
+            accentColor="blue"
+            onClick={() => setActiveTab('rbac')}
+          />
+          <V15MetricCard
+            label="Live Deployments"
+            value={dbStats?.liveDeployments ?? (analytics?.deviceMetrics?.totalActivations ?? 0)}
+            subvalue="Active VPS Containers"
+            icon={Layers}
+            accentColor="orange"
+            onClick={() => setActiveTab('deployments')}
+          />
+        </div>
+
+        {/* V15 Dual Column: Performance Spline Chart + Vibrant Orange Accent Action Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <V15PerformanceChart
+              title="Operations & Request Telemetry"
+              subtitle="Programmatic API transactions vs internal background scheduler tasks"
+              primaryData={[12, 19, 15, 28, 24, 38, 42, 55]}
+              secondaryData={[10, 14, 18, 20, 22, 26, 30, 32]}
+              activeTimeframe="Live"
+              timeframes={['1h', '6h', '24h', 'Live']}
+            />
           </div>
-        </section>
+
+          <V15AccentActionCard
+            title="Programmatic Key Vault"
+            subtitle="Issue secure scoped API keys for server-to-server integrations, SDK clients, and CI/CD automation."
+            buttonText="Generate API Key"
+            badge="Security Vault"
+            icon={Key}
+            onAction={() => setActiveTab('vault')}
+          />
+        </div>
+
+        {/* V15 Pill Tab Navigation */}
+        <V15PillTabs
+          tabs={[
+            { key: 'deployments', label: 'Deployments & Provisioning', icon: Layers },
+            { key: 'analytics', label: 'Telemetry & Downloads', icon: Smartphone },
+            { key: 'vault', label: 'API Keys & Vault', icon: Key, badge: apiKeys.length },
+            { key: 'webhooks', label: 'Webhook Simulator', icon: Zap },
+            { key: 'telemetry', label: 'System Telemetry', icon: Server },
+            { key: 'rbac', label: 'RBAC Manager', icon: Shield, badge: users.length },
+            { key: 'seed', label: 'Database Health', icon: Database },
+            { key: 'ai', label: 'Dev AI Terminal', icon: Bot },
+          ]}
+          activeKey={activeTab}
+          onChange={(key) => setActiveTab(key as any)}
+        />
 
         {/* TAB: DEPLOYMENTS & PROVISIONING OPERATIONS */}
         {activeTab === 'deployments' && (
@@ -977,6 +1024,6 @@ export default function DeveloperStudioPage() {
           </section>
         )}
       </main>
-    </div>
+    </DashboardShell>
   );
 }

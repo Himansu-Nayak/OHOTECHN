@@ -2,11 +2,12 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { LucideIcon, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import { LucideIcon, ArrowUpRight, ArrowDownRight, Minus, Plus } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 
 /* ==========================================================================
-   1. DASHBOARD SHELL & SURFACES
+   1. DASHBOARD SHELL & PASTEL V15 AMBIENCE
+   Soft lavender, pink, and light pastel backgrounds with subtle ambient glow
    ========================================================================== */
 export interface DashboardShellProps {
   children: React.ReactNode;
@@ -18,9 +19,9 @@ export function DashboardShell({ children, className, theme = 'light' }: Dashboa
   return (
     <div
       className={cn(
-        'min-h-screen w-full transition-colors duration-200 antialiased',
+        'min-h-screen w-full transition-colors duration-200 antialiased selection:bg-orange-100 selection:text-orange-950',
         theme === 'light'
-          ? 'bg-[#f8f9fa] text-slate-900 selection:bg-orange-100 selection:text-orange-950'
+          ? 'bg-[#f8f9fe] text-slate-900 bg-[radial-gradient(ellipse_80%_60%_at_5%_-5%,rgba(224,219,254,0.55),transparent),radial-gradient(ellipse_60%_50%_at_95%_0%,rgba(254,226,236,0.55),transparent),radial-gradient(ellipse_60%_50%_at_50%_100%,rgba(243,232,255,0.35),transparent)]'
           : 'bg-[#0b0c0e] text-slate-100 selection:bg-orange-500/20 selection:text-orange-200',
         className
       )}
@@ -53,13 +54,13 @@ export function DashboardPageHeader({
   return (
     <div
       className={cn(
-        'flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200/80 mb-6',
+        'flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-6',
         className
       )}
     >
       <div>
-        <div className="flex items-center gap-2.5">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
             {title}
           </h1>
           {badge}
@@ -71,7 +72,7 @@ export function DashboardPageHeader({
         )}
       </div>
 
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-3 shrink-0 flex-wrap">
         {lastUpdated && (
           <span className="text-[11px] font-mono text-slate-400 hidden md:inline">
             Updated {lastUpdated}
@@ -84,7 +85,7 @@ export function DashboardPageHeader({
 }
 
 /* ==========================================================================
-   3. V15 METRIC KPI CARD (WARM OFF-WHITE, SUBTLE ORANGE ACCENTS, SHADOWS)
+   3. V15 METRIC KPI CARD (WARM PASTEL, ORANGE ACCENTS, ROUNDED-2XL)
    ========================================================================== */
 export interface V15MetricCardProps {
   label: string;
@@ -96,7 +97,7 @@ export interface V15MetricCardProps {
     direction: 'up' | 'down' | 'neutral';
     label?: string;
   };
-  accentColor?: 'orange' | 'emerald' | 'blue' | 'purple' | 'neutral';
+  accentColor?: 'orange' | 'emerald' | 'blue' | 'purple' | 'rose' | 'amber' | 'neutral';
   tooltip?: string;
   onClick?: () => void;
   className?: string;
@@ -119,6 +120,8 @@ export function V15MetricCard({
     emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100 group-hover:bg-emerald-100/80',
     blue: 'bg-sky-50 text-sky-600 border-sky-100 group-hover:bg-sky-100/80',
     purple: 'bg-purple-50 text-purple-600 border-purple-100 group-hover:bg-purple-100/80',
+    rose: 'bg-rose-50 text-rose-600 border-rose-100 group-hover:bg-rose-100/80',
+    amber: 'bg-amber-50 text-amber-600 border-amber-100 group-hover:bg-amber-100/80',
     neutral: 'bg-slate-50 text-slate-700 border-slate-100 group-hover:bg-slate-100/80',
   };
 
@@ -126,19 +129,19 @@ export function V15MetricCard({
     <div
       onClick={onClick}
       className={cn(
-        'group relative bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs transition-all duration-200',
-        onClick && 'cursor-pointer hover:border-slate-300 hover:shadow-md',
+        'group relative bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all duration-200',
+        onClick && 'cursor-pointer hover:border-slate-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)] hover:-translate-y-0.5',
         className
       )}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">
+        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">
           {label}
         </span>
         {Icon && (
           <div
             className={cn(
-              'p-2.5 rounded-xl border transition-colors shrink-0',
+              'p-2.5 rounded-xl border transition-colors shrink-0 shadow-2xs',
               accentStyles[accentColor]
             )}
           >
@@ -148,13 +151,13 @@ export function V15MetricCard({
       </div>
 
       <div className="mt-3.5 flex items-baseline justify-between gap-2">
-        <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
           {value}
         </div>
         {trend && (
           <span
             className={cn(
-              'inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full border',
+              'inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full border shadow-2xs',
               trend.direction === 'up' && 'text-emerald-700 bg-emerald-50 border-emerald-200',
               trend.direction === 'down' && 'text-rose-700 bg-rose-50 border-rose-200',
               trend.direction === 'neutral' && 'text-slate-600 bg-slate-50 border-slate-200'
@@ -188,7 +191,75 @@ export function V15MetricCard({
 }
 
 /* ==========================================================================
-   4. V15 CARD CONTAINER (ROUNDED-2XL, CLEAN PADDING, OPTIONAL HEADER)
+   4. V15 ACCENT ACTION CARD (VIBRANT ORANGE HIGHLIGHT AS SEEN IN V15 REFERENCE)
+   Frame 00:02 "Manage Projects / Create New" aesthetic
+   ========================================================================== */
+export interface V15AccentActionCardProps {
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  onAction?: () => void;
+  icon?: LucideIcon;
+  badge?: string;
+  className?: string;
+}
+
+export function V15AccentActionCard({
+  title,
+  subtitle,
+  buttonText,
+  onAction,
+  icon: Icon = Plus,
+  badge,
+  className,
+}: V15AccentActionCardProps) {
+  return (
+    <div
+      className={cn(
+        'relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#FF6B4A] to-[#FF8E53] p-5 sm:p-6 text-white shadow-[0_10px_30px_rgba(255,107,74,0.25)] flex flex-col justify-between transition-all duration-200 hover:shadow-[0_14px_36px_rgba(255,107,74,0.32)]',
+        className
+      )}
+    >
+      {/* Subtle decorative circles */}
+      <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/10 blur-md pointer-events-none" />
+      <div className="absolute -right-2 -bottom-6 w-20 h-20 rounded-full bg-white/10 blur-xs pointer-events-none" />
+
+      <div className="relative z-10">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/25 shadow-xs">
+            <Icon className="w-4 h-4" />
+          </div>
+          {badge && (
+            <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/25">
+              {badge}
+            </span>
+          )}
+        </div>
+
+        <h3 className="text-base sm:text-lg font-bold tracking-tight text-white mb-1">
+          {title}
+        </h3>
+        <p className="text-xs text-white/85 leading-relaxed line-clamp-2 mb-4">
+          {subtitle}
+        </p>
+      </div>
+
+      <div className="relative z-10 pt-2">
+        <button
+          type="button"
+          onClick={onAction}
+          className="w-full py-2.5 px-4 rounded-xl bg-white text-[#FF6B4A] font-bold text-xs hover:bg-white/95 active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+        >
+          <Icon className="w-3.5 h-3.5" />
+          <span>{buttonText}</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   5. V15 CARD CONTAINER (ROUNDED-[22px], CLEAN PADDING, FROSTED GLASS)
    ========================================================================== */
 export interface V15CardProps {
   title?: React.ReactNode;
@@ -212,14 +283,14 @@ export function V15Card({
   return (
     <div
       className={cn(
-        'bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden transition-all duration-200',
+        'bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden transition-all duration-200',
         className
       )}
     >
       {(title || actions) && (
         <div
           className={cn(
-            'px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50',
+            'px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40',
             headerClassName
           )}
         >
@@ -238,13 +309,204 @@ export function V15Card({
           {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
         </div>
       )}
-      <div className={cn('p-5', contentClassName)}>{children}</div>
+      <div className={cn('p-5 sm:p-5.5', contentClassName)}>{children}</div>
     </div>
   );
 }
 
 /* ==========================================================================
-   5. MINI SVG TREND SPARKLINE / LINE CHART (ZERO EXTERNAL DEPS, ZERO HYDRATION)
+   6. V15 PERFORMANCE CHART (AUTHENTIC DUAL CURVE AS SEEN IN V15 REFERENCE)
+   Frame 00:01 & 00:04 "Performance Chart" recreation with smooth SVG spline
+   ========================================================================== */
+export interface V15PerformanceChartProps {
+  title?: string;
+  subtitle?: string;
+  primaryData: number[];
+  secondaryData?: number[];
+  timeframes?: string[];
+  activeTimeframe?: string;
+  onTimeframeChange?: (tf: string) => void;
+  className?: string;
+}
+
+export function V15PerformanceChart({
+  title = 'Performance Chart',
+  subtitle = 'Velocity & transaction completion metrics',
+  primaryData,
+  secondaryData,
+  timeframes = ['Weekly', 'Monthly', 'Yearly'],
+  activeTimeframe = 'Monthly',
+  onTimeframeChange,
+  className,
+}: V15PerformanceChartProps) {
+  const width = 500;
+  const height = 180;
+  const paddingX = 20;
+  const paddingTop = 25;
+  const paddingBottom = 25;
+  const effectiveWidth = width - paddingX * 2;
+  const effectiveHeight = height - paddingTop - paddingBottom;
+
+  const allVals = [...primaryData, ...(secondaryData || [])];
+  const max = Math.max(...allVals, 1);
+  const min = Math.min(...allVals, 0);
+  const range = max - min || 1;
+
+  const buildPath = (data: number[]) => {
+    if (!data || data.length < 2) return { path: '', area: '', points: [] };
+    const pts = data.map((v, i) => {
+      const x = paddingX + (i / (data.length - 1)) * effectiveWidth;
+      const y = height - paddingBottom - ((v - min) / range) * effectiveHeight;
+      return { x, y, v };
+    });
+
+    // Smooth Bezier Curve
+    let d = `M ${pts[0].x},${pts[0].y}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const current = pts[i];
+      const next = pts[i + 1];
+      const controlX = (current.x + next.x) / 2;
+      d += ` C ${controlX},${current.y} ${controlX},${next.y} ${next.x},${next.y}`;
+    }
+
+    const area = `${d} L ${pts[pts.length - 1].x},${height - paddingBottom} L ${pts[0].x},${height - paddingBottom} Z`;
+    return { path: d, area, points: pts };
+  };
+
+  const primary = buildPath(primaryData);
+  const secondary = secondaryData ? buildPath(secondaryData) : null;
+
+  return (
+    <V15Card
+      title={title}
+      subtitle={subtitle}
+      actions={
+        <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-full border border-slate-200/60">
+          {timeframes.map((tf) => (
+            <button
+              key={tf}
+              type="button"
+              onClick={() => onTimeframeChange && onTimeframeChange(tf)}
+              className={cn(
+                'px-3 py-1 text-[11px] font-bold rounded-full transition-all cursor-pointer',
+                activeTimeframe === tf
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              )}
+            >
+              {tf}
+            </button>
+          ))}
+        </div>
+      }
+      className={className}
+    >
+      <div className="relative w-full">
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          className="w-full h-44 sm:h-52 overflow-visible"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            {/* Primary Gradient (Lavender / Violet) */}
+            <linearGradient id="v15ChartViolet" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.28" />
+              <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.0" />
+            </linearGradient>
+            {/* Secondary Gradient (Orange Accent) */}
+            <linearGradient id="v15ChartOrange" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ea580c" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#ea580c" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+
+          {/* Dotted horizontal grid lines */}
+          {[0.25, 0.5, 0.75, 1.0].map((ratio) => {
+            const y = height - paddingBottom - ratio * effectiveHeight;
+            return (
+              <line
+                key={ratio}
+                x1={paddingX}
+                y1={y}
+                x2={width - paddingX}
+                y2={y}
+                stroke="#e2e8f0"
+                strokeDasharray="4 4"
+                strokeWidth="1"
+              />
+            );
+          })}
+
+          {/* Secondary Curve (Violet) */}
+          {secondary && (
+            <>
+              <path d={secondary.area} fill="url(#v15ChartViolet)" />
+              <path
+                d={secondary.path}
+                fill="none"
+                stroke="#8b5cf6"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+            </>
+          )}
+
+          {/* Primary Curve (Vibrant Orange) */}
+          {primary.path && (
+            <>
+              <path d={primary.area} fill="url(#v15ChartOrange)" />
+              <path
+                d={primary.path}
+                fill="none"
+                stroke="#ea580c"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+              {/* Highlight peak point */}
+              {primary.points.length > 0 && (
+                <g>
+                  {primary.points.map((pt, i) => (
+                    <circle
+                      key={i}
+                      cx={pt.x}
+                      cy={pt.y}
+                      r={i === primary.points.length - 1 ? 4.5 : 3}
+                      fill="#ea580c"
+                      stroke="#ffffff"
+                      strokeWidth="2"
+                    />
+                  ))}
+                </g>
+              )}
+            </>
+          )}
+        </svg>
+
+        {/* Legend */}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-500 font-medium">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+              <span>Orders / Velocity</span>
+            </span>
+            {secondary && (
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+                <span>Baseline Capacity</span>
+              </span>
+            )}
+          </div>
+          <span className="text-[11px] font-mono text-slate-400">
+            Real-time PostgreSQL Feed
+          </span>
+        </div>
+      </div>
+    </V15Card>
+  );
+}
+
+/* ==========================================================================
+   7. MINI SVG TREND SPARKLINE
    ========================================================================== */
 export interface V15SparklineProps {
   data: number[];
@@ -256,7 +518,7 @@ export interface V15SparklineProps {
 
 export function V15Sparkline({
   data,
-  color = '#ea580c', // OHO TECH vibrant orange
+  color = '#ea580c',
   fillColor = 'rgba(234, 88, 12, 0.08)',
   height = 56,
   className,
@@ -302,7 +564,7 @@ export function V15Sparkline({
 }
 
 /* ==========================================================================
-   6. V15 MINI BAR COMPARISON CHART
+   8. V15 MINI BAR COMPARISON CHART
    ========================================================================== */
 export interface V15BarChartProps {
   data: { label: string; value: number }[];
@@ -319,18 +581,18 @@ export function V15BarChart({
   const max = Math.max(...data.map((d) => d.value), 1);
 
   return (
-    <div className={cn('flex items-end justify-between gap-2 h-28 pt-2', className)}>
+    <div className={cn('flex items-end justify-between gap-2.5 h-28 pt-2', className)}>
       {data.map((item, idx) => {
         const heightPercent = Math.max(8, Math.round((item.value / max) * 100));
         return (
           <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-            <div className="w-full bg-slate-100 rounded-t-md h-full flex items-end overflow-hidden">
+            <div className="w-full bg-slate-100 rounded-t-lg h-full flex items-end overflow-hidden">
               <div
                 style={{ height: `${heightPercent}%`, backgroundColor: activeColor }}
-                className="w-full rounded-t-md transition-all duration-300 group-hover:brightness-110"
+                className="w-full rounded-t-lg transition-all duration-300 group-hover:brightness-110"
               />
             </div>
-            <span className="text-[10px] font-mono text-slate-400 truncate max-w-[40px] text-center">
+            <span className="text-[10px] font-semibold text-slate-400 truncate max-w-[48px] text-center">
               {item.label}
             </span>
           </div>
@@ -341,7 +603,7 @@ export function V15BarChart({
 }
 
 /* ==========================================================================
-   7. V15 MINI CALENDAR / SCHEDULE WIDGET
+   9. V15 MINI CALENDAR / SCHEDULE WIDGET
    ========================================================================== */
 export interface V15CalendarWidgetProps {
   selectedDate?: Date;
@@ -363,7 +625,7 @@ export function V15CalendarWidget({
   const blanks = Array.from({ length: firstDayIndex }, (_, i) => i);
 
   return (
-    <div className={cn('bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs', className)}>
+    <div className={cn('bg-white/95 backdrop-blur-sm p-4 rounded-[22px] border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.02)]', className)}>
       <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
         <span className="text-xs font-bold text-slate-800 tracking-tight">{currentMonthName}</span>
         <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">
@@ -410,7 +672,7 @@ export function V15CalendarWidget({
 }
 
 /* ==========================================================================
-   8. V15 ACTIVITY TIMELINE SECTION
+   10. V15 ACTIVITY TIMELINE SECTION
    ========================================================================== */
 export interface V15ActivityItem {
   id: string | number;
@@ -455,7 +717,7 @@ export function V15ActivityTimeline({
                 />
               )}
               <div className="relative flex items-start space-x-3">
-                <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-200/90">
+                <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-200/90 shadow-2xs">
                   {Icon ? (
                     <Icon className={cn('h-3.5 w-3.5', item.iconColor || 'text-slate-600')} />
                   ) : (
@@ -479,6 +741,64 @@ export function V15ActivityTimeline({
           );
         })}
       </ul>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   11. V15 PILL TABS
+   ========================================================================== */
+export interface V15PillTabItem {
+  key: string;
+  label: string;
+  icon?: LucideIcon;
+  badge?: number | string;
+}
+
+export function V15PillTabs({
+  tabs,
+  activeKey,
+  onChange,
+  className,
+}: {
+  tabs: V15PillTabItem[];
+  activeKey: string;
+  onChange: (key: string) => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn('bg-white/90 backdrop-blur-sm border border-slate-200/80 rounded-[20px] p-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.02)] overflow-x-auto scrollbar-none flex items-center gap-1.5', className)}>
+      {tabs.map((tab) => {
+        const Icon = tab.icon;
+        const isActive = activeKey === tab.key;
+
+        return (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => onChange(tab.key)}
+            className={cn(
+              'px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 shadow-2xs',
+              isActive
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+            )}
+          >
+            {Icon && <Icon className={cn('w-3.5 h-3.5', isActive ? 'text-orange-400' : 'text-slate-400')} />}
+            <span>{tab.label}</span>
+            {tab.badge != null && (
+              <span
+                className={cn(
+                  'px-1.5 py-0.5 rounded-full text-[10px] font-mono',
+                  isActive ? 'bg-orange-500 text-white' : 'bg-slate-200/80 text-slate-700'
+                )}
+              >
+                {tab.badge}
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

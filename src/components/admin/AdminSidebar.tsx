@@ -191,7 +191,8 @@ export function AdminSidebar({
                         }}
                         title={collapsed ? item.label : undefined}
                         className={cn(
-                          'w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-colors duration-150 cursor-pointer select-none text-left',
+                          collapsed ? 'w-10 h-10 mx-auto justify-center' : 'w-full gap-3 px-3 py-2 text-left',
+                          'flex items-center rounded-xl text-xs font-medium transition-colors duration-150 cursor-pointer select-none',
                           isActive
                             ? 'bg-slate-900 text-white font-semibold shadow-xs'
                             : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
@@ -236,6 +237,19 @@ export function AdminSidebar({
           isCollapsed ? 'w-16' : 'w-64'
         )}
       >
+        {/* Collapsed Top Brand Tile (V15 Style Rail Header) */}
+        {isCollapsed && (
+          <div className="p-3 border-b border-slate-100 flex items-center justify-center">
+            <div
+              onClick={onToggleCollapse}
+              title="Expand sidebar (Ctrl+B)"
+              className="w-10 h-10 rounded-xl bg-slate-950 text-white flex items-center justify-center font-black text-xs shadow-md cursor-pointer hover:scale-105 transition-transform"
+            >
+              OH
+            </div>
+          </div>
+        )}
+
         {/* Search Filter Header */}
         {!isCollapsed && (
           <div className="p-3 border-b border-slate-100">
