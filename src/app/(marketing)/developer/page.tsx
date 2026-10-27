@@ -39,7 +39,10 @@ import {
   V15PerformanceChart,
   V15Card, 
   V15CalendarWidget,
-  V15PillTabs 
+  V15PillTabs,
+  V15CircularGauge,
+  V15StaggerContainer,
+  V15StaggerItem
 } from '@/components/dashboard/V15DashboardPrimitives';
 
 export default function DeveloperStudioPage() {
@@ -408,7 +411,7 @@ export default function DeveloperStudioPage() {
         </section>
 
         {/* V15 Developer KPI Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <V15StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <V15MetricCard
             label="System Health"
             value={diagnostics?.status || 'HEALTHY'}
@@ -441,7 +444,7 @@ export default function DeveloperStudioPage() {
             accentColor="orange"
             onClick={() => setActiveTab('deployments')}
           />
-        </div>
+        </V15StaggerContainer>
 
         {/* V15 Dual Column: Performance Spline Chart + Vibrant Orange Accent Action Card */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -461,6 +464,8 @@ export default function DeveloperStudioPage() {
             subtitle="Issue secure scoped API keys for server-to-server integrations, SDK clients, and CI/CD automation."
             buttonText="Generate API Key"
             badge="Security Vault"
+            metricValue={apiKeys.length}
+            metricLabel="Active Cryptographic Keys"
             icon={Key}
             onAction={() => setActiveTab('vault')}
           />

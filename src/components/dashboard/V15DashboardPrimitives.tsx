@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { LucideIcon, ArrowUpRight, ArrowDownRight, Minus, Plus } from 'lucide-react';
-import { motion, useReducedMotion } from 'motion/react';
+import { LucideIcon, ArrowUpRight, ArrowDownRight, Minus, Plus, ArrowRight } from 'lucide-react';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 
 /* ==========================================================================
    1. DASHBOARD SHELL & PASTEL V15 AMBIENCE
@@ -129,8 +129,8 @@ export function V15MetricCard({
     <div
       onClick={onClick}
       className={cn(
-        'group relative bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all duration-200',
-        onClick && 'cursor-pointer hover:border-slate-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)] hover:-translate-y-0.5',
+        'group relative bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all duration-300',
+        onClick && 'cursor-pointer hover:border-slate-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)]',
         className
       )}
     >
@@ -179,9 +179,9 @@ export function V15MetricCard({
     </div>
   );
 
-  if (onClick && !shouldReduceMotion) {
+  if (!shouldReduceMotion) {
     return (
-      <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15, ease: 'easeOut' }}>
+      <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
         {cardBody}
       </motion.div>
     );
@@ -198,6 +198,8 @@ export interface V15AccentActionCardProps {
   title: string;
   subtitle: string;
   buttonText: string;
+  metricValue?: string | number;
+  metricLabel?: string;
   onAction?: () => void;
   icon?: LucideIcon;
   badge?: string;
@@ -208,29 +210,33 @@ export function V15AccentActionCard({
   title,
   subtitle,
   buttonText,
+  metricValue,
+  metricLabel,
   onAction,
   icon: Icon = Plus,
   badge,
   className,
 }: V15AccentActionCardProps) {
-  return (
+  const shouldReduceMotion = useReducedMotion();
+
+  const cardContent = (
     <div
       className={cn(
-        'relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#FF6B4A] to-[#FF8E53] p-5 sm:p-6 text-white shadow-[0_10px_30px_rgba(255,107,74,0.25)] flex flex-col justify-between transition-all duration-200 hover:shadow-[0_14px_36px_rgba(255,107,74,0.32)]',
+        'relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#FF6B4A] to-[#FF8E53] p-5 sm:p-6 text-white shadow-[0_10px_30px_rgba(255,107,74,0.25)] flex flex-col justify-between transition-all duration-300 hover:shadow-[0_16px_40px_rgba(255,107,74,0.36)] group',
         className
       )}
     >
-      {/* Subtle decorative circles */}
-      <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/10 blur-md pointer-events-none" />
-      <div className="absolute -right-2 -bottom-6 w-20 h-20 rounded-full bg-white/10 blur-xs pointer-events-none" />
+      {/* Subtle decorative circles as in V15 reference */}
+      <div className="absolute -right-6 -top-6 w-32 h-32 rounded-full bg-white/10 blur-md pointer-events-none" />
+      <div className="absolute -right-2 -bottom-6 w-24 h-24 rounded-full bg-white/10 blur-xs pointer-events-none" />
 
       <div className="relative z-10">
         <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/25 shadow-xs">
-            <Icon className="w-4 h-4" />
+          <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/25 shadow-xs">
+            <Icon className="w-5 h-5" />
           </div>
           {badge && (
-            <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/25">
+            <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/25">
               {badge}
             </span>
           )}
@@ -239,7 +245,22 @@ export function V15AccentActionCard({
         <h3 className="text-base sm:text-lg font-bold tracking-tight text-white mb-1">
           {title}
         </h3>
-        <p className="text-xs text-white/85 leading-relaxed line-clamp-2 mb-4">
+
+        {/* Large Prominent Metric from Video Frame 00:02 */}
+        {metricValue != null && (
+          <div className="my-2.5">
+            <div className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-none drop-shadow-xs">
+              {metricValue}
+            </div>
+            {metricLabel && (
+              <span className="text-[11px] font-semibold text-white/80 uppercase tracking-wider mt-1 block">
+                {metricLabel}
+              </span>
+            )}
+          </div>
+        )}
+
+        <p className="text-xs text-white/90 leading-relaxed line-clamp-2 mb-4">
           {subtitle}
         </p>
       </div>
@@ -248,14 +269,26 @@ export function V15AccentActionCard({
         <button
           type="button"
           onClick={onAction}
-          className="w-full py-2.5 px-4 rounded-xl bg-white text-[#FF6B4A] font-bold text-xs hover:bg-white/95 active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+          className="w-full py-2.5 px-4 rounded-xl bg-white text-[#FF6B4A] font-bold text-xs hover:bg-white/95 active:scale-[0.98] transition-all shadow-sm flex items-center justify-between cursor-pointer"
         >
-          <Icon className="w-3.5 h-3.5" />
           <span>{buttonText}</span>
+          <span className="w-6 h-6 rounded-full bg-orange-100 text-[#FF6B4A] flex items-center justify-center group-hover:translate-x-1 transition-transform">
+            <ArrowRight className="w-3.5 h-3.5" />
+          </span>
         </button>
       </div>
     </div>
   );
+
+  if (!shouldReduceMotion) {
+    return (
+      <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
+        {cardContent}
+      </motion.div>
+    );
+  }
+
+  return cardContent;
 }
 
 /* ==========================================================================
@@ -800,5 +833,178 @@ export function V15PillTabs({
         );
       })}
     </div>
+  );
+}
+
+
+/* ==========================================================================
+   12. V15 CIRCULAR GAUGE / DONUT METER (FRAMES 00:01 & 00:02)
+   Recreates the circular gauge meter for integrations/goals
+   ========================================================================== */
+export interface V15CircularGaugeProps {
+  title: string;
+  subtitle?: string;
+  value: number; // 0 - 100 percentage
+  displayValue?: string | number;
+  label?: string;
+  primaryColor?: string;
+  metrics?: { label: string; value: string | number; color: string }[];
+  className?: string;
+}
+
+export function V15CircularGauge({
+  title,
+  subtitle,
+  value,
+  displayValue,
+  label = 'Operational',
+  primaryColor = '#ea580c',
+  metrics,
+  className,
+}: V15CircularGaugeProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const size = 140;
+  const strokeWidth = 12;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const clamped = Math.min(Math.max(value, 0), 100);
+  const strokeDashoffset = circumference - (clamped / 100) * circumference;
+
+  const gaugeCard = (
+    <V15Card title={title} subtitle={subtitle} className={className}>
+      <div className="flex flex-col items-center justify-center py-1">
+        <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+          <svg width={size} height={size} className="rotate-[-90deg]">
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              stroke="#f1f5f9"
+              strokeWidth={strokeWidth}
+              fill="none"
+            />
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              stroke={primaryColor}
+              strokeWidth={strokeWidth}
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              fill="none"
+              className="transition-all duration-1000 ease-out"
+            />
+          </svg>
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span className="text-2xl font-black text-slate-900 tracking-tight leading-none">
+              {displayValue != null ? displayValue : `${clamped}%`}
+            </span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
+              {label}
+            </span>
+          </div>
+        </div>
+
+        {metrics && metrics.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 w-full mt-4 pt-3 border-t border-slate-100">
+            {metrics.map((m, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
+                <div className="min-w-0">
+                  <span className="text-[10px] font-bold text-slate-400 block uppercase truncate">
+                    {m.label}
+                  </span>
+                  <span className="text-xs font-black text-slate-800">
+                    {m.value}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </V15Card>
+  );
+
+  if (!shouldReduceMotion) {
+    return (
+      <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
+        {gaugeCard}
+      </motion.div>
+    );
+  }
+
+  return gaugeCard;
+}
+
+/* ==========================================================================
+   13. V15 MOTION CONTAINERS & STAGGER WRAPPERS
+   Smooth, restrained entrance animations matching the video transitions
+   ========================================================================== */
+export function V15StaggerContainer({
+  children,
+  className,
+  staggerDelay = 0.05,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  staggerDelay?: number;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: staggerDelay,
+      },
+    },
+  };
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function V15StaggerItem({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 12 },
+    show: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.35, ease: 'easeOut' } 
+    },
+  };
+
+  return (
+    <motion.div variants={itemVariants} className={className}>
+      {children}
+    </motion.div>
   );
 }

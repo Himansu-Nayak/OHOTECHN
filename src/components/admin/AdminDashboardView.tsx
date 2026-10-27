@@ -22,7 +22,10 @@ import {
   V15BarChart, 
   V15CalendarWidget, 
   V15ActivityTimeline, 
-  V15ActivityItem 
+  V15ActivityItem,
+  V15CircularGauge,
+  V15StaggerContainer,
+  V15StaggerItem
 } from '@/components/dashboard/V15DashboardPrimitives';
 
 interface AdminDashboardViewProps {

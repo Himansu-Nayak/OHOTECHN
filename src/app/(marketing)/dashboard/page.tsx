@@ -27,7 +27,10 @@ import {
   V15Sparkline, 
   V15CalendarWidget, 
   V15ActivityTimeline, 
-  V15ActivityItem 
+  V15ActivityItem,
+  V15CircularGauge,
+  V15StaggerContainer,
+  V15StaggerItem
 } from '@/components/dashboard/V15DashboardPrimitives';
 
 export default function CustomerDashboardPage() {
@@ -339,7 +342,7 @@ export default function CustomerDashboardPage() {
         </div>
 
         {/* Primary Metrics Grid (V15 Cards) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <V15StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           <V15MetricCard
             label="Owned Products"
             value={products.length}
@@ -375,7 +378,7 @@ export default function CustomerDashboardPage() {
             icon={Headphones}
             accentColor="neutral"
           />
-        </div>
+        </V15StaggerContainer>
 
                 {/* V15 Dual Column: Customer Spending Trajectory + Vibrant Orange Action Accent Card */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -395,6 +398,8 @@ export default function CustomerDashboardPage() {
             subtitle="Need engineering assistance or deployment troubleshooting? Reach certified engineers directly."
             buttonText="Open Support Query"
             badge="Engineering Support"
+            metricValue={activeTicketsCount}
+            metricLabel="Active Support Inquiries"
             icon={Headphones}
             onAction={() => {
               window.location.href = '/support';
