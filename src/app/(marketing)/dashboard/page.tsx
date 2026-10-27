@@ -652,7 +652,7 @@ export default function CustomerDashboardPage() {
                     </div>
 
                     <Link
-                      href="/support"
+                      href={`/support?ticketId=${ticket.id}`}
                       className="px-2.5 py-1.5 rounded-lg bg-slate-900 text-white text-[11px] font-medium hover:bg-slate-800 transition-colors shadow-2xs shrink-0"
                     >
                       View

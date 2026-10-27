@@ -19,6 +19,7 @@ interface AdminHeaderProps {
   activeTab: string;
   onSelectTab: (tab: any) => void;
   onOpenMobileSidebar?: () => void;
+  onOpenCommandPalette?: () => void;
 }
 
 export function AdminHeader({
@@ -29,6 +30,7 @@ export function AdminHeader({
   activeTab,
   onSelectTab,
   onOpenMobileSidebar,
+  onOpenCommandPalette,
 }: AdminHeaderProps) {
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
   const [profileOpen, setProfileOpen] = React.useState(false);
@@ -131,9 +133,17 @@ export function AdminHeader({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search records across platform..."
+            onClick={() => onOpenCommandPalette?.()}
+            onFocus={() => onOpenCommandPalette?.()}
+            readOnly
+            placeholder="Search or press Ctrl+K..."
             className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-100/70 border border-slate-200/70 rounded-full text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition-all"
           />
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
+            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs font-mono">
+              ⌘K
+            </kbd>
+          </div>
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}

@@ -20,6 +20,7 @@ import {
 // Modular Production Admin Components
 import { DashboardShell } from '@/components/dashboard/V15DashboardPrimitives';
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { AdminCommandPalette } from '@/components/admin/AdminCommandPalette';
 import { AdminSidebar, AdminTabKey } from '@/components/admin/AdminSidebar';
 import { AdminDashboardView } from '@/components/admin/AdminDashboardView';
 import { AdminProductsView } from '@/components/admin/AdminProductsView';
@@ -64,6 +65,7 @@ export default function AdminConsolePage() {
   const [activeTab, setActiveTab] = React.useState<AdminTabKey>('overview');
   const [globalSearchQuery, setGlobalSearchQuery] = React.useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = React.useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -95,6 +97,9 @@ export default function AdminConsolePage() {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
         e.preventDefault();
         handleToggleSidebar();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -233,6 +238,7 @@ export default function AdminConsolePage() {
         onSearchChange={setGlobalSearchQuery}
         onLogout={handleLogout}
         onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
       />
 
       {/* Main Layout Shell: Sidebar + Central Viewport */}
@@ -363,6 +369,18 @@ export default function AdminConsolePage() {
           )}
         </main>
       </div>
+      {/* Global Command Palette (Ctrl+K / Cmd+K) */}
+      <AdminCommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onSelectTab={(tab) => setActiveTab(tab)}
+        onRefreshStats={() => {
+          fetchStats();
+          fetchAnalytics();
+          fetchEnquiriesCount();
+          showToast('Operational metrics synchronized with database.', 'success');
+        }}
+      />
     </DashboardShell>
   );
 }

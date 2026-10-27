@@ -158,6 +158,21 @@ export default function SupportPanelPage() {
     }
   };
 
+
+  // Auto-open ticket if ticketId query param is present
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && user) {
+      const params = new URLSearchParams(window.location.search);
+      const ticketIdParam = params.get('ticketId');
+      if (ticketIdParam) {
+        const id = parseInt(ticketIdParam, 10);
+        if (!isNaN(id)) {
+          handleOpenTicket(id);
+        }
+      }
+    }
+  }, [user]);
+
   const handleFetchAiTriage = async () => {
     if (!selectedTicket) return;
     setIsLoadingAi(true);
