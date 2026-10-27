@@ -64,18 +64,42 @@ export default function AdminConsolePage() {
   const [activeTab, setActiveTab] = React.useState<AdminTabKey>('overview');
   const [globalSearchQuery, setGlobalSearchQuery] = React.useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('oho_admin_sidebar_collapsed');
+        if (saved !== null) {
+          return saved === 'true';
+        }
+      } catch {
+        // ignore in SSR
+      }
+    }
+    return true;
+  });
+
+  const handleToggleSidebar = React.useCallback(() => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('oho_admin_sidebar_collapsed', String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, []);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
         e.preventDefault();
-        setIsSidebarCollapsed((prev) => !prev);
+        handleToggleSidebar();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [handleToggleSidebar]);
 
   // System Core Statistics from Backend
   const [stats, setStats] = React.useState<AdminStatsDto>({
@@ -225,7 +249,7 @@ export default function AdminConsolePage() {
           isMobileOpen={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           isCollapsed={isSidebarCollapsed}
-          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          onToggleCollapse={handleToggleSidebar}
         />
 
         {/* Central Viewport */}

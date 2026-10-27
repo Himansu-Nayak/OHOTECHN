@@ -2,11 +2,12 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   Package, Key, Repeat, Download, ArrowRight, ShieldCheck, Clock, 
   CreditCard, Sparkles, CheckCircle2, Headphones, Copy, Check, 
   MessageSquare, AlertCircle, ChevronRight, Laptop, FileText, 
-  Loader2, Activity, Plus, ShoppingBag, ExternalLink, Calendar as CalendarIcon
+  Loader2, Activity, Plus, ShoppingBag, ExternalLink, Calendar as CalendarIcon, LogOut
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -30,7 +31,8 @@ import {
 } from '@/components/dashboard/V15DashboardPrimitives';
 
 export default function CustomerDashboardPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const { showToast } = useToast();
   
   const [products, setProducts] = React.useState<ProductDto[]>([]);
@@ -205,8 +207,54 @@ export default function CustomerDashboardPage() {
   const activeTicketsCount = openTicketsCount + inProgressTicketsCount;
 
   return (
-    <DashboardShell className="pb-16 pt-24 sm:pt-28 px-3 sm:px-6 lg:px-8 font-sans">
-      <main className="max-w-7xl w-full mx-auto" id="customer-dashboard-main">
+    <DashboardShell className="pb-16 font-sans">
+      {/* V15 Customer Command Top Bar */}
+      <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/70 shadow-[0_1px_10px_rgba(0,0,0,0.02)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-slate-950 text-white flex items-center justify-center font-black text-xs shadow-md hover:scale-105 transition-transform">
+                OH
+              </div>
+              <div>
+                <span className="text-sm font-black tracking-tight text-slate-900">OHO TECH</span>
+                <span className="ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-600">
+                  PORTAL
+                </span>
+              </div>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-700">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>All Systems Operational</span>
+            </div>
+
+            <Link
+              href="/products"
+              className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 text-xs font-semibold text-slate-700 transition-all flex items-center gap-1.5 shadow-xs"
+            >
+              <Package className="w-3.5 h-3.5 text-slate-500" />
+              <span className="hidden sm:inline">Browse Products</span>
+            </Link>
+
+            <button
+              onClick={() => {
+                logout();
+                router.push('/login');
+              }}
+              className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-xs font-semibold text-rose-700 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl w-full mx-auto pt-6 px-3 sm:px-6 lg:px-8" id="customer-dashboard-main">
         
         {/* Welcome Header with V15 Aesthetics */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-200/80">

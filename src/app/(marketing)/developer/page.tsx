@@ -7,7 +7,7 @@ import {
   Terminal, Shield, Key, Database, Cpu, Bot, CheckCircle2, 
   AlertTriangle, RefreshCw, Zap, Server, Smartphone, 
   Activity, ExternalLink, Copy, Check, Plus, Trash2, 
-  Send, Layers, ShieldCheck, Clock, ArrowRight, Laptop, Sparkles
+  Send, Layers, ShieldCheck, Clock, ArrowRight, Laptop, Sparkles, LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
@@ -44,7 +44,7 @@ import {
 
 export default function DeveloperStudioPage() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const { showToast } = useToast();
 
   React.useEffect(() => {
@@ -345,6 +345,18 @@ export default function DeveloperStudioPage() {
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>LIVE SYSTEM: {diagnostics?.status || 'OPERATIONAL'}</span>
             </div>
+
+            <button
+              onClick={() => {
+                logout();
+                router.push('/login');
+              }}
+              className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-xs font-semibold text-rose-700 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
           </div>
         </div>
       </header>
