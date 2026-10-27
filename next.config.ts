@@ -23,7 +23,7 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
-    value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.unsplash.com https://api.qrserver.com; connect-src 'self' https://api.razorpay.com https://lumberjack.razorpay.com https://ohotechn.com http://localhost:* ws://localhost:* http://127.0.0.1:*; frame-src 'self' https://api.razorpay.com; object-src 'none'; base-uri 'self';",
+    value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.unsplash.com https://api.qrserver.com; connect-src 'self' https://api.ohotechn.com https://*.ohotechn.com https://api.razorpay.com https://lumberjack.razorpay.com https://ohotechn.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com http://localhost:* ws://localhost:* http://127.0.0.1:*; frame-src 'self' https://api.razorpay.com; object-src 'none'; base-uri 'self';",
   },
 ];
 
