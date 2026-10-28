@@ -92,17 +92,47 @@ public class RazorpayWebhookController {
                                 if (payment.getStatus() != PaymentStatus.SUCCESSFUL) {
                                     payment.setRazorpayPaymentId(razorpayPaymentId);
                                     payment.setStatus(PaymentStatus.SUCCESSFUL);
+                                    payment.setVerifiedAt(java.time.LocalDateTime.now());
                                     paymentRepository.save(payment);
 
                                     if (order != null) {
-                                        order.setStatus(OrderStatus.CONFIRMED);
+                                        order.setStatus(OrderStatus.PAID);
                                         orderRepository.save(order);
+
+                                        // Automated instant entitlement provisioning
+                                        paymentService.createEntitlementsForOrder(order);
 
                                         if (order.getUser() != null) {
                                             cartService.clearCart(order.getUser().getId());
                                         }
-                                        logger.info("Webhook captured payment for Order #{}. Awaiting Admin Approval.", order.getId());
+                                        logger.info("Webhook captured payment for Order #{}. Entitlements provisioned.", order.getId());
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if ("payment.failed".equals(eventType)) {
+                JSONObject payloadObj = event.optJSONObject("payload");
+                if (payloadObj != null) {
+                    JSONObject paymentObj = payloadObj.optJSONObject("payment");
+                    JSONObject entity = paymentObj != null ? paymentObj.optJSONObject("entity") : null;
+                    if (entity != null) {
+                        String razorpayOrderId = entity.optString("order_id");
+                        String failureReason = entity.optString("error_description", "Payment failed at gateway");
+                        if (!razorpayOrderId.isBlank()) {
+                            Optional<Payment> paymentOpt = paymentRepository.findByRazorpayOrderId(razorpayOrderId);
+                            if (paymentOpt.isPresent()) {
+                                Payment payment = paymentOpt.get();
+                                Order order = payment.getOrder();
+                                // Safe handling of delayed/out-of-order events: ignore if order already PAID
+                                if (payment.getStatus() != PaymentStatus.SUCCESSFUL && (order == null || order.getStatus() != OrderStatus.PAID)) {
+                                    payment.setStatus(PaymentStatus.FAILED);
+                                    payment.setFailureReason(failureReason);
+                                    paymentRepository.save(payment);
+                                    logger.info("Recorded payment failure for Order #{} from webhook: {}", order != null ? order.getId() : "N/A", failureReason);
+                                } else {
+                                    logger.warn("Ignored delayed payment.failed event for already-paid order #{}", order != null ? order.getId() : "N/A");
                                 }
                             }
                         }
@@ -120,7 +150,8 @@ public class RazorpayWebhookController {
             return ResponseEntity.ok(ApiResponse.success("Webhook processed successfully", "OK"));
         } catch (Exception e) {
             logger.error("Error processing webhook payload: {}", e.getMessage(), e);
-            return ResponseEntity.ok(ApiResponse.success("Webhook received with processing notes", "ACK"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Webhook processing error: " + e.getMessage()));
         }
     }
 }

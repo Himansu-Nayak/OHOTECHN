@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,6 +70,15 @@ public class PaymentGatewaySecurityTests {
 
     @Autowired
     private ApiKeyService apiKeyService;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private LicenseRepository licenseRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     private User adminUser;
     private User devUser;
@@ -370,5 +380,169 @@ public class PaymentGatewaySecurityTests {
 
         // Verify deduplication check detects this event
         assertThat(webhookEventRepository.existsByProviderAndExternalEventId("RAZORPAY", eventId)).isTrue();
+    }
+
+    // 8. RAZORPAY WEBHOOK CAPTURE & AUTOMATED ENTITLEMENT PROVISIONING
+    @Test
+    @DisplayName("Razorpay webhook payment.captured sets order PAID and provisions entitlements idempotently")
+    void testRazorpayWebhookPaymentCapturedAutoProvisionsEntitlements() throws Exception {
+        Product product = productRepository.findAll().stream().findFirst().orElseGet(() ->
+                productRepository.save(Product.builder()
+                        .name("OHO Enterprise Engine")
+                        .slug("oho-enterprise-engine")
+                        .description("High-performance core engine")
+                        .price(new BigDecimal("14999.00"))
+                        .active(true)
+                        .build()));
+
+        Order order = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(new BigDecimal("14999.00"))
+                .status(OrderStatus.PENDING)
+                .build());
+
+        OrderItem orderItem = OrderItem.builder()
+                .order(order)
+                .product(product)
+                .quantity(1)
+                .price(new BigDecimal("14999.00"))
+                .build();
+        order.getItems().add(orderItem);
+        order = orderRepository.save(order);
+
+        String rzpOrderId = "order_rzp_mock_" + System.currentTimeMillis();
+        Payment payment = paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(new BigDecimal("14999.00"))
+                .currency("INR")
+                .status(PaymentStatus.PENDING)
+                .provider("RAZORPAY")
+                .razorpayOrderId(rzpOrderId)
+                .build());
+
+        String eventId = "evt_cap_" + System.currentTimeMillis();
+        String payload = "{\"id\":\"" + eventId + "\",\"event\":\"payment.captured\",\"payload\":{\"payment\":{\"entity\":{\"id\":\"pay_rzp_mock_123\",\"order_id\":\"" + rzpOrderId + "\",\"amount\":1499900}}}}";
+
+        // Generate HMAC-SHA256 signature
+        String webhookSecret = "test_razorpay_webhook_secret_key_12345";
+        String signature = "";
+        try {
+            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+            mac.init(new javax.crypto.spec.SecretKeySpec(webhookSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] hash = mac.doFinal(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) sb.append('0');
+                sb.append(hex);
+            }
+            signature = sb.toString();
+        } catch (Exception ignored) {}
+
+        // 1st Webhook delivery
+        mockMvc.perform(post("/api/payments/webhook")
+                        .header("X-Razorpay-Signature", signature)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        // Verify order is PAID
+        Order updatedOrder = orderRepository.findById(order.getId()).orElseThrow();
+        assertThat(updatedOrder.getStatus()).isEqualTo(OrderStatus.PAID);
+
+        // Verify payment is SUCCESSFUL
+        Payment updatedPayment = paymentRepository.findById(payment.getId()).orElseThrow();
+        assertThat(updatedPayment.getStatus()).isEqualTo(PaymentStatus.SUCCESSFUL);
+        assertThat(updatedPayment.getRazorpayPaymentId()).isEqualTo("pay_rzp_mock_123");
+
+        // Verify Entitlements (Subscription & License) were auto-provisioned
+        List<Subscription> subs = subscriptionRepository.findAllByOrderId(order.getId());
+        assertThat(subs).isNotEmpty();
+        assertThat(subs.get(0).getStatus()).isEqualTo(SubscriptionStatus.ACTIVE);
+
+        Optional<License> lic = licenseRepository.findBySubscriptionId(subs.get(0).getId());
+        assertThat(lic).isPresent();
+        assertThat(lic.get().getStatus()).isEqualTo(LicenseStatus.ACTIVE);
+        assertThat(lic.get().getLicenseKey()).isNotBlank();
+        int initialLicenseCount = licenseRepository.findByUserIdOrderByCreatedAtDesc(customerUser.getId()).size();
+
+        // 2nd Webhook delivery (Duplicate event replay)
+        mockMvc.perform(post("/api/payments/webhook")
+                        .header("X-Razorpay-Signature", signature)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ALREADY_PROCESSED"));
+
+        // Idempotency: verify no duplicate licenses created
+        int subsequentLicenseCount = licenseRepository.findByUserIdOrderByCreatedAtDesc(customerUser.getId()).size();
+        assertThat(subsequentLicenseCount).isEqualTo(initialLicenseCount);
+    }
+
+    // 9. FORGED OR MISSING WEBHOOK SIGNATURE REJECTION
+    @Test
+    @DisplayName("Webhook rejects missing or invalid signatures with HTTP 400 Bad Request")
+    void testWebhookRejectsInvalidSignature() throws Exception {
+        String payload = "{\"event\":\"payment.captured\",\"id\":\"evt_fake\"}";
+
+        // Missing signature
+        mockMvc.perform(post("/api/payments/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Missing webhook signature"));
+
+        // Invalid signature
+        mockMvc.perform(post("/api/payments/webhook")
+                        .header("X-Razorpay-Signature", "forged_invalid_signature_hex_12345")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Invalid webhook signature"));
+    }
+
+    // 10. RECONCILIATION DETECTS MISSING ENTITLEMENT ANOMALY
+    @Test
+    @DisplayName("Reconciliation report accurately identifies paid orders lacking provisioned entitlements")
+    void testReconciliationDetectsMissingEntitlement() throws Exception {
+        Product product = productRepository.findAll().stream().findFirst().orElseGet(() ->
+                productRepository.save(Product.builder()
+                        .name("OHO Cloud License")
+                        .slug("oho-cloud-license")
+                        .price(new BigDecimal("4999.00"))
+                        .active(true)
+                        .build()));
+
+        Order order = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(new BigDecimal("4999.00"))
+                .status(OrderStatus.PAID)
+                .build());
+
+        OrderItem item = OrderItem.builder()
+                .order(order)
+                .product(product)
+                .quantity(1)
+                .price(new BigDecimal("4999.00"))
+                .build();
+        order.getItems().add(item);
+        order = orderRepository.save(order);
+
+        paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(new BigDecimal("4999.00"))
+                .status(PaymentStatus.SUCCESSFUL)
+                .provider("RAZORPAY")
+                .build());
+
+        // Call reconciliation report as Admin
+        mockMvc.perform(get("/api/admin/payments/reconciliation")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.anomalies[?(@.anomalyType == 'MISSING_ENTITLEMENT')]").exists());
     }
 }

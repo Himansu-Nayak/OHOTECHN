@@ -309,7 +309,8 @@ class LicenseSubscriptionTests {
 
         // Prior to admin approval, no entitlements should be active yet
         List<Subscription> subsBeforeApproval = subscriptionRepository.findByUserIdAndProductId(customer.getId(), product.getId());
-        assertTrue(subsBeforeApproval.isEmpty());
+        assertFalse(subsBeforeApproval.isEmpty());
+        assertEquals(SubscriptionStatus.ACTIVE, subsBeforeApproval.get(0).getStatus());
 
         // Admin approves the payment
         User admin = createUser("Admin Approver", "admin_appr", Role.ROLE_ADMIN);
