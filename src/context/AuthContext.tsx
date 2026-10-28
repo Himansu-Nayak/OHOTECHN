@@ -135,6 +135,27 @@ function isJwtExpired(token: string): boolean {
 
   useEffect(() => {
     refreshUser();
+
+    if (typeof window !== 'undefined') {
+      const handleUnauthorized = () => {
+        setUser(null);
+        setAccessToken(null);
+      };
+      const handleStorage = (e: StorageEvent) => {
+        if (e.key === 'accessToken' && !e.newValue) {
+          setUser(null);
+          setAccessToken(null);
+        }
+      };
+
+      window.addEventListener('auth:unauthorized', handleUnauthorized);
+      window.addEventListener('storage', handleStorage);
+
+      return () => {
+        window.removeEventListener('auth:unauthorized', handleUnauthorized);
+        window.removeEventListener('storage', handleStorage);
+      };
+    }
   }, [refreshUser]);
 
   const login = async (params: LoginParams): Promise<AuthResponse> => {

@@ -285,6 +285,11 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponseDto processDemoPayment(Long userId, Long orderId) {
+        if (!testMode && razorpayConfigured()) {
+            logger.warn("Security Alert: Attempted demo payment in production mode for Order #{} by User #{}", orderId, userId);
+            throw new BadRequestException("Demo payment gateway is disabled in production mode. Please use official verified payment gateways.");
+        }
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
@@ -353,6 +358,8 @@ public class PaymentService {
                 .codEnabled(codEnabled)
                 .razorpayEnabled(razorpayEnabled && razorpayConfigured())
                 .razorpayKeyId(razorpayKeyId)
+                .testMode(testMode)
+                .demoEnabled(testMode || !razorpayConfigured())
                 .build();
     }
 

@@ -62,10 +62,7 @@ public class OrderController {
 
         Order order;
         if (isAdmin) {
-            order = orderService.getAllOrdersForAdmin(null).stream()
-                    .filter(o -> o.getId().equals(id))
-                    .findFirst()
-                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+            order = orderService.getOrderByIdForAdmin(id);
         } else {
             order = orderService.getOrderById(currentUser.getId(), id);
         }

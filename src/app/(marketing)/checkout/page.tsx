@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = React.useState(user?.name || 'Demo Customer');
   const [customerEmail, setCustomerEmail] = React.useState(user?.email || 'demo.customer@ohotechn.com');
   const [contactPhone, setContactPhone] = React.useState(user?.phone || '+91 98765 43210');
-  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO' | 'YOUPI'>('DEMO');
+  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO' | 'YOUPI'>('UPI');
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
@@ -709,25 +709,27 @@ export default function CheckoutPage() {
                     </label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {/* Option 1: Demo Instant Pay & Activate */}
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod('DEMO')}
-                        className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer relative ${
-                          paymentMethod === 'DEMO'
-                            ? 'border-emerald-600 bg-emerald-50/60 shadow-sm'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
-                        }`}
-                      >
-                        <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded-full">
-                          ⚡ Instant Demo
-                        </span>
-                        <Zap className={`w-5 h-5 mb-2 ${paymentMethod === 'DEMO' ? 'text-emerald-600' : 'text-slate-500'}`} />
-                        <div className="text-xs font-bold text-slate-900">Demo Quick Pay (₹ INR)</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
-                          Instant verification &amp; license key auto-generation
-                        </div>
-                      </button>
+                      {/* Option 1: Demo Instant Pay & Activate (Hidden in Production unless testMode is enabled) */}
+                      {(paymentConfig?.demoEnabled || process.env.NODE_ENV !== 'production') && (
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('DEMO')}
+                          className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer relative ${
+                            paymentMethod === 'DEMO'
+                              ? 'border-emerald-600 bg-emerald-50/60 shadow-sm'
+                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                          }`}
+                        >
+                          <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded-full">
+                            ⚡ Instant Demo
+                          </span>
+                          <Zap className={`w-5 h-5 mb-2 ${paymentMethod === 'DEMO' ? 'text-emerald-600' : 'text-slate-500'}`} />
+                          <div className="text-xs font-bold text-slate-900">Demo Quick Pay (₹ INR)</div>
+                          <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
+                            Non-production testing &amp; license key auto-generation
+                          </div>
+                        </button>
+                      )}
 
                       {/* Option 2: Direct UPI / Bank Transfer */}
                       <button

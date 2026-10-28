@@ -31,6 +31,8 @@ export interface PaymentConfigDto {
   merchantName: string;
   upiId: string;
   bankName: string;
+  testMode?: boolean;
+  demoEnabled?: boolean;
 }
 
 export interface UpiInitiateResponse {
