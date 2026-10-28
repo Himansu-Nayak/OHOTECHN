@@ -545,4 +545,176 @@ public class PaymentGatewaySecurityTests {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.anomalies[?(@.anomalyType == 'MISSING_ENTITLEMENT')]").exists());
     }
+
+    // 11. TRANSACTION OPERATIONS CENTER: OVERVIEW METRICS
+    @Test
+    @DisplayName("Admin transaction overview metrics aggregate accurately across timeframes")
+    void testTransactionOverviewMetrics() throws Exception {
+        Order order = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(new BigDecimal("1500.00"))
+                .status(OrderStatus.PAID)
+                .build());
+
+        paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(new BigDecimal("1500.00"))
+                .status(PaymentStatus.SUCCESSFUL)
+                .provider("RAZORPAY")
+                .build());
+
+        Order order2 = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(new BigDecimal("500.00"))
+                .status(OrderStatus.PENDING)
+                .build());
+
+        paymentRepository.save(Payment.builder()
+                .order(order2)
+                .amount(new BigDecimal("500.00"))
+                .status(PaymentStatus.PENDING)
+                .provider("UPI_DIRECT")
+                .build());
+
+        mockMvc.perform(get("/api/admin/transactions/overview?period=ALL")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.totalTransactions").value(2))
+                .andExpect(jsonPath("$.data.successfulCount").value(1))
+                .andExpect(jsonPath("$.data.successfulAmount").value(1500.0))
+                .andExpect(jsonPath("$.data.pendingCount").value(1))
+                .andExpect(jsonPath("$.data.pendingAmount").value(500.0));
+    }
+
+    // 12. TRANSACTION OPERATIONS CENTER: SERVER-SIDE PAGINATED LEDGER
+    @Test
+    @DisplayName("Admin transaction ledger supports server-side search, status filter, and pagination")
+    void testTransactionLedgerSearchAndPagination() throws Exception {
+        Order order = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(new BigDecimal("2999.00"))
+                .status(OrderStatus.PAID)
+                .build());
+
+        paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(new BigDecimal("2999.00"))
+                .status(PaymentStatus.SUCCESSFUL)
+                .provider("RAZORPAY")
+                .transactionReference("UTR-SEARCH-TARGET-999")
+                .build());
+
+        // Search by UTR reference
+        mockMvc.perform(get("/api/admin/transactions/history?search=UTR-SEARCH-TARGET&page=0&size=10")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.totalElements").value(1))
+                .andExpect(jsonPath("$.data.content[0].transactionReference").value("UTR-SEARCH-TARGET-999"))
+                .andExpect(jsonPath("$.data.content[0].customerName").value(customerUser.getName()));
+
+        // Filter by Status
+        mockMvc.perform(get("/api/admin/transactions/history?status=FAILED&page=0&size=10")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.totalElements").value(0));
+    }
+
+    // 13. TRANSACTION OPERATIONS CENTER: WEBHOOK MONITORING & RETRY
+    @Test
+    @DisplayName("Admin webhook operations center monitors events and supports automated retry")
+    void testWebhookMonitoringAndRetry() throws Exception {
+        WebhookEvent event = webhookEventRepository.save(WebhookEvent.builder()
+                .provider("RAZORPAY")
+                .externalEventId("evt_failed_test_123")
+                .eventType("payment.captured")
+                .status(WebhookEventStatus.FAILED)
+                .attemptCount(1)
+                .payloadSummary("{\"event\":\"payment.captured\"}")
+                .errorReason("Simulated network timeout")
+                .build());
+
+        // List webhooks
+        mockMvc.perform(get("/api/admin/transactions/webhooks?status=FAILED")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.content[0].externalEventId").value("evt_failed_test_123"));
+
+        // Retry webhook
+        mockMvc.perform(post("/api/admin/transactions/webhooks/" + event.getId() + "/retry")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.attemptCount").value(2))
+                .andExpect(jsonPath("$.data.status").value("PROCESSED"));
+    }
+
+    // 14. TRANSACTION OPERATIONS CENTER: AUTOMATED RECONCILIATION RECOVERY
+    @Test
+    @DisplayName("Reconciliation recovery re-evaluates paid order and provisions missing entitlements")
+    void testReconciliationRecoveryAction() throws Exception {
+        Product product = productRepository.findAll().stream().findFirst().orElseGet(() ->
+                productRepository.save(Product.builder()
+                        .name("Pro Enterprise License")
+                        .slug("pro-enterprise-license")
+                        .price(new BigDecimal("9999.00"))
+                        .active(true)
+                        .build()));
+
+        Order order = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(new BigDecimal("9999.00"))
+                .status(OrderStatus.PAID)
+                .build());
+
+        OrderItem item = OrderItem.builder()
+                .order(order)
+                .product(product)
+                .quantity(1)
+                .price(new BigDecimal("9999.00"))
+                .build();
+        order.getItems().add(item);
+        order = orderRepository.save(order);
+
+        paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(new BigDecimal("9999.00"))
+                .status(PaymentStatus.SUCCESSFUL)
+                .provider("RAZORPAY")
+                .build());
+
+        // Confirm missing entitlement before recovery
+        assertThat(subscriptionRepository.findAllByOrderId(order.getId())).isEmpty();
+
+        // Run recovery
+        mockMvc.perform(post("/api/admin/transactions/reconciliation/recover/" + order.getId())
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        // Entitlements provisioned!
+        assertThat(subscriptionRepository.findAllByOrderId(order.getId())).isNotEmpty();
+    }
+
+    // 15. TRANSACTION OPERATIONS CENTER: ROLE-BASED ACCESS CONTROL
+    @Test
+    @DisplayName("Non-admin users are strictly denied access to transaction operations center")
+    void testNonAdminAccessDenied() throws Exception {
+        // Customer cannot access overview
+        mockMvc.perform(get("/api/admin/transactions/overview")
+                        .header("Authorization", "Bearer " + customerToken))
+                .andExpect(status().isForbidden());
+
+        // Developer cannot access ledger
+        mockMvc.perform(get("/api/admin/transactions/history")
+                        .header("Authorization", "Bearer " + devToken))
+                .andExpect(status().isForbidden());
+
+        // Anonymous cannot access webhooks
+        mockMvc.perform(get("/api/admin/transactions/webhooks"))
+                .andExpect(status().isUnauthorized());
+    }
 }

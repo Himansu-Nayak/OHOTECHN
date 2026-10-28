@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
     @UniqueConstraint(name = "uk_provider_event_id", columnNames = {"provider", "externalEventId"})
 }, indexes = {
     @Index(name = "idx_webhook_provider_lead", columnList = "provider, externalLeadId"),
-    @Index(name = "idx_webhook_status", columnList = "status")
+    @Index(name = "idx_webhook_status", columnList = "status"),
+    @Index(name = "idx_webhook_received_at", columnList = "receivedAt")
 })
 @Getter
 @Setter
@@ -34,6 +35,9 @@ public class WebhookEvent {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private WebhookEventStatus status = WebhookEventStatus.RECEIVED;
+
+    @Builder.Default
+    private Integer attemptCount = 1;
 
     private LocalDateTime processedAt;
 

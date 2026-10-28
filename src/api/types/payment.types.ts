@@ -16,12 +16,34 @@ export interface Payment {
   transactionReference?: string;
   payerUpiId?: string;
   payerName?: string;
+  customerName?: string;
+  customerEmail?: string;
   failureReason?: string;
   adminNotes?: string;
   verifiedBy?: string;
   verifiedAt?: string;
   createdAt: string;
   updatedAt?: string;
+}
+
+export interface TransactionOverviewDto {
+  generatedAt: string;
+  period: string;
+  periodStart?: string;
+  periodEnd?: string;
+  totalTransactions: number;
+  totalVolume: number;
+  successfulCount: number;
+  successfulAmount: number;
+  pendingCount: number;
+  pendingAmount: number;
+  failedCount: number;
+  failedAmount: number;
+  refundedCount: number;
+  refundedAmount: number;
+  reconciliationDiscrepancies: number;
+  webhookFailures: number;
+  entitlementFailures: number;
 }
 
 export interface PaymentConfigDto {

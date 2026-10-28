@@ -83,7 +83,8 @@ export interface WebhookEventDto {
   externalLeadId?: string;
   eventType: string;
   receivedAt: string;
-  status: 'RECEIVED' | 'PROCESSED' | 'FAILED' | 'IGNORED';
+  status: 'RECEIVED' | 'PROCESSING' | 'PROCESSED' | 'FAILED' | 'IGNORED' | 'DUPLICATE' | string;
+  attemptCount?: number;
   processedAt?: string;
   errorReason?: string;
   payloadSummary?: string;

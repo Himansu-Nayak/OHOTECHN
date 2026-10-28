@@ -3,12 +3,14 @@ package com.ohotech.backend.repository;
 import com.ohotech.backend.entity.WebhookEvent;
 import com.ohotech.backend.entity.WebhookEventStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long> {
+public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long>, JpaSpecificationExecutor<WebhookEvent> {
 
     Optional<WebhookEvent> findByProviderAndExternalEventId(String provider, String externalEventId);
 
@@ -18,7 +20,9 @@ public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long
 
     boolean existsByProviderAndExternalLeadIdAndStatus(String provider, String externalLeadId, WebhookEventStatus status);
 
-    java.util.List<WebhookEvent> findTop50ByOrderByReceivedAtDesc();
+    List<WebhookEvent> findTop50ByOrderByReceivedAtDesc();
 
-    java.util.List<WebhookEvent> findByProviderOrderByReceivedAtDesc(String provider);
+    List<WebhookEvent> findByProviderOrderByReceivedAtDesc(String provider);
+
+    long countByStatus(WebhookEventStatus status);
 }

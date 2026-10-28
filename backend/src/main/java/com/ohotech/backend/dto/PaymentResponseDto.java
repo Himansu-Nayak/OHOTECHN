@@ -17,6 +17,8 @@ public class PaymentResponseDto {
     private Long id;
     private Long orderId;
     private String orderStatus;
+    private String customerName;
+    private String customerEmail;
     private BigDecimal amount;
     private PaymentStatus status;
     private String provider;

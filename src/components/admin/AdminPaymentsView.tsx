@@ -2,15 +2,27 @@
 
 import * as React from 'react';
 import { 
-  CreditCard, Search, Filter, RefreshCw, CheckCircle2, 
-  AlertCircle, ArrowDownLeft, ShieldCheck, Download, Check,
-  XCircle, Copy, Clock, QrCode, Truck, Building2, AlertTriangle, Scale
+  CreditCard, Search, RefreshCw, CheckCircle2, 
+  AlertCircle, ShieldCheck, Check,
+  XCircle, Copy, Clock, QrCode, Truck, AlertTriangle, Scale,
+  Activity, Terminal, Eye, RotateCw, ChevronLeft, ChevronRight,
+  User, Mail, ArrowUpRight, DollarSign, Layers
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
-import { Payment, PaymentReconciliationReportDto } from '@/api/types';
 import { 
-  getAdminPaymentsApi, 
+  Payment, 
+  PaymentReconciliationReportDto, 
+  TransactionOverviewDto, 
+  WebhookEventDto,
+  Page
+} from '@/api/types';
+import { 
+  getTransactionsHistoryApi,
+  getTransactionOverviewApi,
+  getWebhooksApi,
+  retryWebhookApi,
+  recoverReconciliationApi,
   adminVerifyPaymentApi, 
   adminRejectPaymentApi,
   getPaymentReconciliationReportApi
@@ -24,23 +36,42 @@ import {
   StatusBadge, 
   AdminEmptyState, 
   AdminTableSkeleton,
-  AdminModal
+  AdminModal,
+  AdminDrawer
 } from './AdminUiPrimitives';
+
+type ActiveTab = 'overview' | 'ledger' | 'webhooks' | 'reconciliation';
 
 export function AdminPaymentsView() {
   const { showToast } = useToast();
-  const [payments, setPayments] = React.useState<Payment[]>([]);
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
-  const [viewMode, setViewMode] = React.useState<'ledger' | 'reconciliation'>('ledger');
-  const [reconReport, setReconReport] = React.useState<PaymentReconciliationReportDto | null>(null);
-  const [isLoadingRecon, setIsLoadingRecon] = React.useState<boolean>(false);
+  // Active top-level tab
+  const [activeTab, setActiveTab] = React.useState<ActiveTab>('overview');
 
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [statusFilter, setStatusFilter] = React.useState('ALL');
-  const [providerFilter, setProviderFilter] = React.useState('ALL');
-  const [copiedUtr, setCopiedUtr] = React.useState<string | null>(null);
+  // ==========================================
+  // TAB 1: OVERVIEW STATE
+  // ==========================================
+  const [overviewPeriod, setOverviewPeriod] = React.useState<'ALL' | '30D' | '7D' | '24H'>('ALL');
+  const [overviewData, setOverviewData] = React.useState<TransactionOverviewDto | null>(null);
+  const [isLoadingOverview, setIsLoadingOverview] = React.useState<boolean>(true);
+
+  // ==========================================
+  // TAB 2: LEDGER STATE (Server-side Paginated)
+  // ==========================================
+  const [transactions, setTransactions] = React.useState<Payment[]>([]);
+  const [page, setPage] = React.useState<number>(0);
+  const [pageSize] = React.useState<number>(10);
+  const [totalPages, setTotalPages] = React.useState<number>(0);
+  const [totalElements, setTotalElements] = React.useState<number>(0);
+  const [searchQuery, setSearchQuery] = React.useState<string>('');
+  const [statusFilter, setStatusFilter] = React.useState<string>('ALL');
+  const [providerFilter, setProviderFilter] = React.useState<string>('ALL');
+  const [isLoadingLedger, setIsLoadingLedger] = React.useState<boolean>(true);
+  const [ledgerError, setLedgerError] = React.useState<string | null>(null);
+
+  // Selected Transaction for Drawer
+  const [selectedTxn, setSelectedTxn] = React.useState<Payment | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState<boolean>(false);
 
   // Verification & Rejection Modal State
   const [verifyingPayment, setVerifyingPayment] = React.useState<Payment | null>(null);
@@ -50,6 +81,100 @@ export function AdminPaymentsView() {
   const [rejectingPayment, setRejectingPayment] = React.useState<Payment | null>(null);
   const [rejectionReason, setRejectionReason] = React.useState('');
   const [isRejectingAction, setIsRejectingAction] = React.useState(false);
+
+  // Clipboard copy state
+  const [copiedText, setCopiedText] = React.useState<string | null>(null);
+
+  // ==========================================
+  // TAB 3: WEBHOOKS MONITOR STATE
+  // ==========================================
+  const [webhooks, setWebhooks] = React.useState<WebhookEventDto[]>([]);
+  const [webhookPage, setWebhookPage] = React.useState<number>(0);
+  const [webhookPageSize] = React.useState<number>(10);
+  const [webhookTotalPages, setWebhookTotalPages] = React.useState<number>(0);
+  const [webhookTotalElements, setWebhookTotalElements] = React.useState<number>(0);
+  const [webhookStatusFilter, setWebhookStatusFilter] = React.useState<string>('ALL');
+  const [webhookProviderFilter, setWebhookProviderFilter] = React.useState<string>('ALL');
+  const [webhookSearch, setWebhookSearch] = React.useState<string>('');
+  const [isLoadingWebhooks, setIsLoadingWebhooks] = React.useState<boolean>(false);
+  const [retryingWebhookId, setRetryingWebhookId] = React.useState<number | null>(null);
+  const [inspectedWebhook, setInspectedWebhook] = React.useState<WebhookEventDto | null>(null);
+
+  // ==========================================
+  // TAB 4: RECONCILIATION STATE
+  // ==========================================
+  const [reconReport, setReconReport] = React.useState<PaymentReconciliationReportDto | null>(null);
+  const [isLoadingRecon, setIsLoadingRecon] = React.useState<boolean>(false);
+  const [recoveringOrderId, setRecoveringOrderId] = React.useState<number | null>(null);
+
+  // ==========================================
+  // FETCH HANDLERS
+  // ==========================================
+
+  const fetchOverview = React.useCallback(async (period: string = overviewPeriod) => {
+    setIsLoadingOverview(true);
+    try {
+      const res = await getTransactionOverviewApi(period);
+      if (res.success && res.data) {
+        setOverviewData(res.data);
+      }
+    } catch (err: any) {
+      console.warn('Overview fetch note:', err?.message);
+    } finally {
+      setIsLoadingOverview(false);
+    }
+  }, [overviewPeriod]);
+
+  const fetchLedger = React.useCallback(async (targetPage: number = page) => {
+    setIsLoadingLedger(true);
+    setLedgerError(null);
+    try {
+      const res = await getTransactionsHistoryApi({
+        page: targetPage,
+        size: pageSize,
+        search: searchQuery.trim() || undefined,
+        status: statusFilter,
+        provider: providerFilter,
+      });
+
+      if (res.success && res.data) {
+        setTransactions(res.data.content || []);
+        setTotalPages(res.data.totalPages || 0);
+        setTotalElements(res.data.totalElements || 0);
+        setPage(res.data.number || 0);
+      } else {
+        setLedgerError(res.message || 'Unable to retrieve transaction ledger.');
+      }
+    } catch (err: any) {
+      setLedgerError(err?.message || 'Error connecting to transaction records.');
+    } finally {
+      setIsLoadingLedger(false);
+    }
+  }, [page, pageSize, searchQuery, statusFilter, providerFilter]);
+
+  const fetchWebhooks = React.useCallback(async (targetPage: number = webhookPage) => {
+    setIsLoadingWebhooks(true);
+    try {
+      const res = await getWebhooksApi({
+        page: targetPage,
+        size: webhookPageSize,
+        provider: webhookProviderFilter,
+        status: webhookStatusFilter,
+        search: webhookSearch.trim() || undefined,
+      });
+
+      if (res.success && res.data) {
+        setWebhooks(res.data.content || []);
+        setWebhookTotalPages(res.data.totalPages || 0);
+        setWebhookTotalElements(res.data.totalElements || 0);
+        setWebhookPage(res.data.number || 0);
+      }
+    } catch (err: any) {
+      console.warn('Webhooks fetch note:', err?.message);
+    } finally {
+      setIsLoadingWebhooks(false);
+    }
+  }, [webhookPage, webhookPageSize, webhookProviderFilter, webhookStatusFilter, webhookSearch]);
 
   const fetchReconciliation = React.useCallback(async () => {
     setIsLoadingRecon(true);
@@ -65,40 +190,48 @@ export function AdminPaymentsView() {
     }
   }, []);
 
-  const fetchPayments = React.useCallback(async () => {
-    setIsLoading(true);
-    setErrorMsg(null);
-    try {
-      const [paymentsRes, reconRes] = await Promise.allSettled([
-        getAdminPaymentsApi(),
-        getPaymentReconciliationReportApi()
-      ]);
-
-      if (paymentsRes.status === 'fulfilled' && paymentsRes.value.success && paymentsRes.value.data) {
-        setPayments(paymentsRes.value.data);
-      } else if (paymentsRes.status === 'fulfilled') {
-        setErrorMsg(paymentsRes.value.message || 'Unable to retrieve payments.');
-      }
-
-      if (reconRes.status === 'fulfilled' && reconRes.value.success && reconRes.value.data) {
-        setReconReport(reconRes.value.data);
-      }
-    } catch (err: any) {
-      setErrorMsg(err?.message || 'Error connecting to payment records.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  // Initial load & Tab triggers
+  React.useEffect(() => {
+    fetchOverview(overviewPeriod);
+    fetchLedger(0);
+    fetchReconciliation();
+  }, [fetchOverview, overviewPeriod, fetchLedger, fetchReconciliation]);
 
   React.useEffect(() => {
-    fetchPayments();
-  }, [fetchPayments]);
+    if (activeTab === 'webhooks') {
+      fetchWebhooks(0);
+    } else if (activeTab === 'reconciliation') {
+      fetchReconciliation();
+    }
+  }, [activeTab, fetchWebhooks, fetchReconciliation]);
+
+  // Debounced search for ledger
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchLedger(0);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery, statusFilter, providerFilter]);
+
+  // Debounced search for webhooks
+  React.useEffect(() => {
+    if (activeTab === 'webhooks') {
+      const timer = setTimeout(() => {
+        fetchWebhooks(0);
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [webhookSearch, webhookStatusFilter, webhookProviderFilter, activeTab]);
+
+  // ==========================================
+  // ACTIONS
+  // ==========================================
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    setCopiedUtr(text);
+    setCopiedText(text);
     showToast('Copied to clipboard', 'info');
-    setTimeout(() => setCopiedUtr(null), 2000);
+    setTimeout(() => setCopiedText(null), 2000);
   };
 
   const handleConfirmVerify = async () => {
@@ -108,17 +241,20 @@ export function AdminPaymentsView() {
       const res = await adminVerifyPaymentApi(verifyingPayment.id, {
         notes: adminNotes.trim() || undefined,
       });
-
-      if (res.success && res.data) {
-        showToast(`Payment #PAY-${verifyingPayment.id} verified & approved! Software entitlements provisioned.`, 'success');
-        setPayments((prev) => prev.map((p) => (p.id === verifyingPayment.id ? res.data! : p)));
+      if (res.success) {
+        showToast(`Payment #PAY-${verifyingPayment.id} verified and entitlements provisioned!`, 'success');
         setVerifyingPayment(null);
-        setAdminNotes('');
+        fetchLedger(page);
+        fetchOverview();
+        fetchReconciliation();
+        if (selectedTxn?.id === verifyingPayment.id) {
+          setIsDrawerOpen(false);
+        }
       } else {
-        throw new Error(res.message || 'Failed to verify payment');
+        showToast(res.message || 'Verification failed.', 'error');
       }
     } catch (err: any) {
-      showToast(err?.message || 'Verification failed', 'error');
+      showToast(err?.message || 'Verification request failed.', 'error');
     } finally {
       setIsVerifyingAction(false);
     }
@@ -127,7 +263,7 @@ export function AdminPaymentsView() {
   const handleConfirmReject = async () => {
     if (!rejectingPayment) return;
     if (!rejectionReason.trim()) {
-      showToast('Please specify a rejection reason.', 'error');
+      showToast('Please provide a rejection reason.', 'warning');
       return;
     }
     setIsRejectingAction(true);
@@ -136,77 +272,81 @@ export function AdminPaymentsView() {
         failureReason: rejectionReason.trim(),
         notes: adminNotes.trim() || undefined,
       });
-
-      if (res.success && res.data) {
+      if (res.success) {
         showToast(`Payment #PAY-${rejectingPayment.id} marked as rejected.`, 'info');
-        setPayments((prev) => prev.map((p) => (p.id === rejectingPayment.id ? res.data! : p)));
         setRejectingPayment(null);
-        setRejectionReason('');
-        setAdminNotes('');
+        fetchLedger(page);
+        fetchOverview();
+        fetchReconciliation();
+        if (selectedTxn?.id === rejectingPayment.id) {
+          setIsDrawerOpen(false);
+        }
       } else {
-        throw new Error(res.message || 'Failed to reject payment');
+        showToast(res.message || 'Rejection failed.', 'error');
       }
     } catch (err: any) {
-      showToast(err?.message || 'Rejection failed', 'error');
+      showToast(err?.message || 'Rejection request failed.', 'error');
     } finally {
       setIsRejectingAction(false);
     }
   };
 
-  const filteredPayments = React.useMemo(() => {
-    return payments.filter((p) => {
-      const matchesStatus =
-        statusFilter === 'ALL' ||
-        p.status === statusFilter ||
-        (statusFilter === 'COMPLETED' && p.status === 'SUCCESSFUL');
-      const matchesProvider =
-        providerFilter === 'ALL' ||
-        p.provider === providerFilter ||
-        (providerFilter === 'UPI_DIRECT' && (p.provider === 'BANK_TRANSFER' || p.method === 'UPI'));
-      const q = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        !q ||
-        p.id.toString().includes(q) ||
-        (p.orderId && p.orderId.toString().includes(q)) ||
-        (p.transactionReference && p.transactionReference.toLowerCase().includes(q)) ||
-        (p.payerUpiId && p.payerUpiId.toLowerCase().includes(q)) ||
-        (p.payerName && p.payerName.toLowerCase().includes(q)) ||
-        (p.razorpayPaymentId && p.razorpayPaymentId.toLowerCase().includes(q)) ||
-        (p.razorpayOrderId && p.razorpayOrderId.toLowerCase().includes(q));
+  const handleRetryWebhook = async (webhookEventId: number) => {
+    setRetryingWebhookId(webhookEventId);
+    try {
+      const res = await retryWebhookApi(webhookEventId);
+      if (res.success) {
+        showToast(`Webhook #${webhookEventId} retried and processed successfully!`, 'success');
+        fetchWebhooks(webhookPage);
+        fetchOverview();
+      } else {
+        showToast(res.message || 'Webhook retry execution failed.', 'error');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Webhook retry failed.', 'error');
+    } finally {
+      setRetryingWebhookId(null);
+    }
+  };
 
-      return matchesStatus && matchesProvider && matchesSearch;
-    });
-  }, [payments, statusFilter, providerFilter, searchQuery]);
+  const handleRecoverReconciliation = async (orderId: number) => {
+    setRecoveringOrderId(orderId);
+    try {
+      const res = await recoverReconciliationApi(orderId);
+      if (res.success) {
+        showToast(`Reconciliation recovery succeeded for Order #${orderId}. Entitlements provisioned!`, 'success');
+        fetchReconciliation();
+        fetchLedger(page);
+        fetchOverview();
+      } else {
+        showToast(res.message || 'Reconciliation recovery failed.', 'error');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Reconciliation recovery failed.', 'error');
+    } finally {
+      setRecoveringOrderId(null);
+    }
+  };
 
-  // Aggregate stats from real data
-  const totalAmount = React.useMemo(() => {
-    return payments
-      .filter((p) => p.status === 'COMPLETED' || p.status === 'SUCCESSFUL')
-      .reduce((sum, p) => sum + Number(p.amount || 0), 0);
-  }, [payments]);
-
-  const completedCount = React.useMemo(() => {
-    return payments.filter((p) => p.status === 'COMPLETED' || p.status === 'SUCCESSFUL').length;
-  }, [payments]);
-
-  const pendingVerificationCount = React.useMemo(() => {
-    return payments.filter((p) => p.status === 'PENDING').length;
-  }, [payments]);
+  // Helper calculation for success percentage
+  const totalTxnCount = overviewData?.totalTransactions || 0;
+  const successTxnCount = overviewData?.successfulCount || 0;
+  const successRate = totalTxnCount > 0 ? ((successTxnCount / totalTxnCount) * 100).toFixed(1) : '100.0';
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+    <div className="space-y-6">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Payments &amp; Settlements</h1>
-            <AdminBadge variant="outline">{payments.length} Records</AdminBadge>
-            {pendingVerificationCount > 0 && (
-              <AdminBadge variant="warning">{pendingVerificationCount} Awaiting Review</AdminBadge>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Transaction Operations Center</h1>
+            <AdminBadge variant="brand">V15 Operations</AdminBadge>
+            {reconReport && reconReport.anomalyCount > 0 && (
+              <AdminBadge variant="warning">{reconReport.anomalyCount} Anomaly</AdminBadge>
             )}
           </div>
           <p className="text-sm text-slate-500">
-            Audit of Bank Transfer / UPI UTR submissions, COD orders, and Razorpay gateway transactions.
+            Real-time financial telemetry, distributed webhook idempotency, server-side transaction ledger, and automated reconciliation.
           </p>
         </div>
 
@@ -214,43 +354,77 @@ export function AdminPaymentsView() {
           <AdminButton
             variant="secondary"
             size="sm"
-            onClick={fetchPayments}
-            disabled={isLoading}
-            leftIcon={<RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />}
+            onClick={() => {
+              if (activeTab === 'overview') fetchOverview(overviewPeriod);
+              else if (activeTab === 'ledger') fetchLedger(page);
+              else if (activeTab === 'webhooks') fetchWebhooks(webhookPage);
+              else if (activeTab === 'reconciliation') fetchReconciliation();
+            }}
+            disabled={isLoadingLedger || isLoadingOverview || isLoadingWebhooks || isLoadingRecon}
+            leftIcon={<RefreshCw className={cn("w-3.5 h-3.5", (isLoadingLedger || isLoadingOverview || isLoadingWebhooks || isLoadingRecon) && "animate-spin")} />}
           >
-            Sync Ledger
+            Sync Data
           </AdminButton>
         </div>
       </div>
 
-      {/* View Switcher: Payment Ledger vs Payment Reconciliation */}
-      <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+      {/* 4-Tab Navigation */}
+      <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3 overflow-x-auto">
         <button
-          onClick={() => setViewMode('ledger')}
+          onClick={() => setActiveTab('overview')}
           className={cn(
-            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2",
-            viewMode === 'ledger'
+            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
+            activeTab === 'overview'
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          )}
+        >
+          <Activity className="w-3.5 h-3.5" />
+          <span>Overview &amp; Health</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('ledger')}
+          className={cn(
+            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
+            activeTab === 'ledger'
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           )}
         >
           <CreditCard className="w-3.5 h-3.5" />
-          <span>Payment Ledger ({payments.length})</span>
+          <span>Transaction Ledger ({totalElements})</span>
         </button>
+
         <button
-          onClick={() => {
-            setViewMode('reconciliation');
-            fetchReconciliation();
-          }}
+          onClick={() => setActiveTab('webhooks')}
           className={cn(
-            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2",
-            viewMode === 'reconciliation'
+            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
+            activeTab === 'webhooks'
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          )}
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          <span>Webhook Operations</span>
+          {overviewData && overviewData.webhookFailures > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white">
+              {overviewData.webhookFailures} failed
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('reconciliation')}
+          className={cn(
+            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
+            activeTab === 'reconciliation'
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           )}
         >
           <Scale className="w-3.5 h-3.5" />
-          <span>Reconciliation &amp; Mismatch Audit</span>
+          <span>Reconciliation &amp; Recovery</span>
           {reconReport && reconReport.anomalyCount > 0 && (
             <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-white">
               {reconReport.anomalyCount}
@@ -259,272 +433,700 @@ export function AdminPaymentsView() {
         </button>
       </div>
 
-      {viewMode === 'ledger' ? (
-        <>
-          {/* Summary KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <AdminCard className="p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Settled Volume</div>
-            <div className="text-lg font-bold text-slate-900">₹{totalAmount.toLocaleString('en-IN')}</div>
-          </div>
-        </AdminCard>
+      {/* =================================================================== */}
+      {/* TAB 1: OVERVIEW & TELEMETRY                                          */}
+      {/* =================================================================== */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* Period Selection Controls */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs">
+              {(['ALL', '30D', '7D', '24H'] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => {
+                    setOverviewPeriod(p);
+                    fetchOverview(p);
+                  }}
+                  className={cn(
+                    "px-3 py-1 font-semibold rounded-lg transition-all cursor-pointer",
+                    overviewPeriod === p
+                      ? "bg-white text-slate-900 shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  {p === 'ALL' ? 'All Time' : p === '30D' ? 'Last 30 Days' : p === '7D' ? 'Last 7 Days' : 'Last 24 Hours'}
+                </button>
+              ))}
+            </div>
 
-        <AdminCard className="p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
-            <CreditCard className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Completed Transactions</div>
-            <div className="text-lg font-bold text-slate-900">{completedCount} of {payments.length}</div>
-          </div>
-        </AdminCard>
-
-        <AdminCard className="p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
-            <Clock className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending UTR Verification</div>
-            <div className="text-lg font-bold text-amber-600 font-mono">{pendingVerificationCount} Orders</div>
-          </div>
-        </AdminCard>
-      </div>
-
-      {/* Controls Bar */}
-      <AdminCard className="p-4">
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <div className="relative flex-1 w-full">
-            <AdminInput
-              placeholder="Search by Payment ID, UTR, Payer UPI, Order ID, or Razorpay ID..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              leftIcon={<Search className="w-4 h-4" />}
-            />
+            <div className="text-xs text-slate-400">
+              Telemetry updated: {overviewData?.generatedAt ? new Date(overviewData.generatedAt).toLocaleTimeString() : 'Live'}
+            </div>
           </div>
 
-          <div className="w-full sm:w-48">
-            <AdminSelect
-              value={providerFilter}
-              onChange={(e) => setProviderFilter(e.target.value)}
-              options={[
-                { value: 'ALL', label: 'All Providers' },
-                { value: 'UPI_DIRECT', label: 'Direct UPI / QR' },
-                { value: 'COD', label: 'Cash on Delivery' },
-                { value: 'RAZORPAY', label: 'Razorpay PG' },
-              ]}
-            />
+          {/* Core KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Total Settled Volume */}
+            <AdminCard className="p-4 flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                <DollarSign className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Settled Volume</div>
+                <div className="text-xl font-black text-slate-900 truncate">
+                  ₹{Number(overviewData?.successfulAmount || 0).toLocaleString('en-IN')}
+                </div>
+                <div className="text-[11px] text-emerald-600 font-medium">
+                  {overviewData?.successfulCount || 0} successful orders
+                </div>
+              </div>
+            </AdminCard>
+
+            {/* Total Transactions & Success Rate */}
+            <AdminCard className="p-4 flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Volume / Success</div>
+                <div className="text-xl font-black text-slate-900">
+                  {overviewData?.totalTransactions || 0} Txns
+                </div>
+                <div className="text-[11px] text-slate-500 font-medium">
+                  {successRate}% completion rate
+                </div>
+              </div>
+            </AdminCard>
+
+            {/* Pending Settlements / Verification */}
+            <AdminCard className="p-4 flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending Settlement</div>
+                <div className="text-xl font-black text-amber-600 font-mono">
+                  {overviewData?.pendingCount || 0}
+                </div>
+                <div className="text-[11px] text-slate-500">
+                  ₹{Number(overviewData?.pendingAmount || 0).toLocaleString('en-IN')} awaiting review
+                </div>
+              </div>
+            </AdminCard>
+
+            {/* Operational Integrity Anomaly Count */}
+            <AdminCard className="p-4 flex items-center gap-4">
+              <div className={cn(
+                "w-11 h-11 rounded-xl border flex items-center justify-center shrink-0",
+                (overviewData?.reconciliationDiscrepancies || 0) > 0 || (overviewData?.webhookFailures || 0) > 0
+                  ? "bg-rose-50 border-rose-200 text-rose-600"
+                  : "bg-emerald-50 border-emerald-100 text-emerald-600"
+              )}>
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Integrity Watch</div>
+                <div className={cn(
+                  "text-xl font-black font-mono",
+                  (overviewData?.reconciliationDiscrepancies || 0) > 0 || (overviewData?.webhookFailures || 0) > 0
+                    ? "text-rose-600"
+                    : "text-emerald-700"
+                )}>
+                  {(overviewData?.reconciliationDiscrepancies || 0) + (overviewData?.webhookFailures || 0)} Alerts
+                </div>
+                <div className="text-[11px] text-slate-500">
+                  {overviewData?.webhookFailures || 0} webhooks, {overviewData?.reconciliationDiscrepancies || 0} recon
+                </div>
+              </div>
+            </AdminCard>
           </div>
 
-          <div className="w-full sm:w-48">
-            <AdminSelect
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              options={[
-                { value: 'ALL', label: 'All Statuses' },
-                { value: 'PENDING', label: 'Pending Verification' },
-                { value: 'COMPLETED', label: 'Completed / Verified' },
-                { value: 'FAILED', label: 'Rejected / Failed' },
-                { value: 'REFUNDED', label: 'Refunded' },
-              ]}
-            />
+          {/* Secondary Telemetry Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Payment Status Breakdown */}
+            <AdminCard className="p-5 space-y-4">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction States</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2 text-slate-600">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    Successful / Settled
+                  </span>
+                  <span className="font-mono font-bold text-slate-900">{overviewData?.successfulCount || 0}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2 text-slate-600">
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    Pending Verification
+                  </span>
+                  <span className="font-mono font-bold text-slate-900">{overviewData?.pendingCount || 0}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2 text-slate-600">
+                    <span className="w-2 h-2 rounded-full bg-rose-500" />
+                    Failed / Rejected
+                  </span>
+                  <span className="font-mono font-bold text-slate-900">{overviewData?.failedCount || 0}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2 text-slate-600">
+                    <span className="w-2 h-2 rounded-full bg-purple-500" />
+                    Refunded
+                  </span>
+                  <span className="font-mono font-bold text-slate-900">{overviewData?.refundedCount || 0}</span>
+                </div>
+              </div>
+            </AdminCard>
+
+            {/* Quick Actions Card */}
+            <AdminCard className="p-5 space-y-4">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Operational Quick Actions</h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setActiveTab('ledger');
+                    setStatusFilter('PENDING');
+                  }}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 hover:border-amber-300 hover:bg-amber-50/50 transition-colors flex items-center justify-between text-left text-xs cursor-pointer"
+                >
+                  <span className="font-semibold text-slate-800">Review Pending UTR Submissions</span>
+                  <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('webhooks');
+                    setWebhookStatusFilter('FAILED');
+                  }}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 hover:border-rose-300 hover:bg-rose-50/50 transition-colors flex items-center justify-between text-left text-xs cursor-pointer"
+                >
+                  <span className="font-semibold text-slate-800">Investigate Failed Webhooks</span>
+                  <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                </button>
+                <button
+                  onClick={() => setActiveTab('reconciliation')}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-colors flex items-center justify-between text-left text-xs cursor-pointer"
+                >
+                  <span className="font-semibold text-slate-800">Audit Entitlement Mismatches</span>
+                  <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                </button>
+              </div>
+            </AdminCard>
+
+            {/* Resilience Architecture Pill */}
+            <AdminCard className="p-5 space-y-3 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-slate-800">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">Payment Security Core</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Protected with HMAC-SHA256 constant-time verification, PostgreSQL row locking (PESSIMISTIC_WRITE), and database-level idempotency guards across all gateways.
+              </p>
+              <div className="pt-2 flex items-center gap-2 text-[10px] text-emerald-400 font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Zero Duplicate Fulfillment Guarantee
+              </div>
+            </AdminCard>
           </div>
         </div>
-      </AdminCard>
+      )}
 
-      {/* Payments Ledger Table */}
-      <AdminCard className="overflow-hidden">
-        {isLoading ? (
-          <div className="p-6">
-            <AdminTableSkeleton rows={5} cols={7} />
-          </div>
-        ) : errorMsg ? (
-          <div className="p-8 text-center text-rose-600">
-            <AlertCircle className="w-6 h-6 mx-auto mb-2 text-rose-500" />
-            <p className="font-semibold text-sm">{errorMsg}</p>
-            <AdminButton variant="secondary" size="sm" onClick={fetchPayments} className="mt-3">
-              Retry Connection
-            </AdminButton>
-          </div>
-        ) : filteredPayments.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
-                  <th className="py-3 px-4">Payment Ref</th>
-                  <th className="py-3 px-4">Order Ref</th>
-                  <th className="py-3 px-4">Payment Method</th>
-                  <th className="py-3 px-4">UTR / Transaction Ref</th>
-                  <th className="py-3 px-4 text-right">Amount (₹)</th>
-                  <th className="py-3 px-4 text-center">Status</th>
-                  <th className="py-3 px-4 text-right">Date</th>
-                  <th className="py-3 px-4 text-center">Admin Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredPayments.map((pay) => (
-                  <tr key={pay.id} className="hover:bg-slate-50/60 transition-colors">
-                    {/* Payment Ref */}
-                    <td className="py-3 px-4 font-mono font-bold text-slate-900 text-xs whitespace-nowrap">
-                      #PAY-{pay.id}
-                    </td>
+      {/* =================================================================== */}
+      {/* TAB 2: TRANSACTION LEDGER (Paginated + Filterable)                  */}
+      {/* =================================================================== */}
+      {activeTab === 'ledger' && (
+        <div className="space-y-4">
+          {/* Controls Bar */}
+          <AdminCard className="p-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="relative flex-1 w-full">
+                <AdminInput
+                  placeholder="Search by Payment ID, Order ID, UTR, Payer Name, Email, or Gateway Ref..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  leftIcon={<Search className="w-4 h-4" />}
+                />
+              </div>
 
-                    {/* Order Ref */}
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      {pay.orderId ? (
-                        <span className="font-mono text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-                          #ORD-{pay.orderId}
-                        </span>
-                      ) : pay.razorpayOrderId ? (
-                        <span className="font-mono text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-                          {pay.razorpayOrderId}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-400">Direct Txn</span>
-                      )}
-                    </td>
+              <div className="w-full sm:w-48">
+                <AdminSelect
+                  value={providerFilter}
+                  onChange={(e) => setProviderFilter(e.target.value)}
+                  options={[
+                    { value: 'ALL', label: 'All Providers' },
+                    { value: 'RAZORPAY', label: 'Razorpay PG' },
+                    { value: 'UPI_DIRECT', label: 'Direct UPI / QR' },
+                    { value: 'COD', label: 'Cash on Delivery' },
+                  ]}
+                />
+              </div>
 
-                    {/* Payment Method / Provider */}
-                    <td className="py-3 px-4">
-                      {pay.provider === 'UPI_DIRECT' ? (
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-800">
-                          <QrCode className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span>Direct UPI / QR</span>
-                        </div>
-                      ) : pay.provider === 'COD' ? (
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800">
-                          <Truck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                          <span>Cash on Delivery</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-800">
-                          <CreditCard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                          <span>Razorpay PG</span>
-                        </div>
-                      )}
-                    </td>
+              <div className="w-full sm:w-48">
+                <AdminSelect
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  options={[
+                    { value: 'ALL', label: 'All Statuses' },
+                    { value: 'SUCCESSFUL', label: 'Successful / Paid' },
+                    { value: 'PENDING', label: 'Pending Verification' },
+                    { value: 'FAILED', label: 'Failed / Rejected' },
+                    { value: 'REFUNDED', label: 'Refunded' },
+                  ]}
+                />
+              </div>
+            </div>
+          </AdminCard>
 
-                    {/* UTR / Transaction Reference */}
-                    <td className="py-3 px-4">
-                      {pay.transactionReference ? (
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-xs font-bold text-slate-900 select-all">
-                              {pay.transactionReference}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(pay.transactionReference!)}
-                              className="text-slate-400 hover:text-slate-600 transition-colors"
-                              title="Copy UTR"
-                            >
-                              {copiedUtr === pay.transactionReference ? (
-                                <Check className="w-3 h-3 text-emerald-600" />
-                              ) : (
-                                <Copy className="w-3 h-3" />
-                              )}
-                            </button>
-                          </div>
-                          {(pay.payerUpiId || pay.payerName) && (
-                            <div className="text-[10px] text-slate-500 font-medium truncate max-w-[200px]">
-                              {pay.payerName ? `${pay.payerName} ` : ''}
-                              {pay.payerUpiId ? `(${pay.payerUpiId})` : ''}
+          {/* Ledger Table */}
+          <AdminCard className="overflow-hidden">
+            {isLoadingLedger ? (
+              <div className="p-6">
+                <AdminTableSkeleton rows={6} cols={8} />
+              </div>
+            ) : ledgerError ? (
+              <div className="p-8 text-center text-rose-600">
+                <AlertCircle className="w-6 h-6 mx-auto mb-2 text-rose-500" />
+                <p className="font-semibold text-sm">{ledgerError}</p>
+                <AdminButton variant="secondary" size="sm" onClick={() => fetchLedger(0)} className="mt-3">
+                  Retry Connection
+                </AdminButton>
+              </div>
+            ) : transactions.length > 0 ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                        <th className="py-3 px-4">Payment Ref</th>
+                        <th className="py-3 px-4">Order Ref</th>
+                        <th className="py-3 px-4">Customer</th>
+                        <th className="py-3 px-4">Provider &amp; Method</th>
+                        <th className="py-3 px-4">Transaction / UTR</th>
+                        <th className="py-3 px-4 text-right">Amount (₹)</th>
+                        <th className="py-3 px-4 text-center">Status</th>
+                        <th className="py-3 px-4 text-right">Date</th>
+                        <th className="py-3 px-4 text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {transactions.map((pay) => (
+                        <tr key={pay.id} className="hover:bg-slate-50/60 transition-colors">
+                          {/* Payment Ref */}
+                          <td className="py-3 px-4 font-mono font-bold text-slate-900 whitespace-nowrap">
+                            #PAY-{pay.id}
+                          </td>
+
+                          {/* Order Ref */}
+                          <td className="py-3 px-4 whitespace-nowrap">
+                            {pay.orderId ? (
+                              <span className="font-mono text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                #ORD-{pay.orderId}
+                              </span>
+                            ) : pay.razorpayOrderId ? (
+                              <span className="font-mono text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                {pay.razorpayOrderId}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400">Direct Txn</span>
+                            )}
+                          </td>
+
+                          {/* Customer */}
+                          <td className="py-3 px-4">
+                            <div className="max-w-[160px] truncate">
+                              <div className="font-semibold text-slate-900 truncate">
+                                {pay.customerName || pay.payerName || 'Direct Customer'}
+                              </div>
+                              <div className="text-[10px] text-slate-400 truncate">
+                                {pay.customerEmail || pay.payerUpiId || '—'}
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      ) : pay.razorpayPaymentId ? (
-                        <div className="font-mono text-xs text-slate-600 max-w-[180px] truncate" title={pay.razorpayPaymentId}>
-                          {pay.razorpayPaymentId}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-slate-400 italic">No reference</span>
-                      )}
-                    </td>
+                          </td>
 
-                    {/* Amount */}
-                    <td className="py-3 px-4 font-semibold text-slate-900 text-right whitespace-nowrap">
-                      ₹{Number(pay.amount).toLocaleString('en-IN')}
-                    </td>
+                          {/* Provider & Method */}
+                          <td className="py-3 px-4 whitespace-nowrap">
+                            {pay.provider === 'UPI_DIRECT' ? (
+                              <div className="flex items-center gap-1.5 font-semibold text-emerald-800">
+                                <QrCode className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <span>Direct UPI / QR</span>
+                              </div>
+                            ) : pay.provider === 'COD' ? (
+                              <div className="flex items-center gap-1.5 font-semibold text-amber-800">
+                                <Truck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                <span>Cash on Delivery</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5 font-semibold text-blue-800">
+                                <CreditCard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                <span>Razorpay PG</span>
+                              </div>
+                            )}
+                          </td>
 
-                    {/* Status */}
-                    <td className="py-3 px-4 text-center whitespace-nowrap">
-                      <StatusBadge status={pay.status} />
-                    </td>
+                          {/* UTR / Transaction Reference */}
+                          <td className="py-3 px-4">
+                            {pay.transactionReference ? (
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono font-bold text-slate-900 select-all">
+                                  {pay.transactionReference}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(pay.transactionReference!)}
+                                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                                  title="Copy UTR"
+                                >
+                                  {copiedText === pay.transactionReference ? (
+                                    <Check className="w-3 h-3 text-emerald-600" />
+                                  ) : (
+                                    <Copy className="w-3 h-3" />
+                                  )}
+                                </button>
+                              </div>
+                            ) : pay.razorpayPaymentId ? (
+                              <div className="font-mono text-slate-600 max-w-[140px] truncate" title={pay.razorpayPaymentId}>
+                                {pay.razorpayPaymentId}
+                              </div>
+                            ) : (
+                              <span className="text-slate-400 italic">No reference</span>
+                            )}
+                          </td>
 
-                    {/* Timestamp */}
-                    <td className="py-3 px-4 text-right text-xs text-slate-500 whitespace-nowrap">
-                      {pay.createdAt ? new Date(pay.createdAt).toLocaleString('en-IN', {
-                        dateStyle: 'medium',
-                        timeStyle: 'short'
-                      }) : 'N/A'}
-                    </td>
+                          {/* Amount */}
+                          <td className="py-3 px-4 font-mono font-bold text-slate-900 text-right whitespace-nowrap">
+                            ₹{Number(pay.amount).toLocaleString('en-IN')}
+                          </td>
 
-                    {/* Admin Actions */}
-                    <td className="py-3 px-4 text-center whitespace-nowrap">
-                      {pay.status === 'PENDING' ? (
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setVerifyingPayment(pay);
-                              setAdminNotes('');
-                            }}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 transition-colors shadow-xs cursor-pointer"
-                            title="Verify and Approve"
-                          >
-                            <CheckCircle2 className="w-3 h-3" />
-                            <span>Verify</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setRejectingPayment(pay);
-                              setRejectionReason('');
-                              setAdminNotes('');
-                            }}
-                            className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer"
-                            title="Reject Payment"
-                          >
-                            <XCircle className="w-3 h-3" />
-                            <span>Reject</span>
-                          </button>
-                        </div>
-                      ) : pay.status === 'COMPLETED' || pay.status === 'SUCCESSFUL' ? (
-                        <div className="text-[11px] text-emerald-700 font-medium flex items-center justify-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>{pay.verifiedBy ? `By ${pay.verifiedBy}` : 'Verified'}</span>
-                        </div>
-                      ) : pay.status === 'FAILED' ? (
-                        <div className="text-[11px] text-rose-600 font-medium" title={pay.failureReason || ''}>
-                          {pay.failureReason ? `Rejected: ${pay.failureReason}` : 'Rejected'}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-slate-400">—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <AdminEmptyState
-            title="No payment records found"
-            description={
-              searchQuery || statusFilter !== 'ALL' || providerFilter !== 'ALL'
-                ? "No transactions match your current search or filter criteria."
-                : "Commercial payments, UPI transfers, and settlements will appear here."
-            }
-            icon={<CreditCard className="w-6 h-6 text-slate-400" />}
-          />
-        )}
-      </AdminCard>
-      </>
-      ) : (
-        /* Dedicated Reconciliation View satisfying Requirement 9 */
+                          {/* Status */}
+                          <td className="py-3 px-4 text-center whitespace-nowrap">
+                            <StatusBadge status={pay.status} />
+                          </td>
+
+                          {/* Date */}
+                          <td className="py-3 px-4 text-right text-slate-500 whitespace-nowrap">
+                            {pay.createdAt ? new Date(pay.createdAt).toLocaleDateString('en-IN', {
+                              day: '2-digit',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }) : 'N/A'}
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-3 px-4 text-center whitespace-nowrap">
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedTxn(pay);
+                                  setIsDrawerOpen(true);
+                                }}
+                                className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+                                title="Inspect Transaction"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </button>
+
+                              {pay.status === 'PENDING' && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setVerifyingPayment(pay);
+                                      setAdminNotes('');
+                                    }}
+                                    className="px-2 py-0.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center gap-1 transition-colors cursor-pointer"
+                                    title="Verify and Approve"
+                                  >
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    <span>Verify</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setRejectingPayment(pay);
+                                      setRejectionReason('');
+                                      setAdminNotes('');
+                                    }}
+                                    className="px-2 py-0.5 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-[11px] flex items-center gap-1 transition-colors cursor-pointer"
+                                    title="Reject Payment"
+                                  >
+                                    <XCircle className="w-3 h-3" />
+                                    <span>Reject</span>
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Server-side Pagination Footer */}
+                <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                  <div>
+                    Showing <span className="font-semibold text-slate-800">{page * pageSize + 1}</span> to{' '}
+                    <span className="font-semibold text-slate-800">
+                      {Math.min((page + 1) * pageSize, totalElements)}
+                    </span>{' '}
+                    of <span className="font-semibold text-slate-800">{totalElements}</span> transactions
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <AdminButton
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fetchLedger(page - 1)}
+                      disabled={page <= 0 || isLoadingLedger}
+                      leftIcon={<ChevronLeft className="w-3.5 h-3.5" />}
+                    >
+                      Previous
+                    </AdminButton>
+
+                    <div className="px-3 py-1 font-mono font-medium text-slate-700">
+                      Page {page + 1} of {Math.max(1, totalPages)}
+                    </div>
+
+                    <AdminButton
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fetchLedger(page + 1)}
+                      disabled={page >= totalPages - 1 || isLoadingLedger}
+                      rightIcon={<ChevronRight className="w-3.5 h-3.5" />}
+                    >
+                      Next
+                    </AdminButton>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <AdminEmptyState
+                title="No transaction records found"
+                description={
+                  searchQuery || statusFilter !== 'ALL' || providerFilter !== 'ALL'
+                    ? "No transactions match your current search and filter criteria."
+                    : "Payments, UPI transfers, and settlements will appear here."
+                }
+                icon={<CreditCard className="w-6 h-6 text-slate-400" />}
+              />
+            )}
+          </AdminCard>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* TAB 3: WEBHOOK OPERATIONS CENTER                                    */}
+      {/* =================================================================== */}
+      {activeTab === 'webhooks' && (
+        <div className="space-y-4">
+          {/* Controls Bar */}
+          <AdminCard className="p-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="relative flex-1 w-full">
+                <AdminInput
+                  placeholder="Search by Webhook Event ID or Payload content..."
+                  value={webhookSearch}
+                  onChange={(e) => setWebhookSearch(e.target.value)}
+                  leftIcon={<Search className="w-4 h-4" />}
+                />
+              </div>
+
+              <div className="w-full sm:w-48">
+                <AdminSelect
+                  value={webhookProviderFilter}
+                  onChange={(e) => setWebhookProviderFilter(e.target.value)}
+                  options={[
+                    { value: 'ALL', label: 'All Providers' },
+                    { value: 'RAZORPAY', label: 'Razorpay' },
+                    { value: 'YOUPI', label: 'YouPi' },
+                  ]}
+                />
+              </div>
+
+              <div className="w-full sm:w-48">
+                <AdminSelect
+                  value={webhookStatusFilter}
+                  onChange={(e) => setWebhookStatusFilter(e.target.value)}
+                  options={[
+                    { value: 'ALL', label: 'All Event States' },
+                    { value: 'PROCESSED', label: 'PROCESSED' },
+                    { value: 'RECEIVED', label: 'RECEIVED' },
+                    { value: 'PROCESSING', label: 'PROCESSING' },
+                    { value: 'FAILED', label: 'FAILED' },
+                    { value: 'DUPLICATE', label: 'DUPLICATE' },
+                  ]}
+                />
+              </div>
+            </div>
+          </AdminCard>
+
+          {/* Webhooks Table */}
+          <AdminCard className="overflow-hidden">
+            {isLoadingWebhooks ? (
+              <div className="p-6">
+                <AdminTableSkeleton rows={5} cols={7} />
+              </div>
+            ) : webhooks.length > 0 ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                        <th className="py-3 px-4">Event Ref</th>
+                        <th className="py-3 px-4">Provider</th>
+                        <th className="py-3 px-4">Event Type</th>
+                        <th className="py-3 px-4 text-center">Status</th>
+                        <th className="py-3 px-4 text-center">Attempts</th>
+                        <th className="py-3 px-4">Received At</th>
+                        <th className="py-3 px-4">Processed At</th>
+                        <th className="py-3 px-4 text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {webhooks.map((wh) => (
+                        <tr key={wh.id} className="hover:bg-slate-50/60 transition-colors">
+                          {/* Event Ref */}
+                          <td className="py-3 px-4 font-mono font-bold text-slate-900 whitespace-nowrap">
+                            #{wh.id}
+                            <span className="block text-[10px] text-slate-400 font-normal truncate max-w-[140px]" title={wh.externalEventId}>
+                              {wh.externalEventId}
+                            </span>
+                          </td>
+
+                          {/* Provider */}
+                          <td className="py-3 px-4 font-semibold text-slate-800 whitespace-nowrap">
+                            {wh.provider}
+                          </td>
+
+                          {/* Event Type */}
+                          <td className="py-3 px-4 font-mono text-slate-700 whitespace-nowrap">
+                            <span className="bg-slate-100 px-2 py-0.5 rounded text-[11px]">
+                              {wh.eventType}
+                            </span>
+                          </td>
+
+                          {/* Status */}
+                          <td className="py-3 px-4 text-center whitespace-nowrap">
+                            <StatusBadge status={wh.status} />
+                          </td>
+
+                          {/* Attempts */}
+                          <td className="py-3 px-4 text-center font-mono font-bold text-slate-700">
+                            {wh.attemptCount || 1}
+                          </td>
+
+                          {/* Received At */}
+                          <td className="py-3 px-4 text-slate-500 whitespace-nowrap">
+                            {wh.receivedAt ? new Date(wh.receivedAt).toLocaleTimeString('en-IN', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            }) : '—'}
+                          </td>
+
+                          {/* Processed At */}
+                          <td className="py-3 px-4 text-slate-500 whitespace-nowrap">
+                            {wh.processedAt ? new Date(wh.processedAt).toLocaleTimeString('en-IN', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            }) : wh.errorReason ? (
+                              <span className="text-rose-600 font-medium truncate block max-w-[160px]" title={wh.errorReason}>
+                                {wh.errorReason}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 italic">Pending</span>
+                            )}
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-3 px-4 text-center whitespace-nowrap">
+                            <div className="flex items-center justify-center gap-1.5">
+                              {wh.payloadSummary && (
+                                <button
+                                  type="button"
+                                  onClick={() => setInspectedWebhook(wh)}
+                                  className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+                                  title="Inspect Payload"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                              )}
+
+                              {wh.status === 'FAILED' && (
+                                <AdminButton
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleRetryWebhook(wh.id)}
+                                  isLoading={retryingWebhookId === wh.id}
+                                  leftIcon={<RotateCw className="w-3 h-3" />}
+                                  className="text-xs text-rose-700 hover:bg-rose-50 border-rose-200"
+                                >
+                                  Retry
+                                </AdminButton>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Webhooks Pagination Footer */}
+                <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                  <div>
+                    Showing <span className="font-semibold text-slate-800">{webhookPage * webhookPageSize + 1}</span> to{' '}
+                    <span className="font-semibold text-slate-800">
+                      {Math.min((webhookPage + 1) * webhookPageSize, webhookTotalElements)}
+                    </span>{' '}
+                    of <span className="font-semibold text-slate-800">{webhookTotalElements}</span> webhook events
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <AdminButton
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fetchWebhooks(webhookPage - 1)}
+                      disabled={webhookPage <= 0 || isLoadingWebhooks}
+                      leftIcon={<ChevronLeft className="w-3.5 h-3.5" />}
+                    >
+                      Previous
+                    </AdminButton>
+
+                    <div className="px-3 py-1 font-mono font-medium text-slate-700">
+                      Page {webhookPage + 1} of {Math.max(1, webhookTotalPages)}
+                    </div>
+
+                    <AdminButton
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fetchWebhooks(webhookPage + 1)}
+                      disabled={webhookPage >= webhookTotalPages - 1 || isLoadingWebhooks}
+                      rightIcon={<ChevronRight className="w-3.5 h-3.5" />}
+                    >
+                      Next
+                    </AdminButton>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <AdminEmptyState
+                title="No webhook events recorded"
+                description="Live incoming webhook payloads from Razorpay and payment providers will appear here."
+                icon={<Terminal className="w-6 h-6 text-slate-400" />}
+              />
+            )}
+          </AdminCard>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* TAB 4: RECONCILIATION & RECOVERY                                    */}
+      {/* =================================================================== */}
+      {activeTab === 'reconciliation' && (
         <div className="space-y-6">
           {/* Reconciliation KPIs */}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -534,7 +1136,7 @@ export function AdminPaymentsView() {
               </div>
               <div>
                 <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Evaluated Records</div>
-                <div className="text-lg font-bold text-slate-900">{reconReport?.totalRecordsEvaluated ?? payments.length}</div>
+                <div className="text-lg font-bold text-slate-900">{reconReport?.totalRecordsEvaluated ?? 0}</div>
               </div>
             </AdminCard>
 
@@ -544,7 +1146,7 @@ export function AdminPaymentsView() {
               </div>
               <div>
                 <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Matched &amp; Balanced</div>
-                <div className="text-lg font-bold text-slate-900">{reconReport?.matchedCount ?? completedCount}</div>
+                <div className="text-lg font-bold text-slate-900">{reconReport?.matchedCount ?? 0}</div>
               </div>
             </AdminCard>
 
@@ -581,16 +1183,16 @@ export function AdminPaymentsView() {
             </AdminCard>
           </div>
 
-          {/* Anomaly Callout Banner if any anomaly detected */}
+          {/* Anomaly Callout Banner & 1-Click Recovery Actions */}
           {reconReport && reconReport.anomalies && reconReport.anomalies.length > 0 && (
             <div className="p-4 bg-rose-50/70 border border-rose-200 rounded-2xl text-xs space-y-3">
               <div className="flex items-center gap-2 font-bold text-rose-900">
                 <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                <span>Ledger Reconciliation Alerts ({reconReport.anomalies.length} Issues Detected)</span>
+                <span>Reconciliation Discrepancies ({reconReport.anomalies.length} Issues Detected)</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {reconReport.anomalies.map((anom, idx) => (
-                  <div key={idx} className="bg-white p-3 rounded-xl border border-rose-200 shadow-xs space-y-1">
+                  <div key={idx} className="bg-white p-3.5 rounded-xl border border-rose-200 shadow-xs space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-mono font-bold text-rose-700">{anom.anomalyType}</span>
                       <span className="font-mono text-[11px] text-slate-500">PAY #{anom.paymentId} &bull; ORD #{anom.orderId || '—'}</span>
@@ -600,18 +1202,34 @@ export function AdminPaymentsView() {
                       <span>Payment: {anom.currentPaymentStatus} &bull; Order: {anom.currentOrderStatus}</span>
                       <span>₹{Number(anom.recordedAmount || 0).toLocaleString('en-IN')}</span>
                     </div>
+
+                    {/* 1-Click Recovery Button for MISSING_ENTITLEMENT */}
+                    {anom.anomalyType === 'MISSING_ENTITLEMENT' && anom.orderId && (
+                      <div className="pt-2 border-t border-rose-100 flex items-center justify-end">
+                        <AdminButton
+                          variant="primary"
+                          size="sm"
+                          onClick={() => handleRecoverReconciliation(anom.orderId!)}
+                          isLoading={recoveringOrderId === anom.orderId}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-xs"
+                          leftIcon={<ShieldCheck className="w-3.5 h-3.5" />}
+                        >
+                          Run Recovery (Provision Entitlements)
+                        </AdminButton>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Reconciliation Audit Table */}
+          {/* Audit Matrix Table */}
           <AdminCard className="overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Payment Reconciliation Audit Matrix</h3>
-                <p className="text-xs text-slate-500">Cross-verifying PostgreSQL Payment records with Order state machines &amp; Gateway IDs.</p>
+                <h3 className="text-sm font-bold text-slate-900">Payment Reconciliation Matrix</h3>
+                <p className="text-xs text-slate-500">Continuous ledger cross-checking against order state machines and webhook confirmations.</p>
               </div>
               <AdminButton
                 variant="secondary"
@@ -624,144 +1242,200 @@ export function AdminPaymentsView() {
               </AdminButton>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
-                    <th className="py-3 px-4">Order ID</th>
-                    <th className="py-3 px-4">Payment ID</th>
-                    <th className="py-3 px-4">Razorpay Order ID</th>
-                    <th className="py-3 px-4 text-right">Amount</th>
-                    <th className="py-3 px-4 text-center">Currency</th>
-                    <th className="py-3 px-4 text-center">Payment Status</th>
-                    <th className="py-3 px-4 text-center">Order Status</th>
-                    <th className="py-3 px-4 whitespace-nowrap">Created At</th>
-                    <th className="py-3 px-4 whitespace-nowrap">Verified At</th>
-                    <th className="py-3 px-4 text-center">Audit Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {payments.map((pay) => {
-                    const isMismatch = (pay.status === 'SUCCESSFUL' || pay.status === 'COMPLETED') &&
-                      pay.orderStatus && pay.orderStatus !== 'PAID' && pay.orderStatus !== 'CONFIRMED' && pay.orderStatus !== 'DELIVERED';
-                    const isPending = pay.status === 'PENDING';
-
-                    return (
-                      <tr 
-                        key={pay.id} 
-                        className={cn(
-                          "transition-colors",
-                          isMismatch ? "bg-rose-50/50 hover:bg-rose-50/80" : "hover:bg-slate-50/60"
-                        )}
-                      >
-                        {/* 1. Order ID */}
-                        <td className="py-3 px-4 font-mono font-bold text-slate-900">
-                          {pay.orderId ? (
-                            <span className="text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-                              #ORD-{pay.orderId}
-                            </span>
-                          ) : (
-                            <span className="text-slate-400">—</span>
-                          )}
-                        </td>
-
-                        {/* 2. Payment ID */}
-                        <td className="py-3 px-4 font-mono font-medium text-slate-800">
-                          #PAY-{pay.id}
-                        </td>
-
-                        {/* 3. Razorpay Order ID */}
-                        <td className="py-3 px-4 font-mono text-[11px] text-slate-600">
-                          {pay.razorpayOrderId || (
-                            <span className="text-slate-400 italic">Direct / UTR</span>
-                          )}
-                        </td>
-
-                        {/* 4. Amount */}
-                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">
-                          ₹{Number(pay.amount || 0).toLocaleString('en-IN')}
-                        </td>
-
-                        {/* 5. Currency */}
-                        <td className="py-3 px-4 text-center font-mono text-slate-500">
-                          {pay.currency || 'INR'}
-                        </td>
-
-                        {/* 6. Payment Status */}
-                        <td className="py-3 px-4 text-center">
-                          <StatusBadge status={pay.status} />
-                        </td>
-
-                        {/* 7. Order Status */}
-                        <td className="py-3 px-4 text-center font-mono">
-                          {pay.orderStatus ? (
-                            <span className={cn(
-                              "px-2 py-0.5 rounded text-[10px] font-bold border",
-                              pay.orderStatus === 'PAID' || pay.orderStatus === 'CONFIRMED' || pay.orderStatus === 'DELIVERED'
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                : pay.orderStatus === 'PENDING'
-                                ? "bg-amber-50 text-amber-700 border-amber-200"
-                                : "bg-rose-50 text-rose-700 border-rose-200"
-                            )}>
-                              {pay.orderStatus}
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 text-[10px]">NONE</span>
-                          )}
-                        </td>
-
-                        {/* 8. Created At */}
-                        <td className="py-3 px-4 text-slate-500 text-[11px] whitespace-nowrap">
-                          {pay.createdAt ? new Date(pay.createdAt).toLocaleString('en-IN', {
-                            dateStyle: 'short',
-                            timeStyle: 'short'
-                          }) : '—'}
-                        </td>
-
-                        {/* 9. Verified At */}
-                        <td className="py-3 px-4 text-slate-500 text-[11px] whitespace-nowrap">
-                          {pay.verifiedAt ? (
-                            <span className="text-emerald-700 font-medium">
-                              {new Date(pay.verifiedAt).toLocaleString('en-IN', {
-                                dateStyle: 'short',
-                                timeStyle: 'short'
-                              })}
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 italic">Unverified</span>
-                          )}
-                        </td>
-
-                        {/* Audit Status / Mismatch Highlight */}
-                        <td className="py-3 px-4 text-center whitespace-nowrap">
-                          {isMismatch ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                              <AlertTriangle className="w-3 h-3 text-rose-600" />
-                              <span>STATUS MISMATCH</span>
-                            </span>
-                          ) : isPending ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                              <Clock className="w-3 h-3 text-amber-600" />
-                              <span>PENDING AUDIT</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              <span>BALANCED</span>
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="p-6">
+              {(reconReport?.anomalies?.length || 0) === 0 ? (
+                <div className="text-center py-8">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
+                  <h4 className="text-sm font-bold text-slate-900">All Transactions Balanced</h4>
+                  <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+                    Zero discrepancies found. All verified payments correspond directly to confirmed orders and provisioned entitlements.
+                  </p>
+                </div>
+              ) : (
+                <div className="text-xs text-slate-600 space-y-2">
+                  <p className="font-semibold text-rose-700">
+                    {reconReport?.anomalies.length} anomaly item(s) require administrative review or automated recovery above.
+                  </p>
+                </div>
+              )}
             </div>
           </AdminCard>
         </div>
       )}
 
-      {/* Verify & Approve Modal */}
+      {/* =================================================================== */}
+      {/* SLIDE-OVER DRAWER: TRANSACTION INSPECTOR                            */}
+      {/* =================================================================== */}
+      <AdminDrawer
+        isOpen={isDrawerOpen && !!selectedTxn}
+        onClose={() => {
+          setIsDrawerOpen(false);
+          setSelectedTxn(null);
+        }}
+        title={`Transaction Details #PAY-${selectedTxn?.id}`}
+        subtitle={`Order #${selectedTxn?.orderId || 'Direct'} • Created ${selectedTxn?.createdAt ? new Date(selectedTxn.createdAt).toLocaleDateString() : ''}`}
+        width="md"
+      >
+        {selectedTxn && (
+          <div className="space-y-6 text-xs">
+            {/* Status and Amount Header Card */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+              <div>
+                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Amount Paid</div>
+                <div className="text-2xl font-black text-slate-900">
+                  ₹{Number(selectedTxn.amount).toLocaleString('en-IN')}
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">Currency: {selectedTxn.currency || 'INR'}</div>
+              </div>
+              <div className="text-right space-y-1">
+                <StatusBadge status={selectedTxn.status} />
+                {selectedTxn.orderStatus && (
+                  <div className="text-[10px] text-slate-500">
+                    Order: <span className="font-bold text-slate-700">{selectedTxn.orderStatus}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Customer Information */}
+            <div className="space-y-2">
+              <h4 className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">Customer Identity</h4>
+              <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="font-semibold text-slate-800">{selectedTxn.customerName || selectedTxn.payerName || 'Direct Customer'}</span>
+                </div>
+                {selectedTxn.customerEmail && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="text-slate-600">{selectedTxn.customerEmail}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Provider and Reference Keys */}
+            <div className="space-y-2">
+              <h4 className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">Gateway &amp; Reference Audit</h4>
+              <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-2 font-mono text-[11px]">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-sans">Provider:</span>
+                  <span className="font-bold text-slate-900">{selectedTxn.provider}</span>
+                </div>
+                {selectedTxn.transactionReference && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-sans">UTR Ref:</span>
+                    <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                      <span>{selectedTxn.transactionReference}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(selectedTxn.transactionReference!)}
+                        className="text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        {copiedText === selectedTxn.transactionReference ? (
+                          <Check className="w-3 h-3 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {selectedTxn.razorpayPaymentId && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-sans">Razorpay Pay ID:</span>
+                    <span className="font-bold text-slate-900">{selectedTxn.razorpayPaymentId}</span>
+                  </div>
+                )}
+                {selectedTxn.razorpayOrderId && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-sans">Razorpay Order ID:</span>
+                    <span className="text-slate-700">{selectedTxn.razorpayOrderId}</span>
+                  </div>
+                )}
+                {selectedTxn.payerUpiId && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-sans">Payer UPI ID:</span>
+                    <span className="text-slate-700">{selectedTxn.payerUpiId}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Verification Metadata */}
+            {(selectedTxn.verifiedBy || selectedTxn.verifiedAt || selectedTxn.adminNotes) && (
+              <div className="space-y-2">
+                <h4 className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">Verification Audit Log</h4>
+                <div className="p-3 bg-emerald-50/60 border border-emerald-200 rounded-xl space-y-1 text-emerald-900">
+                  {selectedTxn.verifiedBy && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Verified By:</span>
+                      <span className="font-semibold">{selectedTxn.verifiedBy}</span>
+                    </div>
+                  )}
+                  {selectedTxn.verifiedAt && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Verified Timestamp:</span>
+                      <span>{new Date(selectedTxn.verifiedAt).toLocaleString()}</span>
+                    </div>
+                  )}
+                  {selectedTxn.adminNotes && (
+                    <div className="pt-1 text-[11px] text-slate-600 italic">
+                      Notes: &quot;{selectedTxn.adminNotes}&quot;
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Failure Reason */}
+            {selectedTxn.failureReason && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 space-y-1">
+                <div className="font-bold flex items-center gap-1.5">
+                  <XCircle className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Failure / Rejection Reason</span>
+                </div>
+                <p className="text-[11px]">{selectedTxn.failureReason}</p>
+              </div>
+            )}
+
+            {/* Pending Action Buttons inside Drawer */}
+            {selectedTxn.status === 'PENDING' && (
+              <div className="pt-4 border-t border-slate-200 flex items-center gap-2">
+                <AdminButton
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    setVerifyingPayment(selectedTxn);
+                    setAdminNotes('');
+                  }}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                  leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+                >
+                  Verify Payment
+                </AdminButton>
+                <AdminButton
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setRejectingPayment(selectedTxn);
+                    setRejectionReason('');
+                    setAdminNotes('');
+                  }}
+                  className="flex-1 text-rose-700 border-rose-200 hover:bg-rose-50"
+                  leftIcon={<XCircle className="w-3.5 h-3.5" />}
+                >
+                  Reject Payment
+                </AdminButton>
+              </div>
+            )}
+          </div>
+        )}
+      </AdminDrawer>
+
+      {/* =================================================================== */}
+      {/* MODAL: VERIFY PAYMENT                                               */}
+      {/* =================================================================== */}
       <AdminModal
         isOpen={!!verifyingPayment}
         onClose={() => setVerifyingPayment(null)}
@@ -803,18 +1477,6 @@ export function AdminPaymentsView() {
                   </span>
                 </div>
               )}
-              {verifyingPayment.payerUpiId && (
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Payer UPI ID:</span>
-                  <span className="font-mono text-slate-800">{verifyingPayment.payerUpiId}</span>
-                </div>
-              )}
-              {verifyingPayment.payerName && (
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Payer Name:</span>
-                  <span className="font-medium text-slate-800">{verifyingPayment.payerName}</span>
-                </div>
-              )}
             </div>
 
             <div>
@@ -825,7 +1487,7 @@ export function AdminPaymentsView() {
                 rows={2}
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
-                placeholder="e.g. Verified against Indian Bank statement transaction #423589"
+                placeholder="e.g. Verified against bank statement transaction #423589"
                 className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-emerald-500"
               />
             </div>
@@ -853,7 +1515,9 @@ export function AdminPaymentsView() {
         )}
       </AdminModal>
 
-      {/* Reject Payment Modal */}
+      {/* =================================================================== */}
+      {/* MODAL: REJECT PAYMENT                                               */}
+      {/* =================================================================== */}
       <AdminModal
         isOpen={!!rejectingPayment}
         onClose={() => setRejectingPayment(null)}
@@ -911,6 +1575,64 @@ export function AdminPaymentsView() {
                 isLoading={isRejectingAction}
               >
                 Reject Payment
+              </AdminButton>
+            </div>
+          </div>
+        )}
+      </AdminModal>
+
+      {/* =================================================================== */}
+      {/* MODAL: INSPECT WEBHOOK PAYLOAD                                      */}
+      {/* =================================================================== */}
+      <AdminModal
+        isOpen={!!inspectedWebhook}
+        onClose={() => setInspectedWebhook(null)}
+        title={`Webhook Payload #${inspectedWebhook?.id} [${inspectedWebhook?.eventType}]`}
+        maxWidth="lg"
+      >
+        {inspectedWebhook && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-xs border-b border-slate-100 pb-2">
+              <span className="font-mono text-slate-500">Provider: <strong>{inspectedWebhook.provider}</strong></span>
+              <StatusBadge status={inspectedWebhook.status} />
+            </div>
+
+            {inspectedWebhook.errorReason && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs">
+                <strong>Failure Reason:</strong> {inspectedWebhook.errorReason}
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-mono text-slate-400">Raw JSON Payload</span>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(inspectedWebhook.payloadSummary || '')}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1 cursor-pointer"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Copy Payload</span>
+                </button>
+              </div>
+              <pre className="p-3 rounded-xl bg-slate-900 text-slate-100 font-mono text-[11px] overflow-x-auto max-h-96">
+                {(() => {
+                  try {
+                    return JSON.stringify(JSON.parse(inspectedWebhook.payloadSummary || '{}'), null, 2);
+                  } catch {
+                    return inspectedWebhook.payloadSummary || 'No payload available';
+                  }
+                })()}
+              </pre>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <AdminButton
+                variant="secondary"
+                size="sm"
+                onClick={() => setInspectedWebhook(null)}
+              >
+                Close
               </AdminButton>
             </div>
           </div>

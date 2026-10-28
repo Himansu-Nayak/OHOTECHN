@@ -63,6 +63,16 @@ export default function AdminConsolePage() {
   }, [user, isLoading, router, showToast]);
 
   const [activeTab, setActiveTab] = React.useState<AdminTabKey>('overview');
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab') as AdminTabKey | null;
+      if (tabParam) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
   const [globalSearchQuery, setGlobalSearchQuery] = React.useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = React.useState(false);

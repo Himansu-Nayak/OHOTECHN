@@ -7,6 +7,9 @@ import {
   UtrSubmissionRequest,
   AdminPaymentActionRequest,
   PaymentReconciliationReportDto,
+  TransactionOverviewDto,
+  WebhookEventDto,
+  Page,
 } from './types';
 
 export interface CreatePaymentOrderParams {
@@ -116,3 +119,91 @@ export async function getPaymentReconciliationReportApi(): Promise<ApiResponse<P
   });
 }
 
+// ==========================================
+// TRANSACTION OPERATIONS CENTER APIS
+// ==========================================
+
+export async function getTransactionOverviewApi(
+  period: string = 'ALL',
+  startDate?: string,
+  endDate?: string
+): Promise<ApiResponse<TransactionOverviewDto>> {
+  const query = new URLSearchParams({ period });
+  if (startDate) query.append('startDate', startDate);
+  if (endDate) query.append('endDate', endDate);
+  return apiClient<TransactionOverviewDto>(`/api/admin/transactions/overview?${query.toString()}`, {
+    method: 'GET',
+  });
+}
+
+export interface GetTransactionHistoryParams {
+  page?: number;
+  size?: number;
+  search?: string;
+  status?: string;
+  provider?: string;
+  startDate?: string;
+  endDate?: string;
+  sort?: string;
+  direction?: 'asc' | 'desc';
+}
+
+export async function getTransactionsHistoryApi(
+  params: GetTransactionHistoryParams = {}
+): Promise<ApiResponse<Page<Payment>>> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.append('page', String(params.page));
+  if (params.size !== undefined) query.append('size', String(params.size));
+  if (params.search) query.append('search', params.search);
+  if (params.status && params.status !== 'ALL') query.append('status', params.status);
+  if (params.provider && params.provider !== 'ALL') query.append('provider', params.provider);
+  if (params.startDate) query.append('startDate', params.startDate);
+  if (params.endDate) query.append('endDate', params.endDate);
+  if (params.sort) query.append('sort', params.sort);
+  if (params.direction) query.append('direction', params.direction);
+
+  return apiClient<Page<Payment>>(`/api/admin/transactions/history?${query.toString()}`, {
+    method: 'GET',
+  });
+}
+
+export interface GetWebhooksParams {
+  page?: number;
+  size?: number;
+  provider?: string;
+  status?: string;
+  eventType?: string;
+  search?: string;
+}
+
+export async function getWebhooksApi(
+  params: GetWebhooksParams = {}
+): Promise<ApiResponse<Page<WebhookEventDto>>> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.append('page', String(params.page));
+  if (params.size !== undefined) query.append('size', String(params.size));
+  if (params.provider && params.provider !== 'ALL') query.append('provider', params.provider);
+  if (params.status && params.status !== 'ALL') query.append('status', params.status);
+  if (params.eventType && params.eventType !== 'ALL') query.append('eventType', params.eventType);
+  if (params.search) query.append('search', params.search);
+
+  return apiClient<Page<WebhookEventDto>>(`/api/admin/transactions/webhooks?${query.toString()}`, {
+    method: 'GET',
+  });
+}
+
+export async function retryWebhookApi(
+  webhookEventId: number
+): Promise<ApiResponse<WebhookEventDto>> {
+  return apiClient<WebhookEventDto>(`/api/admin/transactions/webhooks/${webhookEventId}/retry`, {
+    method: 'POST',
+  });
+}
+
+export async function recoverReconciliationApi(
+  orderId: number
+): Promise<ApiResponse<Payment>> {
+  return apiClient<Payment>(`/api/admin/transactions/reconciliation/recover/${orderId}`, {
+    method: 'POST',
+  });
+}

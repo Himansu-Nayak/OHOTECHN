@@ -861,10 +861,20 @@ public class PaymentService {
     }
 
     public PaymentResponseDto mapPaymentToDto(Payment payment) {
+        Order order = payment.getOrder();
+        String customerName = null;
+        String customerEmail = null;
+        if (order != null && order.getUser() != null) {
+            customerName = order.getUser().getName();
+            customerEmail = order.getUser().getEmail();
+        }
+
         return PaymentResponseDto.builder()
                 .id(payment.getId())
-                .orderId(payment.getOrder() != null ? payment.getOrder().getId() : null)
-                .orderStatus(payment.getOrder() != null && payment.getOrder().getStatus() != null ? payment.getOrder().getStatus().name() : null)
+                .orderId(order != null ? order.getId() : null)
+                .orderStatus(order != null && order.getStatus() != null ? order.getStatus().name() : null)
+                .customerName(customerName)
+                .customerEmail(customerEmail)
                 .amount(payment.getAmount())
                 .status(payment.getStatus())
                 .provider(payment.getProvider())
