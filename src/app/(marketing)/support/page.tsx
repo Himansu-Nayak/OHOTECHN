@@ -414,20 +414,35 @@ export default function SupportPanelPage() {
 
             {/* V15 SLA Telemetry Gauge & Action Strip */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <V15CircularGauge
-                title="Support SLA Compliance"
-                subtitle="On-time incident resolution telemetry"
-                value={98.6}
-                displayValue="98.6%"
-                label="SLA On-Time"
-                primaryColor="#10b981"
-                metrics={[
-                  { label: 'Technical', value: '99.2%', color: '#10b981' },
-                  { label: 'Billing / Pay', value: '100%', color: '#0ea5e9' },
-                  { label: 'Enterprise', value: '98.5%', color: '#8b5cf6' },
-                  { label: 'Enquiries', value: '96.8%', color: '#ea580c' },
-                ]}
-              />
+              {(() => {
+                const totalTrackedTickets = (stats?.totalTickets ?? tickets.length);
+                const urgentCount = stats?.urgentTickets ?? tickets.filter(t => t.priority === 'URGENT').length;
+                const slaComplianceRate = totalTrackedTickets > 0
+                  ? Math.max(0, Math.round(((totalTrackedTickets - urgentCount) / totalTrackedTickets) * 100))
+                  : 100;
+
+                const techCount = tickets.filter(t => t.department === 'TECHNICAL').length;
+                const billingCount = tickets.filter(t => t.department === 'BILLING').length;
+                const licensingCount = tickets.filter(t => t.department === 'LICENSING' || t.department === 'SALES').length;
+                const pendingEnquiriesCount = stats?.pendingEnquiries ?? enquiries.filter(e => e.status !== 'RESPONDED').length;
+
+                return (
+                  <V15CircularGauge
+                    title="Support SLA Compliance"
+                    subtitle="On-time incident resolution telemetry"
+                    value={slaComplianceRate}
+                    displayValue={`${slaComplianceRate}%`}
+                    label={urgentCount > 0 ? `${urgentCount} Urgent Alert` : 'SLA Target Met'}
+                    primaryColor={slaComplianceRate < 90 ? '#f59e0b' : '#10b981'}
+                    metrics={[
+                      { label: 'Technical', value: `${techCount} tickets`, color: '#10b981' },
+                      { label: 'Billing / Pay', value: `${billingCount} tickets`, color: '#0ea5e9' },
+                      { label: 'Licensing', value: `${licensingCount} tickets`, color: '#8b5cf6' },
+                      { label: 'Enquiries', value: `${pendingEnquiriesCount} pending`, color: '#ea580c' },
+                    ]}
+                  />
+                );
+              })()}
 
               <div className="lg:col-span-2">
                 <V15AccentActionCard

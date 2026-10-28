@@ -451,7 +451,7 @@ export default function DeveloperStudioPage() {
           <div className="lg:col-span-2">
             <V15PerformanceChart
               title="Operations & Request Telemetry"
-              subtitle="Programmatic API transactions vs internal background scheduler tasks"
+              subtitle="Programmatic API transactions vs internal background tasks (Live telemetry sample fixture)"
               primaryData={[12, 19, 15, 28, 24, 38, 42, 55]}
               secondaryData={[10, 14, 18, 20, 22, 26, 30, 32]}
               labels={['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00']}
@@ -474,20 +474,27 @@ export default function DeveloperStudioPage() {
 
         {/* V15 Telemetry Circular Gauge & Schedule Widget */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <V15CircularGauge
-            title="Cluster Telemetry & Health"
-            subtitle="Real-time heap & thread metrics"
-            value={Number(diagnostics?.heapUsedPercent ?? 42)}
-            displayValue={`${diagnostics?.heapUsedPercent ?? 42}%`}
-            label="Heap Usage"
-            primaryColor="#8b5cf6"
-            metrics={[
-              { label: 'Runtime', value: diagnostics?.jvmVersion ? `Java ${diagnostics.jvmVersion}` : 'JVM 21', color: '#10b981' },
-              { label: 'Heap Used', value: `${diagnostics?.heapUsedBytes ? (diagnostics.heapUsedBytes / (1024 * 1024)).toFixed(0) : '184'} MB`, color: '#8b5cf6' },
-              { label: 'Active Threads', value: `${diagnostics?.activeThreadCount ?? 28}`, color: '#0ea5e9' },
-              { label: 'Status', value: diagnostics?.status || 'HEALTHY', color: '#ea580c' },
-            ]}
-          />
+          {(() => {
+            const hasDiagnostics = diagnostics !== null && diagnostics !== undefined;
+            const heapPercent = hasDiagnostics ? Math.round(Number(diagnostics.heapUsedPercent ?? 0)) : 0;
+
+            return (
+              <V15CircularGauge
+                title="Cluster Telemetry & Health"
+                subtitle="Real-time heap & thread metrics"
+                value={heapPercent}
+                displayValue={hasDiagnostics ? `${heapPercent}%` : (isLoading ? 'Syncing...' : 'Awaiting Feed')}
+                label={hasDiagnostics ? 'Heap Usage' : (isLoading ? 'Connecting' : 'Disconnected')}
+                primaryColor={heapPercent > 80 ? '#ef4444' : '#8b5cf6'}
+                metrics={[
+                  { label: 'Runtime', value: diagnostics?.jvmVersion ? `Java ${diagnostics.jvmVersion}` : (isLoading ? 'Detecting' : 'Awaiting Feed'), color: '#10b981' },
+                  { label: 'Heap Used', value: diagnostics?.heapUsedBytes ? `${(diagnostics.heapUsedBytes / (1024 * 1024)).toFixed(0)} MB` : (isLoading ? '...' : 'N/A'), color: '#8b5cf6' },
+                  { label: 'Active Threads', value: diagnostics?.activeThreadCount != null ? `${diagnostics.activeThreadCount} threads` : (isLoading ? '...' : 'N/A'), color: '#0ea5e9' },
+                  { label: 'Status', value: diagnostics?.status || (isLoading ? 'CONNECTING' : 'OFFLINE'), color: diagnostics?.status === 'UP' || diagnostics?.status === 'HEALTHY' ? '#10b981' : '#ea580c' },
+                ]}
+              />
+            );
+          })()}
 
           <div className="lg:col-span-2">
             <V15CalendarWidget

@@ -263,7 +263,7 @@ export function AdminDashboardView({
           subtitle="Manage active digital solutions, configure product pricing, and provision client license keys."
           buttonText="Catalog Management"
           badge="Quick Action"
-          metricValue={activeProducts || 24}
+          metricValue={activeProducts ?? 0}
           metricLabel="Active Catalog Solutions"
           icon={Package}
           onAction={() => onNavigateTab('products')}
@@ -536,20 +536,31 @@ export function AdminDashboardView({
           </V15Card>
 
           {/* V15 Infrastructure Gauge Meter (Frames 00:01 & 00:02) */}
-          <V15CircularGauge
-            title="System Infrastructure"
-            subtitle="Production cluster telemetry and health"
-            value={100}
-            displayValue="100%"
-            label="Operational"
-            primaryColor="#ea580c"
-            metrics={[
-              { label: 'Database', value: 'PostgreSQL 17', color: '#10b981' },
-              { label: 'Runtime', value: 'Spring Boot 4', color: '#0ea5e9' },
-              { label: 'Payments', value: 'Razorpay / UPI', color: '#8b5cf6' },
-              { label: 'AI Ops', value: 'Gemini Live', color: '#ea580c' },
-            ]}
-          />
+          {(() => {
+            const totalPaymentAttempts = (analyticsData?.paymentMetrics?.successfulPayments ?? 0) + (stats.failedPayments ?? 0);
+            const paymentSuccessRate = totalPaymentAttempts > 0
+              ? Math.round(((analyticsData?.paymentMetrics?.successfulPayments ?? 0) / totalPaymentAttempts) * 100)
+              : 100;
+            const systemHealthValue = stats.systemStatus === 'DOWN' ? 0 : (stats.systemStatus === 'DEGRADED' ? 70 : paymentSuccessRate);
+            const systemHealthLabel = stats.systemStatus ? stats.systemStatus.toUpperCase() : (stats.failedPayments && stats.failedPayments > 0 ? 'PAYMENT ALERT' : 'OPERATIONAL');
+
+            return (
+              <V15CircularGauge
+                title="System Infrastructure"
+                subtitle="Production cluster telemetry and health"
+                value={systemHealthValue}
+                displayValue={`${systemHealthValue}%`}
+                label={systemHealthLabel}
+                primaryColor={systemHealthValue < 90 ? '#ef4444' : '#ea580c'}
+                metrics={[
+                  { label: 'Database', value: 'PostgreSQL 17', color: '#10b981' },
+                  { label: 'Runtime', value: 'Spring Boot 4', color: '#0ea5e9' },
+                  { label: 'Payments', value: stats.failedPayments ? `${stats.failedPayments} failed` : 'Healthy', color: stats.failedPayments ? '#f59e0b' : '#10b981' },
+                  { label: 'Providers', value: stats.providerIssues ? `${stats.providerIssues} alert` : 'Operational', color: stats.providerIssues ? '#ef4444' : '#10b981' },
+                ]}
+              />
+            );
+          })()}
         </div>
       </div>
     </V15StaggerContainer>

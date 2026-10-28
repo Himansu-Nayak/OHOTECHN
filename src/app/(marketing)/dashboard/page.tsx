@@ -423,20 +423,27 @@ export default function CustomerDashboardPage() {
                 {/* Visual Analytics & Velocity Strip */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Entitlement Health Circular Gauge */}
-          <V15CircularGauge
-            title="Entitlement Authorization"
-            subtitle="Software license & SLA status"
-            value={100}
-            displayValue="Active"
-            label="Verified"
-            primaryColor="#10b981"
-            metrics={[
-              { label: 'Licensed Products', value: products.length, color: '#ea580c' },
-              { label: 'Active Keys', value: activeLicensesCount, color: '#10b981' },
-              { label: 'Subscriptions', value: activeSubsCount, color: '#8b5cf6' },
-              { label: 'Engineering SLA', value: 'Active', color: '#0ea5e9' },
-            ]}
-          />
+          {(() => {
+            const totalEntitlements = products.length + activeLicensesCount + activeSubsCount;
+            const hasActiveEntitlement = totalEntitlements > 0;
+
+            return (
+              <V15CircularGauge
+                title="Entitlement Authorization"
+                subtitle="Software license & SLA status"
+                value={hasActiveEntitlement ? 100 : 0}
+                displayValue={hasActiveEntitlement ? 'Active' : 'Inactive'}
+                label={hasActiveEntitlement ? 'Verified' : 'No Licenses'}
+                primaryColor={hasActiveEntitlement ? '#10b981' : '#94a3b8'}
+                metrics={[
+                  { label: 'Licensed Products', value: products.length, color: '#ea580c' },
+                  { label: 'Active Keys', value: activeLicensesCount, color: '#10b981' },
+                  { label: 'Subscriptions', value: activeSubsCount, color: '#8b5cf6' },
+                  { label: 'Engineering SLA', value: hasActiveEntitlement ? 'Active' : 'Standard Tier', color: '#0ea5e9' },
+                ]}
+              />
+            );
+          })()}
 
           {/* Order Spend Velocity Sparkline */}
           <V15Card

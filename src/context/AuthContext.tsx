@@ -26,7 +26,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+function isJwtExpired(token: string): boolean {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const jsonStr = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const payload = JSON.parse(jsonStr);
+    if (typeof payload.exp === 'number') {
+      return payload.exp * 1000 <= Date.now();
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
   const refreshUser = useCallback(async () => {
+    const token = getAccessToken();
+    if (!token || isJwtExpired(token)) {
+      if (token && isJwtExpired(token)) {
+        clearTokens();
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('user');
+        }
+      }
+      setUser(null);
+      setAccessToken(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setAccessToken(token);
+
+    // Warm-start cached user if token is mathematically unexpired
     if (typeof window !== 'undefined') {
       try {
         const savedUser = localStorage.getItem('user');
@@ -38,16 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    const token = getAccessToken();
-    if (!token) {
-      setUser(null);
-      setAccessToken(null);
-      setIsLoading(false);
-      return;
-    }
-
-    setAccessToken(token);
-
     try {
       const res = await getCurrentUserApi();
       if (res.success && res.data) {
@@ -57,24 +85,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         clearTokens();
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('user');
+        }
         setUser(null);
         setAccessToken(null);
       }
-    } catch (error) {
-      console.warn('Failed to verify token on startup (offline/dev fallback):', error);
-      if (typeof window !== 'undefined' && localStorage.getItem('user')) {
-        try {
-          setUser(JSON.parse(localStorage.getItem('user')!));
-          setAccessToken(token);
-        } catch {
+    } catch (error: any) {
+      const isAuthError =
+        error?.status === 401 ||
+        error?.status === 403 ||
+        error?.response?.status === 401 ||
+        error?.response?.status === 403 ||
+        String(error?.message).toLowerCase().includes('unauthorized') ||
+        String(error?.message).toLowerCase().includes('forbidden') ||
+        String(error?.message).toLowerCase().includes('invalid token') ||
+        String(error?.message).toLowerCase().includes('expired');
+
+      if (isAuthError) {
+        console.warn('Session rejected by server (401/403/invalid), clearing local auth state.');
+        clearTokens();
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('user');
+        }
+        setUser(null);
+        setAccessToken(null);
+      } else {
+        console.warn('Network connectivity issue while verifying session, using unexpired local cache:', error);
+        if (typeof window !== 'undefined' && localStorage.getItem('user')) {
+          try {
+            setUser(JSON.parse(localStorage.getItem('user')!));
+            setAccessToken(token);
+          } catch {
+            clearTokens();
+            localStorage.removeItem('user');
+            setUser(null);
+            setAccessToken(null);
+          }
+        } else {
           clearTokens();
           setUser(null);
           setAccessToken(null);
         }
-      } else {
-        clearTokens();
-        setUser(null);
-        setAccessToken(null);
       }
     } finally {
       setIsLoading(false);
@@ -160,6 +212,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.warn('Firebase signOut error:', e);
     }
     clearTokens();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+    }
     setUser(null);
     setAccessToken(null);
     if (typeof window !== 'undefined') {

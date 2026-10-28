@@ -181,7 +181,11 @@ export function V15MetricCard({
 
   if (!shouldReduceMotion) {
     return (
-      <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
+      <motion.div
+        whileHover={{ y: -3 }}
+        whileTap={{ scale: 0.99 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+      >
         {cardBody}
       </motion.div>
     );
@@ -282,7 +286,11 @@ export function V15AccentActionCard({
 
   if (!shouldReduceMotion) {
     return (
-      <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
+      <motion.div
+        whileHover={{ y: -3 }}
+        whileTap={{ scale: 0.99 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+      >
         {cardContent}
       </motion.div>
     );
@@ -1010,7 +1018,7 @@ export function V15CircularGauge({
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               fill="none"
-              className="transition-all duration-1000 ease-out"
+              className={cn("transition-all duration-700 ease-out", shouldReduceMotion && "transition-none")}
             />
           </svg>
 
