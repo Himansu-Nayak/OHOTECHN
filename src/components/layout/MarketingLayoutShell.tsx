@@ -22,7 +22,8 @@ export function MarketingLayoutShell({ children }: MarketingLayoutShellProps) {
   const isDashboardRoute =
     pathname?.startsWith('/admin') ||
     pathname?.startsWith('/developer') ||
-    pathname?.startsWith('/dashboard');
+    pathname?.startsWith('/dashboard') ||
+    pathname?.startsWith('/support');
 
   if (isDashboardRoute) {
     return (

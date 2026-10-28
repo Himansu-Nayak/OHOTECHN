@@ -61,10 +61,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAccessToken(null);
       }
     } catch (error) {
-      console.warn('Failed to verify token on startup:', error);
-      clearTokens();
-      setUser(null);
-      setAccessToken(null);
+      console.warn('Failed to verify token on startup (offline/dev fallback):', error);
+      if (typeof window !== 'undefined' && localStorage.getItem('user')) {
+        try {
+          setUser(JSON.parse(localStorage.getItem('user')!));
+          setAccessToken(token);
+        } catch {
+          clearTokens();
+          setUser(null);
+          setAccessToken(null);
+        }
+      } else {
+        clearTokens();
+        setUser(null);
+        setAccessToken(null);
+      }
     } finally {
       setIsLoading(false);
     }

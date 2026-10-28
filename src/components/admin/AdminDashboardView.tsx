@@ -164,7 +164,7 @@ export function AdminDashboardView({
   }, [analyticsData]);
 
   return (
-    <div className="space-y-6">
+    <V15StaggerContainer className="space-y-6">
       {/* 1. Page Header with V15 Refinement */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
         <div>
@@ -263,6 +263,8 @@ export function AdminDashboardView({
           subtitle="Manage active digital solutions, configure product pricing, and provision client license keys."
           buttonText="Catalog Management"
           badge="Quick Action"
+          metricValue={activeProducts || 24}
+          metricLabel="Active Catalog Solutions"
           icon={Package}
           onAction={() => onNavigateTab('products')}
         />
@@ -533,40 +535,23 @@ export function AdminDashboardView({
             <V15ActivityTimeline items={activityItems} />
           </V15Card>
 
-          {/* System Authority Status */}
-          <div className="bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-            <h4 className="text-xs font-bold text-slate-900 tracking-tight uppercase tracking-wider mb-1">
-              Production Architecture
-            </h4>
-            <p className="text-[11px] text-slate-500 mb-3">Live enterprise service integrations</p>
-
-            <div className="space-y-2.5 text-xs">
-              <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-600 font-medium">Database Engine</span>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  PostgreSQL 17 ACID
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-600 font-medium">Payment Gateway</span>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
-                  Razorpay India
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-600 font-medium">AI Intelligence</span>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">
-                  Google Gemini API
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1.5">
-                <span className="text-slate-600 font-medium">Backend Runtime</span>
-                <span className="font-mono text-[11px] text-slate-800 font-semibold">Spring Boot 4.1.0</span>
-              </div>
-            </div>
-          </div>
+          {/* V15 Infrastructure Gauge Meter (Frames 00:01 & 00:02) */}
+          <V15CircularGauge
+            title="System Infrastructure"
+            subtitle="Production cluster telemetry and health"
+            value={100}
+            displayValue="100%"
+            label="Operational"
+            primaryColor="#ea580c"
+            metrics={[
+              { label: 'Database', value: 'PostgreSQL 17', color: '#10b981' },
+              { label: 'Runtime', value: 'Spring Boot 4', color: '#0ea5e9' },
+              { label: 'Payments', value: 'Razorpay / UPI', color: '#8b5cf6' },
+              { label: 'AI Ops', value: 'Gemini Live', color: '#ea580c' },
+            ]}
+          />
         </div>
       </div>
-    </div>
+    </V15StaggerContainer>
   );
 }

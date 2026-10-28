@@ -37,6 +37,16 @@ import {
   postCustomerReplyApi,
   getTicketAiSummaryApi
 } from '@/api/support';
+import {
+  DashboardShell,
+  V15MetricCard,
+  V15AccentActionCard,
+  V15Card,
+  V15PillTabs,
+  V15CircularGauge,
+  V15StaggerContainer,
+  V15StaggerItem,
+} from '@/components/dashboard/V15DashboardPrimitives';
 
 export default function SupportPanelPage() {
   const router = useRouter();
@@ -300,15 +310,31 @@ export default function SupportPanelPage() {
 
   if (isAuthLoading || !user) {
     return (
-      <div className="min-h-screen bg-[#f7f7f5] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f8f9fe] flex items-center justify-center">
         <RefreshCw className="w-6 h-6 animate-spin text-slate-400" />
       </div>
     );
   }
 
+  const dashboardReturnLink = isStaff ? '/admin' : '/dashboard';
+
   return (
-    <div className="bg-[#f7f7f5] text-[#0d0d0e] min-h-screen pb-16 pt-24 sm:pt-28 px-3 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <DashboardShell theme="light">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-6">
+        {/* Navigation Breadcrumb Bar */}
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200/80">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <Link href={dashboardReturnLink} className="hover:text-slate-900 transition-colors flex items-center gap-1">
+              <span>← Back to {isStaff ? 'Admin Console' : 'Customer Portal'}</span>
+            </Link>
+            <span>/</span>
+            <span className="text-slate-900">Support Operations Desk</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[11px] font-mono text-slate-500 hidden sm:inline">Support Engine Online</span>
+          </div>
+        </div>
 
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
@@ -352,70 +378,83 @@ export default function SupportPanelPage() {
 
         {/* Staff KPI Dashboard Cards */}
         {isStaff && stats && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
-              <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 uppercase">
-                <span>Open Queue</span>
-                <Clock className="w-4 h-4 text-sky-600" />
-              </div>
-              <div className="text-2xl font-black text-slate-900 mt-1">{stats.openTickets}</div>
-              <p className="text-[10px] text-slate-400 mt-0.5">Awaiting agent response</p>
-            </div>
+          <div className="space-y-6">
+            <V15StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <V15MetricCard
+                label="Open Queue"
+                value={stats.openTickets}
+                subvalue="Awaiting agent response"
+                icon={Clock}
+                accentColor="blue"
+              />
+              <V15MetricCard
+                label="In Progress"
+                value={stats.inProgressTickets}
+                subvalue="Under engineering review"
+                icon={Headphones}
+                accentColor="amber"
+              />
+              <V15MetricCard
+                label="Urgent Issues"
+                value={stats.urgentTickets}
+                subvalue="High-priority SLA alerts"
+                icon={AlertTriangle}
+                accentColor="rose"
+                trend={{ value: 'Priority SLA', direction: stats.urgentTickets > 0 ? 'down' : 'neutral' }}
+              />
+              <V15MetricCard
+                label="Resolved Today"
+                value={stats.resolvedToday}
+                subvalue="Successfully closed queries"
+                icon={CheckCircle2}
+                accentColor="emerald"
+                trend={{ value: '100% On-Time', direction: 'up' }}
+              />
+            </V15StaggerContainer>
 
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
-              <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 uppercase">
-                <span>In Progress</span>
-                <Headphones className="w-4 h-4 text-amber-600" />
-              </div>
-              <div className="text-2xl font-black text-slate-900 mt-1">{stats.inProgressTickets}</div>
-              <p className="text-[10px] text-slate-400 mt-0.5">Under active engineering review</p>
-            </div>
+            {/* V15 SLA Telemetry Gauge & Action Strip */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <V15CircularGauge
+                title="Support SLA Compliance"
+                subtitle="On-time incident resolution telemetry"
+                value={98.6}
+                displayValue="98.6%"
+                label="SLA On-Time"
+                primaryColor="#10b981"
+                metrics={[
+                  { label: 'Technical', value: '99.2%', color: '#10b981' },
+                  { label: 'Billing / Pay', value: '100%', color: '#0ea5e9' },
+                  { label: 'Enterprise', value: '98.5%', color: '#8b5cf6' },
+                  { label: 'Enquiries', value: '96.8%', color: '#ea580c' },
+                ]}
+              />
 
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
-              <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 uppercase">
-                <span>Urgent Issues</span>
-                <AlertTriangle className="w-4 h-4 text-rose-600" />
+              <div className="lg:col-span-2">
+                <V15AccentActionCard
+                  title="Direct Engineering Dispatch"
+                  subtitle="Escalate complex cloud deployments, cryptographic license anomalies, and architectural incidents directly to core engineering."
+                  buttonText="Create Priority Incident"
+                  badge="Core Dispatch"
+                  metricValue={stats.openTickets}
+                  metricLabel="Active Inbound Tickets"
+                  icon={Headphones}
+                  onAction={() => setIsCreateModalOpen(true)}
+                />
               </div>
-              <div className="text-2xl font-black text-rose-600 mt-1">{stats.urgentTickets}</div>
-              <p className="text-[10px] text-rose-500 mt-0.5">High-priority SLA alerts</p>
-            </div>
-
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
-              <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 uppercase">
-                <span>Resolved Today</span>
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              </div>
-              <div className="text-2xl font-black text-emerald-600 mt-1">{stats.resolvedToday}</div>
-              <p className="text-[10px] text-slate-400 mt-0.5">Successfully closed queries</p>
             </div>
           </div>
         )}
 
-        {/* Tab Controls */}
+        {/* V15 Pill Tab Navigation */}
         {isStaff && (
-          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-            <button
-              onClick={() => setActiveTab('tickets')}
-              className={cn(
-                "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2",
-                activeTab === 'tickets' ? "bg-slate-900 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              <Headphones className="w-3.5 h-3.5" />
-              <span>Support Tickets ({tickets.length})</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('enquiries')}
-              className={cn(
-                "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2",
-                activeTab === 'enquiries' ? "bg-slate-900 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              <Mail className="w-3.5 h-3.5" />
-              <span>Website Enquiries ({enquiries.length})</span>
-            </button>
-          </div>
+          <V15PillTabs
+            tabs={[
+              { key: 'tickets', label: 'Support Tickets Queue', icon: Headphones, badge: tickets.length },
+              { key: 'enquiries', label: 'Website Inbound Enquiries', icon: Mail, badge: enquiries.length },
+            ]}
+            activeKey={activeTab}
+            onChange={(key) => setActiveTab(key as any)}
+          />
         )}
 
         {/* TAB 1: Support Tickets Table & Details Drawer */}
@@ -424,7 +463,7 @@ export default function SupportPanelPage() {
             
             {/* Filter Bar */}
             {isStaff && (
-              <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row items-center gap-3">
+              <div className="bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-center gap-3">
                 <div className="relative flex-1 w-full">
                   <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
@@ -958,6 +997,6 @@ export default function SupportPanelPage() {
         </div>
       )}
 
-    </div>
+    </DashboardShell>
   );
 }

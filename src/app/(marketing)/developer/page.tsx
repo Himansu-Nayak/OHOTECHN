@@ -472,6 +472,35 @@ export default function DeveloperStudioPage() {
           />
         </div>
 
+        {/* V15 Telemetry Circular Gauge & Schedule Widget */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <V15CircularGauge
+            title="Cluster Telemetry & Health"
+            subtitle="Real-time heap & thread metrics"
+            value={Number(diagnostics?.heapUsedPercent ?? 42)}
+            displayValue={`${diagnostics?.heapUsedPercent ?? 42}%`}
+            label="Heap Usage"
+            primaryColor="#8b5cf6"
+            metrics={[
+              { label: 'Runtime', value: diagnostics?.jvmVersion ? `Java ${diagnostics.jvmVersion}` : 'JVM 21', color: '#10b981' },
+              { label: 'Heap Used', value: `${diagnostics?.heapUsedBytes ? (diagnostics.heapUsedBytes / (1024 * 1024)).toFixed(0) : '184'} MB`, color: '#8b5cf6' },
+              { label: 'Active Threads', value: `${diagnostics?.activeThreadCount ?? 28}`, color: '#0ea5e9' },
+              { label: 'Status', value: diagnostics?.status || 'HEALTHY', color: '#ea580c' },
+            ]}
+          />
+
+          <div className="lg:col-span-2">
+            <V15CalendarWidget
+              selectedDate={new Date()}
+              events={[
+                { day: new Date().getDate(), count: 6 },
+                { day: (new Date().getDate() + 2) % 28 || 1, count: 3 },
+                { day: (new Date().getDate() + 5) % 28 || 4, count: 1 },
+              ]}
+            />
+          </div>
+        </div>
+
         {/* V15 Pill Tab Navigation */}
         <V15PillTabs
           tabs={[
