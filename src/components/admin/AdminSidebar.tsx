@@ -6,7 +6,7 @@ import {
   Layers, KeyRound, Users, UserCheck, Inbox, GitPullRequest, 
   DownloadCloud, Bell, Sparkles, Shield, UserCog, Settings,
   ChevronRight, ChevronDown, Search, X, PanelLeftClose, PanelLeftOpen,
-  Building2, MessageSquare, Headphones
+  Building2, MessageSquare, Headphones, Mail, Smartphone
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
@@ -28,6 +28,8 @@ export type AdminTabKey =
   | 'leads' 
   | 'crm' 
   | 'quotes'
+  | 'emails'
+  | 'whatsapp'
   | 'releases' 
   | 'gateways'
   | 'notifications' 
@@ -116,12 +118,14 @@ export function AdminSidebar({
       ],
     },
     {
-      label: 'CRM & SUPPORT',
+      label: 'CRM & COMMUNICATIONS',
       items: [
-        { key: 'support', label: 'Support & Help Desk', icon: Headphones, badge: badgeCounts.support },
         { key: 'leads', label: 'Leads & Enquiries', icon: Inbox, badge: badgeCounts.leads },
         { key: 'crm', label: 'Sales Pipeline', icon: GitPullRequest },
         { key: 'quotes', label: 'Commercial Quotes', icon: MessageSquare, badge: badgeCounts.quotes },
+        { key: 'emails', label: 'Email Automation', icon: Mail },
+        { key: 'whatsapp', label: 'WhatsApp Messaging', icon: Smartphone },
+        { key: 'support', label: 'Support & Help Desk', icon: Headphones, badge: badgeCounts.support },
       ],
     },
     {

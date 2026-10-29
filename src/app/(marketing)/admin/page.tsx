@@ -33,6 +33,9 @@ import { AdminLicensesView } from '@/components/admin/AdminLicensesView';
 import { AdminReleasesView } from '@/components/admin/AdminReleasesView';
 import { AdminCustomersView } from '@/components/admin/AdminCustomersView';
 import { AdminLeadsView } from '@/components/admin/AdminLeadsView';
+import { AdminCrmView } from '@/components/admin/AdminCrmView';
+import { AdminEmailsView } from '@/components/admin/AdminEmailsView';
+import { AdminWhatsAppView } from '@/components/admin/AdminWhatsAppView';
 import { AdminQuotesView } from '@/components/admin/AdminQuotesView';
 import { AdminSupportDeskView } from '@/components/admin/AdminSupportDeskView';
 import { AdminGatewaysView } from '@/components/admin/AdminGatewaysView';
@@ -348,12 +351,24 @@ export default function AdminConsolePage() {
             <AdminCustomersView />
           )}
 
-          {(activeTab === 'leads' || activeTab === 'crm') && (
-            <AdminLeadsView />
+          {activeTab === 'crm' && (
+            <AdminCrmView initialViewMode="pipeline" />
+          )}
+
+          {activeTab === 'leads' && (
+            <AdminCrmView initialViewMode="table" />
           )}
 
           {activeTab === 'quotes' && (
             <AdminQuotesView />
+          )}
+
+          {activeTab === 'emails' && (
+            <AdminEmailsView />
+          )}
+
+          {activeTab === 'whatsapp' && (
+            <AdminWhatsAppView />
           )}
 
           {activeTab === 'support' && (
