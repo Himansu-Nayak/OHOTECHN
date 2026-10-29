@@ -335,12 +335,12 @@ export function AdminPaymentsView() {
   const successRate = totalTxnCount > 0 ? ((successTxnCount / totalTxnCount) * 100).toFixed(1) : '100.0';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300 motion-reduce:animate-none">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-[22px] bg-white/90 border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.025),inset_0_1px_0_rgba(255,255,255,0.8)] overflow-hidden before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-[#FF6B4A] before:via-[#FF8E53] before:to-[#f5c6b8]">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Transaction Operations Center</h1>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Transaction Operations Center</h1>
             <AdminBadge variant="brand">V15 Operations</AdminBadge>
             {reconReport && reconReport.anomalyCount > 0 && (
               <AdminBadge variant="warning">{reconReport.anomalyCount} Anomaly</AdminBadge>
@@ -370,13 +370,13 @@ export function AdminPaymentsView() {
       </div>
 
       {/* 4-Tab Navigation */}
-      <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3 overflow-x-auto">
+      <div role="tablist" aria-label="Payment operations views" className="flex items-center gap-2 p-1.5 rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_4px_18px_rgba(15,23,42,0.025)] overflow-x-auto">
         <button
           onClick={() => setActiveTab('overview')}
           className={cn(
-            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
+            "px-3.5 py-2.5 text-xs font-semibold rounded-xl transition-[background-color,box-shadow,transform,color] duration-200 cursor-pointer flex items-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/20",
             activeTab === 'overview'
-              ? "bg-slate-900 text-white shadow-xs"
+              ? "bg-gradient-to-r from-[#FF6B4A] to-[#FF8E53] text-white shadow-[0_6px_18px_rgba(255,107,74,0.22)]"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           )}
         >
@@ -444,7 +444,7 @@ export function AdminPaymentsView() {
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           )}
         >
-          <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+          <Terminal className="w-3.5 h-3.5" />
           <span>POS Counter Billing</span>
           <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-600 text-white">
             Register
