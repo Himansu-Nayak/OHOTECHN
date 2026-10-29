@@ -372,6 +372,8 @@ export function AdminPaymentsView() {
       {/* 4-Tab Navigation */}
       <div role="tablist" aria-label="Payment operations views" className="flex items-center gap-2 p-1.5 rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_4px_18px_rgba(15,23,42,0.025)] overflow-x-auto">
         <button
+          role="tab"
+          aria-selected={activeTab === 'overview'}
           onClick={() => setActiveTab('overview')}
           className={cn(
             "px-3.5 py-2.5 text-xs font-semibold rounded-xl transition-[background-color,box-shadow,transform,color] duration-200 cursor-pointer flex items-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/20",
@@ -385,6 +387,8 @@ export function AdminPaymentsView() {
         </button>
 
         <button
+          role="tab"
+          aria-selected={activeTab === 'ledger'}
           onClick={() => setActiveTab('ledger')}
           className={cn(
             "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
@@ -398,6 +402,8 @@ export function AdminPaymentsView() {
         </button>
 
         <button
+          role="tab"
+          aria-selected={activeTab === 'webhooks'}
           onClick={() => setActiveTab('webhooks')}
           className={cn(
             "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
@@ -416,6 +422,8 @@ export function AdminPaymentsView() {
         </button>
 
         <button
+          role="tab"
+          aria-selected={activeTab === 'reconciliation'}
           onClick={() => setActiveTab('reconciliation')}
           className={cn(
             "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
@@ -436,6 +444,8 @@ export function AdminPaymentsView() {
         <button
           id="btn-counter-billing"
           data-testid="counter-billing-tab"
+          role="tab"
+          aria-selected={activeTab === 'counter-billing'}
           onClick={() => setActiveTab('counter-billing')}
           className={cn(
             "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
