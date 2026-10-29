@@ -13,6 +13,7 @@ import com.ohotech.backend.repository.EmailSuppressionRepository;
 import com.ohotech.backend.repository.UserRepository;
 import com.ohotech.backend.security.JwtTokenProvider;
 import com.ohotech.backend.service.EmailService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Transactional
 class CrmCommunicationsIntegrationTests {
 
     @Autowired
@@ -97,6 +96,19 @@ class CrmCommunicationsIntegrationTests {
         customerToken = jwtTokenProvider.generateTokenFromUserId(customerUser.getId());
     }
 
+    @AfterEach
+    void tearDown() {
+        whatsAppMessageRepository.deleteAll();
+        emailOutboxRepository.deleteAll();
+        emailSuppressionRepository.deleteAll();
+        if (adminUser != null) {
+            userRepository.deleteById(adminUser.getId());
+        }
+        if (customerUser != null) {
+            userRepository.deleteById(customerUser.getId());
+        }
+    }
+
     @Test
     @DisplayName("Email Outbox endpoints reject unauthenticated or non-admin requests")
     void testEmailEndpointsAuthorization() throws Exception {
@@ -140,10 +152,17 @@ class CrmCommunicationsIntegrationTests {
         // Attempt sending email to suppressed address
         emailService.sendHtmlEmail(testEmail, "Test Subject", "<p>Hello</p>");
 
-        // Verify outbox record created with SUPPRESSED status
-        List<EmailOutbox> outboxList = emailOutboxRepository.findAll();
-        boolean foundSuppressed = outboxList.stream()
-                .anyMatch(e -> e.getRecipient().equalsIgnoreCase(testEmail) && "SUPPRESSED".equals(e.getStatus()));
+        // Await async outbox record creation with SUPPRESSED status (up to 3 seconds)
+        boolean foundSuppressed = false;
+        for (int i = 0; i < 30; i++) {
+            List<EmailOutbox> outboxList = emailOutboxRepository.findAll();
+            foundSuppressed = outboxList.stream()
+                    .anyMatch(e -> e.getRecipient().equalsIgnoreCase(testEmail) && "SUPPRESSED".equals(e.getStatus()));
+            if (foundSuppressed) {
+                break;
+            }
+            Thread.sleep(100);
+        }
         assertTrue(foundSuppressed, "Suppressed email should be recorded with SUPPRESSED status in outbox");
 
         // Verify stats endpoint returns non-zero counts
