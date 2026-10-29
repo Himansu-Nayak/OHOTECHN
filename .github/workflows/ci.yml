@@ -2,7 +2,7 @@ name: OHO TECH — Continuous Integration
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'feat/**', 'fix/**' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -56,6 +56,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
         run: npm ci
@@ -69,5 +70,6 @@ jobs:
       - name: Next.js Production Build
         run: npm run build
         env:
+          NEXT_TELEMETRY_DISABLED: 1
           NEXT_PUBLIC_APP_URL: https://ohotechn.com
           NEXT_PUBLIC_API_URL: https://api.ohotechn.com

@@ -10,6 +10,9 @@ import {
   TransactionOverviewDto,
   WebhookEventDto,
   Page,
+  UpiCheckoutResponseDto,
+  UpiCheckoutStatusDto,
+  CounterBillingReceiptDto,
 } from './types';
 
 export interface CreatePaymentOrderParams {

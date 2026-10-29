@@ -114,6 +114,7 @@ export interface AdminButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
   isLoading?: boolean;
   icon?: React.ComponentType<{ className?: string }>;
   leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 export function AdminButton({
@@ -122,6 +123,7 @@ export function AdminButton({
   isLoading = false,
   icon: Icon,
   leftIcon,
+  rightIcon,
   children,
   className,
   disabled,
@@ -167,6 +169,7 @@ export function AdminButton({
         <Icon className="w-3.5 h-3.5 shrink-0" />
       ) : null}
       {children ? <span>{children}</span> : null}
+      {rightIcon ? <span className="shrink-0">{rightIcon}</span> : null}
     </motion.button>
   );
 }
@@ -179,6 +182,7 @@ export interface AdminInputProps extends React.InputHTMLAttributes<HTMLInputElem
   error?: string;
   helperText?: string;
   leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 export function AdminInput({ label, error, helperText, leftIcon, className, id, ...props }: AdminInputProps) {

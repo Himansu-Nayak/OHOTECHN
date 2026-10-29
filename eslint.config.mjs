@@ -26,6 +26,7 @@ const eslintConfig = defineConfig([
     "scratch/**",
     "scripts/**",
     "skills/**",
+    "tests/**",
     "data/**",
     "docs/**",
     "src/generated/**",

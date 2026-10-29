@@ -118,20 +118,30 @@ export interface PaymentDto {
 export interface UpiCheckoutResponseDto {
   orderId: number;
   paymentId: number;
+  merchantVpa: string;
+  merchantName: string;
+  receiverVpa?: string;
+  receiverName?: string;
   amount: number;
   currency: string;
+  transactionNote?: string;
+  transactionRef?: string;
   upiUri: string;
-  slotNumber: number;
-  expiresInSeconds: number;
-  receiverVpa: string;
-  receiverName: string;
+  intentLinks?: Record<string, string>;
   intentUrls?: {
     gpay?: string;
     phonepe?: string;
     paytm?: string;
     bhim?: string;
     cred?: string;
+    [key: string]: string | undefined;
   };
+  status?: string;
+  slotNumber?: number;
+  slotAcquired?: boolean;
+  queuePosition?: number;
+  expiresInSeconds?: number;
+  leaseExpiresAt?: string;
 }
 
 export interface UpiCheckoutStatusDto {
@@ -153,14 +163,19 @@ export interface CounterBillingReceiptDto {
   paymentId: number;
   cashierName: string;
   cashierId: number;
+  customerName?: string;
+  customerEmail?: string;
   paymentMethod: string;
-  paymentStatus: string;
-  amountTotal: number;
+  paymentStatus?: string;
+  status?: string;
+  orderTotal: number;
+  amountTotal?: number;
   cashTendered?: number;
+  changeReturned?: number;
   changeDue?: number;
   cardTerminalRef?: string;
   cardTerminalId?: string;
-  transactedAt: string;
+  transactedAt?: string;
   notes?: string;
 }
 
