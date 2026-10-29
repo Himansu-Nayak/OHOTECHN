@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -211,5 +212,33 @@ class CrmCommunicationsIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.content").isArray());
+    }
+
+    @Test
+    @DisplayName("Email Service prevents rapid duplicate sends within 10-second debounce window")
+    void testEmailDebounce() throws Exception {
+        String testEmail = "debounce_" + UUID.randomUUID().toString().substring(0, 6) + "@test.com";
+        String subject = "Debounce Verification Notification";
+
+        // Dispatch first email
+        emailService.sendHtmlEmail(testEmail, subject, "<p>First attempt</p>");
+
+        // Wait for first outbox entry to be written
+        for (int i = 0; i < 30; i++) {
+            if (emailOutboxRepository.existsByRecipientAndSubjectAndCreatedAtAfter(testEmail, subject, LocalDateTime.now().minusSeconds(10))) {
+                break;
+            }
+            Thread.sleep(100);
+        }
+
+        // Dispatch immediate second email with identical recipient and subject
+        emailService.sendHtmlEmail(testEmail, subject, "<p>Rapid duplicate attempt</p>");
+        Thread.sleep(300);
+
+        // Count should remain exactly 1
+        long count = emailOutboxRepository.findAll().stream()
+                .filter(e -> e.getRecipient().equalsIgnoreCase(testEmail) && e.getSubject().equals(subject))
+                .count();
+        assertEquals(1, count, "Rapid duplicate email within 10s should be debounced and discarded");
     }
 }

@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Table(name = "crm_whatsapp_messages", indexes = {
         @Index(name = "idx_whatsapp_status", columnList = "status"),
         @Index(name = "idx_whatsapp_recipient", columnList = "recipientPhone"),
-        @Index(name = "idx_whatsapp_wamid", columnList = "wamid")
+        @Index(name = "idx_whatsapp_wamid", columnList = "wamid"),
+        @Index(name = "idx_whatsapp_idempotency", columnList = "idempotencyKey")
 })
 @Getter
 @Setter
@@ -40,11 +41,18 @@ public class CrmWhatsAppMessage {
     @Column(columnDefinition = "TEXT")
     private String parametersJson;
 
+    @Column(length = 30)
+    @Builder.Default
+    private String category = "MARKETING"; // MARKETING, TRANSACTIONAL, UTILITY
+
     @Column(nullable = false, length = 30)
-    private String status; // QUEUED, SENT, DELIVERED, READ, FAILED
+    private String status; // QUEUED, SENT, DELIVERED, READ, FAILED, OPTED_OUT, SKIPPED_UNCONFIGURED
 
     @Column(length = 255)
     private String wamid; // Meta WhatsApp Message ID
+
+    @Column(length = 100)
+    private String idempotencyKey;
 
     @Column(length = 1000)
     private String errorMessage;
@@ -53,6 +61,10 @@ public class CrmWhatsAppMessage {
     private String dispatchedBy;
 
     private Long leadId;
+
+    private LocalDateTime deliveredAt;
+
+    private LocalDateTime readAt;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

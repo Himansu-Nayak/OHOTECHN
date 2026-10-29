@@ -85,6 +85,13 @@ public class EmailService {
             return;
         }
 
+        // Duplicate Send Protection: Prevent exact duplicate subject + recipient within 10 seconds
+        if (emailOutboxRepository != null && emailOutboxRepository.existsByRecipientAndSubjectAndCreatedAtAfter(
+                recipientEmail, subject != null ? subject : "No Subject", LocalDateTime.now().minusSeconds(10))) {
+            logger.warn("Skipping duplicate email dispatch to {} with subject '{}' within debounce window", recipientEmail, subject);
+            return;
+        }
+
         EmailOutbox outboxRecord = null;
         if (emailOutboxRepository != null) {
             outboxRecord = EmailOutbox.builder()

@@ -27,4 +27,12 @@ public class SendWhatsAppMessageRequest {
     private List<String> parameters;
 
     private Long leadId;
+
+    private String idempotencyKey;
+
+    @Builder.Default
+    private String category = "MARKETING"; // MARKETING, TRANSACTIONAL, UTILITY
+
+    @Builder.Default
+    private boolean overrideConsent = false;
 }
