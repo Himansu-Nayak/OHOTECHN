@@ -114,3 +114,61 @@ export interface PaymentDto {
   razorpayPaymentId?: string;
   createdAt: string;
 }
+
+export interface UpiCheckoutResponseDto {
+  orderId: number;
+  paymentId: number;
+  amount: number;
+  currency: string;
+  upiUri: string;
+  slotNumber: number;
+  expiresInSeconds: number;
+  receiverVpa: string;
+  receiverName: string;
+  intentUrls?: {
+    gpay?: string;
+    phonepe?: string;
+    paytm?: string;
+    bhim?: string;
+    cred?: string;
+  };
+}
+
+export interface UpiCheckoutStatusDto {
+  paymentId: number;
+  orderId: number;
+  paymentStatus: string;
+  orderStatus: string;
+  amount: number;
+  transactionReference?: string;
+  verifiedAt?: string;
+  isPaid: boolean;
+  isExpired: boolean;
+  message: string;
+}
+
+export interface CounterBillingReceiptDto {
+  receiptNumber: string;
+  orderId: number;
+  paymentId: number;
+  cashierName: string;
+  cashierId: number;
+  paymentMethod: string;
+  paymentStatus: string;
+  amountTotal: number;
+  cashTendered?: number;
+  changeDue?: number;
+  cardTerminalRef?: string;
+  cardTerminalId?: string;
+  transactedAt: string;
+  notes?: string;
+}
+
+export interface PhoneOtpRequestDto {
+  phoneNumber: string;
+}
+
+export interface PhoneOtpVerifyDto {
+  phoneNumber: string;
+  otpCode: string;
+}

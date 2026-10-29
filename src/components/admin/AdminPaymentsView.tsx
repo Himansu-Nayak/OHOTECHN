@@ -27,6 +27,7 @@ import {
   adminRejectPaymentApi,
   getPaymentReconciliationReportApi
 } from '@/api/payments';
+import { CounterBillingTerminal } from './CounterBillingTerminal';
 import { 
   AdminCard, 
   AdminButton, 
@@ -40,7 +41,7 @@ import {
   AdminDrawer
 } from './AdminUiPrimitives';
 
-type ActiveTab = 'overview' | 'ledger' | 'webhooks' | 'reconciliation';
+type ActiveTab = 'overview' | 'ledger' | 'webhooks' | 'reconciliation' | 'counter-billing';
 
 export function AdminPaymentsView() {
   const { showToast } = useToast();
@@ -430,6 +431,24 @@ export function AdminPaymentsView() {
               {reconReport.anomalyCount}
             </span>
           )}
+        </button>
+
+        <button
+          id="btn-counter-billing"
+          data-testid="counter-billing-tab"
+          onClick={() => setActiveTab('counter-billing')}
+          className={cn(
+            "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-2 whitespace-nowrap",
+            activeTab === 'counter-billing'
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          )}
+        >
+          <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+          <span>POS Counter Billing</span>
+          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-600 text-white">
+            Register
+          </span>
         </button>
       </div>
 
@@ -1264,6 +1283,13 @@ export function AdminPaymentsView() {
       )}
 
       {/* =================================================================== */}
+      {/* =================================================================== */}
+      {/* TAB 5: COUNTER BILLING POS TERMINAL                                  */}
+      {/* =================================================================== */}
+      {activeTab === 'counter-billing' && (
+        <CounterBillingTerminal />
+      )}
+
       {/* SLIDE-OVER DRAWER: TRANSACTION INSPECTOR                            */}
       {/* =================================================================== */}
       <AdminDrawer

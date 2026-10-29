@@ -74,11 +74,13 @@ public class EmailTemplateService {
             case EMAIL_VERIFICATION -> "Email Verification Code";
             case LOGIN -> "Login Verification Code";
             case PASSWORD_RESET -> "Password Reset Verification Code";
+            case PHONE_CHECKOUT_VERIFICATION -> "Phone Verification Code";
         };
         String actionText = switch (purpose) {
             case EMAIL_VERIFICATION -> "verify your email address";
             case LOGIN -> "log in to your account";
             case PASSWORD_RESET -> "reset your account password";
+            case PHONE_CHECKOUT_VERIFICATION -> "verify your mobile phone number";
         };
         String content = """
                 <p>Hello <strong>%s</strong>,</p>

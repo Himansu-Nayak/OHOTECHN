@@ -83,6 +83,21 @@ public class Payment {
     @Column(name = "verified_at")
     private LocalDateTime verifiedAt;
 
+    @Column(name = "cashier_user_id")
+    private Long cashierUserId;
+
+    @Column(name = "cash_tendered")
+    private BigDecimal cashTendered;
+
+    @Column(name = "change_returned")
+    private BigDecimal changeReturned;
+
+    @Column(name = "card_terminal_ref")
+    private String cardTerminalRef;
+
+    @Column(name = "card_terminal_id")
+    private String cardTerminalId;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

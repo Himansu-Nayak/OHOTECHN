@@ -207,3 +207,88 @@ export async function recoverReconciliationApi(
     method: 'POST',
   });
 }
+
+// ==========================================
+// Self-Hosted UPI Checkout & Verification
+// ==========================================
+
+export async function requestPhoneOtpApi(phoneNumber: string): Promise<ApiResponse<{ message: string }>> {
+  return apiClient<{ message: string }>('/api/auth/phone-otp/request', {
+    method: 'POST',
+    body: JSON.stringify({ phoneNumber }),
+  });
+}
+
+export async function verifyPhoneOtpApi(phoneNumber: string, otpCode: string): Promise<ApiResponse<{ proofToken: string; message: string }>> {
+  return apiClient<{ proofToken: string; message: string }>('/api/auth/phone-otp/verify', {
+    method: 'POST',
+    body: JSON.stringify({ phoneNumber, otpCode }),
+  });
+}
+
+export async function initiateSelfHostedUpiCheckoutApi(
+  orderId: number,
+  phoneProofToken?: string
+): Promise<ApiResponse<UpiCheckoutResponseDto>> {
+  return apiClient<UpiCheckoutResponseDto>('/api/payments/upi/initiate', {
+    method: 'POST',
+    body: JSON.stringify({ orderId, phoneProofToken }),
+  });
+}
+
+export async function getSelfHostedUpiStatusApi(paymentId: number): Promise<ApiResponse<UpiCheckoutStatusDto>> {
+  return apiClient<UpiCheckoutStatusDto>(`/api/payments/upi/status/${paymentId}`, {
+    method: 'GET',
+  });
+}
+
+export async function submitSelfHostedUtrApi(data: {
+  paymentId: number;
+  utr: string;
+  payerUpi?: string;
+  payerName?: string;
+}): Promise<ApiResponse<UpiCheckoutStatusDto>> {
+  return apiClient<UpiCheckoutStatusDto>('/api/payments/upi/submit-utr', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function cancelSelfHostedUpiApi(paymentId: number): Promise<ApiResponse<void>> {
+  return apiClient<void>(`/api/payments/upi/cancel/${paymentId}`, {
+    method: 'POST',
+  });
+}
+
+// ==========================================
+// Counter Billing POS (Cash & Card)
+// ==========================================
+
+export async function processCashSaleApi(
+  orderId: number,
+  cashTendered: number,
+  notes?: string
+): Promise<ApiResponse<CounterBillingReceiptDto>> {
+  return apiClient<CounterBillingReceiptDto>('/api/admin/counter-billing/cash', {
+    method: 'POST',
+    body: JSON.stringify({ orderId, cashTendered, notes }),
+  });
+}
+
+export async function processCardTerminalSaleApi(
+  orderId: number,
+  terminalRef: string,
+  terminalId?: string,
+  notes?: string
+): Promise<ApiResponse<CounterBillingReceiptDto>> {
+  return apiClient<CounterBillingReceiptDto>('/api/admin/counter-billing/card', {
+    method: 'POST',
+    body: JSON.stringify({ orderId, terminalRef, terminalId, notes }),
+  });
+}
+
+export async function getCounterBillingSummaryApi(): Promise<ApiResponse<Record<string, any>>> {
+  return apiClient<Record<string, any>>('/api/admin/counter-billing/terminal-summary', {
+    method: 'GET',
+  });
+}

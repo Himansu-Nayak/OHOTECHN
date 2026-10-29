@@ -52,8 +52,8 @@ public class SecurityConfig {
             "http://localhost:*",
             "http://127.0.0.1:*",
             "https://ohotechn.com",
-            "https://www.ohotechn.com",
-            "https://*.ohotechn.com"
+            "https://www.ohotech.com",
+            "https://*.ohotech.com"
         ));
         if (frontendUrl != null && !frontendUrl.isBlank()) {
             for (String origin : frontendUrl.split(",")) {
@@ -65,7 +65,7 @@ public class SecurityConfig {
         }
         configuration.setAllowedOriginPatterns(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "X-Observer-Token"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
@@ -102,6 +102,9 @@ public class SecurityConfig {
                     "/api/auth/forgot-password",
                     "/api/auth/verify-reset-otp",
                     "/api/auth/reset-password",
+                    "/api/auth/phone-otp/**",
+                    "/api/payments/upi/**",
+                    "/api/payments/observers/**",
                     "/api/contact",
                     "/api/payments/config",
                     "/api/support/public/**",

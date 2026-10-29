@@ -3,5 +3,6 @@ package com.ohotech.backend.entity;
 public enum OtpPurpose {
     EMAIL_VERIFICATION,
     LOGIN,
-    PASSWORD_RESET
+    PASSWORD_RESET,
+    PHONE_CHECKOUT_VERIFICATION
 }

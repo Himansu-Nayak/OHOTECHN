@@ -27,6 +27,7 @@ import { PaymentConfigDto, UpiInitiateResponse } from '@/api/types';
 import { getSafeCartItemUnitPrice, formatInr } from '@/utils/cartUtils';
 import { PaymentStatusFeedback } from '@/components/ui/PaymentStatusFeedback';
 import { CheckoutAmountBreakdown } from '@/components/checkout/CheckoutAmountBreakdown';
+import { SelfHostedUpiModal } from '@/components/checkout/SelfHostedUpiModal';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -56,6 +57,8 @@ export default function CheckoutPage() {
   const [isSubmittingUtr, setIsSubmittingUtr] = React.useState(false);
   const [copiedField, setCopiedField] = React.useState<string | null>(null);
   const [isSuccessSubmitted, setIsSuccessSubmitted] = React.useState(false);
+  const [isSelfHostedModalOpen, setIsSelfHostedModalOpen] = React.useState(false);
+  const [selfHostedOrder, setSelfHostedOrder] = React.useState<{ id: number; amount: number } | null>(null);
   const [successOrderId, setSuccessOrderId] = React.useState<number | null>(null);
 
   // Fetch payment configuration from backend
@@ -834,10 +837,24 @@ export default function CheckoutPage() {
 
           {/* Cart & Summary Sidebar (Amount Breakdown Section) */}
           <CheckoutAmountBreakdown cart={cart} formattedTotal={formattedTotal} />
-
         </div>
-
       </main>
+
+      {selfHostedOrder && (
+        <SelfHostedUpiModal
+          isOpen={isSelfHostedModalOpen}
+          onClose={() => setIsSelfHostedModalOpen(false)}
+          orderId={selfHostedOrder.id}
+          amount={selfHostedOrder.amount}
+          initialPhone={contactPhone}
+          onPaymentSuccess={async (confirmedOrderId) => {
+            setIsSelfHostedModalOpen(false);
+            await clearCart();
+            showToast('Self-Hosted UPI payment verified! Software licenses provisioned.', 'success');
+            router.push(`/my-products?orderId=${confirmedOrderId}&newPurchase=true`);
+          }}
+        />
+      )}
     </div>
   );
 }
