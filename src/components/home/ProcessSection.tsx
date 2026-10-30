@@ -57,7 +57,7 @@ const steps = [
       'Atomic UI design system & high-fidelity prototypes',
       'Cloud infrastructure, security policies & DevOps blueprint',
     ],
-    techStack: ['Prisma ORM', 'Next.js 16', 'Tailwind v4', 'ERD Diagrams'],
+    techStack: ['Spring Data JPA', 'Next.js 16', 'Tailwind v4', 'ERD Diagrams'],
   },
   {
     num: '03',
