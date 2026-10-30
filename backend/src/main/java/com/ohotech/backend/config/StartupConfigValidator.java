@@ -47,7 +47,7 @@ public class StartupConfigValidator implements CommandLineRunner {
         }
 
         if (isDefaultOrInsecureJwt) {
-            logger.warn("SECURITY WARNING: app.jwt.secret is empty or less than 32 characters! Defaulting to development fallback key.");
+            logger.warn("SECURITY WARNING: app.jwt.secret is empty or less than 32 characters! Ephemeral development fallback key in use (Strictly prohibited in production).");
         } else {
             logger.info("JWT Secret: OK (Sufficient secret strength)");
         }

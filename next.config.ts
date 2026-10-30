@@ -71,12 +71,6 @@ const nextConfig: NextConfig = {
         destination: 'https://ohotechn.com/:path*',
         permanent: true,
       },
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.ohotechn.com' }],
-        destination: 'https://ohotechn.com/:path*',
-        permanent: true,
-      },
     ];
   },
 };

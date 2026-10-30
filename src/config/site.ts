@@ -7,7 +7,7 @@ export const siteConfig = {
 
   contact: {
     email: 'hello@ohotechn.com',
-    phone: '+91 98765 43210',
+    phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || '+91 76840 54872',
     address: 'Bhubaneswar, Odisha, India',
     hours: 'Mon – Sat, 9:00 AM – 7:00 PM IST',
   },

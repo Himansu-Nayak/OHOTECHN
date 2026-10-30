@@ -34,7 +34,7 @@ export function SelfHostedUpiModal({
   onClose,
   orderId,
   amount,
-  initialPhone = '+91 98765 43210',
+  initialPhone = '+91 76840 54872',
   onPaymentSuccess,
 }: SelfHostedUpiModalProps) {
   const { showToast } = useToast();

@@ -53,7 +53,7 @@ export default function ProductDetailPage() {
   const amountSectionRef = React.useRef<HTMLDivElement>(null);
   const [demoCustomerName, setDemoCustomerName] = React.useState('Demo Customer');
   const [demoCustomerEmail, setDemoCustomerEmail] = React.useState('customer@demo.ohotechn.com');
-  const [demoContactPhone, setDemoContactPhone] = React.useState('+91 98765 43210');
+  const [demoContactPhone, setDemoContactPhone] = React.useState('+91 76840 54872');
   const [demoShippingAddress, setDemoShippingAddress] = React.useState('Demo Software Hub, Block 4, Tech Enclave, Bhubaneswar, Odisha - 751024');
   const [paymentMethod, setPaymentMethod] = React.useState<'DEMO' | 'UPI' | 'RAZORPAY'>('DEMO');
 
@@ -229,7 +229,7 @@ export default function ProductDetailPage() {
       // 3. Create Order
       const orderRes = await createOrderApi({
         shippingAddress: demoShippingAddress.trim() || 'Demo Software Hub, Bhubaneswar, Odisha',
-        contactPhone: demoContactPhone.trim() || '+91 98765 43210',
+        contactPhone: demoContactPhone.trim() || '+91 76840 54872',
       });
 
       if (!orderRes.success || !orderRes.data) {
@@ -842,7 +842,7 @@ export default function ProductDetailPage() {
                             onClick={() => {
                               setDemoCustomerName('Demo Customer');
                               setDemoCustomerEmail('customer@demo.ohotechn.com');
-                              setDemoContactPhone('+91 98765 43210');
+                              setDemoContactPhone('+91 76840 54872');
                               setDemoShippingAddress('Demo Software Hub, Block 4, Tech Enclave, Bhubaneswar, Odisha - 751024');
                               showToast('Demo details reset', 'info');
                             }}
