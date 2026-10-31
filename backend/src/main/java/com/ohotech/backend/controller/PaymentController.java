@@ -71,4 +71,20 @@ public class PaymentController {
         PaymentResponseDto payment = paymentService.initiateCod(currentUser.getId(), request.getOrderId());
         return ResponseEntity.ok(ApiResponse.success("Cash on Delivery order confirmed.", payment));
     }
+
+    @PostMapping("/cashfree/create-order")
+    public ResponseEntity<ApiResponse<CashfreeOrderResponseDto>> createCashfreeOrder(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @Valid @RequestBody PaymentOrderRequest request) {
+        CashfreeOrderResponseDto response = paymentService.createCashfreePaymentSession(currentUser.getId(), request.getOrderId());
+        return ResponseEntity.ok(ApiResponse.success("Cashfree payment session created successfully", response));
+    }
+
+    @PostMapping("/cashfree/verify")
+    public ResponseEntity<ApiResponse<PaymentResponseDto>> verifyCashfreePayment(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @Valid @RequestBody CashfreeVerificationRequest request) {
+        PaymentResponseDto payment = paymentService.verifyCashfreePayment(currentUser.getId(), request);
+        return ResponseEntity.ok(ApiResponse.success("Cashfree payment verified successfully", payment));
+    }
 }

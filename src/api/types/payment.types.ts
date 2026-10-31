@@ -50,11 +50,27 @@ export interface PaymentConfigDto {
   upiDirectEnabled: boolean;
   codEnabled: boolean;
   razorpayEnabled: boolean;
+  cashfreeEnabled?: boolean;
+  cashfreeEnvironment?: 'SANDBOX' | 'PRODUCTION';
   merchantName: string;
   upiId: string;
   bankName: string;
   testMode?: boolean;
   demoEnabled?: boolean;
+}
+
+export interface CashfreeOrderResponseDto {
+  orderId: number;
+  cashfreeOrderId: string;
+  paymentSessionId: string;
+  environment: 'sandbox' | 'production';
+  amount: number;
+  currency: string;
+}
+
+export interface CashfreeVerificationRequest {
+  orderId: number;
+  cashfreeOrderId: string;
 }
 
 export interface UpiInitiateResponse {

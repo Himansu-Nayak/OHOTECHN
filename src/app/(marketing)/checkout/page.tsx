@@ -21,8 +21,11 @@ import {
   initiateUpiPaymentApi,
   createYouPiPaymentApi,
   submitUtrApi,
-  initiateCodApi 
+  initiateCodApi,
+  createCashfreeOrderApi,
+  verifyCashfreePaymentApi
 } from '@/api/payments';
+import { getCashfreeInstance } from '@/utils/cashfree';
 import { PaymentConfigDto, UpiInitiateResponse } from '@/api/types';
 import { getSafeCartItemUnitPrice, formatInr } from '@/utils/cartUtils';
 import { PaymentStatusFeedback } from '@/components/ui/PaymentStatusFeedback';
@@ -39,7 +42,7 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = React.useState(user?.name || 'Demo Customer');
   const [customerEmail, setCustomerEmail] = React.useState(user?.email || 'demo.customer@ohotechn.com');
   const [contactPhone, setContactPhone] = React.useState(user?.phone || '+91 76840 54872');
-  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'DEMO' | 'YOUPI'>('UPI');
+  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'CASHFREE' | 'DEMO' | 'YOUPI'>('UPI');
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
@@ -241,6 +244,67 @@ export default function CheckoutPage() {
     }
   };
 
+  const processCashfreeCheckout = async (createdOrderId: number) => {
+    try {
+      setIsLoading(true);
+      const sessionRes = await createCashfreeOrderApi(createdOrderId);
+      if (!sessionRes.success || !sessionRes.data?.paymentSessionId) {
+        throw new Error(sessionRes.message || 'Could not create Cashfree payment session.');
+      }
+
+      const { paymentSessionId, cashfreeOrderId, environment } = sessionRes.data;
+      const cashfree = await getCashfreeInstance(environment);
+
+      if (!cashfree) {
+        throw new Error('Cashfree Checkout SDK could not be loaded. Please check your network or choose another payment method.');
+      }
+
+      setIsLoading(false);
+      showToast('Opening Cashfree Secure Checkout...', 'info');
+
+      const result = await cashfree.checkout({
+        paymentSessionId,
+        redirectTarget: '_modal',
+      });
+
+      if (result.error) {
+        console.warn('Cashfree modal closed / error:', result.error);
+        showToast(result.error.message || 'Payment window closed. You can retry when ready.', 'warning');
+        return;
+      }
+
+      if (result.redirect) {
+        showToast('Redirecting to payment authentication...', 'info');
+        return;
+      }
+
+      // Payment completed in modal -> verify server-side!
+      setIsLoading(true);
+      showToast('Verifying payment with Cashfree...', 'info');
+
+      const verifyRes = await verifyCashfreePaymentApi({
+        orderId: createdOrderId,
+        cashfreeOrderId,
+      });
+
+      if (verifyRes.success) {
+        await clearCart();
+        showToast('Cashfree payment verified! Your software order is active.', 'success');
+        setSuccessOrderId(createdOrderId);
+        setIsSuccessSubmitted(true);
+        router.push(`/my-products?orderId=${createdOrderId}&newPurchase=true`);
+      } else {
+        throw new Error(verifyRes.message || 'Server-side payment verification failed.');
+      }
+    } catch (err: any) {
+      console.error('Cashfree checkout error:', err);
+      setErrorMsg(err.message || 'Payment processing failed.');
+      showToast(err.message || 'Cashfree payment failed', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!shippingAddress.trim()) {
@@ -323,6 +387,8 @@ export default function CheckoutPage() {
           throw new Error(paymentRes.message || 'Failed to initiate Razorpay payment order.');
         }
         await processRazorpayCheckout(createdOrder.id, paymentRes.data);
+      } else if (paymentMethod === 'CASHFREE') {
+        await processCashfreeCheckout(createdOrder.id);
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'An error occurred while creating your order.');
@@ -783,7 +849,24 @@ export default function CheckoutPage() {
                         </div>
                       </button>
 
-                      {/* Option 4: Cash on Delivery */}
+                      {/* Option 4: Cashfree Online Gateway */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('CASHFREE')}
+                        className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                          paymentMethod === 'CASHFREE'
+                            ? 'border-emerald-600 bg-emerald-50/50 shadow-sm'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <ShieldCheck className={`w-5 h-5 mb-2 ${paymentMethod === 'CASHFREE' ? 'text-emerald-600' : 'text-slate-500'}`} />
+                        <div className="text-xs font-bold text-slate-900">Cashfree PG (₹ INR)</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
+                          UPI, Cards, NetBanking, Wallets
+                        </div>
+                      </button>
+
+                      {/* Option 5: Cash on Delivery */}
                       <button
                         type="button"
                         onClick={() => setPaymentMethod('COD')}
@@ -820,6 +903,8 @@ export default function CheckoutPage() {
                             ? `⚡ Demo One-Click Pay & Activate Software (${formattedTotal})`
                             : paymentMethod === 'UPI'
                             ? `Generate UPI QR Code (${formattedTotal})`
+                            : paymentMethod === 'CASHFREE'
+                            ? `Pay with Cashfree (${formattedTotal})`
                             : paymentMethod === 'COD'
                             ? `Place Cash on Delivery Order (${formattedTotal})`
                             : paymentMethod === 'YOUPI'

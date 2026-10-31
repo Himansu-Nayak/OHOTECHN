@@ -98,8 +98,29 @@ public class Payment {
     @Column(name = "card_terminal_id")
     private String cardTerminalId;
 
+    @Version
+    private Long version;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public boolean canTransitionTo(PaymentStatus newStatus) {
+        if (this.status == null || this.status == newStatus) {
+            return true;
+        }
+        switch (this.status) {
+            case PENDING:
+                return newStatus == PaymentStatus.SUCCESSFUL || newStatus == PaymentStatus.FAILED;
+            case SUCCESSFUL:
+                return newStatus == PaymentStatus.REFUNDED;
+            case FAILED:
+                return newStatus == PaymentStatus.PENDING || newStatus == PaymentStatus.SUCCESSFUL;
+            case REFUNDED:
+                return false; // Terminal
+            default:
+                return false;
+        }
+    }
 
     @PrePersist
     protected void onCreate() {

@@ -13,6 +13,8 @@ import {
   UpiCheckoutResponseDto,
   UpiCheckoutStatusDto,
   CounterBillingReceiptDto,
+  CashfreeOrderResponseDto,
+  CashfreeVerificationRequest,
 } from './types';
 
 export interface CreatePaymentOrderParams {
@@ -50,6 +52,20 @@ export async function demoPayApi(orderId: number): Promise<ApiResponse<Payment>>
   return apiClient<Payment>('/api/payments/demo-pay', {
     method: 'POST',
     body: JSON.stringify({ orderId }),
+  });
+}
+
+export async function createCashfreeOrderApi(orderId: number): Promise<ApiResponse<CashfreeOrderResponseDto>> {
+  return apiClient<CashfreeOrderResponseDto>('/api/payments/cashfree/create-order', {
+    method: 'POST',
+    body: JSON.stringify({ orderId }),
+  });
+}
+
+export async function verifyCashfreePaymentApi(data: CashfreeVerificationRequest): Promise<ApiResponse<Payment>> {
+  return apiClient<Payment>('/api/payments/cashfree/verify', {
+    method: 'POST',
+    body: JSON.stringify(data),
   });
 }
 

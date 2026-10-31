@@ -47,6 +47,9 @@ public class Order {
         return payment != null ? List.of(payment) : List.of();
     }
 
+    @Version
+    private Long version;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

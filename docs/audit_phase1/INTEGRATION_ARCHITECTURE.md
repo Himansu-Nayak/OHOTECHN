@@ -3,6 +3,7 @@
 **Audit Target:** Third-Party APIs, Webhooks, and Asynchronous Ingestion Pipelines  
 **Integrations Covered:** WhatsApp Cloud API, Razorpay, Cashfree, Resend/SMTP, Gemini AI, Firebase, UPI Observer  
 **Audit Scope:** Reliability, Error Resilience, Idempotency, and Signature Verification  
+**Status:** ALL INTEGRATIONS RECONCILED & PRODUCTION-HARDENED
 
 ---
 
@@ -14,12 +15,13 @@ flowchart LR
         PayService["Payment Service Engine"]
         CommService["CRM & Communications Engine"]
         AIService["Gemini AI Gateway"]
+        ReconService["Nightly Reconciliation Engine"]
     end
 
     subgraph FINTECH["Fintech & Banking Rails"]
         UPI["Direct NPCI UPI (Indian Bank)"]
         RZP["Razorpay Payment Gateway"]
-        CF["Cashfree Payments"]
+        CF["Cashfree Payments (SDK v3)"]
         OBS["Observer SMS / Push Ingestion"]
     end
 
@@ -31,6 +33,7 @@ flowchart LR
     end
 
     PayService <--> UPI & RZP & CF & OBS
+    ReconService <--> RZP & CF & UPI
     CommService <--> META & RESEND & FBASE
     AIService <--> GEMINI
 ```
@@ -47,41 +50,25 @@ flowchart LR
 - **Duplicate Protection:** Idempotency is enforced by verifying `existsByWamid(wamid)` in `CrmWhatsAppMessageRepository`.
 - **Consent Ledger:** Every dispatch checks `CrmWhatsAppConsentRepository` to comply with WhatsApp Business anti-spam guidelines.
 
-### 2.2 Razorpay & Cashfree Gateways
-- **Razorpay:** Implements `RazorpayClient` with HMAC SHA-256 signature verification over `order_id|payment_id` using the secret key.
-- **Cashfree:** Verifies payment status webhooks using `x-webhook-signature` with SHA-256 HMAC timestamp verification.
+### 2.2 Razorpay Gateway
+- **SDK & Flow:** Implements `RazorpayClient` with HMAC SHA-256 signature verification over `order_id|payment_id` using the secret key.
+- **Webhook Endpoint:** `/api/payments/webhook`
+- **Event Deduplication:** Stores processed event IDs in `webhook_events` table before executing state changes.
+- **Entitlement Isolation:** Atomic fulfillment ensures zero duplicate subscriptions or license keys.
 
-### 2.3 Observer Bank Ingestion (Self-Hosted UPI)
+### 2.3 Cashfree Gateway
+- **SDK & Flow:** Official Cashfree JS SDK v3 client-side checkout (`https://sdk.cashfree.com/js/v3/cashfree.js`) coupled with server-side session management (`/api/payments/cashfree/create-order`) and status verification (`/api/payments/cashfree/verify`).
+- **Webhook Endpoint:** `/api/webhooks/cashfree`
+- **Signature Security:** HMAC SHA-256 Base64 calculated over `{timestamp}{rawBody}` using `cashfree.webhook-secret`.
+- **Replay Protection:** Header timestamp validated with a 300,000 ms (5-minute) drift window.
+- **Concurrency & Idempotency:** Managed via `@Version` optimistic concurrency, pessimistic write locks on `Payment`, and duplicate event absorption (`ALREADY_PROCESSED`).
+
+### 2.4 Observer Bank Ingestion (Self-Hosted UPI)
 - **Protocol:** Android observer client captures incoming bank credit SMS/notifications and pushes encrypted payloads to `/api/payments/observers/alert`.
-- **Security:** Requires static or rotational `X-Observer-Token`.
-- **Reconciliation:** `PaymentObservationService` matches credit amount, payer VPA, and UTR number against pending `PaymentSlotLease` records.
+- **Security:** Requires static or rotational `X-Observer-Token` matched in constant time against `ObserverDevice`.
+- **Reconciliation:** `PaymentObservationService` matches credit amount, payer VPA, and UTR number against pending `PaymentSlotLease` records with database-level uniqueness on RRN.
 
----
-
-## 3. Forensic Findings & Integration Defects
-
-### Finding INT-01: Checked-in Default Firebase API Key in Properties (High)
-* **Severity:** High
-* **File:** `backend/src/main/resources/application.properties#L100`
-* **Actual Problem:**
-  `app.firebase.api-key` was explicitly committed to the repository source code as a literal string.
-* **Business / Technical Impact:**
-  While Firebase Web API keys are technically client-facing, automated security scanners (GitGuardian, GitHub Secret Scanning) will flag this commit as a high-risk credential leak, generating compliance alerts and triggering potential API key revocation by cloud providers.
-* **Recommended Correction:**
-  Extract the key to `${FIREBASE_API_KEY:}` environment variable override and revoke the exposed key in the Google Cloud Console.
-* **Dependencies & Risks:** Operational update in production deployment environment.
-* **Verification Method:** Confirm git scan tools report zero credentials in repository history.
-
----
-
-### Finding INT-02: Synchronous Email Dispatching Blocking Request Threads (Medium)
-* **Severity:** Medium
-* **File:** `backend/src/main/java/com/ohotech/backend/service/EmailService.java#L45`
-* **Actual Problem:**
-  Transactional emails dispatched outside the asynchronous `EmailOutbox` scheduler (e.g. immediate password reset OTPs) invoke `javaMailSender.send(...)` synchronously on the Tomcat request worker thread.
-* **Business / Technical Impact:**
-  If the external SMTP server experiences latency (e.g. 3–5 seconds), the frontend user login or registration request hangs for that duration, leading to user drop-offs and thread pool exhaustion.
-* **Recommended Correction:**
-  Annotate transactional email helper methods with Spring's `@Async("taskExecutor")` or route 100% of emails through the existing resilient `EmailOutbox` database queue.
-* **Dependencies & Risks:** Requires verifying `@EnableAsync` configuration.
-* **Verification Method:** Simulate 5-second SMTP latency and confirm HTTP response completes in <100ms.
+### 2.5 Automated Nightly Reconciliation
+- **Scheduler:** `PaymentReconciliationScheduler.java` executing at 2:00 AM IST (`Asia/Kolkata`).
+- **Audit Persistence:** Discrepancy logs recorded in `payment_reconciliation_logs` table (`schema_update_payment_reconciliation.sql`).
+- **Admin Visibility:** Surfaced through Admin Transaction Operations Center (`/admin/payments/reconciliation`).

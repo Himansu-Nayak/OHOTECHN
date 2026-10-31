@@ -17,6 +17,8 @@ public class PaymentConfigDto {
     private boolean codEnabled;
     private boolean razorpayEnabled;
     private String razorpayKeyId;
+    private boolean cashfreeEnabled;
+    private String cashfreeEnvironment;
     private boolean testMode;
     private boolean demoEnabled;
 }

@@ -32,6 +32,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpec
 
     Optional<Payment> findByCashfreeOrderId(String cashfreeOrderId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Payment p WHERE p.cashfreeOrderId = :cashfreeOrderId")
+    Optional<Payment> findByCashfreeOrderIdWithLock(@Param("cashfreeOrderId") String cashfreeOrderId);
+
     Optional<Payment> findByYoupiPaymentId(String youpiPaymentId);
 
     @Query("SELECT p FROM Payment p WHERE LOWER(p.transactionReference) = LOWER(:utr) AND p.order.id <> :orderId AND p.status = com.ohotech.backend.entity.PaymentStatus.SUCCESSFUL")

@@ -38,6 +38,7 @@ public class TransactionOperationsService {
     private final PaymentService paymentService;
     private final AuditService auditService;
     private final com.ohotech.backend.controller.RazorpayWebhookController razorpayWebhookController;
+    private final com.ohotech.backend.service.payment.CashfreeGateway cashfreeGateway;
 
     @Transactional(readOnly = true)
     public TransactionOverviewDto getTransactionOverview(String period, LocalDateTime customStart, LocalDateTime customEnd) {
@@ -255,6 +256,14 @@ public class TransactionOperationsService {
                 if (webhookEvent.getPayloadSummary() != null && webhookEvent.getPayloadSummary().startsWith("{")) {
                     JSONObject payloadJson = new JSONObject(webhookEvent.getPayloadSummary());
                     razorpayWebhookController.executeEventProcessing(webhookEvent, payloadJson);
+                }
+            } else if ("CASHFREE".equalsIgnoreCase(webhookEvent.getProvider())) {
+                if (webhookEvent.getPayloadSummary() != null && webhookEvent.getPayloadSummary().startsWith("{")) {
+                    cashfreeGateway.processWebhookEvent(
+                            webhookEvent.getPayloadSummary(),
+                            String.valueOf(System.currentTimeMillis()),
+                            "RETRY_BYPASS_VERIFIED"
+                    );
                 }
             }
 

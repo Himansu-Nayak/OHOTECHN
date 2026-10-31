@@ -40,6 +40,8 @@ public class PaymentService {
     private final AuditService auditService;
     private final DeploymentRepository deploymentRepository;
     private final com.ohotech.backend.service.provisioning.SoftwareProvisioningService softwareProvisioningService;
+    private final com.ohotech.backend.service.payment.CashfreeGateway cashfreeGateway;
+    private final com.ohotech.backend.repository.PaymentReconciliationLogRepository reconciliationLogRepository;
 
     @Value("${app.razorpay.key-id:${razorpay.key-id:}}")
     private String razorpayKeyId;
@@ -288,6 +290,133 @@ public class PaymentService {
     }
 
     @Transactional
+    public CashfreeOrderResponseDto createCashfreePaymentSession(Long userId, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Order", "id", orderId);
+        }
+
+        if (order.getStatus() == OrderStatus.PAID || order.getStatus() == OrderStatus.CONFIRMED) {
+            throw new BadRequestException("Order #" + orderId + " is already paid.");
+        }
+
+        if (order.getTotalAmount() == null || order.getTotalAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Order amount must be greater than zero!");
+        }
+
+        var sessionResult = cashfreeGateway.createCashfreeOrderSession(order, order.getContactPhone());
+
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElse(Payment.builder()
+                        .order(order)
+                        .amount(order.getTotalAmount())
+                        .build());
+
+        payment.setAmount(order.getTotalAmount());
+        payment.setProvider(com.ohotech.backend.service.payment.CashfreeGateway.PROVIDER_ID);
+        payment.setMethod("ONLINE");
+        payment.setCurrency("INR");
+        payment.setCashfreeOrderId(sessionResult.cashfreeOrderId);
+        payment.setStatus(PaymentStatus.PENDING);
+        paymentRepository.save(payment);
+
+        return CashfreeOrderResponseDto.builder()
+                .orderId(order.getId())
+                .cashfreeOrderId(sessionResult.cashfreeOrderId)
+                .paymentSessionId(sessionResult.paymentSessionId)
+                .environment(sessionResult.environment)
+                .amount(order.getTotalAmount())
+                .currency("INR")
+                .build();
+    }
+
+    @Transactional
+    public PaymentResponseDto verifyCashfreePayment(Long userId, CashfreeVerificationRequest request) {
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", request.getOrderId()));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Order", "id", request.getOrderId());
+        }
+
+        Payment payment = paymentRepository.findByOrderId(order.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Payment for order", "id", request.getOrderId()));
+
+        if (payment.getStatus() == PaymentStatus.SUCCESSFUL &&
+            (order.getStatus() == OrderStatus.PAID || order.getStatus() == OrderStatus.CONFIRMED)) {
+            logger.info("Order #{} is already verified and confirmed via Cashfree. Returning existing payment.", order.getId());
+            return mapPaymentToDto(payment);
+        }
+
+        var statusResult = cashfreeGateway.fetchCashfreePaymentStatus(request.getCashfreeOrderId());
+
+        if (!"SUCCESS".equalsIgnoreCase(statusResult.paymentStatus)) {
+            if ("FAILED".equalsIgnoreCase(statusResult.paymentStatus) || "USER_DROPPED".equalsIgnoreCase(statusResult.paymentStatus)) {
+                payment.setStatus(PaymentStatus.FAILED);
+                payment.setFailureReason("Cashfree: " + (statusResult.failureMessage != null ? statusResult.failureMessage : "Payment failed"));
+                paymentRepository.save(payment);
+            }
+            throw new BadRequestException(statusResult.failureMessage != null ? statusResult.failureMessage : "Cashfree payment is not completed yet (Status: " + statusResult.paymentStatus + ")");
+        }
+
+        if (statusResult.amount != null && order.getTotalAmount().compareTo(statusResult.amount) != 0) {
+            payment.setStatus(PaymentStatus.FAILED);
+            payment.setFailureReason("Cashfree reported amount (₹" + statusResult.amount + ") does not match Order amount (₹" + order.getTotalAmount() + ")");
+            paymentRepository.save(payment);
+            throw new BadRequestException("Payment amount mismatch with Cashfree gateway!");
+        }
+
+        if (statusResult.currency != null && !"INR".equalsIgnoreCase(statusResult.currency)) {
+            payment.setStatus(PaymentStatus.FAILED);
+            payment.setFailureReason("Invalid currency: " + statusResult.currency);
+            paymentRepository.save(payment);
+            throw new BadRequestException("Invalid payment currency: " + statusResult.currency);
+        }
+
+        payment.setCashfreeOrderId(request.getCashfreeOrderId());
+        if (statusResult.cfPaymentId != null && !statusResult.cfPaymentId.isBlank()) {
+            payment.setCashfreePaymentId(statusResult.cfPaymentId);
+        }
+        payment.setStatus(PaymentStatus.SUCCESSFUL);
+        payment.setVerifiedAt(LocalDateTime.now());
+        paymentRepository.save(payment);
+
+        order.setStatus(OrderStatus.CONFIRMED);
+        orderRepository.save(order);
+
+        createEntitlementsForOrder(order);
+
+        try {
+            cartService.clearCart(order.getUser().getId());
+        } catch (Exception e) {
+            logger.warn("Cart clear warning after Cashfree verify: {}", e.getMessage());
+        }
+
+        try {
+            notificationService.createNotification(
+                    order.getUser().getId(),
+                    "Payment Received - Verified",
+                    "Your payment of ₹" + order.getTotalAmount() + " for Order #" + order.getId() + " was verified via Cashfree. Your software licenses are activated.",
+                    NotificationType.SUCCESS,
+                    NotificationCategory.PAYMENT,
+                    "/my-products"
+            );
+
+            if (order.getUser().getEmail() != null) {
+                String htmlBody = emailTemplateService.buildPaymentSuccessEmail(
+                        order.getUser().getName(), payment.getCashfreePaymentId() != null ? payment.getCashfreePaymentId() : "CF_" + request.getCashfreeOrderId(), order.getId(), order.getTotalAmount());
+                emailService.sendHtmlEmail(order.getUser().getEmail(), "OHO TECHN - Payment Received for Order #" + order.getId(), htmlBody);
+            }
+        } catch (Exception e) {
+            logger.warn("Notification error after Cashfree verify: {}", e.getMessage());
+        }
+
+        return mapPaymentToDto(payment);
+    }
+
+    @Transactional
     public PaymentResponseDto processDemoPayment(Long userId, Long orderId) {
         if (!testMode && razorpayConfigured()) {
             logger.warn("Security Alert: Attempted demo payment in production mode for Order #{} by User #{}", orderId, userId);
@@ -354,6 +483,10 @@ public class PaymentService {
 
     @Transactional(readOnly = true)
     public PaymentConfigDto getPaymentConfig() {
+        boolean cfConfigured = cashfreeGateway != null && (cashfreeGateway.isConfigured() || testMode);
+        boolean cfEnabled = cashfreeGateway != null && cashfreeGateway.isEnabled() && cfConfigured;
+        String cfEnv = cashfreeGateway != null && cashfreeGateway.isProduction() ? "PRODUCTION" : "SANDBOX";
+
         return PaymentConfigDto.builder()
                 .upiId(upiId)
                 .merchantName(upiMerchantName)
@@ -362,8 +495,10 @@ public class PaymentService {
                 .codEnabled(codEnabled)
                 .razorpayEnabled(razorpayEnabled && razorpayConfigured())
                 .razorpayKeyId(razorpayKeyId)
+                .cashfreeEnabled(cfEnabled)
+                .cashfreeEnvironment(cfEnv)
                 .testMode(testMode)
-                .demoEnabled(testMode || !razorpayConfigured())
+                .demoEnabled(testMode || (!razorpayConfigured() && !cfConfigured))
                 .build();
     }
 
@@ -848,6 +983,30 @@ public class PaymentService {
 
             if (!hasAnomaly) {
                 matchedCount++;
+            }
+        }
+
+        // Check for multiple successful payments for a single order
+        Map<Long, List<Payment>> paymentsByOrder = new HashMap<>();
+        for (Payment p : allPayments) {
+            if (p.getOrder() != null && p.getStatus() == PaymentStatus.SUCCESSFUL) {
+                paymentsByOrder.computeIfAbsent(p.getOrder().getId(), k -> new ArrayList<>()).add(p);
+            }
+        }
+        for (Map.Entry<Long, List<Payment>> entry : paymentsByOrder.entrySet()) {
+            if (entry.getValue().size() > 1) {
+                Payment first = entry.getValue().get(0);
+                anomalies.add(PaymentReconciliationReportDto.ReconciliationAnomalyDto.builder()
+                        .paymentId(first.getId())
+                        .orderId(entry.getKey())
+                        .provider(first.getProvider())
+                        .recordedAmount(first.getAmount())
+                        .currentPaymentStatus("SUCCESSFUL")
+                        .currentOrderStatus("PAID")
+                        .anomalyType("DUPLICATE_PAYMENT_FOR_ORDER")
+                        .recommendation("Order #" + entry.getKey() + " has " + entry.getValue().size() + " SUCCESSFUL payments recorded. Immediate refund required for duplicate transaction.")
+                        .detectedAt(LocalDateTime.now())
+                        .build());
             }
         }
 
