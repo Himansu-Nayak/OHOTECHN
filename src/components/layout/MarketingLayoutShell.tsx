@@ -5,14 +5,13 @@ import { usePathname } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { PageTransition } from '@/components/ui/PageTransition';
-import { AIChatWidget } from '@/components/ai/AIChatWidget';
 
 interface MarketingLayoutShellProps {
   children: React.ReactNode;
 }
 
 /**
- * MarketingLayoutShell selectively injects public website chrome (Header, Footer, AIChatWidget, pt-16/72px)
+ * MarketingLayoutShell selectively injects public website chrome (Header, Footer, pt-16/72px)
  * for standard marketing pages, while providing clean zero-padding, full-viewport isolation
  * for Admin, Developer, and Customer Dashboards.
  */
@@ -40,7 +39,6 @@ export function MarketingLayoutShell({ children }: MarketingLayoutShellProps) {
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
-      <AIChatWidget />
     </>
   );
 }

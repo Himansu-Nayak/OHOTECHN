@@ -632,4 +632,68 @@ public class PaymentProductionReadinessTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
     }
+
+    // 15. CASH ON DELIVERY (COD) STRICTLY REJECTED FOR NEW ORDERS
+    @Test
+    @DisplayName("15. Direct COD requests to /api/payments/initiate-cod are rejected with HTTP 400 Bad Request")
+    void testCodPaymentStrictlyRejectedForNewOrders() throws Exception {
+        Order order = createOrderForUser(customerA, new BigDecimal("15000.00"));
+
+        mockMvc.perform(post("/api/payments/initiate-cod")
+                        .header("Authorization", "Bearer " + tokenA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new PaymentOrderRequest(order.getId()))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Cash on Delivery (COD) has been discontinued")));
+
+        // Order remains in PENDING state; no COD payment is created
+        Order reloaded = orderRepository.findById(order.getId()).orElseThrow();
+        assertThat(reloaded.getStatus()).isEqualTo(OrderStatus.PENDING);
+        assertThat(paymentRepository.findByOrderId(order.getId())).isEmpty();
+    }
+
+    // 16. PAYMENT CONFIG ADVERTISES COD AS DISABLED
+    @Test
+    @DisplayName("16. Payment config endpoint explicitly returns codEnabled = false")
+    void testPaymentConfigAdvertisesCodDisabled() throws Exception {
+        mockMvc.perform(get("/api/payments/config"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.codEnabled").value(false));
+    }
+
+    // 17. HISTORICAL COD ORDERS REMAIN FULLY READABLE
+    @Test
+    @DisplayName("17. Historical COD payments in database remain readable in admin ledger")
+    void testHistoricalCodPaymentsRemainReadable() throws Exception {
+        Order order = createOrderForUser(customerA, new BigDecimal("8500.00"));
+        order.setStatus(OrderStatus.CONFIRMED);
+        orderRepository.save(order);
+
+        Payment historicalCod = paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(new BigDecimal("8500.00"))
+                .status(PaymentStatus.SUCCESSFUL)
+                .provider("COD")
+                .method("CASH_ON_DELIVERY")
+                .transactionReference("COD_HISTORICAL_TXN_1")
+                .build());
+
+        assertThat(historicalCod.getId()).isNotNull();
+        assertThat(historicalCod.getProvider()).isEqualTo("COD");
+
+        // Verify readable via repository and admin transaction history
+        Optional<Payment> saved = paymentRepository.findById(historicalCod.getId());
+        assertThat(saved).isPresent();
+        assertThat(saved.get().getProvider()).isEqualTo("COD");
+        assertThat(saved.get().getStatus()).isEqualTo(PaymentStatus.SUCCESSFUL);
+
+        mockMvc.perform(get("/api/admin/transactions/history?provider=COD")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.content[0].provider").value("COD"))
+                .andExpect(jsonPath("$.data.content[0].status").value("SUCCESSFUL"));
+    }
 }

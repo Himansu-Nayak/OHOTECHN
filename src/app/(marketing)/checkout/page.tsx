@@ -6,7 +6,7 @@ import Link from 'next/link';
 import QRCode from 'qrcode';
 import { 
   ArrowLeft, ShieldCheck, CreditCard, Lock, CheckCircle2, 
-  AlertCircle, Loader2, QrCode, Truck, Copy, Check, ExternalLink, 
+  AlertCircle, Loader2, QrCode, Copy, Check, ExternalLink, 
   Smartphone, Building2, Info, Sparkles, Zap
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -21,7 +21,6 @@ import {
   initiateUpiPaymentApi,
   createYouPiPaymentApi,
   submitUtrApi,
-  initiateCodApi,
   createCashfreeOrderApi,
   verifyCashfreePaymentApi
 } from '@/api/payments';
@@ -42,7 +41,7 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = React.useState(user?.name || 'Demo Customer');
   const [customerEmail, setCustomerEmail] = React.useState(user?.email || 'demo.customer@ohotechn.com');
   const [contactPhone, setContactPhone] = React.useState(user?.phone || '+91 76840 54872');
-  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'COD' | 'RAZORPAY' | 'CASHFREE' | 'DEMO' | 'YOUPI'>('UPI');
+  const [paymentMethod, setPaymentMethod] = React.useState<'UPI' | 'UPIHOST' | 'RAZORPAY' | 'CASHFREE' | 'DEMO' | 'YOUPI'>('UPI');
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
@@ -74,8 +73,8 @@ export default function CheckoutPage() {
           // If UPI is disabled but Razorpay enabled, switch default
           if (!res.data.upiDirectEnabled && res.data.razorpayEnabled) {
             setPaymentMethod('RAZORPAY');
-          } else if (!res.data.upiDirectEnabled && !res.data.razorpayEnabled && res.data.codEnabled) {
-            setPaymentMethod('COD');
+          } else if (!res.data.upiDirectEnabled && !res.data.razorpayEnabled && res.data.cashfreeEnabled) {
+            setPaymentMethod('CASHFREE');
           }
         }
       })
@@ -350,6 +349,11 @@ export default function CheckoutPage() {
         showToast('Demo Payment Confirmed! Your software license key has been generated.', 'success');
         router.push(`/my-products?orderId=${createdOrder.id}&newPurchase=true`);
         return;
+      } else if (paymentMethod === 'UPIHOST') {
+        setSelfHostedOrder({ id: createdOrder.id, amount: createdOrder.totalAmount });
+        setIsSelfHostedModalOpen(true);
+        setIsLoading(false);
+        return;
       } else if (paymentMethod === 'UPI') {
         const upiRes = await initiateUpiPaymentApi(createdOrder.id);
         if (!upiRes.success || !upiRes.data) {
@@ -371,16 +375,6 @@ export default function CheckoutPage() {
         }
         window.location.assign(checkoutUrl.toString());
         return;
-      } else if (paymentMethod === 'COD') {
-        const codRes = await initiateCodApi(createdOrder.id);
-        if (!codRes.success) {
-          throw new Error(codRes.message || 'Failed to confirm Cash on Delivery order.');
-        }
-        await clearCart();
-        showToast('Order confirmed! Cash on Delivery selected.', 'success');
-        setSuccessOrderId(createdOrder.id);
-        setIsSuccessSubmitted(true);
-        setIsLoading(false);
       } else if (paymentMethod === 'RAZORPAY') {
         const paymentRes = await createPaymentOrderApi(createdOrder.id);
         if (!paymentRes.success || !paymentRes.data) {
@@ -498,7 +492,7 @@ export default function CheckoutPage() {
               Checkout &amp; Payment
             </h1>
             <p className="text-xs font-medium text-slate-600 mt-1">
-              Direct UPI QR / Bank Transfer, Cash on Delivery, or Online Payment Gateway.
+              Direct UPI QR / Bank Transfer, UPIHost, or Online Payment Gateway (Cashfree &amp; Razorpay).
             </p>
           </div>
 
@@ -522,7 +516,7 @@ export default function CheckoutPage() {
 
             {/* If UPI Payment is initiated and waiting for UTR */}
             {upiOrderData ? (
-              <div className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm space-y-6">
                 <div className="border-b border-slate-100 pb-4">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-black text-[#0d0d0e] flex items-center gap-2">
@@ -540,7 +534,7 @@ export default function CheckoutPage() {
 
                 {/* QR Code and Bank Details Box */}
                 <div className="flex flex-col sm:flex-row items-center gap-6 p-5 bg-slate-50 rounded-2xl border border-slate-200">
-                  <div className="w-52 h-52 bg-white p-2.5 rounded-2xl border border-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                  <div className="w-48 h-48 sm:w-52 sm:h-52 max-w-full bg-white p-2.5 rounded-2xl border border-slate-200 flex items-center justify-center shrink-0 shadow-xs">
                     {qrCodeUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={qrCodeUrl} alt="UPI QR Code" className="w-full h-full object-contain" />
@@ -679,22 +673,24 @@ export default function CheckoutPage() {
                     )}
                   </button>
 
-                  <div className="pt-2 text-center">
-                    <button
-                      type="button"
-                      onClick={handleAutoVerifyDemoUtr}
-                      disabled={isSubmittingUtr}
-                      className="text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                    >
-                      <Zap className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Demo Mode: 1-Click Auto-Fill UTR &amp; Activate License</span>
-                    </button>
-                  </div>
+                                    {paymentConfig?.demoEnabled && (
+                    <div className="pt-2 text-center">
+                      <button
+                        type="button"
+                        onClick={handleAutoVerifyDemoUtr}
+                        disabled={isSubmittingUtr}
+                        className="text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      >
+                        <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Demo Mode: 1-Click Auto-Fill UTR (Sandbox Only)</span>
+                      </button>
+                    </div>
+                  )}
                 </form>
               </div>
             ) : (
               /* Step 1: Customer Contact + Payment Method Selection Form */
-              <div className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm">
+              <div className="bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm">
                 
                 {/* Demo Basis Pre-fill Notice Banner */}
                 <div className="mb-6 p-4 bg-sky-50 border border-sky-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
@@ -817,6 +813,26 @@ export default function CheckoutPage() {
                         </div>
                       </button>
 
+                      {/* Option 2.5: UPIHost — Self-Hosted UPI */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('UPIHOST')}
+                        className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer relative ${
+                          paymentMethod === 'UPIHOST'
+                            ? 'border-indigo-600 bg-indigo-50/50 shadow-sm'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wider bg-indigo-600 text-white px-2 py-0.5 rounded-full">
+                          ⚡ Real-Time QR
+                        </span>
+                        <QrCode className={`w-5 h-5 mb-2 ${paymentMethod === 'UPIHOST' ? 'text-indigo-600' : 'text-slate-500'}`} />
+                        <div className="text-xs font-bold text-slate-900">UPIHost — Self-Hosted UPI</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
+                          Secure UPI payment with dynamic QR and real-time payment verification.
+                        </div>
+                      </button>
+
                       {/* Option: YouPI prototype; hidden unless explicitly enabled for isolated testing */}
                       {process.env.NEXT_PUBLIC_YOUPI_PROTOTYPE_ENABLED === 'true' && (
                         <button
@@ -865,23 +881,6 @@ export default function CheckoutPage() {
                           UPI, Cards, NetBanking, Wallets
                         </div>
                       </button>
-
-                      {/* Option 5: Cash on Delivery */}
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod('COD')}
-                        className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                          paymentMethod === 'COD'
-                            ? 'border-amber-600 bg-amber-50/50 shadow-sm'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
-                        }`}
-                      >
-                        <Truck className={`w-5 h-5 mb-2 ${paymentMethod === 'COD' ? 'text-amber-600' : 'text-slate-500'}`} />
-                        <div className="text-xs font-bold text-slate-900">Cash on Delivery (₹ INR)</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5 leading-snug">
-                          Pay upon delivery / deployment
-                        </div>
-                      </button>
                     </div>
                   </div>
 
@@ -903,10 +902,10 @@ export default function CheckoutPage() {
                             ? `⚡ Demo One-Click Pay & Activate Software (${formattedTotal})`
                             : paymentMethod === 'UPI'
                             ? `Generate UPI QR Code (${formattedTotal})`
+                            : paymentMethod === 'UPIHOST'
+                            ? `Proceed with UPIHost (Real-Time QR) (${formattedTotal})`
                             : paymentMethod === 'CASHFREE'
                             ? `Pay with Cashfree (${formattedTotal})`
-                            : paymentMethod === 'COD'
-                            ? `Place Cash on Delivery Order (${formattedTotal})`
                             : paymentMethod === 'YOUPI'
                             ? `Continue to YouPI UPI Checkout (${formattedTotal})`
                             : `Pay with Razorpay (${formattedTotal})`}

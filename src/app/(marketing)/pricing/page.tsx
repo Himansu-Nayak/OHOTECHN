@@ -106,7 +106,7 @@ export default async function PricingPage() {
       <main className="max-w-[1536px] w-full mx-auto" id="pricing-main">
         
         {/* Header Hero Section */}
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="pricing-hero">
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-5 sm:p-10 lg:p-16 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="pricing-hero">
           <div className="max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
               <Sparkles className="w-3.5 h-3.5 text-sky-600" />
@@ -122,7 +122,7 @@ export default async function PricingPage() {
         </section>
 
         {/* Engagement Models Grid */}
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm mb-10" id="engagement-models-section">
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-5 sm:p-10 lg:p-16 shadow-sm mb-10" id="engagement-models-section">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-slate-200">
             <div>
@@ -222,7 +222,7 @@ export default async function PricingPage() {
         </section>
 
         {/* FAQs Section */}
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm" id="faqs-section">
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-5 sm:p-10 lg:p-16 shadow-sm" id="faqs-section">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <div className="inline-block text-xs font-mono font-bold text-sky-600 uppercase tracking-widest mb-2">

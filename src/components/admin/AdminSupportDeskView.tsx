@@ -9,6 +9,7 @@ import {
   Building2, Phone, Mail, AlertTriangle, ExternalLink, Sparkles, Bot
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SlaStatusBadge } from '@/components/support/SlaStatusBadge';
 import { useToast } from '@/context/ToastContext';
 import { AdminDrawer, AdminModal, AdminButton, AdminInput } from './AdminUiPrimitives';
 import { 
@@ -338,8 +339,8 @@ export function AdminSupportDeskView() {
                         {t.status}
                       </span>
                     </td>
-                    <td className="p-3.5 text-right font-mono text-slate-700">
-                      {t.slaHoursRemaining !== undefined ? `${t.slaHoursRemaining}h remaining` : 'Active'}
+                    <td className="p-3.5 text-right font-mono text-slate-700 whitespace-nowrap">
+                      <SlaStatusBadge ticket={t} showDetails={true} />
                     </td>
                     <td className="p-3.5 text-right">
                       <button

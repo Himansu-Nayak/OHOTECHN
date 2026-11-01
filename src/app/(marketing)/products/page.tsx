@@ -181,7 +181,7 @@ export default function ProductsCatalogPage() {
       <main className="max-w-[1536px] w-full mx-auto" id="products-catalog-main">
         
         {/* Header Hero Section */}
-        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-8 sm:p-14 lg:p-20 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="products-hero">
+        <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-5 sm:p-10 lg:p-16 shadow-sm text-center mb-10 relative overflow-hidden grid-pattern-light" id="products-hero">
           <div className="max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
@@ -309,7 +309,7 @@ export default function ProductsCatalogPage() {
           </div>
         ) : products.length === 0 ? (
           /* Empty Search / Filter State */
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-12 sm:p-16 shadow-sm text-center" id="products-empty-section">
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 shadow-sm text-center" id="products-empty-section">
             <div className="w-16 h-16 rounded-3xl bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-400">
               <Search className="w-8 h-8" />
             </div>
@@ -330,7 +330,7 @@ export default function ProductsCatalogPage() {
           </section>
         ) : (
           /* Products Grid */
-          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-6 sm:p-10 lg:p-14 shadow-sm" id="products-grid-section">
+          <section className="bg-white border-2 border-slate-300 rounded-[32px] sm:rounded-[44px] p-4 sm:p-8 lg:p-12 shadow-sm" id="products-grid-section">
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {products.map((product) => {
@@ -344,7 +344,7 @@ export default function ProductsCatalogPage() {
                 return (
                   <div
                     key={product.id}
-                    className="bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-[32px] p-6 transition-all duration-300 flex flex-col justify-between hover:shadow-2xl relative overflow-hidden group"
+                    className="bg-[#fafafa] border-2 border-slate-200 hover:border-emerald-500 rounded-[28px] sm:rounded-[32px] p-4 sm:p-6 transition-all duration-300 flex flex-col justify-between hover:shadow-2xl relative overflow-hidden group"
                   >
                     <div>
                       {/* Product Header Image Visual Card */}
@@ -417,7 +417,7 @@ export default function ProductsCatalogPage() {
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <Link
                           href={`/products/${product.id}#amount-payment-section`}
                           className="py-2.5 px-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-[10px] uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1 shadow-xs"

@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import NextImage from 'next/image';
-import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, Building2, Layers, ShoppingBag, User, LogOut, Package, LayoutDashboard, Key, Download, Headphones, Repeat, CreditCard } from 'lucide-react';
+import { Menu, X, ChevronDown, Code2, TrendingUp, Sparkles, ShoppingBag, User, LogOut, Package, LayoutDashboard, Key, Download, Headphones, Repeat, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { solutionsNav, techServicesNav, growthServicesNav, resourcesNav, companyNav } from '@/config/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -75,7 +75,7 @@ export function Header() {
       <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-3 sm:px-4 pointer-events-none">
         <header
           id="site-header"
-          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-4 sm:px-6 lg:px-7 py-2 sm:py-2.5 flex items-center justify-between gap-2 lg:gap-3 xl:gap-5 max-w-[1240px] w-full transition-all duration-300"
+          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-3 sm:px-5 lg:px-7 py-1.5 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-2 lg:gap-3 xl:gap-5 max-w-[1240px] w-full transition-all duration-300"
         >
           {/* Logo */}
           <Link href="/" prefetch={true} id="logo-link" className="flex items-center shrink-0 group py-0.5" aria-label="OHO TECH Home">
@@ -87,7 +87,7 @@ export function Header() {
               priority
               quality={100}
               unoptimized
-              className="h-8 sm:h-10 lg:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-7 sm:h-9 lg:h-12 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
 
@@ -606,7 +606,7 @@ export function Header() {
             onClick={() => setIsMobileOpen(false)}
             aria-hidden="true"
           />
-          <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl overflow-y-auto z-10">
+          <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white p-4 sm:p-6 flex flex-col justify-between shadow-2xl overflow-y-auto z-10">
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-slate-100">
                 <NextImage

@@ -65,7 +65,7 @@ function MyProductsContent() {
   if (!user) {
     return (
       <div className="bg-[#f7f7f5] min-h-screen pb-16 pt-28 sm:pt-36 px-4">
-        <div className="max-w-md mx-auto bg-white border-2 border-slate-300 rounded-[32px] p-8 text-center shadow-sm">
+        <div className="max-w-md mx-auto bg-white border-2 border-slate-300 rounded-[28px] sm:rounded-[32px] p-5 sm:p-8 text-center shadow-sm">
           <Package className="w-12 h-12 text-sky-600 mx-auto mb-4" />
           <h1 className="text-2xl font-black text-[#0d0d0e] mb-2">Sign In Required</h1>
           <p className="text-xs text-slate-500 mb-6">Please sign in to view your entitled products.</p>
@@ -253,7 +253,7 @@ function MyProductsContent() {
               const isCopied = matchedLicense && copiedKey === matchedLicense.licenseKey;
 
               return (
-                <div key={product.id} className="bg-white border-2 border-slate-300 rounded-[32px] p-6 sm:p-8 shadow-sm">
+                <div key={product.id} className="bg-white border-2 border-slate-300 rounded-[24px] sm:rounded-[32px] p-4 sm:p-6 lg:p-8 shadow-sm">
                   
                   {/* Top Bar: Title & Primary Actions */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-4">

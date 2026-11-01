@@ -40,7 +40,9 @@ export function SelfHostedUpiModal({
   const { showToast } = useToast();
 
   // Phase: 'PHONE_OTP' | 'QR_PAYMENT' | 'SETTLED'
-  const [phase, setPhase] = React.useState<'PHONE_OTP' | 'QR_PAYMENT' | 'SETTLED'>('PHONE_OTP');
+  const [phase, setPhase] = React.useState<'PHONE_OTP' | 'QR_PAYMENT' | 'SETTLED'>('QR_PAYMENT');
+  const [isLoadingSession, setIsLoadingSession] = React.useState(false);
+  const [isCancelling, setIsCancelling] = React.useState(false);
 
   // Phone OTP State
   const [phoneNumber, setPhoneNumber] = React.useState(initialPhone);
@@ -63,6 +65,35 @@ export function SelfHostedUpiModal({
   const [manualUtr, setManualUtr] = React.useState('');
   const [isSubmittingUtr, setIsSubmittingUtr] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+
+  // Start Self-Hosted UPI Session
+  const startUpiSession = React.useCallback(async (proofToken?: string) => {
+    setIsLoadingSession(true);
+    setErrorMessage('');
+    try {
+      const res = await initiateSelfHostedUpiCheckoutApi(orderId, proofToken || undefined);
+      if (!res.success || !res.data) {
+        throw new Error(res.message || 'Failed to initialize UPI session.');
+      }
+
+      setUpiData(res.data);
+      setRemainingSeconds(res.data.expiresInSeconds || 600);
+      setIsExpired(false);
+      setPhase('QR_PAYMENT');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Could not start UPI checkout session.');
+      showToast(err.message || 'UPI session initiation failed', 'error');
+    } finally {
+      setIsLoadingSession(false);
+    }
+  }, [orderId]);
+
+  // Auto-initiate UPI session on modal open if not already initiated
+  React.useEffect(() => {
+    if (isOpen && orderId && !upiData && !isLoadingSession) {
+      startUpiSession();
+    }
+  }, [isOpen, orderId, upiData, isLoadingSession, startUpiSession]);
 
   // 1. Cooldown Timer Countdown
   React.useEffect(() => {
@@ -190,22 +221,21 @@ export function SelfHostedUpiModal({
     }
   };
 
-  // Start Self-Hosted UPI Session
-  const startUpiSession = async (proofToken?: string) => {
-    try {
-      const res = await initiateSelfHostedUpiCheckoutApi(orderId, proofToken || undefined);
-      if (!res.success || !res.data) {
-        throw new Error(res.message || 'Failed to initialize UPI session.');
-      }
 
-      setUpiData(res.data);
-      setRemainingSeconds(res.data.expiresInSeconds || 600);
-      setIsExpired(false);
-      setPhase('QR_PAYMENT');
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Could not start UPI checkout session.');
-      showToast(err.message || 'UPI session initiation failed', 'error');
+
+  // Gracefully cancel active payment session on close and release slot lease
+  const handleClose = async () => {
+    if (upiData?.paymentId && phase === 'QR_PAYMENT' && !isExpired) {
+      setIsCancelling(true);
+      try {
+        await cancelSelfHostedUpiApi(upiData.paymentId);
+      } catch (err: any) {
+        console.warn('Session cancel notice:', err?.message || err);
+      } finally {
+        setIsCancelling(false);
+      }
     }
+    onClose();
   };
 
   // Handle Manual UTR Submission
@@ -270,21 +300,23 @@ export function SelfHostedUpiModal({
         {/* Header */}
         <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black shadow-xs">
-              <QrCode className="w-5 h-5 text-emerald-400" />
+            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-xs">
+              <QrCode className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-base font-black text-slate-900 tracking-tight">Direct Self-Hosted UPI</h3>
-              <p className="text-[11px] text-slate-500 font-medium">NPCI Instant Settlement &bull; Zero Gateway Fee</p>
+              <h3 className="text-base font-black text-slate-900 tracking-tight">UPIHost — Self-Hosted UPI</h3>
+              <p className="text-[11px] text-slate-500 font-medium">Secure UPI payment with dynamic QR and real-time payment verification.</p>
             </div>
           </div>
 
           <button
             type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition"
+            onClick={handleClose}
+            disabled={isCancelling}
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition disabled:opacity-50"
+            title="Cancel & Close"
           >
-            <X className="w-4 h-4" />
+            {isCancelling ? <Loader2 className="w-4 h-4 animate-spin text-slate-500" /> : <X className="w-4 h-4" />}
           </button>
         </div>
 
@@ -414,7 +446,40 @@ export function SelfHostedUpiModal({
           {/* ========================================================= */}
           {/* PHASE 2: DYNAMIC UPI QR & INTENT TRIGGER                  */}
           {/* ========================================================= */}
-          {phase === 'QR_PAYMENT' && upiData && (
+          {phase === 'QR_PAYMENT' && (
+            <>
+              {isLoadingSession && !upiData && (
+                <div className="py-12 text-center space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mx-auto text-indigo-600">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900">Initiating UPIHost Session...</h4>
+                    <p className="text-xs text-slate-500 mt-1">Reserving dedicated NPCI dynamic settlement slot</p>
+                  </div>
+                </div>
+              )}
+
+              {!isLoadingSession && !upiData && (
+                <div className="py-10 text-center space-y-4">
+                  <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900">Unable to Initialize UPI Session</h4>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {errorMessage || 'A temporary connection issue occurred while acquiring a UPI slot.'}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => startUpiSession()}
+                    className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs"
+                  >
+                    Retry Session Acquisition
+                  </button>
+                </div>
+              )}
+
+              {upiData && (
             <div className="space-y-5">
               {/* Slot & Timer Ribbon */}
               <div className="flex items-center justify-between p-3 rounded-xl bg-slate-100 border border-slate-200">
@@ -578,6 +643,8 @@ export function SelfHostedUpiModal({
                 </>
               )}
             </div>
+            )}
+            </>
           )}
 
           {/* ========================================================= */}
@@ -595,6 +662,21 @@ export function SelfHostedUpiModal({
             </div>
           )}
         </div>
+
+        {/* Footer actions for cancellation */}
+        {phase === 'QR_PAYMENT' && (
+          <div className="p-4 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="text-slate-500 text-[11px]">Need to change payment option?</span>
+            <button
+              type="button"
+              onClick={handleClose}
+              disabled={isCancelling}
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-200/60 transition disabled:opacity-50 cursor-pointer"
+            >
+              {isCancelling ? 'Cancelling slot...' : 'Cancel & Choose Another Method'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

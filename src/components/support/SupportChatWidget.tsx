@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   MessageSquare,
   X,
@@ -18,6 +19,7 @@ import { useAuth } from '@/context/AuthContext';
 import { createCustomerTicketApi, createPublicTicketApi } from '@/api/support';
 
 export function SupportChatWidget() {
+  const pathname = usePathname();
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<'quick' | 'ticket'>('quick');
@@ -29,6 +31,11 @@ export function SupportChatWidget() {
   const [submitting, setSubmitting] = useState(false);
   const [successCode, setSuccessCode] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // If user is already on the dedicated support desk page, omit floating launcher to avoid covering tickets
+  if (pathname === '/support' || pathname?.startsWith('/support/')) {
+    return null;
+  }
 
   const handleSubmitTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,20 +93,21 @@ export function SupportChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-45 font-sans pointer-events-auto">
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 px-4 py-3 rounded-full bg-slate-950 text-white border border-slate-700/60 shadow-2xl hover:border-orange-500/50 hover:bg-slate-900 transition-all duration-300 group"
+          className="flex items-center gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-full bg-slate-950 text-white border border-slate-700/60 shadow-2xl hover:border-orange-500/50 hover:bg-slate-900 transition-all duration-300 group cursor-pointer"
           aria-label="Open OHO TECH Support Assistance"
+          aria-expanded={false}
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-white shadow-inner">
-            <MessageSquare className="w-4 h-4" />
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-white shadow-inner shrink-0">
+            <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
-          <span className="text-sm font-semibold pr-1 text-slate-200 group-hover:text-white transition-colors">
+          <span className="text-xs sm:text-sm font-semibold pr-1 text-slate-200 group-hover:text-white transition-colors whitespace-nowrap">
             Support Desk
           </span>
-          <span className="flex h-2 w-2 relative">
+          <span className="flex h-2 w-2 relative shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
@@ -107,26 +115,31 @@ export function SupportChatWidget() {
       )}
 
       {isOpen && (
-        <div className="w-[360px] sm:w-[400px] h-[520px] max-h-[85vh] bg-slate-950/95 backdrop-blur-xl border border-slate-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
+        <div 
+          role="dialog"
+          aria-label="OHO TECH Support Desk"
+          aria-modal="true"
+          className="w-[calc(100vw-32px)] sm:w-[400px] max-w-[400px] h-[520px] max-h-[85vh] bg-slate-950/95 backdrop-blur-xl border border-slate-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300"
+        >
           <div className="p-4 bg-gradient-to-r from-slate-900 to-slate-950 border-b border-slate-800/80 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20 shrink-0">
                 <Sparkles className="w-4 h-4" />
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <div className="min-w-0">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2 truncate">
                   OHO TECH Support
                 </h3>
-                <p className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <p className="text-[11px] text-slate-400 flex items-center gap-1.5 truncate">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
                   SLA Support &amp; AI Advisory
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
-              aria-label="Close widget"
+              className="p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors shrink-0 cursor-pointer"
+              aria-label="Close support desk widget"
             >
               <X className="w-4 h-4" />
             </button>
@@ -160,7 +173,7 @@ export function SupportChatWidget() {
                   </Link>
                   <button
                     onClick={handleReset}
-                    className="py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold rounded-xl border border-slate-700 transition-colors"
+                    className="py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold rounded-xl border border-slate-700 transition-colors cursor-pointer"
                   >
                     New Query
                   </button>
@@ -180,10 +193,10 @@ export function SupportChatWidget() {
                 <div className="space-y-2">
                   <button
                     onClick={() => setMode('ticket')}
-                    className="w-full p-3 rounded-2xl bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/20 hover:border-orange-500/40 text-left flex items-center justify-between group transition-all"
+                    className="w-full p-3 rounded-2xl bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/20 hover:border-orange-500/40 text-left flex items-center justify-between group transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
-                      <FileQuestion className="w-4 h-4 text-orange-400" />
+                      <FileQuestion className="w-4 h-4 text-orange-400 shrink-0" />
                       <div>
                         <div className="font-semibold text-white group-hover:text-orange-400 transition-colors">
                           Log a Technical Ticket
@@ -193,7 +206,7 @@ export function SupportChatWidget() {
                         </div>
                       </div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-orange-400 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-orange-400 group-hover:translate-x-1 transition-all shrink-0" />
                   </button>
 
                   <Link
@@ -202,7 +215,7 @@ export function SupportChatWidget() {
                     className="w-full p-3 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 text-left flex items-center justify-between group transition-all"
                   >
                     <div className="flex items-center gap-2.5">
-                      <HelpCircle className="w-4 h-4 text-sky-400" />
+                      <HelpCircle className="w-4 h-4 text-sky-400 shrink-0" />
                       <div>
                         <div className="font-semibold text-white group-hover:text-sky-400 transition-colors">
                           Support Operations Portal
@@ -212,7 +225,26 @@ export function SupportChatWidget() {
                         </div>
                       </div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-sky-400 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-sky-400 group-hover:translate-x-1 transition-all shrink-0" />
+                  </Link>
+
+                  <Link
+                    href="/ai"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full p-3 rounded-2xl bg-gradient-to-r from-indigo-950/40 to-slate-900/40 border border-indigo-900/40 hover:border-indigo-500/40 text-left flex items-center justify-between group transition-all"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
+                      <div>
+                        <div className="font-semibold text-white group-hover:text-indigo-300 transition-colors">
+                          AI Intelligence Hub
+                        </div>
+                        <div className="text-[11px] text-slate-400">
+                          Interactive architecture copilot &amp; document OCR
+                        </div>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0" />
                   </Link>
                 </div>
 
@@ -230,7 +262,7 @@ export function SupportChatWidget() {
                   <button
                     type="button"
                     onClick={() => setMode('quick')}
-                    className="text-[11px] text-orange-400 hover:underline"
+                    className="text-[11px] text-orange-400 hover:underline cursor-pointer"
                   >
                     Back
                   </button>
@@ -252,7 +284,7 @@ export function SupportChatWidget() {
                       onChange={(e) => setClientEmail(e.target.value)}
                       placeholder="client@organization.com"
                       required
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors text-xs"
                     />
                   </div>
                 )}
@@ -265,7 +297,7 @@ export function SupportChatWidget() {
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="e.g. ERP database migration query"
                     required
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors text-xs"
                   />
                 </div>
 
@@ -275,7 +307,7 @@ export function SupportChatWidget() {
                     <select
                       value={department}
                       onChange={(e) => setDepartment(e.target.value as any)}
-                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:border-orange-500"
+                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:border-orange-500 text-xs"
                     >
                       <option value="TECHNICAL">Technical Ops</option>
                       <option value="LICENSING">Licensing &amp; IP</option>
@@ -288,7 +320,7 @@ export function SupportChatWidget() {
                     <select
                       value={priority}
                       onChange={(e) => setPriority(e.target.value as any)}
-                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:border-orange-500"
+                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:border-orange-500 text-xs"
                     >
                       <option value="LOW">Low</option>
                       <option value="MEDIUM">Medium</option>
@@ -306,14 +338,14 @@ export function SupportChatWidget() {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Describe your requirement, issue or platform questions..."
                     required
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors resize-none"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors resize-none text-xs"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 disabled:opacity-50 transition-all"
+                  className="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 disabled:opacity-50 transition-all cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>{submitting ? 'Submitting...' : 'Dispatch Support Ticket'}</span>

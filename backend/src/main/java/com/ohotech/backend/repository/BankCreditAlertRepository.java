@@ -1,7 +1,9 @@
 package com.ohotech.backend.repository;
 
 import com.ohotech.backend.entity.BankCreditAlert;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,6 +17,10 @@ import java.util.Optional;
 public interface BankCreditAlertRepository extends JpaRepository<BankCreditAlert, Long> {
 
     Optional<BankCreditAlert> findByRrn(String rrn);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT b FROM BankCreditAlert b WHERE LOWER(b.rrn) = LOWER(:rrn)")
+    Optional<BankCreditAlert> findByRrnWithLock(@Param("rrn") String rrn);
 
     boolean existsByRrn(String rrn);
 

@@ -503,10 +503,20 @@ public class SupportTicketService {
     }
 
     private SupportTicketDto mapTicketToDto(SupportTicket ticket, boolean includeMessages) {
+        String slaStatus = "NONE";
         Double slaHoursRemaining = null;
-        if (ticket.getSlaDueAt() != null) {
+        if ("RESOLVED".equalsIgnoreCase(ticket.getStatus()) || "CLOSED".equalsIgnoreCase(ticket.getStatus())) {
+            slaStatus = "RESOLVED";
+        } else if (ticket.getSlaDueAt() != null) {
             long seconds = Duration.between(LocalDateTime.now(), ticket.getSlaDueAt()).getSeconds();
-            slaHoursRemaining = Math.max(0.0, Math.round((seconds / 3600.0) * 10.0) / 10.0);
+            slaHoursRemaining = Math.round((seconds / 3600.0) * 10.0) / 10.0;
+            if (seconds < 0) {
+                slaStatus = "BREACHED";
+            } else if (seconds <= 2 * 3600) {
+                slaStatus = "APPROACHING";
+            } else {
+                slaStatus = "WITHIN_SLA";
+            }
         }
 
         List<SupportTicketMessageDto> msgDtos = new ArrayList<>();
@@ -546,6 +556,7 @@ public class SupportTicketService {
                 .issueOwnership(ticket.getIssueOwnership() != null ? ticket.getIssueOwnership() : "OHO_TECH")
                 .slaDueAt(ticket.getSlaDueAt())
                 .slaHoursRemaining(slaHoursRemaining)
+                .slaStatus(slaStatus)
                 .createdAt(ticket.getCreatedAt())
                 .updatedAt(ticket.getUpdatedAt())
                 .resolvedAt(ticket.getResolvedAt())
@@ -626,12 +637,12 @@ public class SupportTicketService {
                 String aiRaw = geminiService.generateText(prompt, null);
                 if (aiRaw != null && !aiRaw.isBlank()) {
                     String cleanedJson = aiRaw.trim();
-                    if (cleanedJson.startsWith("`json")) {
+                    if (cleanedJson.startsWith("```json")) {
                         cleanedJson = cleanedJson.substring(7);
-                    } else if (cleanedJson.startsWith("`")) {
+                    } else if (cleanedJson.startsWith("```")) {
                         cleanedJson = cleanedJson.substring(3);
                     }
-                    if (cleanedJson.endsWith("`")) {
+                    if (cleanedJson.endsWith("```")) {
                         cleanedJson = cleanedJson.substring(0, cleanedJson.length() - 3);
                     }
                     cleanedJson = cleanedJson.trim();

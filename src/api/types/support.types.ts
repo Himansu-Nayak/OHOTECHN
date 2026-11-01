@@ -45,6 +45,7 @@ export interface SupportTicketDto {
   issueOwnership?: string;
   slaDueAt?: string;
   slaHoursRemaining?: number;
+  slaStatus?: 'WITHIN_SLA' | 'APPROACHING' | 'BREACHED' | 'RESOLVED' | 'NONE';
   createdAt: string;
   updatedAt?: string;
   resolvedAt?: string;

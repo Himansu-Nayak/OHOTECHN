@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public class CashOnDeliveryGateway implements PaymentGateway {
 
-    @Value("${app.payment.cod-enabled:true}")
+    @Value("${app.payment.cod-enabled:false}")
     private boolean enabled;
 
     private LocalDateTime lastHealthCheckAt;

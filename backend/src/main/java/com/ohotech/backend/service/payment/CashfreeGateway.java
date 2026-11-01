@@ -53,19 +53,19 @@ public class CashfreeGateway implements PaymentGateway {
     private final EmailTemplateService emailTemplateService;
     private final AuditService auditService;
 
-    @Value("${cashfree.client-id:}")
+    @Value("${cashfree.app-id:${cashfree.client-id:${CASHFREE_APP_ID:${CASHFREE_CLIENT_ID:}}}}")
     private String clientId;
 
-    @Value("${cashfree.client-secret:}")
+    @Value("${cashfree.secret-key:${cashfree.client-secret:${CASHFREE_SECRET_KEY:${CASHFREE_CLIENT_SECRET:}}}}")
     private String clientSecret;
 
-    @Value("${cashfree.webhook-secret:}")
+    @Value("${cashfree.webhook-secret:${CASHFREE_WEBHOOK_SECRET:}}")
     private String webhookSecret;
 
-    @Value("${cashfree.environment:SANDBOX}")
+    @Value("${cashfree.environment:${CASHFREE_ENVIRONMENT:SANDBOX}}")
     private String environment;
 
-    @Value("${cashfree.api-version:2025-01-01}")
+    @Value("${cashfree.api-version:${CASHFREE_API_VERSION:2025-01-01}}")
     private String apiVersion;
 
     @Value("${app.payment.cashfree-enabled:true}")

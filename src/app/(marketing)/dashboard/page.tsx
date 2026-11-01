@@ -18,6 +18,7 @@ import { getMyOrdersApi, downloadOrderInvoiceApi } from '@/api/orders';
 import { getMyCustomerTicketsApi } from '@/api/support';
 import { ProductDto, License, Subscription, Order, SupportTicketDto, OrderStatus } from '@/api/types';
 import { formatInr } from '@/utils/cartUtils';
+import { SlaStatusBadge } from '@/components/support/SlaStatusBadge';
 import { 
   DashboardShell,
   V15MetricCard, 

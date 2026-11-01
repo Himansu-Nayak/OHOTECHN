@@ -241,9 +241,34 @@
 }
 
 /* Responsive Text Wrapping to prevent horizontal overflow */
-h1, h2, h3, h4, h5, h6, p, span, a, button {
+h1, h2, h3, h4, h5, h6, p, blockquote, li {
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+/* Global Responsive Button System & Guardrails */
+button,
+[role="button"],
+.button-tactile {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent accidental vertical character-wrapping on action buttons unless explicit */
+button:not(.multiline-btn),
+a[role="button"]:not(.multiline-btn) {
+  white-space: nowrap;
+}
+
+/* Button groups and toolbars wrap automatically on mobile */
+.btn-group,
+.button-group,
+.actions-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
 }
 
 /* Global Prefers Reduced Motion Safety */

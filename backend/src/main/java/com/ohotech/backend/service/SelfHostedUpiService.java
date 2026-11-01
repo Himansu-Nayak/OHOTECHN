@@ -239,58 +239,87 @@ public class SelfHostedUpiService {
             throw new BadRequestException("A valid UTR or banking transaction reference is required (minimum 6 characters).");
         }
 
-        String cleanUtr = utr.trim();
+        String cleanUtr = utr.trim().toUpperCase();
 
-        Payment payment = paymentRepository.findById(paymentId)
+        Payment payment = paymentRepository.findByIdWithLock(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
 
         Order order = payment.getOrder();
 
-        if (payment.getStatus() == PaymentStatus.SUCCESSFUL ) {
+        if (payment.getStatus() == PaymentStatus.SUCCESSFUL) {
             return getPaymentStatus(paymentId);
+        }
+
+        if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.REFUNDED) {
+            throw new BadRequestException("Order #" + order.getId() + " is " + order.getStatus() + " and cannot accept payment.");
+        }
+
+        // Prevent reuse of any UTR/RRN that is already verified for another order
+        Optional<Payment> duplicateVerified = paymentRepository.findDuplicateVerifiedUtr(cleanUtr, order.getId());
+        if (duplicateVerified.isPresent()) {
+            log.warn("Security Alert: User attempted to submit an already verified UTR/RRN: {} for Order #{}", cleanUtr, order.getId());
+            throw new BadRequestException("This banking reference (UTR/RRN) has already been used and verified for another order. Reusing transaction references is prohibited.");
         }
 
         payment.setTransactionReference(cleanUtr);
         if (payerUpi != null && !payerUpi.isBlank()) payment.setPayerUpiId(payerUpi.trim());
         if (payerName != null && !payerName.isBlank()) payment.setPayerName(payerName.trim());
 
-        // Check if an auxiliary bank credit alert with this RRN already arrived in the database!
-        Optional<BankCreditAlert> alertOpt = bankCreditAlertRepository.findByRrn(cleanUtr);
+        // Concurrency protection: Synchronize on normalized RRN and acquire pessimistic write lock
+        synchronized (("upi-rrn-" + cleanUtr).intern()) {
+            Optional<BankCreditAlert> alertOpt = bankCreditAlertRepository.findByRrnWithLock(cleanUtr);
 
-        if (alertOpt.isPresent()) {
-            BankCreditAlert alert = alertOpt.get();
-            // Validate amount matches
-            if (alert.getAmount().compareTo(payment.getAmount()) == 0) {
-                // High confidence instant settlement!
-                alert.setStatus("MATCHED");
-                alert.setMatchedPaymentId(payment.getId());
-                alert.setConfidenceScore(new BigDecimal("100.00"));
-                bankCreditAlertRepository.save(alert);
+            if (alertOpt.isPresent()) {
+                BankCreditAlert alert = alertOpt.get();
 
-                payment.setStatus(PaymentStatus.SUCCESSFUL);
-                payment.setVerifiedAt(LocalDateTime.now());
-                payment.setVerifiedBy("OBSERVER_RRN_MATCH");
-                payment = paymentRepository.saveAndFlush(payment);
+                // Explicit check: An already MATCHED bank credit alert CANNOT be reused for another payment
+                if ("MATCHED".equalsIgnoreCase(alert.getStatus())) {
+                    if (payment.getId().equals(alert.getMatchedPaymentId())) {
+                        log.info("Bank credit alert RRN #{} was already matched to this payment #{}. Returning status.", cleanUtr, payment.getId());
+                        return getPaymentStatus(paymentId);
+                    } else {
+                        log.warn("Security Alert: Attempted reuse of already MATCHED bank alert RRN: {} (matched to Payment #{}) for Payment #{}",
+                                cleanUtr, alert.getMatchedPaymentId(), payment.getId());
+                        throw new BadRequestException("This banking credit alert (RRN #" + cleanUtr + ") has already been matched and reconciled to another payment.");
+                    }
+                }
 
-                order.setStatus(OrderStatus.PAID);
-                orderRepository.save(order);
+                // Validate amount matches with exact precision
+                if (alert.getAmount() != null && alert.getAmount().compareTo(payment.getAmount()) == 0) {
+                    // High confidence instant settlement!
+                    alert.setStatus("MATCHED");
+                    alert.setMatchedPaymentId(payment.getId());
+                    alert.setConfidenceScore(new BigDecimal("100.00"));
+                    bankCreditAlertRepository.save(alert);
 
-                // Release slot lease
-                slotLeaseRepository.findByOrderId(order.getId()).ifPresent(lease -> {
-                    lease.setStatus("SETTLED");
-                    lease.setReleasedAt(LocalDateTime.now());
-                    slotLeaseRepository.save(lease);
-                });
+                    payment.setStatus(PaymentStatus.SUCCESSFUL);
+                    payment.setVerifiedAt(LocalDateTime.now());
+                    payment.setVerifiedBy("OBSERVER_RRN_MATCH");
+                    payment = paymentRepository.saveAndFlush(payment);
 
-                // Auto-provision entitlements
-                paymentService.createEntitlementsForOrder(order);
+                    order.setStatus(OrderStatus.PAID);
+                    orderRepository.save(order);
 
-                auditService.logUserEvent(order.getUser(), "UPI_AUTO_SETTLED_RRN", "Payment", String.valueOf(payment.getId()),
-                        "Payment auto-settled matching RRN #" + cleanUtr);
+                    // Release slot lease
+                    slotLeaseRepository.findByOrderId(order.getId()).ifPresent(lease -> {
+                        lease.setStatus("SETTLED");
+                        lease.setReleasedAt(LocalDateTime.now());
+                        slotLeaseRepository.save(lease);
+                    });
 
-                log.info("Self-hosted UPI payment #{} auto-settled via matching RRN #{}", payment.getId(), cleanUtr);
+                    // Auto-provision entitlements
+                    paymentService.createEntitlementsForOrder(order);
 
-                return getPaymentStatus(paymentId);
+                    auditService.logUserEvent(order.getUser(), "UPI_AUTO_SETTLED_RRN", "Payment", String.valueOf(payment.getId()),
+                            "Payment auto-settled matching RRN #" + cleanUtr);
+
+                    log.info("Self-hosted UPI payment #{} auto-settled via matching RRN #{}", payment.getId(), cleanUtr);
+
+                    return getPaymentStatus(paymentId);
+                } else {
+                    log.warn("Bank credit alert RRN: {} amount mismatch! Alert amount: ₹{}, Payment expected: ₹{}",
+                            cleanUtr, alert.getAmount(), payment.getAmount());
+                }
             }
         }
 

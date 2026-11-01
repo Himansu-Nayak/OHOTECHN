@@ -129,7 +129,7 @@ export function V15MetricCard({
     <div
       onClick={onClick}
       className={cn(
-        'group relative bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,0,0,0.02),inset_0_1px_0_rgba(255,255,255,0.7)] transition-[box-shadow,border-color,transform] duration-200 ease-out',
+        'group relative bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-[22px] p-3.5 sm:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02),inset_0_1px_0_rgba(255,255,255,0.7)] transition-[box-shadow,border-color,transform] duration-200 ease-out min-w-0',
         onClick && 'cursor-pointer hover:border-slate-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)] active:scale-[0.98]',
         className
       )}

@@ -119,3 +119,10 @@ Recording*.mp4
 .zcode/
 .zencoder/
 
+
+
+# Credentials and sensitive images
+cashfree api*
+*APIKey*
+*.csv
+credentials/

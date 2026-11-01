@@ -620,4 +620,222 @@ public class SelfHostedUpiPaymentTests {
                         .header("Authorization", "Bearer " + customerToken))
                 .andExpect(status().isForbidden());
     }
+
+    // ==========================================
+    // 5. SEC-01: RRN Re-Matching Hardening Tests
+    // ==========================================
+
+    @Test
+    @DisplayName("SEC-01: An already MATCHED bank credit alert cannot be reused for a second payment")
+    void testAlreadyMatchedRrnRejectionForSecondPayment() throws Exception {
+        String sharedRrn = "RRN-SEC01-SHARED";
+        BigDecimal amount = new BigDecimal("800.00");
+
+        // Order 1 & Payment 1
+        Order order1 = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(amount)
+                .status(OrderStatus.PENDING)
+                .build());
+        Payment payment1 = paymentRepository.save(Payment.builder()
+                .order(order1)
+                .amount(amount)
+                .status(PaymentStatus.PENDING)
+                .provider("DIRECT_UPI")
+                .method("UPI_QR")
+                .currency("INR")
+                .build());
+
+        // Pre-create matching bank credit alert
+        bankCreditAlertRepository.save(BankCreditAlert.builder()
+                .rrn(sharedRrn)
+                .amount(amount)
+                .currency("INR")
+                .status("PENDING")
+                .receivedAt(LocalDateTime.now())
+                .build());
+
+        // Payment 1 successfully matches and settles the alert
+        Map<String, Object> req1 = Map.of(
+                "paymentId", payment1.getId(),
+                "utr", sharedRrn
+        );
+        mockMvc.perform(post("/api/payments/upi/submit-utr")
+                        .header("Authorization", "Bearer " + customerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req1)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.isPaid").value(true))
+                .andExpect(jsonPath("$.data.paymentStatus").value("SUCCESSFUL"));
+
+        // Order 2 & Payment 2 for another purchase
+        Order order2 = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(amount)
+                .status(OrderStatus.PENDING)
+                .build());
+        Payment payment2 = paymentRepository.save(Payment.builder()
+                .order(order2)
+                .amount(amount)
+                .status(PaymentStatus.PENDING)
+                .provider("DIRECT_UPI")
+                .method("UPI_QR")
+                .currency("INR")
+                .build());
+
+        // Payment 2 attempts to claim the same already MATCHED RRN
+        Map<String, Object> req2 = Map.of(
+                "paymentId", payment2.getId(),
+                "utr", sharedRrn
+        );
+        mockMvc.perform(post("/api/payments/upi/submit-utr")
+                        .header("Authorization", "Bearer " + customerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req2)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("already been")));
+
+        // Verify Payment 2 was NOT marked SUCCESSFUL
+        Payment p2Check = paymentRepository.findById(payment2.getId()).orElseThrow();
+        assertThat(p2Check.getStatus()).isEqualTo(PaymentStatus.PENDING);
+
+        // Verify Order 2 remains PENDING
+        Order o2Check = orderRepository.findById(order2.getId()).orElseThrow();
+        assertThat(o2Check.getStatus()).isEqualTo(OrderStatus.PENDING);
+    }
+
+    @Test
+    @DisplayName("SEC-01: Bank credit alert with mismatched amount is NOT auto-settled and remains PENDING")
+    void testBankCreditAlertAmountMismatchDoesNotAutoSettle() throws Exception {
+        String testRrn = "RRN-SEC01-AMT-DIFF";
+        BigDecimal paymentAmount = new BigDecimal("1500.00");
+        BigDecimal alertAmount = new BigDecimal("500.00");
+
+        Order order = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(paymentAmount)
+                .status(OrderStatus.PENDING)
+                .build());
+        Payment payment = paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(paymentAmount)
+                .status(PaymentStatus.PENDING)
+                .provider("DIRECT_UPI")
+                .method("UPI_QR")
+                .currency("INR")
+                .build());
+
+        BankCreditAlert alert = bankCreditAlertRepository.save(BankCreditAlert.builder()
+                .rrn(testRrn)
+                .amount(alertAmount)
+                .currency("INR")
+                .status("PENDING")
+                .receivedAt(LocalDateTime.now())
+                .build());
+
+        Map<String, Object> req = Map.of(
+                "paymentId", payment.getId(),
+                "utr", testRrn
+        );
+
+        mockMvc.perform(post("/api/payments/upi/submit-utr")
+                        .header("Authorization", "Bearer " + customerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.isPaid").value(false))
+                .andExpect(jsonPath("$.data.paymentStatus").value("PENDING"));
+
+        // Verify DB alert remains PENDING
+        BankCreditAlert alertCheck = bankCreditAlertRepository.findById(alert.getId()).orElseThrow();
+        assertThat(alertCheck.getStatus()).isEqualTo("PENDING");
+        assertThat(alertCheck.getMatchedPaymentId()).isNull();
+
+        // Verify Payment remains PENDING
+        Payment pCheck = paymentRepository.findById(payment.getId()).orElseThrow();
+        assertThat(pCheck.getStatus()).isEqualTo(PaymentStatus.PENDING);
+    }
+
+    @Test
+    @DisplayName("SEC-01: Resubmitting the same RRN by the same payment is idempotent and does not fail")
+    void testIdempotentResubmissionBySamePayment() throws Exception {
+        String testRrn = "RRN-SEC01-IDEMPOTENT";
+        BigDecimal amount = new BigDecimal("600.00");
+
+        Order order = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(amount)
+                .status(OrderStatus.PENDING)
+                .build());
+        Payment payment = paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(amount)
+                .status(PaymentStatus.PENDING)
+                .provider("DIRECT_UPI")
+                .method("UPI_QR")
+                .currency("INR")
+                .build());
+
+        bankCreditAlertRepository.save(BankCreditAlert.builder()
+                .rrn(testRrn)
+                .amount(amount)
+                .currency("INR")
+                .status("PENDING")
+                .receivedAt(LocalDateTime.now())
+                .build());
+
+        Map<String, Object> req = Map.of(
+                "paymentId", payment.getId(),
+                "utr", testRrn
+        );
+
+        // First submission
+        mockMvc.perform(post("/api/payments/upi/submit-utr")
+                        .header("Authorization", "Bearer " + customerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.isPaid").value(true));
+
+        // Resubmission of same payment with same RRN
+        mockMvc.perform(post("/api/payments/upi/submit-utr")
+                        .header("Authorization", "Bearer " + customerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.isPaid").value(true))
+                .andExpect(jsonPath("$.data.paymentStatus").value("SUCCESSFUL"));
+    }
+
+    @Test
+    @DisplayName("SEC-01: UTR submission on cancelled or refunded order is rejected")
+    void testCancelledOrderUtrSubmissionRejected() throws Exception {
+        Order order = orderRepository.save(Order.builder()
+                .user(customerUser)
+                .totalAmount(new BigDecimal("999.00"))
+                .status(OrderStatus.CANCELLED)
+                .build());
+        Payment payment = paymentRepository.save(Payment.builder()
+                .order(order)
+                .amount(new BigDecimal("999.00"))
+                .status(PaymentStatus.PENDING)
+                .provider("DIRECT_UPI")
+                .method("UPI_QR")
+                .currency("INR")
+                .build());
+
+        Map<String, Object> req = Map.of(
+                "paymentId", payment.getId(),
+                "utr", "RRN-CANCELLED-1234"
+        );
+
+        mockMvc.perform(post("/api/payments/upi/submit-utr")
+                        .header("Authorization", "Bearer " + customerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("cannot accept payment")));
+    }
 }

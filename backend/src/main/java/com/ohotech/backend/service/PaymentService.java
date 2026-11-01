@@ -492,7 +492,7 @@ public class PaymentService {
                 .merchantName(upiMerchantName)
                 .bankName(upiBankName)
                 .bankTransferEnabled(bankTransferEnabled)
-                .codEnabled(codEnabled)
+                .codEnabled(false)
                 .razorpayEnabled(razorpayEnabled && razorpayConfigured())
                 .razorpayKeyId(razorpayKeyId)
                 .cashfreeEnabled(cfEnabled)
@@ -650,35 +650,15 @@ public class PaymentService {
             throw new ResourceNotFoundException("Order", "id", orderId);
         }
 
-        if (order.getStatus() == OrderStatus.PAID) {
-            throw new BadRequestException("Order #" + orderId + " is already paid.");
-        }
-
-        Payment payment = paymentRepository.findByOrderId(orderId)
-                .orElse(Payment.builder()
-                        .order(order)
-                        .amount(order.getTotalAmount())
-                        .build());
-
-        payment.setAmount(order.getTotalAmount());
-        payment.setProvider("COD");
-        payment.setMethod("CASH_ON_DELIVERY");
-        payment.setCurrency("INR");
-        payment.setStatus(PaymentStatus.PENDING);
-        payment = paymentRepository.save(payment);
-
-        order.setStatus(OrderStatus.CONFIRMED);
-        orderRepository.save(order);
-
+        // Server-side enforcement: COD is completely discontinued for new transactions
         try {
-            cartService.clearCart(userId);
-            auditService.logUserEvent(order.getUser(), "ORDER_COD_INITIATED", "Order", String.valueOf(order.getId()),
-                    "Customer placed Cash on Delivery order #" + order.getId());
+            auditService.logUserEvent(order.getUser(), "COD_REJECTED", "Order", String.valueOf(order.getId()),
+                    "Rejected discontinued Cash on Delivery (COD) request for Order #" + order.getId());
         } catch (Exception e) {
-            logger.warn("COD post-processing warning: {}", e.getMessage());
+            logger.warn("Audit logging warning for COD rejection: {}", e.getMessage());
         }
-
-        return mapPaymentToDto(payment);
+        logger.warn("Rejected obsolete Cash on Delivery (COD) payment attempt for User #{} on Order #{}", userId, orderId);
+        throw new BadRequestException("Cash on Delivery (COD) has been discontinued. Please select an online payment method (UPIHost, Cashfree, Razorpay, or Direct UPI).");
     }
 
     @Transactional

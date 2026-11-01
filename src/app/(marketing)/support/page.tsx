@@ -11,6 +11,7 @@ import {
   FileText, ExternalLink, HelpCircle, Lock, UserCheck, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SlaStatusBadge } from '@/components/support/SlaStatusBadge';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
 import { 
@@ -606,12 +607,7 @@ export default function SupportPanelPage() {
                           </td>
 
                           <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                            <div className="font-mono text-slate-700">
-                              {t.slaHoursRemaining !== undefined ? `${t.slaHoursRemaining}h remaining` : 'Active'}
-                            </div>
-                            <div className="text-[10px] text-slate-400">
-                              {t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-IN') : ''}
-                            </div>
+                            <SlaStatusBadge ticket={t} showDetails={true} />
                           </td>
 
                           <td className="py-3.5 px-4 text-center whitespace-nowrap">
@@ -741,11 +737,14 @@ export default function SupportPanelPage() {
                   ))}
                 </div>
 
-                {selectedTicket.slaDueAt && (
-                  <div className="text-[11px] font-mono text-slate-500">
-                    Target SLA: {new Date(selectedTicket.slaDueAt).toLocaleString('en-IN')}
+                <div className="flex items-center gap-2">
+                    <SlaStatusBadge ticket={selectedTicket} />
+                    {selectedTicket.slaDueAt && (
+                      <span className="text-[11px] font-mono text-slate-500">
+                        Target: {new Date(selectedTicket.slaDueAt).toLocaleString('en-IN')}
+                      </span>
+                    )}
                   </div>
-                )}
               </div>
             )}
 

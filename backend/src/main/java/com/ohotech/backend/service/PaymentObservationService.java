@@ -133,6 +133,15 @@ public class PaymentObservationService {
     }
 
     private void fulfillMatchedPayment(BankCreditAlert alert, Payment payment, String mechanism, BigDecimal confidence) {
+        if ("MATCHED".equalsIgnoreCase(alert.getStatus())) {
+            log.warn("Bank credit alert #{} is already MATCHED. Skipping duplicate fulfillment.", alert.getId());
+            return;
+        }
+        if (payment.getStatus() == PaymentStatus.SUCCESSFUL) {
+            log.warn("Payment #{} is already marked SUCCESSFUL. Skipping duplicate fulfillment.", payment.getId());
+            return;
+        }
+
         Order order = payment.getOrder();
         LocalDateTime now = LocalDateTime.now();
 

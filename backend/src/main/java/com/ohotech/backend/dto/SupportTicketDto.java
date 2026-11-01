@@ -32,6 +32,7 @@ public class SupportTicketDto {
     private String issueOwnership;
     private LocalDateTime slaDueAt;
     private Double slaHoursRemaining;
+    private String slaStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime resolvedAt;
