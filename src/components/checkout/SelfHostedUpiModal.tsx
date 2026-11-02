@@ -265,16 +265,16 @@ export function SelfHostedUpiModal({
   const timeFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white rounded-[28px] shadow-2xl border border-slate-200 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/65 backdrop-blur-md animate-in fade-in duration-200 motion-reduce:animate-none">
+      <div className="relative w-full max-w-lg max-h-[min(92dvh,900px)] overflow-y-auto bg-white rounded-[24px] shadow-[0_24px_80px_rgba(15,23,42,0.24)] border border-slate-200/80 ring-1 ring-white/70">
         {/* Header */}
-        <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="sticky top-0 z-10 p-5 border-b border-slate-200/70 flex items-center justify-between bg-white/95 backdrop-blur-md">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black shadow-xs">
-              <QrCode className="w-5 h-5 text-emerald-400" />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF6B4A] to-[#FF8E53] text-white flex items-center justify-center font-black shadow-[0_8px_20px_rgba(255,107,74,0.25)]">
+              <QrCode className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-base font-black text-slate-900 tracking-tight">Direct Self-Hosted UPI</h3>
+              <h3 className="text-base font-extrabold text-slate-900 tracking-tight">Direct Self-Hosted UPI</h3>
               <p className="text-[11px] text-slate-500 font-medium">NPCI Instant Settlement &bull; Zero Gateway Fee</p>
             </div>
           </div>
@@ -282,7 +282,7 @@ export function SelfHostedUpiModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
           >
             <X className="w-4 h-4" />
           </button>
@@ -322,7 +322,7 @@ export function SelfHostedUpiModal({
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/60 text-sm font-semibold transition-[border-color,box-shadow] focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-400"
                       required
                     />
                     <p className="text-[11px] text-slate-400 mt-1">Accepts 10-digit Indian numbers or international with country code.</p>
@@ -331,7 +331,7 @@ export function SelfHostedUpiModal({
                   <button
                     type="submit"
                     disabled={isSendingOtp}
-                    className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FF6B4A] to-[#FF8E53] hover:from-[#F45B3D] hover:to-[#F98247] text-white font-bold text-xs uppercase tracking-wider shadow-[0_8px_22px_rgba(255,107,74,0.22)] transition-[transform,box-shadow,filter] duration-200 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed motion-reduce:transition-none"
                   >
                     {isSendingOtp ? (
                       <>
@@ -368,7 +368,7 @@ export function SelfHostedUpiModal({
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ''))}
                       placeholder="e.g. 123456"
-                      className="w-full px-4 py-3 text-center tracking-[8px] font-mono font-black text-xl rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      className="w-full px-4 py-3 text-center tracking-[8px] font-mono font-black text-xl rounded-xl border border-slate-200 bg-slate-50/60 focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-400 transition-[border-color,box-shadow]"
                       required
                       autoFocus
                     />
@@ -392,7 +392,7 @@ export function SelfHostedUpiModal({
                   <button
                     type="submit"
                     disabled={isVerifyingOtp}
-                    className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-md shadow-emerald-600/20"
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FF6B4A] to-[#FF8E53] hover:from-[#F45B3D] hover:to-[#F98247] text-white font-bold text-xs uppercase tracking-wider transition-[transform,box-shadow] duration-200 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_8px_22px_rgba(255,107,74,0.22)] motion-reduce:transition-none"
                   >
                     {isVerifyingOtp ? (
                       <>
@@ -451,8 +451,8 @@ export function SelfHostedUpiModal({
               ) : (
                 <>
                   {/* Dynamic QR & Payable details */}
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                    <div className="w-44 h-44 bg-white p-2 rounded-2xl border border-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                  <div className="flex flex-col sm:flex-row items-center gap-5 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#fff8f5] via-white to-[#f8f9fe] border border-orange-100/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                    <div className="w-44 h-44 bg-white p-2 rounded-2xl border border-slate-200/80 flex items-center justify-center shrink-0 shadow-[0_8px_24px_rgba(15,23,42,0.06)] ring-4 ring-orange-50">
                       {qrCodeUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={qrCodeUrl} alt="UPI QR Code" className="w-full h-full object-contain" />
