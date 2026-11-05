@@ -1,5 +1,6 @@
 package com.ohotech.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"passwordHash", "officialEmail", "firebaseUid"})
     private User user;
 
     @Column(nullable = false)
@@ -40,7 +42,7 @@ public class Order {
     private List<OrderItem> items = new ArrayList<>();
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("order")
+    @JsonIgnoreProperties("order")
     private Payment payment;
 
     public List<Payment> getPayments() {

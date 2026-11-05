@@ -1,7 +1,10 @@
 package com.ohotech.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,23 +23,24 @@ public class Cart {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JsonIgnoreProperties({"passwordHash", "officialEmail", "firebaseUid"})
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
 
-    @com.fasterxml.jackson.annotation.JsonProperty("totalAmount")
-    public java.math.BigDecimal getTotalAmount() {
+    @JsonProperty("totalAmount")
+    public BigDecimal getTotalAmount() {
         if (items == null || items.isEmpty()) {
-            return java.math.BigDecimal.ZERO;
+            return BigDecimal.ZERO;
         }
         return items.stream()
                 .map(CartItem::getItemTotal)
-                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    @com.fasterxml.jackson.annotation.JsonProperty("totalItems")
+    @JsonProperty("totalItems")
     public Integer getTotalItems() {
         if (items == null || items.isEmpty()) {
             return 0;

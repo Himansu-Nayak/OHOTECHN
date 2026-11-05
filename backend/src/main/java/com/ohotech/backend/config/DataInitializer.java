@@ -9,6 +9,7 @@ import com.ohotech.backend.repository.ProductRepository;
 import com.ohotech.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -28,11 +29,17 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @org.springframework.beans.factory.annotation.Value("${app.admin.initial-email:${INITIAL_ADMIN_EMAIL:}}")
+    @Value("${app.admin.initial-email:${INITIAL_ADMIN_EMAIL:}}")
     private String initialAdminEmail;
 
-    @org.springframework.beans.factory.annotation.Value("${app.admin.initial-password:${INITIAL_ADMIN_PASSWORD:}}")
+    @Value("${app.admin.initial-password:${INITIAL_ADMIN_PASSWORD:}}")
     private String initialAdminPassword;
+
+    @Value("${spring.profiles.active:default}")
+    private String activeProfile;
+
+    @Value("${app.seed-demo-data:false}")
+    private boolean seedDemoData;
 
     @Override
     @Transactional
@@ -73,21 +80,28 @@ public class DataInitializer implements CommandLineRunner {
                 }
             }
 
-            // Seed verified Demo Customer if not present
-            if (userRepository.findByEmail("customer@demo.ohotech.com").isEmpty()) {
-                User demoCustomer = User.builder()
-                        .name("Demo Customer")
-                        .email("customer@demo.ohotech.com")
-                        .phone("+919876543210")
-                        .passwordHash(passwordEncoder.encode("Demo@12345"))
-                        .role(Role.ROLE_CUSTOMER)
-                        .emailVerified(true)
-                        .phoneVerified(true)
-                        .enabled(true)
-                        .failedLoginAttempts(0)
-                        .build();
-                userRepository.save(demoCustomer);
-                log.info("Demo customer [customer@demo.ohotech.com] successfully initialized.");
+            // Seed verified Demo Customer ONLY when explicitly permitted and never in production
+            boolean isProduction = "prod".equalsIgnoreCase(activeProfile) || "production".equalsIgnoreCase(activeProfile);
+            boolean allowDemoSeeding = seedDemoData && !isProduction;
+
+            if (allowDemoSeeding) {
+                if (userRepository.findByEmail("customer@demo.ohotech.com").isEmpty()) {
+                    User demoCustomer = User.builder()
+                            .name("Demo Customer")
+                            .email("customer@demo.ohotech.com")
+                            .phone("+919876543210")
+                            .passwordHash(passwordEncoder.encode("Demo@12345"))
+                            .role(Role.ROLE_CUSTOMER)
+                            .emailVerified(true)
+                            .phoneVerified(true)
+                            .enabled(true)
+                            .failedLoginAttempts(0)
+                            .build();
+                    userRepository.save(demoCustomer);
+                    log.info("Demo customer [customer@demo.ohotech.com] successfully initialized.");
+                }
+            } else {
+                log.info("Skipping demo customer seeding (activeProfile='{}', seedDemoData={}).", activeProfile, seedDemoData);
             }
         } catch (Exception e) {
             log.warn("User initialization check completed: {}", e.getMessage());

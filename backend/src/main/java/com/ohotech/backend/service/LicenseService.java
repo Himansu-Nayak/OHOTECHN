@@ -1,6 +1,7 @@
 package com.ohotech.backend.service;
 
 import com.ohotech.backend.dto.DeviceActivationRequest;
+import com.ohotech.backend.dto.PublicLicenseVerificationDto;
 import com.ohotech.backend.entity.*;
 import com.ohotech.backend.exception.BadRequestException;
 import com.ohotech.backend.exception.ResourceNotFoundException;
@@ -60,6 +61,31 @@ public class LicenseService {
                 .orElseThrow(() -> new ResourceNotFoundException("License", "licenseKey", licenseKey));
         checkAndUpdateExpiry(license);
         return license;
+    }
+
+    @Transactional
+    public PublicLicenseVerificationDto verifyPublicLicenseByKey(String licenseKey) {
+        License license = licenseRepository.findByLicenseKey(licenseKey)
+                .orElseThrow(() -> new ResourceNotFoundException("License", "licenseKey", licenseKey));
+        checkAndUpdateExpiry(license);
+
+        boolean isValid = license.getStatus() == LicenseStatus.ACTIVE
+                && (license.getExpiresAt() == null || license.getExpiresAt().isAfter(LocalDateTime.now()));
+
+        return PublicLicenseVerificationDto.builder()
+                .id(license.getId())
+                .licenseKey(license.getLicenseKey())
+                .status(license.getStatus())
+                .productId(license.getProduct() != null ? license.getProduct().getId() : null)
+                .productName(license.getProduct() != null ? license.getProduct().getName() : null)
+                .productPlanId(license.getProductPlan() != null ? license.getProductPlan().getId() : null)
+                .productPlanName(license.getProductPlan() != null ? license.getProductPlan().getName() : null)
+                .activationLimit(license.getActivationLimit())
+                .activationCount(license.getActivationCount())
+                .issuedAt(license.getIssuedAt())
+                .expiresAt(license.getExpiresAt())
+                .valid(isValid)
+                .build();
     }
 
     @Transactional
